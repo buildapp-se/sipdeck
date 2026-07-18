@@ -218,6 +218,11 @@ data.drinks.forEach(drink => {
     `${drink.id}: method.en present`);
   check(drink.method && typeof drink.method.sv === 'string' && drink.method.sv.length > 0,
     `${drink.id}: method.sv present`);
+  if (drink.source !== undefined) {
+    check(drink.source && typeof drink.source.label === 'string' && drink.source.label.length > 0,
+      `${drink.id}: source label present`);
+    check(drink.source && /^https:\/\//.test(drink.source.url), `${drink.id}: source is an HTTPS URL`);
+  }
   if (drink.method && drink.method.sv) {
     check(!drink.method.sv.includes('—'), `${drink.id}: method.sv has no em-dash`);
   }

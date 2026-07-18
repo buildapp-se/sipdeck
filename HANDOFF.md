@@ -5,20 +5,18 @@ Read this first, then PRODUCT.md (what to build + acceptance criteria), then BAC
 
 ## Current state in one paragraph
 
-**BACKLOG items 1–9 done** (updated 2026-07-19). Committed swipes now promote the existing
-live stack while the outgoing card flies away; the deck view is no longer re-rendered, so
-the next card grows with `--sd-ease-list` and the content/bottom navigation do not repaint
-at the handoff. Favorites are compact real-art rows opening a continuous illustrated
-recipe detail with transient ingredient checkmarks and readable clipboard copy, with no
-second flip. The bottom navigation now sits outside the content wrapper so it remains
-viewport-fixed on mobile, and favorite details use `#/favoriter/<drink-id>` so browser
-Back returns to the favorite list. The exact persisted state blob is unchanged. `test.js`:
-566 checks green.
-The outstanding phone pass was attempted again from a local `python -m http.server` on
-2026-07-19. The required Browser-plugin connection and recovery diagnostics completed,
-but its browser availability list was empty, so no new browser verification is claimed
-and BACKLOG item 10 was not started. Real-phone 60 fps feel remains outstanding. Next:
-the phone pass, then BACKLOG item 10.
+**BACKLOG items 1–9 done; item 10 in progress** (updated 2026-07-19). The reviewed seed
+now contains 26 drinks: the original 10 plus the user's selected 16-drink batch, each
+with a curated 640×800 production image. Every published recipe has a specific source;
+favorite detail renders the source as a small right-aligned link after the method. The
+bottom navigation and history-aware favorite detail fixes remain in place, and the exact
+persisted state blob is unchanged. `test.js`: 1374 checks green. All 26 source URLs
+returned HTTP 200 on 2026-07-19.
+The outstanding phone pass was attempted from a local `python -m http.server`, but the
+Browser plugin reported no controllable browser. No new phone-browser verification is
+claimed; the fixed-nav/history changes, 16-drink batch and source-link treatment still
+need a real-phone interaction pass. Next: that pass, then continue item 10 toward the
+80–100-drink target.
 
 ## Implementation notes for the next session (things the code assumes)
 
@@ -40,7 +38,7 @@ the phone pass, then BACKLOG item 10.
 - Card fronts try `img/<drink-id>.webp` for the top four live cards and retain the
   `glassPlaceholder(drink.glass)` inline silhouette until load or on error. The current
   seed uses `coupe`, `highball`, `rocks` and `martini`; unknown future values degrade to
-  `rocks`. All 10 current ids have art. `convert()` uses 30 ml/oz (bar standard;
+  `rocks`. All 26 current ids have art. `convert()` uses 30 ml/oz (bar standard;
   PRODUCT.md doesn't pin it).
 - The `#view` click/change delegates are attached ONCE at startup (the element is never
   replaced). `#deck` listeners attach when the view is rendered and survive successive
@@ -199,7 +197,7 @@ in PRODUCT.md "Locked decisions".
    ```
 
    Filename **must** be `img/<drink-id>.webp`; verify every output is 640×800 and
-   ≤ 80 kB. Current range is 17,672–45,038 bytes.
+   ≤ 80 kB. Current range is 15,010–45,038 bytes across 26 production images.
 
 5. **Runtime behavior.** The app only creates the top four cards, uses
    `loading="lazy" decoding="async"`, keeps `glassPlaceholder(drink.glass)` behind the
@@ -212,9 +210,9 @@ in PRODUCT.md "Locked decisions".
 
 1. Real-phone check that the bottom navigation remains fixed on every view and hardware
    Back from a favorite detail returns to the favorite list, plus the outstanding full
-   phone-viewport pass and 60 fps feel check.
-2. BACKLOG 10: add the user's numbered drink selection, following the frozen image
-   pipeline for every added drink; selection is pending from the 40-drink candidate list.
+   phone-viewport pass, source-link behavior and 60 fps feel check.
+2. BACKLOG 10: continue from the reviewed 26-drink seed toward 80–100 drinks in another
+   user-selected batch, following the frozen image pipeline for every addition.
 3. BACKLOG 11: PWA manifest and icon exports.
 
 ## How to run / deploy
@@ -239,23 +237,18 @@ Commit messages: `sipdeck: <what>`.
 
 ## Verification state
 
-`node test.js`: 566 green; `node --check app.js`: green; `git diff --check`: green;
-`app.js`: 37.9 kB. All 10 drink ids have exactly one visually inspected 640×800 WebP,
-17,672–45,038 bytes; no missing or extra production filenames. Local HTTP smoke verifies
-index/app/data responses; a deliberately missing image returns 404 and the source retains
-the live `<img>` error fallback. Source inspection confirms both deck and favorite flips
-still toggle `.flipped` on live elements, and filter/pantry changes set `deckQueue = null`
-before `render()` causes `ensureQueue()` to reshuffle. Items 1–5 retain their earlier
-Playwright phone-viewport smoke (deck gestures/flip/recipe/favorites/settings), zero
-console errors. Source inspection on 2026-07-19 confirms committed swipe no longer calls
-`render()`, surviving cards change `data-depth`, and deck flip still toggles `.flipped` on
-the live element. On 2026-07-19 the requested phone pass was served locally from
-`http://127.0.0.1:8765/`; the server returned HTTP 200, but the Browser plugin reported
-an empty browser availability list after its prescribed recovery diagnostics. Therefore
-none of the requested interaction checks received new browser verification, the promotion
-feel and redesigned favorite flow remain browser-unverified, and BACKLOG item 10 remains
-unstarted. Real-phone feel check NOT done. This file's "Current state" paragraph must be
-updated at the end of every working session (recept/Årshjul convention).
+`node test.js`: 1374 green; `node --check app.js`: green; `git diff --check`: green.
+All 26 drink ids have exactly one visually inspected 640×800 WebP, 15,010–45,038 bytes;
+there are no missing or extra production filenames. The 16 new source PNGs were generated
+one drink at a time from the frozen reference prompt and converted at quality 72/method 6;
+the original 10 images were not regenerated. All 26 recipe source URLs returned HTTP 200.
+Local HTTP smoke verifies index/app/data and a new image response. Source inspection
+confirms live-element deck promotion/flip and queue resets are unchanged. Earlier browser
+checks remain historical only: on 2026-07-19 the requested local phone pass could not run
+because the Browser plugin reported no controllable browser. The current fixed navigation,
+favorite history, expanded seed and source links therefore remain phone-browser-unverified;
+real-phone feel check NOT done. This file's "Current state" paragraph must be updated at
+the end of every working session (recept/Årshjul convention).
 
 Source inspection and pure-function tests on 2026-07-19 confirm favorite detail hashes
 parse safely, opening a favorite creates a history entry, and hardware Back therefore

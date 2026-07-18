@@ -120,6 +120,7 @@ This exact blob is what `PUT /state` will carry in v1.1. Never store derived dat
     "bar": true,
     "tags": ["citrusy", "strong"],
     "glass": "coupe",
+    "source": { "label": "IBA", "url": "https://iba-world.com/iba-cocktail/margarita/" },
     "ingredients": [
       { "id": "tequila-blanco", "ml": 50, "essential": true },
       { "id": "triple-sec",     "ml": 20, "essential": true },
@@ -136,6 +137,9 @@ This exact blob is what `PUT /state` will carry in v1.1. Never store derived dat
 - `name` is a string (cocktail names are proper nouns); allow `{en, sv}` object override
   for the rare translated name. `type`, `base`, `glass`, `tags`, `unit` are ids resolved
   through the string table.
+- `source` is optional for genuinely original/house recipes. When present it contains a
+  short source label and an HTTPS link to the specific published recipe; favorite detail
+  renders it as a small link after the method.
 - `essential` is explicit on every line (validator enforces).
 
 ## User stories & acceptance criteria
@@ -191,6 +195,8 @@ This exact blob is what `PUT /state` will carry in v1.1. Never store derived dat
   can be copied as readable text. Explicit un-favorite control. Favorites survive reload
   (localStorage); mixing checkmarks are deliberately transient. A favorite detail has its
   own history entry, so browser or mobile Back returns to the favorite list first.
+  Published recipes show a small direct source link after the method; original or house
+  recipes may omit it.
 
 ### Epic D — Filters
 

@@ -20,7 +20,7 @@ const STRINGS = {
     recipe_title: 'Recipe', ingredients_title: 'Ingredients', method_title: 'Method',
     ingredient_check_hint: 'Check off ingredients as you mix.',
     check_ingredient: 'Check off', copy_recipe: 'Copy recipe',
-    copied: 'Copied!', copy_failed: 'Could not copy', servings_copy: 'servings',
+    copied: 'Copied!', copy_failed: 'Could not copy', servings_copy: 'servings', source_label: 'Source',
     pantry_title: 'Pantry',
     pantry_empty: 'No ingredients are used by the current drinks.',
     pantry_intro: 'Check off what you have. Optional garnishes never block a match.',
@@ -59,7 +59,7 @@ const STRINGS = {
     recipe_title: 'Recept', ingredients_title: 'Ingredienser', method_title: 'Gör så här',
     ingredient_check_hint: 'Bocka av ingredienserna medan du blandar.',
     check_ingredient: 'Bocka av', copy_recipe: 'Kopiera receptet',
-    copied: 'Kopierat!', copy_failed: 'Kunde inte kopiera', servings_copy: 'portioner',
+    copied: 'Kopierat!', copy_failed: 'Kunde inte kopiera', servings_copy: 'portioner', source_label: 'Källa',
     pantry_title: 'Skafferi',
     pantry_empty: 'Inga ingredienser används av de aktuella drinkarna.',
     pantry_intro: 'Bocka av vad du har. Valfri garnering stoppar aldrig en träff.',
@@ -568,6 +568,9 @@ if (typeof document !== 'undefined') (function () {
         </label>`;
       }).join('');
       const unitBtns = UNITS.map(unit => `<button data-fav-act="unit" data-unit="${unit}"${unit === s.unit ? ' class="active"' : ''}>${unit}</button>`).join('');
+      const source = open.source && open.source.url && open.source.label
+        ? `<p class="fav-source"><a href="${esc(open.source.url)}" target="_blank" rel="noopener noreferrer">${esc(t(lang(), 'source_label'))}: ${esc(open.source.label)}</a></p>`
+        : '';
       return `${title}
         <div class="fav-toolbar">
           <button id="favClose" class="fav-back">${esc(t(lang(), 'fav_back'))}</button>
@@ -595,6 +598,7 @@ if (typeof document !== 'undefined') (function () {
             <div class="fav-ing-list">${ingredientRows}</div>
             <h3>${esc(t(lang(), 'method_title'))}</h3>
             <p class="fav-method">${esc(open.method[lang()] || open.method.en)}</p>
+            ${source}
             <button class="fav-copy" data-copy-fav>${esc(t(lang(), 'copy_recipe'))}</button>
           </section>
         </article>`;
