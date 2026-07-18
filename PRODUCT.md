@@ -185,8 +185,11 @@ This exact blob is what `PUT /state` will carry in v1.1. Never store derived dat
 ### Epic C — Favorites
 
 **C1. As a returning user, I want my saved drinks in a list so that I can find them fast.**
-- Favorites view lists saved drinks (thumbnail, name, type); tap opens the card
-  (flippable, swipe-free); explicit un-favorite control. Survives reload (localStorage).
+- Favorites view lists saved drinks (art thumbnail, name, type); tap opens a continuous,
+  swipe-free detail with the illustrated front followed by the full recipe, so no second
+  flip is needed. Ingredient rows can be checked off while mixing and the scaled recipe
+  can be copied as readable text. Explicit un-favorite control. Favorites survive reload
+  (localStorage); mixing checkmarks are deliberately transient.
 
 ### Epic D — Filters
 

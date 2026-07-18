@@ -72,7 +72,7 @@ header.brand .tagline{font:500 .8rem/1.4 var(--sd-font-ui);color:var(--sd-ink-2)
 
 .bottom-nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--sd-card);
   border-top:1px solid var(--sd-line);box-shadow:var(--sd-shadow);z-index:10;
-  padding-bottom:env(safe-area-inset-bottom)}
+  padding-bottom:env(safe-area-inset-bottom);transform:translateZ(0);backface-visibility:hidden}
 .bottom-nav a{flex:1;text-align:center;padding:.75rem .25rem;font:500 .68rem/1.2 var(--sd-font-ui);
   letter-spacing:.03em;color:var(--sd-ink-2);border-top:2px solid transparent}
 .bottom-nav a.active{color:var(--sd-accent);border-top-color:var(--sd-accent)}
@@ -143,15 +143,37 @@ dl.settings dd{min-width:0}
   color:var(--sd-ink);font:500 .82rem/1.2 var(--sd-font-ui)}
 .lang-toggle button.active{background:var(--sd-accent);border-color:var(--sd-accent);color:var(--sd-bg)}
 
-/* ---- favorites (BACKLOG item 5): reuse .list-card/.deck/.card, only row + toolbar chrome is new ---- */
-.fav-row{display:flex;align-items:center;gap:.75rem}
-.fav-thumb{width:44px;height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
-  background:var(--sd-bg);border-radius:8px}
-.fav-thumb .glass-ph{width:65%;opacity:.6}
-.fav-info{flex:1;min-width:0}
+/* ---- favorites: compact art rows + continuous recipe detail ---- */
+.fav-row{display:flex;align-items:center;gap:.55rem;color:#211B12}
+.fav-open{display:flex;align-items:center;gap:.85rem;flex:1;min-width:0;text-align:left;color:#211B12}
+.fav-open:focus-visible,.fav-copy:focus-visible{outline:3px solid var(--sd-accent);outline-offset:2px}
+.fav-thumb{position:relative;width:64px;height:80px;flex-shrink:0;display:flex;align-items:center;
+  justify-content:center;background:var(--sd-card);border-radius:8px;overflow:hidden}
+.fav-thumb .glass-ph{width:58%;opacity:.6}
+.fav-info{display:block;flex:1;min-width:0}
+.fav-info .name,.fav-info .meta{display:block}
 .fav-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;gap:.5rem}
 .fav-back,.fav-remove{border:1px solid rgba(33,27,18,.18);border-radius:8px;padding:.35rem .65rem;
   color:var(--sd-ink-2);font:500 .78rem/1.2 var(--sd-font-ui)}
+.fav-detail{display:grid;gap:1rem}
+.fav-hero,.fav-recipe{background:var(--sd-card);color:#211B12;border-radius:16px;box-shadow:var(--sd-shadow);
+  padding:1.1rem}
+.fav-detail-art{position:relative;height:min(52vh,360px);display:flex;align-items:center;justify-content:center}
+.fav-detail-art .glass-ph{width:35%;max-height:80%;color:#6E6455;opacity:.55}
+.fav-recipe h2,.fav-recipe h3{font:600 1rem/1.3 var(--sd-font-ui)}
+.fav-recipe h3{margin-top:1.25rem}
+.fav-recipe-controls{display:flex;align-items:center;justify-content:space-between;gap:.75rem;
+  margin:.8rem 0 1.2rem}
+.fav-hint{color:#6E6455;font:.8rem/1.4 var(--sd-font-ui);margin:.25rem 0 .65rem}
+.fav-ing-list{border-top:1px solid rgba(33,27,18,.14)}
+.fav-ing-row{display:grid;grid-template-columns:auto 4.8rem 1fr;align-items:center;gap:.55rem;
+  padding:.65rem 0;border-bottom:1px solid rgba(33,27,18,.14);font:.88rem/1.35 var(--sd-font-ui)}
+.fav-ing-row input{width:1.05rem;height:1.05rem;accent-color:#2F6B3F}
+.fav-ing-row .amount{text-align:right;font-size:.82rem}
+.fav-ing-row.done span{text-decoration:line-through;color:#6E6455}
+.fav-method{margin-top:.45rem;font:.88rem/1.55 var(--sd-font-ui)}
+.fav-copy{margin-top:1.25rem;border-radius:9px;padding:.65rem .9rem;background:#2F6B3F;color:#FBF7EF;
+  font:600 .85rem/1.2 var(--sd-font-ui)}
 
 /* ---- pantry (BACKLOG item 7) ---- */
 .pantry-intro{color:var(--sd-ink-2);font-size:.88rem;margin:-.4rem 0 1.2rem}

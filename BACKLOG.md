@@ -21,8 +21,10 @@ Items 1–9 ✅ done 2026-07-18 (see HANDOFF.md "Current state"). Next up: item 
    units passthrough. Full `test.js` coverage. (B2, B3, F1 formatting)
 4. ✅ **Deck + swipe physics + flip** — card stack, pointer-event drag, thresholds,
    spring-back, left = requeue, right = save, tap-flip with recipe back, serving stepper
-   + unit toggle on the back. The feel-great milestone; budget real polish time. (Epic A, B)
-5. ✅ **Favorites view** — list, open card, un-favorite. (C1)
+   + unit toggle on the back. Committed swipes promote the existing live cards with the
+   list motion curve; the deck view is not re-rendered between cards. (Epic A, B)
+5. ✅ **Favorites view** — compact rows with real art, continuous illustrated recipe
+   detail, transient ingredient checkmarks, readable clipboard copy and un-favorite. (C1)
 6. ✅ **Filters** — `bar` toggle + base-spirit select, deck rebuild + reshuffle, match count,
    empty state. (D1, D2)
 7. ✅ **Pantry + "what can I make"** — grouped checklist, essential-subset match, combinable

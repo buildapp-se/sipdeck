@@ -17,6 +17,10 @@ const STRINGS = {
     favorites_empty: 'Nothing saved yet. Swipe right on a drink to save it here.',
     fav_back: 'Back',
     fav_unfavorite: 'Remove favorite',
+    recipe_title: 'Recipe', ingredients_title: 'Ingredients', method_title: 'Method',
+    ingredient_check_hint: 'Check off ingredients as you mix.',
+    check_ingredient: 'Check off', copy_recipe: 'Copy recipe',
+    copied: 'Copied!', copy_failed: 'Could not copy', servings_copy: 'servings',
     pantry_title: 'Pantry',
     pantry_empty: 'No ingredients are used by the current drinks.',
     pantry_intro: 'Check off what you have. Optional garnishes never block a match.',
@@ -52,6 +56,10 @@ const STRINGS = {
     favorites_empty: 'Inget sparat än. Svep höger på en drink för att spara den här.',
     fav_back: 'Tillbaka',
     fav_unfavorite: 'Ta bort favorit',
+    recipe_title: 'Recept', ingredients_title: 'Ingredienser', method_title: 'Gör så här',
+    ingredient_check_hint: 'Bocka av ingredienserna medan du blandar.',
+    check_ingredient: 'Bocka av', copy_recipe: 'Kopiera receptet',
+    copied: 'Kopierat!', copy_failed: 'Kunde inte kopiera', servings_copy: 'portioner',
     pantry_title: 'Skafferi',
     pantry_empty: 'Inga ingredienser används av de aktuella drinkarna.',
     pantry_intro: 'Bocka av vad du har. Valfri garnering stoppar aldrig en träff.',
@@ -174,6 +182,14 @@ function shuffle(arr, rng) {
   return a;
 }
 
+function advanceQueue(queue, saved) {
+  const next = Array.isArray(queue) ? queue.slice() : [];
+  if (!next.length) return next;
+  const top = next.shift();
+  if (!saved) next.push(top);
+  return next;
+}
+
 const BASE_FILTERS = ['gin', 'vodka', 'rum', 'tequila', 'whiskey', 'brandy', 'other'];
 
 function matchesFilters(drink, filters) {
@@ -227,10 +243,29 @@ function formatAmount(line, servings, unit, lang) {
   return `${formatNumber(rounded, lang)} ${line.unit}`;
 }
 
+function formatLineAmount(line, servings, unit, lang) {
+  if (line.unit === 'top') return t(lang, 'unit_top');
+  const amount = formatAmount(line, servings, unit, lang);
+  return typeof line.ml === 'number' ? amount : amount.replace(line.unit, t(lang, 'unit_' + line.unit));
+}
+
+function drinkAsText(drink, ingredients, servings, unit, lang) {
+  const name = typeof drink.name === 'string' ? drink.name : (drink.name[lang] || drink.name.en);
+  const lines = [name, '', `${formatNumber(servings, lang)} ${t(lang, 'servings_copy')}`, '', t(lang, 'ingredients_title')];
+  drink.ingredients.forEach(line => {
+    const ingredient = ingredients[line.id] || {};
+    const ingredientName = ingredient[lang] || ingredient.en || line.id;
+    lines.push(`- ${formatLineAmount(line, servings, unit, lang)} ${ingredientName}`);
+  });
+  lines.push('', t(lang, 'method_title'), drink.method[lang] || drink.method.en);
+  return lines.join('\n');
+}
+
 if (typeof module !== 'undefined') module.exports = {
   STRINGS, t, UNITS, detectLang, defaultState, normalizeState,
   NONCONVERTIBLE_UNITS, scaleMl, convert, roundForUnit, formatNumber, formatOz, formatAmount,
-  shuffle, BASE_FILTERS, matchesFilters, canMake, filterDrinks,
+  formatLineAmount, drinkAsText,
+  shuffle, advanceQueue, BASE_FILTERS, matchesFilters, canMake, filterDrinks,
   GLASS_SILHOUETTES, glassPlaceholder,
 };
 
@@ -283,10 +318,9 @@ if (typeof document !== 'undefined') (function () {
   // ---------- deck: the one imperative-DOM zone (drag/flip animate outside re-renders) ----------
   let deckQueue = null; // drink ids, [0] = top card; survives view switches, reshuffles on exhaustion
   let flippedId = null; // top-card id when showing the recipe back
-  // favorites overlay (BACKLOG 5): transient UI state, deliberately NOT in the state blob and
-  // NOT touching deckQueue/flippedId — the favorites card is a separate, swipe-free instance.
+  // Favorites detail state is transient and deliberately stays outside the sync-shaped blob.
   let favOpenId = null;  // id of the favorite currently opened in detail view, or null = list
-  let favFlipped = false; // flip state for that one open card
+  let favChecked = new Set(); // mixing progress for the open favorite; resets when it closes
   let makeableOnly = false; // transient deck mode; pantry itself is the persisted source of truth
 
   function filteredDrinks() {
@@ -307,19 +341,22 @@ if (typeof document !== 'undefined') (function () {
   }
 
   function ingLine(line) {
-    let amt;
-    if (line.unit === 'top') {
-      amt = t(lang(), 'unit_top'); // "toppa upp" reads better than "1 top up"
-    } else {
-      amt = formatAmount(line, state.settings.servings, state.settings.unit, lang());
-      if (typeof line.ml !== 'number') amt = amt.replace(line.unit, t(lang(), 'unit_' + line.unit));
-    }
+    const amt = formatLineAmount(line, state.settings.servings, state.settings.unit, lang());
     return `<li${line.essential ? '' : ' class="opt"'}><span class="amount">${esc(amt)}</span> ${esc(ingName(line.id))}</li>`;
   }
 
-  // opts: { flipped, tint } — both optional; default behavior (undefined opts) is unchanged
-  // for the deck's own call site. Favorites overlay passes its own flip flag and tint:false
-  // (no drag = no gesture tint needed) instead of duplicating this markup. // ponytail
+  function wireArt(img) {
+    const revealArt = () => img.classList.add('loaded');
+    img.addEventListener('load', revealArt, { once: true });
+    img.addEventListener('error', () => { img.hidden = true; }, { once: true });
+    if (img.complete && img.naturalWidth) revealArt();
+  }
+
+  function artMarkup(drink) {
+    return `${glassPlaceholder(drink.glass)}<img class="cocktail-art" src="img/${esc(drink.id)}.webp" alt="" loading="lazy" decoding="async">`;
+  }
+
+  // opts: { flipped, tint } — both optional; the deck uses the defaults.
   function buildCard(drink, depth, opts) {
     opts = opts || {};
     const flipped = 'flipped' in opts ? opts.flipped : (depth === 0 && flippedId === drink.id);
@@ -327,6 +364,7 @@ if (typeof document !== 'undefined') (function () {
     const el = document.createElement('article');
     el.className = 'card' + (flipped ? ' flipped' : '');
     el.dataset.depth = depth;
+    el.dataset.id = drink.id;
     const tags = drink.ingredients.filter(l => l.essential)
       .map(l => `<span class="chip">${esc(ingName(l.id))}</span>`).join('');
     const s = state.settings;
@@ -335,7 +373,7 @@ if (typeof document !== 'undefined') (function () {
     el.innerHTML = `
       <div class="card-inner">
         <div class="card-face card-front">
-          <div class="card-art">${glassPlaceholder(drink.glass)}<img class="cocktail-art" src="img/${esc(drink.id)}.webp" alt="" loading="lazy" decoding="async"></div>
+          <div class="card-art">${artMarkup(drink)}</div>
           <h2 class="card-name">${esc(drink.name)}</h2>
           <div class="card-meta">${esc(taxonomyName('type', drink.type))}</div>
           <div class="card-tags">${tags}</div>
@@ -357,10 +395,7 @@ if (typeof document !== 'undefined') (function () {
       <div class="tint tint-save"></div>
       <div class="tint tint-skip"></div>` : ''}`;
     const art = el.querySelector('.cocktail-art');
-    const revealArt = () => art.classList.add('loaded');
-    art.addEventListener('load', revealArt, { once: true });
-    art.addEventListener('error', () => { art.hidden = true; }, { once: true });
-    if (art.complete && art.naturalWidth) revealArt();
+    wireArt(art);
     return el;
   }
 
@@ -384,6 +419,28 @@ if (typeof document !== 'undefined') (function () {
       render(); // coarse re-render; deckQueue + flippedId survive, so the same card stays up, flipped
     });
     attachDrag(deckEl.querySelector('.card[data-depth="0"]'));
+  }
+
+  // Promote the existing live cards while the committed card flies away. This preserves
+  // their computed depth transforms, so depth 1 -> 0 animates instead of snapping after render().
+  function promoteDeck(leavingCard) {
+    const deckEl = $('#deck');
+    if (!deckEl) return;
+    ensureQueue();
+    const desired = deckQueue.slice(0, 4);
+    Array.from(deckEl.querySelectorAll('.card')).forEach(card => {
+      if (card !== leavingCard && !desired.includes(card.dataset.id)) card.remove();
+    });
+    desired.forEach((id, depth) => {
+      let card = Array.from(deckEl.querySelectorAll('.card')).find(el => el !== leavingCard && el.dataset.id === id);
+      if (!card) {
+        const drink = db.drinks.find(item => item.id === id);
+        card = buildCard(drink, depth);
+        deckEl.insertBefore(card, deckEl.firstChild);
+      }
+      card.dataset.depth = depth;
+    });
+    attachDrag(Array.from(deckEl.querySelectorAll('.card')).find(el => el !== leavingCard && el.dataset.depth === '0'));
   }
 
   function attachDrag(card) {
@@ -444,52 +501,44 @@ if (typeof document !== 'undefined') (function () {
     const x = (window.innerWidth + card.offsetWidth) * dir;
     card.style.transition = 'transform var(--sd-t-fly) var(--sd-ease-fly)'; // never fades — it leaves
     card.style.transform = `translate(${x}px, ${dy * 0.4}px) rotate(${dir * 18}deg)`;
+    const id = deckQueue[0];
+    if (dir > 0) { // save (A3): idempotent, out of this cycle; exhaustion reshuffles the full set
+      if (!state.favorites.includes(id)) state.favorites.push(id);
+      deckQueue = advanceQueue(deckQueue, true);
+      save();
+    } else { // skip (A2): to the back of the deck, nothing is ever dismissed
+      deckQueue = advanceQueue(deckQueue, false);
+    }
+    flippedId = null; // flip state resets when a card leaves the top (A4)
+    promoteDeck(card);
     let done = false;
     const finish = () => {
       if (done) return;
       done = true;
-      const id = deckQueue[0];
-      if (dir > 0) { // save (A3): idempotent, out of this cycle; exhaustion reshuffles the full set
-        if (!state.favorites.includes(id)) state.favorites.push(id);
-        save();
-        deckQueue.shift();
-      } else { // skip (A2): to the back of the deck, nothing is ever dismissed
-        deckQueue.push(deckQueue.shift());
-      }
-      flippedId = null; // flip state resets when a card leaves the top (A4)
-      render();
+      card.removeEventListener('transitionend', onEnd);
+      card.remove();
     };
-    card.addEventListener('transitionend', finish, { once: true });
+    const onEnd = e => { if (e.target === card) finish(); };
+    card.addEventListener('transitionend', onEnd);
     setTimeout(finish, 450); // reduced-motion sets 0ms durations, which never fire transitionend
   }
 
-  // ---------- favorites overlay (BACKLOG 5): same card markup, swipe-free, own flip tracking ----------
+  // ---------- favorites: compact image list -> one continuous, swipe-free recipe detail ----------
   function favDrink() {
     return favOpenId && db ? db.drinks.find(d => d.id === favOpenId) || null : null;
   }
 
-  function mountFavCard(drink) {
-    const wrap = $('#favDeck');
-    if (!wrap) return;
-    wrap.appendChild(buildCard(drink, 0, { flipped: favFlipped, tint: false }));
-    wrap.addEventListener('click', e => {
-      // only inc/dec/unit here — unfav/close live outside #favDeck, handled by the #view delegate
-      const b = e.target.closest('button[data-act="inc"],button[data-act="dec"],button[data-act="unit"]');
-      if (b) {
-        const s = state.settings;
-        if (b.dataset.act === 'inc') s.servings = Math.min(8, s.servings + 1);
-        else if (b.dataset.act === 'dec') s.servings = Math.max(1, s.servings - 1);
-        else if (b.dataset.act === 'unit') s.unit = b.dataset.unit;
-        save();
-        render();
-        return;
-      }
-      if (e.target.closest('.card-ctrl')) return; // controls are dead zones, same as the deck
-      favFlipped = !favFlipped;
-      // toggle on the live element (like the deck's tap-flip) so the flip animation plays;
-      // a re-render would rebuild the card with the class pre-applied and snap instead.
-      wrap.querySelector('.card').classList.toggle('flipped', favFlipped);
-    });
+  async function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
+    const area = document.createElement('textarea');
+    area.value = text;
+    area.style.position = 'fixed';
+    area.style.opacity = '0';
+    document.body.appendChild(area);
+    area.select();
+    const copied = document.execCommand('copy');
+    area.remove();
+    if (!copied) throw new Error('copy failed');
   }
 
   function viewFavorites() {
@@ -498,22 +547,60 @@ if (typeof document !== 'undefined') (function () {
     const open = favDrink();
     if (favOpenId && !open) favOpenId = null; // favorite id vanished from db: just close, no crash
     if (open) {
+      const s = state.settings;
+      const tags = open.ingredients.filter(line => line.essential)
+        .map(line => `<span class="chip">${esc(ingName(line.id))}</span>`).join('');
+      const ingredientRows = open.ingredients.map(line => {
+        const checked = favChecked.has(line.id);
+        return `<label class="fav-ing-row${checked ? ' done' : ''}">
+          <input type="checkbox" data-fav-ing="${esc(line.id)}"${checked ? ' checked' : ''} aria-label="${esc(t(lang(), 'check_ingredient') + ' ' + ingName(line.id))}">
+          <span class="amount">${esc(formatLineAmount(line, s.servings, s.unit, lang()))}</span>
+          <span>${esc(ingName(line.id))}</span>
+        </label>`;
+      }).join('');
+      const unitBtns = UNITS.map(unit => `<button data-fav-act="unit" data-unit="${unit}"${unit === s.unit ? ' class="active"' : ''}>${unit}</button>`).join('');
       return `${title}
         <div class="fav-toolbar">
           <button id="favClose" class="fav-back">${esc(t(lang(), 'fav_back'))}</button>
           <button class="fav-remove" data-act="unfav" data-id="${esc(open.id)}" aria-label="${esc(t(lang(), 'fav_unfavorite'))}">${esc(t(lang(), 'fav_unfavorite'))}</button>
         </div>
-        <div class="deck" id="favDeck"></div>`;
+        <article class="fav-detail">
+          <section class="fav-hero">
+            <div class="fav-detail-art">${artMarkup(open)}</div>
+            <h2 class="card-name">${esc(open.name)}</h2>
+            <div class="card-meta">${esc(taxonomyName('type', open.type))}</div>
+            <div class="card-tags">${tags}</div>
+          </section>
+          <section class="fav-recipe">
+            <h2>${esc(t(lang(), 'recipe_title'))}</h2>
+            <div class="fav-recipe-controls">
+              <div class="stepper" role="group" aria-label="${esc(t(lang(), 'servings'))}">
+                <button data-fav-act="dec" aria-label="${esc(t(lang(), 'servings_decrease'))}">−</button>
+                <span class="amount">${s.servings}</span>
+                <button data-fav-act="inc" aria-label="${esc(t(lang(), 'servings_increase'))}">+</button>
+              </div>
+              <div class="units" role="group" aria-label="${esc(t(lang(), 'settings_unit'))}">${unitBtns}</div>
+            </div>
+            <h3>${esc(t(lang(), 'ingredients_title'))}</h3>
+            <p class="fav-hint">${esc(t(lang(), 'ingredient_check_hint'))}</p>
+            <div class="fav-ing-list">${ingredientRows}</div>
+            <h3>${esc(t(lang(), 'method_title'))}</h3>
+            <p class="fav-method">${esc(open.method[lang()] || open.method.en)}</p>
+            <button class="fav-copy" data-copy-fav>${esc(t(lang(), 'copy_recipe'))}</button>
+          </section>
+        </article>`;
     }
     const rows = state.favorites.map(id => db.drinks.find(d => d.id === id)).filter(Boolean); // skip ids not in db
     if (!rows.length) return `${title}<p class="empty">${esc(t(lang(), 'favorites_empty'))}</p>`;
     const list = rows.map(d => `
-      <div class="list-card fav-row" data-id="${esc(d.id)}">
-        <div class="fav-thumb">${glassPlaceholder(d.glass)}</div>
-        <div class="fav-info">
-          <div class="name">${esc(d.name)}</div>
-          <div class="meta">${esc(taxonomyName('type', d.type))}</div>
-        </div>
+      <div class="list-card fav-row">
+        <button class="fav-open" data-id="${esc(d.id)}">
+          <span class="fav-thumb">${artMarkup(d)}</span>
+          <span class="fav-info">
+            <span class="name">${esc(d.name)}</span>
+            <span class="meta">${esc(taxonomyName('type', d.type))}</span>
+          </span>
+        </button>
         <button class="fav-remove" data-act="unfav" data-id="${esc(d.id)}" aria-label="${esc(t(lang(), 'fav_unfavorite'))}">&times;</button>
       </div>`).join('');
     return `${title}${list}`;
@@ -570,7 +657,7 @@ if (typeof document !== 'undefined') (function () {
     const route = ROUTES[hash] || ROUTES['#/'];
     $('#view').innerHTML = route.view();
     if (route.view === viewDeck && db) mountDeck();
-    if (route.view === viewFavorites) { const d = favDrink(); if (d) mountFavCard(d); }
+    if (route.view === viewFavorites) $('#view').querySelectorAll('.cocktail-art').forEach(wireArt);
     document.documentElement.lang = lang();
     $('#tagline').textContent = t(lang(), 'tagline');
     $('#nav').setAttribute('aria-label', t(lang(), 'nav_label'));
@@ -584,7 +671,7 @@ if (typeof document !== 'undefined') (function () {
   // #view itself is never replaced (only its innerHTML), so this delegate is attached once —
   // unlike #deck/#favDeck's listeners, which are fine to re-attach per render since those nodes
   // are freshly created each time. Covers favorites row-open, close, and un-favorite (list + open card).
-  $('#view').addEventListener('click', e => {
+  $('#view').addEventListener('click', async e => {
     const langBtn = e.target.closest('[data-lang]');
     if (langBtn) {
       state.settings.lang = langBtn.dataset.lang;
@@ -592,18 +679,48 @@ if (typeof document !== 'undefined') (function () {
       render();
       return;
     }
-    if (e.target.closest('#favClose')) { favOpenId = null; render(); return; }
-    const unfavBtn = e.target.closest('[data-act="unfav"]');
-    if (unfavBtn) {
-      const id = unfavBtn.dataset.id;
-      state.favorites = state.favorites.filter(x => x !== id);
-      if (favOpenId === id) favOpenId = null;
+    if (e.target.closest('#favClose')) { favOpenId = null; favChecked = new Set(); render(); return; }
+    const favAction = e.target.closest('[data-fav-act]');
+    if (favAction) {
+      const s = state.settings;
+      if (favAction.dataset.favAct === 'inc') s.servings = Math.min(8, s.servings + 1);
+      else if (favAction.dataset.favAct === 'dec') s.servings = Math.max(1, s.servings - 1);
+      else if (favAction.dataset.favAct === 'unit') s.unit = favAction.dataset.unit;
       save();
       render();
       return;
     }
-    const row = e.target.closest('.fav-row');
-    if (row) { favOpenId = row.dataset.id; favFlipped = false; render(); }
+    const copyBtn = e.target.closest('[data-copy-fav]');
+    if (copyBtn) {
+      const drink = favDrink();
+      try {
+        await copyText(drinkAsText(drink, db.ingredients, state.settings.servings, state.settings.unit, lang()));
+        copyBtn.textContent = t(lang(), 'copied');
+      } catch (err) {
+        copyBtn.textContent = t(lang(), 'copy_failed');
+      }
+      setTimeout(() => { if (copyBtn.isConnected) copyBtn.textContent = t(lang(), 'copy_recipe'); }, 2500);
+      return;
+    }
+    const unfavBtn = e.target.closest('[data-act="unfav"]');
+    if (unfavBtn) {
+      const id = unfavBtn.dataset.id;
+      state.favorites = state.favorites.filter(x => x !== id);
+      if (favOpenId === id) { favOpenId = null; favChecked = new Set(); }
+      save();
+      render();
+      return;
+    }
+    const row = e.target.closest('.fav-open');
+    if (row) { favOpenId = row.dataset.id; favChecked = new Set(); render(); }
+  });
+
+  $('#view').addEventListener('change', e => {
+    const control = e.target.closest('[data-fav-ing]');
+    if (!control) return;
+    if (control.checked) favChecked.add(control.dataset.favIng);
+    else favChecked.delete(control.dataset.favIng);
+    control.closest('.fav-ing-row').classList.toggle('done', control.checked);
   });
 
   $('#view').addEventListener('change', e => {

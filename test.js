@@ -3,7 +3,8 @@
 const fs = require('fs');
 const path = require('path');
 const { STRINGS, t, detectLang, defaultState, normalizeState,
-  scaleMl, convert, roundForUnit, formatNumber, formatOz, formatAmount, shuffle,
+  scaleMl, convert, roundForUnit, formatNumber, formatOz, formatAmount, shuffle, advanceQueue,
+  formatLineAmount, drinkAsText,
   BASE_FILTERS, matchesFilters, canMake, filterDrinks,
   GLASS_SILHOUETTES, glassPlaceholder } = require('./app.js');
 
@@ -90,6 +91,25 @@ check(formatAmount({ qty: 1, unit: 'piece', essential: false }, 3, 'cl', 'en') =
   'formatAmount: qty x servings stays integer when it divides evenly');
 check(formatAmount({ qty: 1, unit: 'dash', essential: false }, 3, 'cl', 'en').includes('.') === false,
   'formatAmount: integer scaled qty has no decimal tail');
+check(formatLineAmount({ qty: 1, unit: 'dash' }, 2, 'cl', 'sv') === '2 stänk',
+  'formatLineAmount: translates non-convertible unit');
+check(formatLineAmount({ qty: 1, unit: 'top' }, 4, 'oz', 'sv') === 'toppa upp',
+  'formatLineAmount: top renders without quantity');
+
+const copyDrink = {
+  name: 'Testdrink',
+  ingredients: [{ id: 'gin', ml: 45 }, { id: 'lime', qty: 1, unit: 'slice' }],
+  method: { en: 'Stir and serve.', sv: 'Rör och servera.' },
+};
+const copyIngredients = { gin: { en: 'Gin', sv: 'Gin' }, lime: { en: 'Lime', sv: 'Lime' } };
+check(drinkAsText(copyDrink, copyIngredients, 2, 'cl', 'sv') === [
+  'Testdrink', '', '2 portioner', '', 'Ingredienser',
+  '- 9 cl Gin', '- 2 skiva Lime', '', 'Gör så här', 'Rör och servera.',
+].join('\n'), 'drinkAsText: readable Swedish recipe with scaled amounts');
+check(drinkAsText(copyDrink, copyIngredients, 1, 'oz', 'en').includes('- 1½ oz Gin'),
+  'drinkAsText: uses active English unit formatting');
+check(!drinkAsText(copyDrink, copyIngredients, 2, 'cl', 'sv').includes('—'),
+  'drinkAsText: Swedish copy contains no em-dash');
 
 // ---------- shuffle (BACKLOG 4) ----------
 const orig = [1, 2, 3, 4];
@@ -99,6 +119,11 @@ check(shuffled.length === 4 && [1, 2, 3, 4].every(n => shuffled.includes(n)),
   'shuffle: same members, same length');
 check(shuffle([], () => 0.5).length === 0, 'shuffle: empty array ok');
 check(shuffle(['a']).join() === 'a', 'shuffle: single element ok');
+const queue = ['a', 'b', 'c'];
+check(advanceQueue(queue, false).join() === 'b,c,a', 'advanceQueue: skip moves top to back');
+check(advanceQueue(queue, true).join() === 'b,c', 'advanceQueue: save removes top for this cycle');
+check(queue.join() === 'a,b,c', 'advanceQueue: does not mutate live queue input');
+check(advanceQueue([], false).length === 0, 'advanceQueue: empty queue stays empty');
 
 // ---------- filters (BACKLOG 6) ----------
 const filterSeed = [

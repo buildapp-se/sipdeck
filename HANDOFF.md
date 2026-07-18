@@ -5,26 +5,30 @@ Read this first, then PRODUCT.md (what to build + acceptance criteria), then BAC
 
 ## Current state in one paragraph
 
-**BACKLOG items 1–9 done** (2026-07-18). The deck is now the first content on its view,
-with the redundant screen title removed and the filter panel placed below the live cards.
-Settings has a persisted English/Swedish control; UI, taxonomy and accessibility copy route
-through `t()`. The 10-drink seed retains its visually reviewed 640×800 WebPs at 18–45 kB,
-and missing art now falls back to restrained inline SVG silhouettes keyed by `glass` while
-preserving the existing lazy-load/error behavior. `test.js`: 553 checks green. No
-controllable browser was exposed in this session even after the required Browser-plugin
-diagnostics, so the outstanding phone-viewport pass still has not happened and no new
-browser verification is claimed. Real-phone 60 fps feel is also outstanding. Next:
-BACKLOG item 10 only after that browser pass confirms items 6–9.
+**BACKLOG items 1–9 done** (updated 2026-07-19). Committed swipes now promote the existing
+live stack while the outgoing card flies away; the deck view is no longer re-rendered, so
+the next card grows with `--sd-ease-list` and the content/bottom navigation do not repaint
+at the handoff. Favorites are compact real-art rows opening a continuous illustrated
+recipe detail with transient ingredient checkmarks and readable clipboard copy, with no
+second flip. The exact persisted state blob is unchanged. `test.js`: 562 checks green.
+No controllable browser was exposed in this session even after the required Browser-plugin
+diagnostics, so no new browser verification is claimed. Real-phone 60 fps feel remains
+outstanding. Next: the phone pass, then BACKLOG item 10.
 
 ## Implementation notes for the next session (things the code assumes)
 
 - `app.js` layout: pure functions top (exported), then one browser IIFE. Module vars
   `db` (fetched drinks.json), `deckQueue` (deck order, ids), `flippedId` (deck flip),
-  `favOpenId`/`favFlipped` (favorites overlay) — all transient, never in the state blob.
+  `favOpenId`/`favChecked` (favorite detail/mixing progress) — all transient, never in
+  the state blob.
 - Card faces use fixed paper-ink hex (`#211B12`/`#6E6455`), not `--sd-ink` — cards never
   theme-invert (design rule). Gesture tints are opacity-only overlays (composited).
-- Flip must animate by toggling `.flipped` on the LIVE element; a re-render rebuilds the
-  card with the class pre-applied and snaps instead of animating.
+- Deck flip must animate by toggling `.flipped` on the LIVE element; a re-render rebuilds
+  the card with the class pre-applied and snaps instead of animating. Favorite detail no
+  longer flips: art and recipe are consecutive scroll sections.
+- A committed deck swipe must call `promoteDeck(leavingCard)`, never `render()`. It updates
+  `data-depth` on the surviving live cards, inserts only the new back card, and removes the
+  outgoing card after its transform transition. This is what prevents the reported snap.
 - `formatAmount` returns non-convertible unit labels as raw keys (`dash`); the view layer
   translates via `t('unit_' + key)`; unit `top` renders as just "toppa upp"/"top up".
 - Card fronts try `img/<drink-id>.webp` for the top four live cards and retain the
@@ -32,8 +36,9 @@ BACKLOG item 10 only after that browser pass confirms items 6–9.
   seed uses `coupe`, `highball`, `rocks` and `martini`; unknown future values degrade to
   `rocks`. All 10 current ids have art. `convert()` uses 30 ml/oz (bar standard;
   PRODUCT.md doesn't pin it).
-- The `#view` click delegate is attached ONCE at startup (the element is never replaced);
-  `#deck`/`#favDeck` listeners re-attach per render (those nodes are recreated).
+- The `#view` click/change delegates are attached ONCE at startup (the element is never
+  replaced). `#deck` listeners attach when the view is rendered and survive successive
+  swipes; each newly promoted top card only gets its pointer handlers once.
 
 ## Name & brand
 
@@ -191,8 +196,9 @@ in PRODUCT.md "Locked decisions".
    ≤ 80 kB. Current range is 17,672–45,038 bytes.
 
 5. **Runtime behavior.** The app only creates the top four cards, uses
-   `loading="lazy" decoding="async"`, keeps `GLASS_PH` behind the image until load and
-   hides a failed `<img>` on error. Missing art must never break layout or animation.
+   `loading="lazy" decoding="async"`, keeps `glassPlaceholder(drink.glass)` behind the
+   image until load and hides a failed `<img>` on error. Missing art must never break
+   layout or animation.
    Before Wrangler deploy, temporarily move `img-src/` outside the repo root because
    Wrangler does not honor `.gitignore`, then restore it immediately afterward.
 
@@ -227,16 +233,17 @@ Commit messages: `sipdeck: <what>`.
 
 ## Verification state
 
-`node test.js`: 553 green; `node --check app.js`: green; `git diff --check`: green;
-`app.js`: 31.2 kB. All 10 drink ids have exactly one visually inspected 640×800 WebP,
+`node test.js`: 562 green; `node --check app.js`: green; `git diff --check`: green;
+`app.js`: 36.8 kB. All 10 drink ids have exactly one visually inspected 640×800 WebP,
 17,672–45,038 bytes; no missing or extra production filenames. Local HTTP smoke verifies
 index/app/data responses; a deliberately missing image returns 404 and the source retains
 the live `<img>` error fallback. Source inspection confirms both deck and favorite flips
 still toggle `.flipped` on live elements, and filter/pantry changes set `deckQueue = null`
 before `render()` causes `ensureQueue()` to reshuffle. Items 1–5 retain their earlier
 Playwright phone-viewport smoke (deck gestures/flip/recipe/favorites/settings), zero
-console errors. The Browser plugin reported no available browser in this 2026-07-18
-session after its prescribed diagnostics, so filters, pantry, full-image loading, items
-8–9 and the updated deck-first layout are not browser-verified. Real-phone feel check NOT
-done. This file's "Current state" paragraph must be updated at the end of every working
-session (recept/Årshjul convention).
+console errors. Source inspection on 2026-07-19 confirms committed swipe no longer calls
+`render()`, surviving cards change `data-depth`, and deck flip still toggles `.flipped` on
+the live element. The Browser plugin again reported no available browser after prescribed
+diagnostics, so the promotion feel and redesigned favorite flow are not browser-verified.
+Real-phone feel check NOT done. This file's "Current state" paragraph must be updated at
+the end of every working session (recept/Årshjul convention).
