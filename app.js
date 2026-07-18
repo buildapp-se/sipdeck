@@ -10,16 +10,24 @@ const STRINGS = {
     deck_loading: 'Dealing the deck...',
     deck_error: "Couldn't load the deck. Reload to try again.",
     deck_count_label: 'drinks in the deck',
+    deck_no_matches: 'No drinks match those filters. Try another combination.',
+    filters_label: 'Filter drinks',
+    filter_makeable: 'Only what I can make',
     favorites_title: 'Favorites',
     favorites_empty: 'Nothing saved yet. Swipe right on a drink to save it here.',
     fav_back: 'Back',
     fav_unfavorite: 'Remove favorite',
     pantry_title: 'Pantry',
-    pantry_empty: "Your shelf is empty. Check off what you have once ingredients ship.",
+    pantry_empty: 'No ingredients are used by the current drinks.',
+    pantry_intro: 'Check off what you have. Optional garnishes never block a match.',
+    pantry_group_spirits: 'Spirits', pantry_group_liqueurs: 'Liqueurs',
+    pantry_group_fresh: 'Fresh & mixers', pantry_group_pantry: 'Pantry staples',
     settings_title: 'Settings',
     settings_lang: 'Language', settings_unit: 'Unit', settings_servings: 'Servings',
     settings_filter_bar: 'Bar-servable only', settings_filter_base: 'Base spirit',
     settings_filter_base_none: 'Any',
+    base_gin: 'Gin', base_vodka: 'Vodka', base_rum: 'Rum', base_tequila: 'Tequila',
+    base_whiskey: 'Whiskey', base_brandy: 'Brandy', base_other: 'Other / none',
     yes: 'Yes', no: 'No',
     servings: 'Servings',
     unit_dash: 'dash', unit_barspoon: 'barspoon', unit_piece: 'pc', unit_leaf: 'leaf',
@@ -33,16 +41,24 @@ const STRINGS = {
     deck_loading: 'Delar ut kortleken...',
     deck_error: 'Kunde inte ladda kortleken. Ladda om sidan för att försöka igen.',
     deck_count_label: 'drinkar i kortleken',
+    deck_no_matches: 'Inga drinkar matchar filtren. Prova en annan kombination.',
+    filters_label: 'Filtrera drinkar',
+    filter_makeable: 'Bara det jag kan blanda',
     favorites_title: 'Favoriter',
     favorites_empty: 'Inget sparat än. Svep höger på en drink för att spara den här.',
     fav_back: 'Tillbaka',
     fav_unfavorite: 'Ta bort favorit',
     pantry_title: 'Skafferi',
-    pantry_empty: 'Skafferiet är tomt. Bocka av vad du har när ingredienserna finns.',
+    pantry_empty: 'Inga ingredienser används av de aktuella drinkarna.',
+    pantry_intro: 'Bocka av vad du har. Valfri garnering stoppar aldrig en träff.',
+    pantry_group_spirits: 'Sprit', pantry_group_liqueurs: 'Likörer',
+    pantry_group_fresh: 'Färskt och blanddryck', pantry_group_pantry: 'Skafferivaror',
     settings_title: 'Inställningar',
     settings_lang: 'Språk', settings_unit: 'Enhet', settings_servings: 'Portioner',
     settings_filter_bar: 'Bara barserverbara', settings_filter_base: 'Bas-sprit',
     settings_filter_base_none: 'Alla',
+    base_gin: 'Gin', base_vodka: 'Vodka', base_rum: 'Rom', base_tequila: 'Tequila',
+    base_whiskey: 'Whisky', base_brandy: 'Brandy', base_other: 'Annan / ingen',
     yes: 'Ja', no: 'Nej',
     servings: 'Portioner',
     unit_dash: 'stänk', unit_barspoon: 'barsked', unit_piece: 'st', unit_leaf: 'blad',
@@ -150,6 +166,29 @@ function shuffle(arr, rng) {
   return a;
 }
 
+const BASE_FILTERS = ['gin', 'vodka', 'rum', 'tequila', 'whiskey', 'brandy', 'other'];
+
+function matchesFilters(drink, filters) {
+  const f = filters || {};
+  if (f.bar && drink.bar !== true) return false;
+  if (!f.base) return true;
+  if (f.base === 'other') return !BASE_FILTERS.slice(0, -1).includes(drink.base);
+  return drink.base === f.base;
+}
+
+function canMake(drink, pantry) {
+  const have = pantry instanceof Set ? pantry : new Set(Array.isArray(pantry) ? pantry : []);
+  return Array.isArray(drink.ingredients) && drink.ingredients
+    .filter(line => line.essential)
+    .every(line => have.has(line.id));
+}
+
+function filterDrinks(drinks, filters, pantry) {
+  const have = Array.isArray(pantry) ? new Set(pantry) : null;
+  return (Array.isArray(drinks) ? drinks : [])
+    .filter(drink => matchesFilters(drink, filters) && (!have || canMake(drink, have)));
+}
+
 // Top-level: one ingredient line + servings + active display unit + lang -> display string.
 // line is either { ml } (convertible, canonical) or { qty, unit } (non-convertible, passthrough).
 // Non-convertible unit labels are returned as their raw string-table keys (e.g. "dash") for the
@@ -168,7 +207,7 @@ function formatAmount(line, servings, unit, lang) {
 if (typeof module !== 'undefined') module.exports = {
   STRINGS, t, UNITS, detectLang, defaultState, normalizeState,
   NONCONVERTIBLE_UNITS, scaleMl, convert, roundForUnit, formatNumber, formatOz, formatAmount,
-  shuffle,
+  shuffle, BASE_FILTERS, matchesFilters, canMake, filterDrinks,
 };
 
 // ---------- app (browser only) ----------
@@ -203,8 +242,19 @@ if (typeof document !== 'undefined') (function () {
     if (drinksFailed) return `${title}<p class="empty">${esc(t(lang(), 'deck_error'))}</p>`;
     if (!db) return `${title}<p class="empty">${esc(t(lang(), 'deck_loading'))}</p>`;
     if (!db.drinks.length) return `${title}<p class="empty">${esc(t(lang(), 'deck_empty'))}</p>`;
-    const count = `<p class="deck-count">${db.drinks.length} ${esc(t(lang(), 'deck_count_label'))}</p>`;
-    return `${title}${count}<div class="deck" id="deck"></div>`;
+    const f = state.settings.filters;
+    const baseOptions = [`<option value="">${esc(t(lang(), 'settings_filter_base_none'))}</option>`]
+      .concat(BASE_FILTERS.map(base => `<option value="${base}"${f.base === base ? ' selected' : ''}>${esc(t(lang(), 'base_' + base))}</option>`))
+      .join('');
+    const controls = `<section class="filters" aria-label="${esc(t(lang(), 'filters_label'))}">
+      <label class="filter-toggle"><input type="checkbox" data-filter="bar"${f.bar ? ' checked' : ''}> <span>${esc(t(lang(), 'settings_filter_bar'))}</span></label>
+      <label class="filter-toggle"><input type="checkbox" data-filter="makeable"${makeableOnly ? ' checked' : ''}> <span>${esc(t(lang(), 'filter_makeable'))}</span></label>
+      <label class="filter-select"><span>${esc(t(lang(), 'settings_filter_base'))}</span><select data-filter="base">${baseOptions}</select></label>
+    </section>`;
+    const matches = filteredDrinks();
+    const count = `<p class="deck-count"><span class="amount">${matches.length}</span> ${esc(t(lang(), 'deck_count_label'))}</p>`;
+    const deck = matches.length ? '<div class="deck" id="deck"></div>' : `<p class="empty">${esc(t(lang(), 'deck_no_matches'))}</p>`;
+    return `${title}${controls}${count}${deck}`;
   }
 
   // ---------- deck: the one imperative-DOM zone (drag/flip animate outside re-renders) ----------
@@ -214,12 +264,17 @@ if (typeof document !== 'undefined') (function () {
   // NOT touching deckQueue/flippedId — the favorites card is a separate, swipe-free instance.
   let favOpenId = null;  // id of the favorite currently opened in detail view, or null = list
   let favFlipped = false; // flip state for that one open card
+  let makeableOnly = false; // transient deck mode; pantry itself is the persisted source of truth
 
-  function ensureQueue() {
-    if (!deckQueue || !deckQueue.length) deckQueue = shuffle(db.drinks.map(d => d.id));
+  function filteredDrinks() {
+    return filterDrinks(db.drinks, state.settings.filters, makeableOnly ? state.pantry : null);
   }
 
-  // interim art until the image pipeline (item 9): the favicon glass, monoline, quiet
+  function ensureQueue() {
+    if (!deckQueue || !deckQueue.length) deckQueue = shuffle(filteredDrinks().map(d => d.id));
+  }
+
+  // Quiet fallback stays in the layout until a drink image has loaded successfully.
   const GLASS_PH = `<svg viewBox="0 0 96 96" class="glass-ph" aria-hidden="true"><g transform="rotate(-6 48 48)" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M 16,20 L 48,57 L 80,20 Z"/><path d="M 48,57 V 78 M 30,80 H 66"/></g><circle cx="74" cy="13" r="4.5" transform="rotate(-6 48 48)" fill="#2F6B3F"/></svg>`;
 
   function ingName(id) {
@@ -256,7 +311,7 @@ if (typeof document !== 'undefined') (function () {
     el.innerHTML = `
       <div class="card-inner">
         <div class="card-face card-front">
-          <div class="card-art">${GLASS_PH}</div>
+          <div class="card-art">${GLASS_PH}<img class="cocktail-art" src="img/${esc(drink.id)}.webp" alt="" loading="lazy" decoding="async"></div>
           <h2 class="card-name">${esc(drink.name)}</h2>
           <div class="card-meta">${esc(drink.type)}</div>
           <div class="card-tags">${tags}</div>
@@ -277,6 +332,11 @@ if (typeof document !== 'undefined') (function () {
       </div>${tint ? `
       <div class="tint tint-save"></div>
       <div class="tint tint-skip"></div>` : ''}`;
+    const art = el.querySelector('.cocktail-art');
+    const revealArt = () => art.classList.add('loaded');
+    art.addEventListener('load', revealArt, { once: true });
+    art.addEventListener('error', () => { art.hidden = true; }, { once: true });
+    if (art.complete && art.naturalWidth) revealArt();
     return el;
   }
 
@@ -436,8 +496,25 @@ if (typeof document !== 'undefined') (function () {
   }
 
   function viewPantry() {
-    return `<h1 class="screen-title">${esc(t(lang(), 'pantry_title'))}</h1>
-      <p class="empty">${esc(t(lang(), 'pantry_empty'))}</p>`;
+    const title = `<h1 class="screen-title">${esc(t(lang(), 'pantry_title'))}</h1>`;
+    if (!db) return `${title}<p class="empty">${esc(t(lang(), 'deck_loading'))}</p>`;
+    const used = new Set();
+    db.drinks.forEach(drink => drink.ingredients.forEach(line => used.add(line.id)));
+    if (!used.size) return `${title}<p class="empty">${esc(t(lang(), 'pantry_empty'))}</p>`;
+    const groups = { spirits: [], liqueurs: [], fresh: [], pantry: [] };
+    used.forEach(id => {
+      const ingredient = db.ingredients[id];
+      const group = ingredient && groups[ingredient.group] ? ingredient.group : 'pantry';
+      groups[group].push(id);
+    });
+    const fieldsets = Object.keys(groups).map(group => {
+      const items = groups[group]
+        .sort((a, b) => ingName(a).localeCompare(ingName(b), lang()))
+        .map(id => `<label class="pantry-item"><input type="checkbox" data-pantry="${esc(id)}"${state.pantry.includes(id) ? ' checked' : ''}> <span>${esc(ingName(id))}</span></label>`)
+        .join('');
+      return items ? `<fieldset class="pantry-group"><legend>${esc(t(lang(), 'pantry_group_' + group))}</legend><div class="pantry-list">${items}</div></fieldset>` : '';
+    }).join('');
+    return `${title}<p class="pantry-intro">${esc(t(lang(), 'pantry_intro'))}</p>${fieldsets}`;
   }
 
   function viewSettings() {
@@ -495,6 +572,28 @@ if (typeof document !== 'undefined') (function () {
     }
     const row = e.target.closest('.fav-row');
     if (row) { favOpenId = row.dataset.id; favFlipped = false; render(); }
+  });
+
+  $('#view').addEventListener('change', e => {
+    const control = e.target.closest('[data-filter]');
+    if (!control) return;
+    if (control.dataset.filter === 'bar') state.settings.filters.bar = control.checked;
+    if (control.dataset.filter === 'base') state.settings.filters.base = control.value || null;
+    if (control.dataset.filter === 'makeable') makeableOnly = control.checked;
+    deckQueue = null;
+    flippedId = null;
+    save();
+    render();
+  });
+
+  $('#view').addEventListener('change', e => {
+    const control = e.target.closest('[data-pantry]');
+    if (!control) return;
+    const id = control.dataset.pantry;
+    if (control.checked && !state.pantry.includes(id)) state.pantry.push(id);
+    if (!control.checked) state.pantry = state.pantry.filter(item => item !== id);
+    deckQueue = null;
+    save();
   });
 
   window.addEventListener('hashchange', render);

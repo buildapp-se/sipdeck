@@ -5,7 +5,7 @@ agent session. Story/AC references point into PRODUCT.md.
 
 ## v1 (the cut line is explicit below)
 
-Items 1–5 ✅ done 2026-07-18 (see HANDOFF.md "Current state"). Next up: item 6.
+Items 1–7 ✅ done 2026-07-18 (see HANDOFF.md "Current state"). Next up: item 8.
 
 1. ✅ **Scaffold** — `index.html` (inline the contents of `design/tokens.css` into
    `<style>`, inline `design/wordmark.svg` in the header), `app.js` (pure functions on
@@ -23,13 +23,16 @@ Items 1–5 ✅ done 2026-07-18 (see HANDOFF.md "Current state"). Next up: item 
    spring-back, left = requeue, right = save, tap-flip with recipe back, serving stepper
    + unit toggle on the back. The feel-great milestone; budget real polish time. (Epic A, B)
 5. ✅ **Favorites view** — list, open card, un-favorite. (C1)
-6. **Filters** — `bar` toggle + base-spirit select, deck rebuild + reshuffle, match count,
+6. ✅ **Filters** — `bar` toggle + base-spirit select, deck rebuild + reshuffle, match count,
    empty state. (D1, D2)
-7. **Pantry + "what can I make"** — grouped checklist, essential-subset match, combinable
+7. ✅ **Pantry + "what can I make"** — grouped checklist, essential-subset match, combinable
    with filters. (E1, E2)
 8. **i18n** — EN/SV string table, language toggle, browser-language default, sv typography
    rules enforced in one format layer. (F1)
-9. **Image pipeline + placeholders** — style prompt finalized in HANDOFF.md, WebP convert
+9. **Image pipeline + placeholders** — partial: Margarita, Mojito and Negroni are converted
+   to 640×800 WebP at 27–45 kB, card fronts lazy-load the top four with the generic inline
+   fallback. Still owed: per-glass SVG silhouettes and images for the other seed drinks.
+   Style prompt finalized in HANDOFF.md, WebP convert
    step documented, lazy-load top 3–4, SVG glass-silhouette placeholder. Generate images
    for the current seed set. (G1)
 10. **Full drink seed** — grow drinks.json to ~80–100 (IBA list + modern classics), all

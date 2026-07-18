@@ -5,17 +5,16 @@ Read this first, then PRODUCT.md (what to build + acceptance criteria), then BAC
 
 ## Current state in one paragraph
 
-**BACKLOG items 1–5 done and browser-verified** (2026-07-18). The app is real: scaffold
-(4 hash views, bottom nav, tokens + wordmark inlined, EN+SV string table, state blob in
-localStorage key `sipdeck`), `drinks.json` (10 IBA classics, 26 shared ingredient ids),
-unit engine (ml canonical, cl/ml/oz, bar rounding, vulgar oz fractions, sv/en number
-formatting), the full deck (card stack top-4-in-DOM, pointer-drag swipe with 35%/velocity
-commit, edge tint, spring-back, fly-off, tap-flip to recipe back with serving stepper +
-unit toggle), and the favorites view (list, open swipe-free flippable card, un-favorite).
-`test.js`: 488 checks green (`node test.js`). All flows Playwright-verified on a phone
-viewport, zero console errors. Repo pushed to github.com/Elwyndaz/sipdeck. Still owed:
-the 60 fps feel check on a real phone (PRODUCT.md hard requirement — deploy to Pages or
-serve on LAN and try it). Next: BACKLOG item 6 (filters).
+**BACKLOG items 1–7 done** (2026-07-18). Filters now combine the editorial `bar` toggle,
+single-select base spirit and visible match count, reset and reshuffle the deck on change,
+persist under `settings.filters`, and have a friendly zero-match state. Pantry now lists
+all 26 used ingredients in four editorial groups, persists selections, and feeds a
+combinable essential-subset "what can I make" deck filter. BACKLOG 9 is partially done:
+Margarita, Mojito and Negroni have 640×800 WebP art at 27–45 kB, while missing images keep
+the inline SVG fallback without changing card layout. `test.js`: 528 checks green. Items
+1–5 retain their earlier phone-browser verification; this session had no controllable
+browser, so filters, pantry and image loading still need the phone-viewport interaction
+pass. The real-phone 60 fps feel check also remains outstanding. Next: BACKLOG item 8.
 
 ## Implementation notes for the next session (things the code assumes)
 
@@ -28,8 +27,9 @@ serve on LAN and try it). Next: BACKLOG item 6 (filters).
   card with the class pre-applied and snaps instead of animating.
 - `formatAmount` returns non-convertible unit labels as raw keys (`dash`); the view layer
   translates via `t('unit_' + key)`; unit `top` renders as just "toppa upp"/"top up".
-- Interim card art = favicon glass monoline (`GLASS_PH`) until item 9's per-glass
-  placeholders. `convert()` uses 30 ml/oz (bar standard; PRODUCT.md doesn't pin it).
+- Card fronts try `img/<drink-id>.webp` for the top four live cards and retain the favicon
+  glass monoline (`GLASS_PH`) until load or on error. Item 9 still owes per-glass
+  silhouettes. `convert()` uses 30 ml/oz (bar standard; PRODUCT.md doesn't pin it).
 - The `#view` click delegate is attached ONCE at startup (the element is never replaced);
   `#deck`/`#favDeck` listeners re-attach per render (those nodes are recreated).
 
@@ -124,6 +124,12 @@ in PRODUCT.md "Locked decisions".
    with mint sprig and lime" / "Same exact style: a Negroni in a rocks glass with a
    large ice cube and orange peel." Judge the 3 together for consistency before
    batch-generating the rest; adjust this section if the prompt needed changes.
+
+   **First-three verdict (2026-07-18): pass, freeze the prompt.** Margarita, Mojito and
+   Negroni share the same warm-white paper, confident fine ink, watercolor texture,
+   centered portrait composition, generous whitespace and comparable line weight. The
+   Mojito is naturally more detailed, but its rendering still clearly belongs to the
+   same set. No prompt adjustment is needed before generating the remaining drinks.
 2. Generated externally (ChatGPT image tools) by the user; agent receives PNGs.
 3. Convert: to WebP ≤ 80 kB at ~640×800 (`cwebp -q 80` or equivalent available tool);
    filename **must** be `img/<drink-id>.webp`.
@@ -132,16 +138,13 @@ in PRODUCT.md "Locked decisions".
 
 ## Immediate next steps (in order)
 
-1. BACKLOG 6: filters (`bar` toggle + base-spirit select, deck rebuild + reshuffle on
-   change, match count, empty state). Reset `deckQueue = null` on filter change.
-2. BACKLOG 7: pantry + "what can I make" (grouped ingredient checklist, essential-subset
-   match).
-3. BACKLOG 8: i18n polish (language toggle in settings — the string table and browser
+1. Phone-viewport browser pass for filters, pantry, image loading and missing-image
+   fallback; then do the outstanding real-phone 60 fps feel check.
+2. BACKLOG 8: i18n polish (language toggle in settings — the string table and browser
    default already exist, this is mostly the settings controls).
-4. BACKLOG 9: image pipeline — the user generates PNGs with the frozen prompt above,
-   agent converts to `img/<drink-id>.webp` (≤ 80 kB, ~640×800) + builds the per-glass
-   SVG placeholder + lazy-load.
-5. The real-phone 60 fps feel check (deploy or LAN-serve) — still outstanding.
+3. Finish BACKLOG 9: generate the other seed images with the frozen prompt and replace
+   the generic fallback with SVG silhouettes keyed by `glass`.
+4. BACKLOG 10: grow and review the drink seed.
 
 ## How to run / deploy
 
@@ -165,8 +168,12 @@ Commit messages: `sipdeck: <what>`.
 
 ## Verification state
 
-Items 1–5: `node test.js` (488 green) + Playwright phone-viewport smoke of every flow
-(deck swipe both directions, spring-back, flip, stepper/unit scaling, favorites
-open/flip/un-favorite, settings display), zero console errors, 2026-07-18. Real-phone
-feel check NOT done. This file's "Current state" paragraph must be updated at the end of
-every working session (recept/Årshjul convention).
+`node test.js`: 528 green; `node --check app.js`: green; `git diff --check`: green;
+`app.js`: 29.5 kB. Local HTTP smoke: index/app/image return 200 with `image/webp` for art;
+a missing image returns 404 and is handled by the live `<img>` error fallback. Converted
+assets were visually inspected at 640×800. Items 1–5 retain their earlier Playwright
+phone-viewport smoke (deck gestures/flip/recipe/favorites/settings), zero console errors.
+No controllable browser was available in the 2026-07-18 filters/pantry/image session, so
+those new flows are not yet browser-verified. Real-phone feel check NOT done. This file's
+"Current state" paragraph must be updated at the end of every working session
+(recept/Årshjul convention).

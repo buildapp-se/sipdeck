@@ -2,8 +2,9 @@
 // ponytail: plain node asserts, no framework. `node test.js` to run.
 const fs = require('fs');
 const path = require('path');
-const { detectLang, defaultState, normalizeState,
-  scaleMl, convert, roundForUnit, formatNumber, formatOz, formatAmount, shuffle } = require('./app.js');
+const { STRINGS, detectLang, defaultState, normalizeState,
+  scaleMl, convert, roundForUnit, formatNumber, formatOz, formatAmount, shuffle,
+  matchesFilters, canMake, filterDrinks } = require('./app.js');
 
 let pass = 0, fail = 0;
 function check(cond, msg) {
@@ -14,6 +15,7 @@ function check(cond, msg) {
 check(detectLang('sv-SE') === 'sv', 'detectLang: sv-SE -> sv');
 check(detectLang('en-US') === 'en', 'detectLang: en-US -> en');
 check(detectLang(undefined) === 'en', 'detectLang: missing -> en');
+check(Object.values(STRINGS.sv).every(value => !String(value).includes('—')), 'string table sv: no em-dashes');
 
 const d = defaultState('sv');
 check(d.v === 1 && d.settings.lang === 'sv' && d.settings.unit === 'cl' && d.settings.servings === 1,
@@ -93,8 +95,38 @@ check(shuffled.length === 4 && [1, 2, 3, 4].every(n => shuffled.includes(n)),
 check(shuffle([], () => 0.5).length === 0, 'shuffle: empty array ok');
 check(shuffle(['a']).join() === 'a', 'shuffle: single element ok');
 
+// ---------- filters (BACKLOG 6) ----------
+const filterSeed = [
+  { id: 'a', base: 'gin', bar: true },
+  { id: 'b', base: 'rum', bar: false },
+  { id: 'c', base: 'mezcal', bar: true },
+];
+check(matchesFilters(filterSeed[0], { bar: false, base: null }), 'filters: no filters matches');
+check(!matchesFilters(filterSeed[1], { bar: true, base: null }), 'filters: bar excludes non-bar drink');
+check(matchesFilters(filterSeed[0], { bar: true, base: 'gin' }), 'filters: bar and base combine');
+check(!matchesFilters(filterSeed[1], { bar: false, base: 'gin' }), 'filters: base excludes other spirits');
+check(matchesFilters(filterSeed[2], { bar: false, base: 'other' }), 'filters: other matches unlisted base');
+check(filterDrinks(filterSeed, { bar: true, base: null }).length === 2, 'filterDrinks: returns matching set');
+check(filterDrinks(filterSeed, { bar: true, base: 'rum' }).length === 0, 'filterDrinks: empty combination');
+check(filterDrinks(null, {}).length === 0, 'filterDrinks: invalid input is empty');
+
+// ---------- pantry + makeable filter (BACKLOG 7) ----------
+const pantryDrink = { id: 'pantry-test', base: 'gin', bar: true, ingredients: [
+  { id: 'gin', essential: true },
+  { id: 'lime-juice', essential: true },
+  { id: 'lime-wheel', essential: false },
+] };
+check(canMake(pantryDrink, ['gin', 'lime-juice']), 'canMake: every essential ingredient present');
+check(!canMake(pantryDrink, ['gin']), 'canMake: missing essential ingredient rejects drink');
+check(canMake({ ingredients: [{ id: 'garnish', essential: false }] }, []), 'canMake: optional-only drink qualifies');
+check(filterDrinks([pantryDrink], { bar: true, base: 'gin' }, ['gin', 'lime-juice']).length === 1,
+  'filterDrinks: pantry combines with bar and base');
+check(filterDrinks([pantryDrink], { bar: true, base: 'gin' }, []).length === 0,
+  'filterDrinks: empty pantry has no makeable drinks');
+
 // ---------- drinks.json validator ----------
 const UNITS = ['dash', 'barspoon', 'piece', 'leaf', 'slice', 'garnish', 'top'];
+const INGREDIENT_GROUPS = ['spirits', 'liqueurs', 'fresh', 'pantry'];
 const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const data = JSON.parse(fs.readFileSync(path.join(__dirname, 'drinks.json'), 'utf8'));
 
@@ -108,6 +140,7 @@ Object.keys(data.ingredients).forEach(id => {
   const ing = data.ingredients[id];
   check(typeof ing.en === 'string' && ing.en.length > 0, `ingredient ${id}: en present`);
   check(typeof ing.sv === 'string' && ing.sv.length > 0, `ingredient ${id}: sv present`);
+  check(INGREDIENT_GROUPS.includes(ing.group), `ingredient ${id}: group valid`);
   check(!String(ing.sv).includes('—'), `ingredient ${id}: sv has no em-dash`);
 });
 
