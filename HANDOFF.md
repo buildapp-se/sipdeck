@@ -16,7 +16,8 @@ The outstanding phone pass was attempted from a local `python -m http.server`, b
 Browser plugin reported no controllable browser. No new phone-browser verification is
 claimed; the fixed-nav/history changes, 16-drink batch and source-link treatment still
 need a real-phone interaction pass. Next: that pass, then continue item 10 toward the
-80–100-drink target.
+80–100-drink target. Feature commit `bb33c62` was pushed and deployed; cache-busted checks
+of both production URLs served the 26-drink data, source-link code/CSS and a new image.
 
 ## Implementation notes for the next session (things the code assumes)
 
@@ -247,8 +248,11 @@ confirms live-element deck promotion/flip and queue resets are unchanged. Earlie
 checks remain historical only: on 2026-07-19 the requested local phone pass could not run
 because the Browser plugin reported no controllable browser. The current fixed navigation,
 favorite history, expanded seed and source links therefore remain phone-browser-unverified;
-real-phone feel check NOT done. This file's "Current state" paragraph must be updated at
-the end of every working session (recept/Årshjul convention).
+real-phone feel and console checks NOT done. Cache-busted production checks confirmed both
+`https://sipdeck.pages.dev/` and `https://orgutveckling.se/sipdeck/` serve 26 drinks, the
+source-link JS/CSS markers and the 34,334-byte Frozen Strawberry Daiquiri WebP. This file's
+"Current state" paragraph must be updated at the end of every working session
+(recept/Årshjul convention).
 
 Source inspection and pure-function tests on 2026-07-19 confirm favorite detail hashes
 parse safely, opening a favorite creates a history entry, and hardware Back therefore
