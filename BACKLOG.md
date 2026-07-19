@@ -52,7 +52,8 @@ Items 1–12 ✅ done 2026-07-19 (see HANDOFF.md "Current state"). Next up: item
     water sectors and always lands on water. Includes exact landing geometry, re-spin/New
     wheel behavior, sound/mute, ticking, one landing haptic, reduced-motion handling,
     repeat safety copy and 13 optimized illustrations with reusable local masters. (J1)
-13. **Strict normal-bar audit** — research the reliably stocked baseline at representative
+13. ✅ **Strict normal-bar audit** (done 2026-07-19, see BAR-AUDIT.md: 37 stay `bar: true`,
+    20 flipped, exact allowlist under regression) — research the reliably stocked baseline at representative
     ordinary, non-specialist bars, then reassess every drink currently marked `bar: true`.
     Review all essential ingredients drink by drink; IBA status and cocktail-bar availability
     are not sufficient. If a normal bar is unlikely to stock or routinely prep even one
