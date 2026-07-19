@@ -10,8 +10,10 @@ The complete seed contains 92 reviewed recipes and 92 optimized, visually review
 640×800 WebP illustrations, all under 58 kB. Filters, pantry, essential-ingredient
 makeability, EN/SV switching and glass-specific missing-art fallbacks are implemented.
 Favorites use compact art rows and a continuous recipe view with checkmarks, clipboard
-copy, published-recipe links and mobile Back navigation. See `HANDOFF.md` for the current
-verification state and `BACKLOG.md` for the remaining v1 work.
+copy, published-recipe links and mobile Back navigation. Card gestures suppress native
+image/text dragging and also support Arrow Left/Right. A relative web app manifest and the
+finalized icon set make the app installable without a service worker. See `HANDOFF.md` for
+the current verification state and `BACKLOG.md` for the remaining v1 work.
 
 ## Run
 

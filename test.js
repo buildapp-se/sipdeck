@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { STRINGS, t, detectLang, defaultState, normalizeState, favoriteIdFromHash,
   scaleMl, convert, roundForUnit, formatNumber, formatOz, formatAmount, shuffle, advanceQueue,
+  swipeDirectionForKey,
   formatLineAmount, drinkAsText,
   BASE_FILTERS, matchesFilters, canMake, filterDrinks,
   GLASS_SILHOUETTES, glassPlaceholder } = require('./app.js');
@@ -149,6 +150,17 @@ check(filterDrinks(filterSeed, { bar: true, base: null }).length === 2, 'filterD
 check(filterDrinks(filterSeed, { bar: true, base: 'rum' }).length === 0, 'filterDrinks: empty combination');
 check(filterDrinks(null, {}).length === 0, 'filterDrinks: invalid input is empty');
 
+check(swipeDirectionForKey('ArrowLeft') === -1, 'keyboard swipe: left skips');
+check(swipeDirectionForKey('ArrowRight') === 1, 'keyboard swipe: right saves');
+check(swipeDirectionForKey('Enter') === 0, 'keyboard swipe: unrelated keys are ignored');
+const appSource = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
+const htmlSource = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+check(appSource.includes('draggable="false"'), 'pointer swipe: artwork disables native image dragging');
+check(appSource.includes('e.preventDefault(); // own the gesture'), 'pointer swipe: card owns pointer gesture');
+check(htmlSource.includes('user-select:none;-webkit-user-select:none'), 'pointer swipe: card text selection disabled');
+check(appSource.includes("aria-keyshortcuts', 'ArrowLeft ArrowRight'"),
+  'keyboard swipe: top card exposes arrow shortcuts');
+
 // ---------- glass placeholders (BACKLOG 9) ----------
 ['coupe', 'highball', 'rocks', 'martini'].forEach(glass => {
   check(typeof GLASS_SILHOUETTES[glass] === 'string', `glass placeholder: ${glass} silhouette exists`);
@@ -180,6 +192,10 @@ const data = JSON.parse(fs.readFileSync(path.join(__dirname, 'drinks.json'), 'ut
 check(data.schema === 1, 'drinks.json: schema === 1');
 check(data.ingredients && typeof data.ingredients === 'object', 'drinks.json: ingredients is a map');
 check(Array.isArray(data.drinks), 'drinks.json: drinks is an array');
+['sazerac', 'bees-knees', 'bellini'].forEach(id => {
+  const drink = data.drinks.find(item => item.id === id);
+  check(drink && drink.bar === false, `bar-ready editorial exception: ${id}`);
+});
 new Set(data.drinks.map(drink => drink.type)).forEach(type => {
   const key = 'type_' + type.replace(/-/g, '_');
   check(t('en', key) !== key && t('sv', key) !== key, `i18n: drink type ${type} resolves in EN + SV`);
@@ -188,6 +204,40 @@ BASE_FILTERS.forEach(base => {
   const key = 'base_' + base;
   check(t('en', key) !== key && t('sv', key) !== key, `i18n: base filter ${base} resolves in EN + SV`);
 });
+
+// ---------- installability (BACKLOG 11) ----------
+const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, 'manifest.webmanifest'), 'utf8'));
+check(manifest.id === './' && manifest.start_url === './' && manifest.scope === './',
+  'manifest: subpath-safe relative identity, start and scope');
+check(manifest.display === 'standalone', 'manifest: standalone display');
+check(manifest.background_color === '#EFE8DB' && manifest.theme_color === '#EFE8DB',
+  'manifest: finalized shell colors');
+const expectedManifestIcons = new Map([
+  ['icons/icon-192.png', '192x192'],
+  ['icons/icon-512.png', '512x512'],
+  ['icons/icon-maskable-512.png', '512x512'],
+]);
+check(manifest.icons.length === expectedManifestIcons.size, 'manifest: exact icon set');
+manifest.icons.forEach(icon => {
+  check(expectedManifestIcons.get(icon.src) === icon.sizes, `manifest: icon declaration ${icon.src}`);
+  check(fs.existsSync(path.join(__dirname, icon.src)), `manifest: icon exists ${icon.src}`);
+});
+check(manifest.icons.find(icon => icon.src === 'icons/icon-maskable-512.png').purpose === 'maskable',
+  'manifest: maskable icon purpose');
+const expectedPngSizes = new Map([
+  ['icons/icon-192.png', 192], ['icons/icon-512.png', 512],
+  ['icons/icon-maskable-512.png', 512], ['icons/apple-touch-icon.png', 180],
+  ['icons/icon-48.png', 48], ['icons/favicon-32.png', 32], ['icons/favicon-16.png', 16],
+]);
+expectedPngSizes.forEach((size, file) => {
+  const png = fs.readFileSync(path.join(__dirname, file));
+  check(png.readUInt32BE(16) === size && png.readUInt32BE(20) === size,
+    `icon export: ${file} is ${size}x${size}`);
+});
+check(htmlSource.includes('rel="manifest" href="manifest.webmanifest"'), 'installability: manifest linked');
+check(htmlSource.includes('rel="apple-touch-icon" href="icons/apple-touch-icon.png"'),
+  'installability: Apple touch icon linked');
+check(!appSource.includes('serviceWorker.register'), 'installability: no v1 service worker');
 
 // every ingredient map key is kebab-case with en+sv
 Object.keys(data.ingredients).forEach(id => {

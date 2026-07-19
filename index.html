@@ -6,7 +6,11 @@
 <title>Sipdeck</title>
 <meta name="description" content="Sipdeck. Swipe. Save. Shake.">
 <meta name="theme-color" content="#EFE8DB">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="design/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="icons/favicon-16.png" type="image/png" sizes="16x16">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" sizes="180x180">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -98,7 +102,9 @@ header.brand .tagline{font:500 .8rem/1.4 var(--sd-font-ui);color:var(--sd-ink-2)
 /* ---- deck & cards (BACKLOG item 4) ---- */
 .deck{position:relative;height:min(64vh,540px);max-width:340px;margin:0 auto 2rem;perspective:1200px}
 .card{position:absolute;inset:0;border-radius:16px;touch-action:none;cursor:grab;
+  user-select:none;-webkit-user-select:none;
   transition:transform var(--sd-t-list) var(--sd-ease-list)}
+.card:focus-visible{outline:3px solid var(--sd-accent);outline-offset:3px}
 .card[data-depth="1"]{transform:translateY(12px) scale(.964);pointer-events:none}
 .card[data-depth="2"]{transform:translateY(24px) scale(.928);pointer-events:none}
 .card[data-depth="3"]{transform:translateY(24px) scale(.928);opacity:0;pointer-events:none}
@@ -115,6 +121,7 @@ header.brand .tagline{font:500 .8rem/1.4 var(--sd-font-ui);color:var(--sd-ink-2)
 .card-art{position:relative;flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
 .glass-ph{width:38%;max-height:100%;color:#6E6455;opacity:.55}
 .cocktail-art{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;
+  pointer-events:none;-webkit-user-drag:none;
   transition:opacity var(--sd-t-list) var(--sd-ease-list)}
 .cocktail-art.loaded{opacity:1}
 .card-tags{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.6rem}

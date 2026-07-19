@@ -5,7 +5,7 @@ agent session. Story/AC references point into PRODUCT.md.
 
 ## v1 (the cut line is explicit below)
 
-Items 1–10 ✅ done 2026-07-19 (see HANDOFF.md "Current state"). Next up: item 11.
+Items 1–11 ✅ done 2026-07-19 (see HANDOFF.md "Current state"). Item 12 is in progress.
 
 1. ✅ **Scaffold** — `index.html` (inline the contents of `design/tokens.css` into
    `<style>`, inline `design/wordmark.svg` in the header), `app.js` (pure functions on
@@ -22,7 +22,8 @@ Items 1–10 ✅ done 2026-07-19 (see HANDOFF.md "Current state"). Next up: item
 4. ✅ **Deck + swipe physics + flip** — card stack, pointer-event drag, thresholds,
    spring-back, left = requeue, right = save, tap-flip with recipe back, serving stepper
    + unit toggle on the back. Committed swipes promote the existing live cards with the
-   list motion curve; the deck view is not re-rendered between cards. (Epic A, B)
+   list motion curve; the deck view is not re-rendered between cards. Native image drag
+   and text selection are suppressed; Arrow Left/Right use the same live swipe path. (Epic A, B)
 5. ✅ **Favorites view** — compact rows with real art, continuous illustrated recipe
    detail, transient ingredient checkmarks, readable clipboard copy, un-favorite and a
    history-aware detail route whose Back action returns to the favorite list. (C1)
@@ -41,12 +42,14 @@ Items 1–10 ✅ done 2026-07-19 (see HANDOFF.md "Current state"). Next up: item
     methods, reviewed `bar` flags and direct published sources. All 92 ids have curated
     source illustrations and exact 640×800 production WebPs at ≤ 80 kB. The original 26
     sources and production files, plus the preexisting Manhattan source, were preserved.
-11. **PWA manifest + icons** — relative paths, standalone. Export PNGs from
+11. ✅ **PWA manifest + icons** — relative paths, standalone. Export PNGs from
     `design/icon.svg` (192/512/apple-touch/maskable, on `#FBF7EF` except maskable which
     is full-bleed) and from `design/favicon.svg` (16/32) — see `design/README.md` for
     which file backs which size; don't rescale `icon.svg` down to 48/16. (H1)
-12. **Performance pass + deploy** — verify budgets on a throttled phone profile, then
-    Cloudflare Pages direct upload; smoke-test the pages.dev URL on mobile.
+12. **Performance pass + deploy (in progress)** — static budgets, local HTTP smoke and the
+    Cloudflare Pages direct upload pass. The required throttled-phone trace and
+    live mobile smoke remain pending because neither Chrome DevTools MCP nor a controllable
+    browser backend was available on 2026-07-19.
 
 ——————————— **v1 CUT — everything below ships after v1 is live** ———————————
 

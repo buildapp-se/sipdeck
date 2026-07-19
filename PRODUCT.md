@@ -159,11 +159,14 @@ This exact blob is what `PUT /state` will carry in v1.1. Never store derived dat
 - Left swipe past threshold (~35 % of card width, or a velocity flick) animates the card
   off-screen and requeues it at the **back** of the deck. No permanent dismiss exists.
 - Below threshold: card springs back with damped easing.
+- Native image dragging and text selection never steal the card gesture. Arrow Left invokes
+  the same skip path for keyboard users.
 
 **A3. As a browser, I want swipe right = save so that keeping a drink is one gesture.**
 - Right swipe saves to `favorites` (idempotent), animates off with a brief save cue, and
   removes the card from the current deck cycle.
 - When every card has been right-swiped, the deck reshuffles the full filtered set.
+- Arrow Right invokes the same save path; focus follows the promoted live card.
 
 **A4. As a browser, I want tap to flip the card so that the recipe is one touch away.**
 - Tap (movement < ~10 px, so drags never misfire) flips with a 3D rotateY;
@@ -204,6 +207,8 @@ This exact blob is what `PUT /state` will carry in v1.1. Never store derived dat
 where I am.**
 - Toggle drives the editorial `bar` flag. Deck rebuilds + reshuffles on change; a count of
   matching drinks is visible; state persists in `settings.filters`.
+- A drink that requires a specialty syrup, purée or bitters unlikely to be stocked by a
+  general cocktail bar is `bar: false`, even when the recipe is an IBA classic.
 
 **D2. As a browser, I want to filter by base spirit so that the deck matches my mood.**
 - Single-select base spirit (gin, vodka, rum, tequila, whiskey, brandy, none/other…),

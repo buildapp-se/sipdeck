@@ -1962,7 +1962,7 @@
       "type": "spirit_forward",
       "base": "brandy",
       "iba": true,
-      "bar": true,
+      "bar": false,
       "tags": [
         "anise",
         "aromatic",
@@ -2557,7 +2557,7 @@
       "type": "sour",
       "base": "gin",
       "iba": true,
-      "bar": true,
+      "bar": false,
       "tags": [
         "honeyed",
         "citrusy",
@@ -4518,7 +4518,7 @@
       "type": "contemporary",
       "base": "other",
       "iba": true,
-      "bar": true,
+      "bar": false,
       "tags": [
         "peach",
         "sparkling",

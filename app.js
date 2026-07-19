@@ -198,6 +198,12 @@ function advanceQueue(queue, saved) {
   return next;
 }
 
+function swipeDirectionForKey(key) {
+  if (key === 'ArrowLeft') return -1;
+  if (key === 'ArrowRight') return 1;
+  return 0;
+}
+
 const BASE_FILTERS = ['gin', 'vodka', 'rum', 'tequila', 'whiskey', 'brandy', 'other'];
 
 function matchesFilters(drink, filters) {
@@ -273,7 +279,7 @@ if (typeof module !== 'undefined') module.exports = {
   STRINGS, t, UNITS, detectLang, defaultState, normalizeState, favoriteIdFromHash,
   NONCONVERTIBLE_UNITS, scaleMl, convert, roundForUnit, formatNumber, formatOz, formatAmount,
   formatLineAmount, drinkAsText,
-  shuffle, advanceQueue, BASE_FILTERS, matchesFilters, canMake, filterDrinks,
+  shuffle, advanceQueue, swipeDirectionForKey, BASE_FILTERS, matchesFilters, canMake, filterDrinks,
   GLASS_SILHOUETTES, glassPlaceholder,
 };
 
@@ -362,7 +368,7 @@ if (typeof document !== 'undefined') (function () {
   }
 
   function artMarkup(drink) {
-    return `${glassPlaceholder(drink.glass)}<img class="cocktail-art" src="img/${esc(drink.id)}.webp" alt="" loading="lazy" decoding="async">`;
+    return `${glassPlaceholder(drink.glass)}<img class="cocktail-art" src="img/${esc(drink.id)}.webp" alt="" loading="lazy" decoding="async" draggable="false">`;
   }
 
   // opts: { flipped, tint } — both optional; the deck uses the defaults.
@@ -374,6 +380,8 @@ if (typeof document !== 'undefined') (function () {
     el.className = 'card' + (flipped ? ' flipped' : '');
     el.dataset.depth = depth;
     el.dataset.id = drink.id;
+    el.tabIndex = depth === 0 ? 0 : -1;
+    el.setAttribute('aria-keyshortcuts', 'ArrowLeft ArrowRight');
     const tags = drink.ingredients.filter(l => l.essential)
       .map(l => `<span class="chip">${esc(ingName(l.id))}</span>`).join('');
     const s = state.settings;
@@ -435,6 +443,7 @@ if (typeof document !== 'undefined') (function () {
   function promoteDeck(leavingCard) {
     const deckEl = $('#deck');
     if (!deckEl) return;
+    const moveFocus = leavingCard === document.activeElement || leavingCard.contains(document.activeElement);
     ensureQueue();
     const desired = deckQueue.slice(0, 4);
     Array.from(deckEl.querySelectorAll('.card')).forEach(card => {
@@ -448,8 +457,12 @@ if (typeof document !== 'undefined') (function () {
         deckEl.insertBefore(card, deckEl.firstChild);
       }
       card.dataset.depth = depth;
+      card.tabIndex = depth === 0 ? 0 : -1;
     });
-    attachDrag(Array.from(deckEl.querySelectorAll('.card')).find(el => el !== leavingCard && el.dataset.depth === '0'));
+    const nextCard = Array.from(deckEl.querySelectorAll('.card'))
+      .find(el => el !== leavingCard && el.dataset.depth === '0');
+    attachDrag(nextCard);
+    if (moveFocus && nextCard) nextCard.focus();
   }
 
   function attachDrag(card) {
@@ -462,6 +475,7 @@ if (typeof document !== 'undefined') (function () {
 
     card.addEventListener('pointerdown', e => {
       if (e.target.closest('.card-ctrl')) return; // controls are dead zones
+      e.preventDefault(); // own the gesture: no native image drag or text selection
       dragging = true; moved = false;
       startX = lastX = e.clientX; startY = e.clientY; dx = dy = vx = 0; lastT = e.timeStamp;
       try { card.setPointerCapture(e.pointerId); } catch (err) { /* capture is nice-to-have; drag works without it */ }
@@ -504,9 +518,12 @@ if (typeof document !== 'undefined') (function () {
     }
     card.addEventListener('pointerup', settle);
     card.addEventListener('pointercancel', settle);
+    card.addEventListener('dragstart', e => e.preventDefault());
   }
 
   function flyOff(card, dir, dy) {
+    if (card.dataset.leaving) return;
+    card.dataset.leaving = 'true';
     const x = (window.innerWidth + card.offsetWidth) * dir;
     card.style.transition = 'transform var(--sd-t-fly) var(--sd-ease-fly)'; // never fades — it leaves
     card.style.transform = `translate(${x}px, ${dy * 0.4}px) rotate(${dir * 18}deg)`;
@@ -785,5 +802,15 @@ if (typeof document !== 'undefined') (function () {
   });
 
   window.addEventListener('hashchange', render);
+  window.addEventListener('keydown', e => {
+    const dir = swipeDirectionForKey(e.key);
+    if (!dir || e.defaultPrevented || e.repeat || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    const target = e.target instanceof Element ? e.target : null;
+    if (target && target.closest('button, input, select, textarea, a, [contenteditable="true"]')) return;
+    const card = $('#deck .card[data-depth="0"]');
+    if (!card || card.dataset.leaving) return;
+    e.preventDefault();
+    flyOff(card, dir, 0);
+  });
   render();
 })();

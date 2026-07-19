@@ -5,16 +5,17 @@ Read this first, then PRODUCT.md (what to build + acceptance criteria), then BAC
 
 ## Current state in one paragraph
 
-**BACKLOG items 1–10 done** (updated 2026-07-19). `drinks.json` contains the complete
-user-approved 92-drink seed and 123 normalized ingredients, with EN/SV methods and direct
-published recipe links. Every drink now has a curated source illustration and an exact
-640×800 production WebP; the 66-image expansion was completed without changing the
-original 26 images or the preexisting Manhattan source. The exact persisted state blob is
-unchanged. `test.js`: 4070 checks green. All 92 source URLs returned HTTP 200. The full
-phone pass was attempted again after image completion, but browser discovery returned zero
-controllable backends. No new phone-browser or console verification is claimed; the local
-HTTP smoke and the pre-conversion missing-image fallback check passed. The completed
-artwork batch is committed and deployed as `sipdeck: complete full drink artwork`.
+**BACKLOG items 1–11 done; item 12 in progress** (updated 2026-07-19). The approved
+92-drink/123-ingredient seed and complete production artwork remain intact. Card pointer
+gestures now suppress native image dragging and text selection; Arrow Left/Right use the
+same live skip/save path with focus continuity. Sazerac, Bee's Knees and Bellini are now
+`bar: false`, consistent with the existing treatment of specialty Peychaud's bitters,
+honey syrup and purée recipes; no recipe was changed. The exact persisted state blob is
+unchanged. A relative standalone manifest and seven finalized PNG icon exports complete
+item 11 without adding a service worker. `test.js`: 4101 checks green. Static size budgets,
+local HTTP smoke, deployment and production-origin smoke pass. Chrome DevTools MCP and
+browser discovery were both unavailable, so no throttled-phone trace, live interaction pass
+or browser-console result is claimed.
 
 ## Implementation notes for the next session (things the code assumes)
 
@@ -31,6 +32,9 @@ artwork batch is committed and deployed as `sipdeck: complete full drink artwork
 - A committed deck swipe must call `promoteDeck(leavingCard)`, never `render()`. It updates
   `data-depth` on the surviving live cards, inserts only the new back card, and removes the
   outgoing card after its transform transition. This is what prevents the reported snap.
+- The live card owns `pointerdown`: native image dragging and card text selection are
+  disabled. Arrow Left/Right call `flyOff()` directly, ignore form controls/modifiers/repeat,
+  and move focus to the promoted live card.
 - `formatAmount` returns non-convertible unit labels as raw keys (`dash`); the view layer
   translates via `t('unit_' + key)`; unit `top` renders as just "toppa upp"/"top up".
 - Card fronts try `img/<drink-id>.webp` for the top four live cards and retain the
@@ -213,12 +217,13 @@ in PRODUCT.md "Locked decisions".
 
 ## Immediate next steps (in order)
 
-1. BACKLOG 11: add the PWA manifest and export the finalized icon variants.
+1. Configure the `chrome-devtools` MCP and run BACKLOG 12's throttled 4G phone trace against
+   production; verify the < 1 s repeat/< 2,5 s first-visit interaction budgets.
 2. When a controllable browser is available, run the full phone-viewport pass, including
-   fixed navigation, swipe/flip
+   fixed navigation, pointer/keyboard swipe, flip,
    live-element behavior, missing-image fallback, favorite detail/Back, controls,
-   persistence, links and console. Claim only what a controllable browser verifies.
-3. BACKLOG 12: complete the throttled-phone performance pass and final v1 deploy checks.
+   installability, persistence, links and console. Claim only what a controllable browser verifies.
+3. If both checks pass, mark BACKLOG 12 complete and close the v1 cut.
 
 ## How to run / deploy
 
@@ -231,10 +236,10 @@ npx wrangler pages deploy . --project-name sipdeck --branch main   # Cloudflare 
 Live (since 2026-07-18): **https://sipdeck.pages.dev** (Cloudflare Pages, deploy =
 wrangler command above) and **https://orgutveckling.se/sipdeck/** (GitHub Pages, deploy
 = just `git push`; serves repo root off main — note the subpath, which is why all asset
-paths must stay relative). Both were reverified with the 92-drink data and expansion art on
-2026-07-19. No current browser-console claim is made because no controllable browser was
-available. Delete `.playwright-mcp/` before wrangler deploys — wrangler doesn't read
-`.gitignore`.
+paths must stay relative). Both were reverified with the 92-drink data, complete art,
+manifest, icons and input update on 2026-07-19. No current browser-console claim is made
+because no controllable browser was available. Delete `.playwright-mcp/` before wrangler
+deploys — wrangler doesn't read `.gitignore`.
 
 ## Git
 
@@ -244,7 +249,7 @@ Commit messages: `sipdeck: <what>`.
 
 ## Verification state
 
-`node test.js`: 4070 green; `node --check app.js`: green; `git diff --check`: green. The
+`node test.js`: 4101 green; `node --check app.js`: green; `git diff --check`: green. The
 92-drink dataset validates with 123 normalized ingredients, and all 92 current recipe
 source URLs returned HTTP 200. All 92 production filenames exactly match the drink ids;
 every WebP is 640×800 and 10,834–57,952 bytes. The 26 preexisting production files are
@@ -260,3 +265,15 @@ an empty backend list. The phone-viewport interaction pass and browser-console c
 therefore not performed or claimed. Both production origins returned the 92-drink data and
 new expansion artwork after deployment. This file's "Current state" paragraph must be
 updated at the end of every working session (recept/Årshjul convention).
+
+Input/PWA verification on 2026-07-19: pure tests cover Arrow Left = skip and Arrow Right =
+save; source guards disable native image drag and card text selection; all seven PNG exports
+have their required dimensions; the manifest uses relative `id`, `start_url` and `scope`,
+standalone display, finalized shell colors and no service worker. Local HTTP returned 200
+with correct MIME types for the document, app, data, manifest and representative icons.
+`app.js` is 39,534 bytes unminified (< 60 kB), uses one production JS file and two font
+families. The worst-case uncompressed document/app/data/four-largest-image sum is 378,496
+bytes. Chrome DevTools MCP was not configured and browser discovery returned `[]`, so item
+12's measured phone performance and live mobile interaction/console checks remain open.
+Both production origins returned the updated manifest, representative icons, 92-drink data
+and corrected bar flags after deployment.

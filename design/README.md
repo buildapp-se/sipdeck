@@ -23,6 +23,10 @@ reference (open it in a browser); the files below are what the scaffold session
 - **`favicon.svg`** — a different, simplified mark (glass only, no card) for 16/32px,
   per the design's explicit guidance that the card doesn't read below 48px.
 
+The completed raster exports live in `../icons/`: standard 192/512, maskable 512,
+Apple-touch 180, the purpose-built 48, and favicon 16/32 PNGs. `../manifest.webmanifest`
+references the installable variants with subpath-safe relative URLs.
+
 ## Cocktail artwork
 
 Cocktail illustrations are content assets, not identity source files, so they live at
