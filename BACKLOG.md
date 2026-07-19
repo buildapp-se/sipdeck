@@ -5,7 +5,7 @@ agent session. Story/AC references point into PRODUCT.md.
 
 ## v1 (the cut line is explicit below)
 
-Items 1–9 ✅ done 2026-07-18 (see HANDOFF.md "Current state"). Next up: item 10.
+Items 1–10 ✅ done 2026-07-19 (see HANDOFF.md "Current state"). Next up: item 11.
 
 1. ✅ **Scaffold** — `index.html` (inline the contents of `design/tokens.css` into
    `<style>`, inline `design/wordmark.svg` in the header), `app.js` (pure functions on
@@ -34,16 +34,13 @@ Items 1–9 ✅ done 2026-07-18 (see HANDOFF.md "Current state"). Next up: item 
    rules enforced in one format layer. Settings persists `settings.lang`; navigation,
    taxonomy labels, controls and accessibility labels all route through `t()`. (F1)
 9. ✅ **Image pipeline + placeholders** — frozen `gpt-image-2` reference workflow in
-   HANDOFF.md, exact 640×800 WebP outputs at 18–45 kB, complete id coverage and lazy
+   HANDOFF.md, exact 640×800 WebP outputs at 11–58 kB, complete id coverage and lazy
    loading for the top four cards. Resilient inline SVG silhouettes are keyed by the
    seed's `coupe`, `highball`, `rocks` and `martini` glass values. (G1)
-10. **Full drink seed (in progress: 92 recipes, 26 production images)** — the target
-    recipe set is complete: the reviewed 26 plus the user's approved 66-drink standard and
-    common expansion, with normalized ids, EN/SV methods, reviewed `bar` flags and direct
-    published sources. Data checkpoint: local commit `a5314e0`. Image work is incomplete:
-    `img-src/manhattan.png` is generated and reviewed but not converted; generate the
-    remaining 65 sources one at a time, then convert and verify all 66 new WebPs. Never
-    regenerate the original 26 or Manhattan.
+10. ✅ **Full drink seed** — 92 reviewed recipes and 123 normalized ingredients, with EN/SV
+    methods, reviewed `bar` flags and direct published sources. All 92 ids have curated
+    source illustrations and exact 640×800 production WebPs at ≤ 80 kB. The original 26
+    sources and production files, plus the preexisting Manhattan source, were preserved.
 11. **PWA manifest + icons** — relative paths, standalone. Export PNGs from
     `design/icon.svg` (192/512/apple-touch/maskable, on `#FBF7EF` except maskable which
     is full-bleed) and from `design/favicon.svg` (16/32) — see `design/README.md` for
@@ -74,6 +71,5 @@ Items 1–9 ✅ done 2026-07-18 (see HANDOFF.md "Current state"). Next up: item 
 
 - Last-write-wins sync (v1.1): fine, state has a single owner.
 - Pantry matching is id-exact: seeding discipline on ingredient ids is what makes it work.
-- No image = the drink's glass silhouette forever; acceptable for future additions,
-  tracked per drink by file absence. The original 26 have complete production coverage;
-  the 66-drink expansion is intentionally on placeholders until its image batch is done.
+- No image = the drink's glass silhouette forever; acceptable for future additions and
+  tracked per drink by file absence. All 92 current drinks have complete production art.

@@ -6,13 +6,12 @@ build, no dependencies. English + Swedish.
 
 ## Current state
 
-The complete seed contains 92 reviewed recipes. The original 26 have optimized,
-visually reviewed 640×800 WebP illustrations under 46 kB; art generation for the 66-drink
-expansion is in progress, with Manhattan's source PNG complete. Filters, pantry,
-essential-ingredient makeability, EN/SV switching and glass-specific missing-art
-fallbacks are implemented. Favorites use compact art rows and a continuous recipe view
-with checkmarks, clipboard copy, published-recipe links and mobile Back navigation. See
-`HANDOFF.md` for the exact image checkpoint and `BACKLOG.md` for the remaining v1 work.
+The complete seed contains 92 reviewed recipes and 92 optimized, visually reviewed
+640×800 WebP illustrations, all under 58 kB. Filters, pantry, essential-ingredient
+makeability, EN/SV switching and glass-specific missing-art fallbacks are implemented.
+Favorites use compact art rows and a continuous recipe view with checkmarks, clipboard
+copy, published-recipe links and mobile Back navigation. See `HANDOFF.md` for the current
+verification state and `BACKLOG.md` for the remaining v1 work.
 
 ## Run
 
