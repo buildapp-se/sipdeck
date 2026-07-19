@@ -1,66 +1,621 @@
 {
   "schema": 1,
   "ingredients": {
-    "tequila-blanco": { "en": "Blanco tequila", "sv": "Blanco-tequila", "group": "spirits" },
-    "triple-sec": { "en": "Triple sec", "sv": "Triple sec", "group": "liqueurs" },
-    "lime-juice": { "en": "Lime juice", "sv": "Limejuice", "group": "fresh" },
-    "salt-rim": { "en": "Salt rim", "sv": "Saltad kant", "group": "pantry" },
-    "white-rum": { "en": "White rum", "sv": "Vit rom", "group": "spirits" },
-    "sugar-syrup": { "en": "Sugar syrup", "sv": "Sockerlag", "group": "pantry" },
-    "mint-leaves": { "en": "Mint leaves", "sv": "Myntablad", "group": "fresh" },
-    "soda-water": { "en": "Soda water", "sv": "Sodavatten", "group": "pantry" },
-    "gin": { "en": "Gin", "sv": "Gin", "group": "spirits" },
-    "campari": { "en": "Campari", "sv": "Campari", "group": "liqueurs" },
-    "sweet-vermouth": { "en": "Sweet vermouth", "sv": "Söt vermouth", "group": "liqueurs" },
-    "orange-peel": { "en": "Orange peel", "sv": "Apelsinskal", "group": "fresh" },
-    "bourbon": { "en": "Bourbon whiskey", "sv": "Bourbonwhisky", "group": "spirits" },
-    "angostura-bitters": { "en": "Angostura bitters", "sv": "Angostura bitters", "group": "pantry" },
-    "lemon-juice": { "en": "Lemon juice", "sv": "Citronjuice", "group": "fresh" },
-    "egg-white": { "en": "Egg white", "sv": "Äggvita", "group": "fresh" },
-    "maraschino-cherry": { "en": "Maraschino cherry", "sv": "Maraschinobär", "group": "pantry" },
-    "dry-vermouth": { "en": "Dry vermouth", "sv": "Torr vermouth", "group": "liqueurs" },
-    "olive": { "en": "Olive", "sv": "Oliv", "group": "fresh" },
-    "lime-cordial": { "en": "Lime cordial", "sv": "Lime cordial", "group": "pantry" },
-    "lime-wheel": { "en": "Lime wheel", "sv": "Limeskiva", "group": "fresh" },
-    "vodka": { "en": "Vodka", "sv": "Vodka", "group": "spirits" },
-    "coffee-liqueur": { "en": "Coffee liqueur", "sv": "Kaffelikör", "group": "liqueurs" },
-    "espresso": { "en": "Fresh espresso", "sv": "Färsk espresso", "group": "fresh" },
-    "coffee-beans": { "en": "Coffee beans", "sv": "Kaffebönor", "group": "pantry" },
-    "cranberry-juice": { "en": "Cranberry juice", "sv": "Tranbärsjuice", "group": "fresh" },
-    "tomato-juice": { "en": "Tomato juice", "sv": "Tomatjuice", "group": "fresh" },
-    "worcestershire-sauce": { "en": "Worcestershire sauce", "sv": "Worcestershiresås", "group": "pantry" },
-    "tabasco": { "en": "Tabasco", "sv": "Tabasco", "group": "pantry" },
-    "celery-salt": { "en": "Celery salt", "sv": "Sellerisalt", "group": "pantry" },
-    "black-pepper": { "en": "Black pepper", "sv": "Svartpeppar", "group": "pantry" },
-    "celery-stalk": { "en": "Celery stalk", "sv": "Selleristjälk", "group": "fresh" },
-    "cachaca": { "en": "Cachaça", "sv": "Cachaça", "group": "spirits" },
-    "lime": { "en": "Lime", "sv": "Lime", "group": "fresh" },
-    "white-sugar": { "en": "White sugar", "sv": "Vitt socker", "group": "pantry" },
-    "raspberry-syrup": { "en": "Raspberry syrup", "sv": "Hallonsirap", "group": "pantry" },
-    "raspberries": { "en": "Raspberries", "sv": "Hallon", "group": "fresh" },
-    "champagne": { "en": "Champagne", "sv": "Champagne", "group": "pantry" },
-    "lemon-wheel": { "en": "Lemon slice", "sv": "Citronskiva", "group": "fresh" },
-    "irish-whiskey": { "en": "Irish whiskey", "sv": "Irländsk whiskey", "group": "spirits" },
-    "hot-coffee": { "en": "Hot coffee", "sv": "Varmt kaffe", "group": "fresh" },
-    "fresh-cream": { "en": "Fresh cream", "sv": "Grädde", "group": "fresh" },
-    "ginger-beer": { "en": "Ginger beer", "sv": "Ginger beer", "group": "pantry" },
-    "grapefruit-soda": { "en": "Pink grapefruit soda", "sv": "Rosa grapefruktläsk", "group": "pantry" },
-    "salt": { "en": "Salt", "sv": "Salt", "group": "pantry" },
-    "vanilla-vodka": { "en": "Vanilla vodka", "sv": "Vaniljvodka", "group": "spirits" },
-    "passion-fruit-liqueur": { "en": "Passion fruit liqueur", "sv": "Passionsfruktslikör", "group": "liqueurs" },
-    "passion-fruit-puree": { "en": "Passion fruit puree", "sv": "Passionsfruktspuré", "group": "fresh" },
-    "vanilla-sugar": { "en": "Vanilla sugar", "sv": "Vaniljsocker", "group": "pantry" },
-    "passion-fruit": { "en": "Passion fruit", "sv": "Passionsfrukt", "group": "fresh" },
-    "old-tom-gin": { "en": "Old Tom gin", "sv": "Old Tom-gin", "group": "spirits" },
-    "amaretto": { "en": "Amaretto", "sv": "Amaretto", "group": "liqueurs" },
-    "pisco": { "en": "Pisco", "sv": "Pisco", "group": "spirits" },
-    "cream-liqueur": { "en": "Cream toffee liqueur", "sv": "Gräddkolalikör", "group": "liqueurs" },
-    "dark-chocolate": { "en": "Dark chocolate", "sv": "Mörk choklad", "group": "pantry" },
-    "apple-liqueur": { "en": "Sour apple liqueur", "sv": "Syrlig äppellikör", "group": "liqueurs" },
-    "lemon-lime-soda": { "en": "Lemon-lime soda", "sv": "Citron- och limeläsk", "group": "pantry" },
-    "strawberries": { "en": "Strawberries", "sv": "Jordgubbar", "group": "fresh" },
-    "strawberry-garnish": { "en": "Strawberry", "sv": "Jordgubbe", "group": "fresh" },
-    "ice-cubes": { "en": "Ice cubes", "sv": "Isbitar", "group": "pantry" }
+    "tequila-blanco": {
+      "en": "Blanco tequila",
+      "sv": "Blanco-tequila",
+      "group": "spirits"
+    },
+    "triple-sec": {
+      "en": "Triple sec",
+      "sv": "Triple sec",
+      "group": "liqueurs"
+    },
+    "lime-juice": {
+      "en": "Lime juice",
+      "sv": "Limejuice",
+      "group": "fresh"
+    },
+    "salt-rim": {
+      "en": "Salt rim",
+      "sv": "Saltad kant",
+      "group": "pantry"
+    },
+    "white-rum": {
+      "en": "White rum",
+      "sv": "Vit rom",
+      "group": "spirits"
+    },
+    "sugar-syrup": {
+      "en": "Sugar syrup",
+      "sv": "Sockerlag",
+      "group": "pantry"
+    },
+    "mint-leaves": {
+      "en": "Mint leaves",
+      "sv": "Myntablad",
+      "group": "fresh"
+    },
+    "soda-water": {
+      "en": "Soda water",
+      "sv": "Sodavatten",
+      "group": "pantry"
+    },
+    "gin": {
+      "en": "Gin",
+      "sv": "Gin",
+      "group": "spirits"
+    },
+    "campari": {
+      "en": "Campari",
+      "sv": "Campari",
+      "group": "liqueurs"
+    },
+    "sweet-vermouth": {
+      "en": "Sweet vermouth",
+      "sv": "Söt vermouth",
+      "group": "liqueurs"
+    },
+    "orange-peel": {
+      "en": "Orange peel",
+      "sv": "Apelsinskal",
+      "group": "fresh"
+    },
+    "bourbon": {
+      "en": "Bourbon whiskey",
+      "sv": "Bourbonwhisky",
+      "group": "spirits"
+    },
+    "angostura-bitters": {
+      "en": "Angostura bitters",
+      "sv": "Angostura bitters",
+      "group": "pantry"
+    },
+    "lemon-juice": {
+      "en": "Lemon juice",
+      "sv": "Citronjuice",
+      "group": "fresh"
+    },
+    "egg-white": {
+      "en": "Egg white",
+      "sv": "Äggvita",
+      "group": "fresh"
+    },
+    "maraschino-cherry": {
+      "en": "Maraschino cherry",
+      "sv": "Maraschinobär",
+      "group": "pantry"
+    },
+    "dry-vermouth": {
+      "en": "Dry vermouth",
+      "sv": "Torr vermouth",
+      "group": "liqueurs"
+    },
+    "olive": {
+      "en": "Olive",
+      "sv": "Oliv",
+      "group": "fresh"
+    },
+    "lime-cordial": {
+      "en": "Lime cordial",
+      "sv": "Lime cordial",
+      "group": "pantry"
+    },
+    "lime-wheel": {
+      "en": "Lime wheel",
+      "sv": "Limeskiva",
+      "group": "fresh"
+    },
+    "vodka": {
+      "en": "Vodka",
+      "sv": "Vodka",
+      "group": "spirits"
+    },
+    "coffee-liqueur": {
+      "en": "Coffee liqueur",
+      "sv": "Kaffelikör",
+      "group": "liqueurs"
+    },
+    "espresso": {
+      "en": "Fresh espresso",
+      "sv": "Färsk espresso",
+      "group": "fresh"
+    },
+    "coffee-beans": {
+      "en": "Coffee beans",
+      "sv": "Kaffebönor",
+      "group": "pantry"
+    },
+    "cranberry-juice": {
+      "en": "Cranberry juice",
+      "sv": "Tranbärsjuice",
+      "group": "fresh"
+    },
+    "tomato-juice": {
+      "en": "Tomato juice",
+      "sv": "Tomatjuice",
+      "group": "fresh"
+    },
+    "worcestershire-sauce": {
+      "en": "Worcestershire sauce",
+      "sv": "Worcestershiresås",
+      "group": "pantry"
+    },
+    "tabasco": {
+      "en": "Tabasco",
+      "sv": "Tabasco",
+      "group": "pantry"
+    },
+    "celery-salt": {
+      "en": "Celery salt",
+      "sv": "Sellerisalt",
+      "group": "pantry"
+    },
+    "black-pepper": {
+      "en": "Black pepper",
+      "sv": "Svartpeppar",
+      "group": "pantry"
+    },
+    "celery-stalk": {
+      "en": "Celery stalk",
+      "sv": "Selleristjälk",
+      "group": "fresh"
+    },
+    "cachaca": {
+      "en": "Cachaça",
+      "sv": "Cachaça",
+      "group": "spirits"
+    },
+    "lime": {
+      "en": "Lime",
+      "sv": "Lime",
+      "group": "fresh"
+    },
+    "white-sugar": {
+      "en": "White sugar",
+      "sv": "Vitt socker",
+      "group": "pantry"
+    },
+    "raspberry-syrup": {
+      "en": "Raspberry syrup",
+      "sv": "Hallonsirap",
+      "group": "pantry"
+    },
+    "raspberries": {
+      "en": "Raspberries",
+      "sv": "Hallon",
+      "group": "fresh"
+    },
+    "champagne": {
+      "en": "Champagne",
+      "sv": "Champagne",
+      "group": "pantry"
+    },
+    "lemon-wheel": {
+      "en": "Lemon slice",
+      "sv": "Citronskiva",
+      "group": "fresh"
+    },
+    "irish-whiskey": {
+      "en": "Irish whiskey",
+      "sv": "Irländsk whiskey",
+      "group": "spirits"
+    },
+    "hot-coffee": {
+      "en": "Hot coffee",
+      "sv": "Varmt kaffe",
+      "group": "fresh"
+    },
+    "fresh-cream": {
+      "en": "Fresh cream",
+      "sv": "Grädde",
+      "group": "fresh"
+    },
+    "ginger-beer": {
+      "en": "Ginger beer",
+      "sv": "Ginger beer",
+      "group": "pantry"
+    },
+    "grapefruit-soda": {
+      "en": "Pink grapefruit soda",
+      "sv": "Rosa grapefruktläsk",
+      "group": "pantry"
+    },
+    "salt": {
+      "en": "Salt",
+      "sv": "Salt",
+      "group": "pantry"
+    },
+    "vanilla-vodka": {
+      "en": "Vanilla vodka",
+      "sv": "Vaniljvodka",
+      "group": "spirits"
+    },
+    "passion-fruit-liqueur": {
+      "en": "Passion fruit liqueur",
+      "sv": "Passionsfruktslikör",
+      "group": "liqueurs"
+    },
+    "passion-fruit-puree": {
+      "en": "Passion fruit puree",
+      "sv": "Passionsfruktspuré",
+      "group": "fresh"
+    },
+    "vanilla-sugar": {
+      "en": "Vanilla sugar",
+      "sv": "Vaniljsocker",
+      "group": "pantry"
+    },
+    "passion-fruit": {
+      "en": "Passion fruit",
+      "sv": "Passionsfrukt",
+      "group": "fresh"
+    },
+    "old-tom-gin": {
+      "en": "Old Tom gin",
+      "sv": "Old Tom-gin",
+      "group": "spirits"
+    },
+    "amaretto": {
+      "en": "Amaretto",
+      "sv": "Amaretto",
+      "group": "liqueurs"
+    },
+    "pisco": {
+      "en": "Pisco",
+      "sv": "Pisco",
+      "group": "spirits"
+    },
+    "cream-liqueur": {
+      "en": "Cream toffee liqueur",
+      "sv": "Gräddkolalikör",
+      "group": "liqueurs"
+    },
+    "dark-chocolate": {
+      "en": "Dark chocolate",
+      "sv": "Mörk choklad",
+      "group": "pantry"
+    },
+    "apple-liqueur": {
+      "en": "Sour apple liqueur",
+      "sv": "Syrlig äppellikör",
+      "group": "liqueurs"
+    },
+    "lemon-lime-soda": {
+      "en": "Lemon-lime soda",
+      "sv": "Citron- och limeläsk",
+      "group": "pantry"
+    },
+    "strawberries": {
+      "en": "Strawberries",
+      "sv": "Jordgubbar",
+      "group": "fresh"
+    },
+    "strawberry-garnish": {
+      "en": "Strawberry",
+      "sv": "Jordgubbe",
+      "group": "fresh"
+    },
+    "ice-cubes": {
+      "en": "Ice cubes",
+      "sv": "Isbitar",
+      "group": "pantry"
+    },
+    "rye-whiskey": {
+      "en": "Rye whiskey",
+      "sv": "Rye whiskey",
+      "group": "spirits"
+    },
+    "cognac": {
+      "en": "Cognac",
+      "sv": "Cognac",
+      "group": "spirits"
+    },
+    "peychauds-bitters": {
+      "en": "Peychaud's bitters",
+      "sv": "Peychaud's bitters",
+      "group": "pantry"
+    },
+    "absinthe": {
+      "en": "Absinthe",
+      "sv": "Absint",
+      "group": "spirits"
+    },
+    "benedictine": {
+      "en": "Bénédictine",
+      "sv": "Bénédictine",
+      "group": "liqueurs"
+    },
+    "scotch-whisky": {
+      "en": "Scotch whisky",
+      "sv": "Skotsk whisky",
+      "group": "spirits"
+    },
+    "peated-scotch": {
+      "en": "Peated Scotch whisky",
+      "sv": "Rökig skotsk whisky",
+      "group": "spirits"
+    },
+    "drambuie": {
+      "en": "Drambuie",
+      "sv": "Drambuie",
+      "group": "liqueurs"
+    },
+    "honey-syrup": {
+      "en": "Honey syrup",
+      "sv": "Honungssirap",
+      "group": "pantry"
+    },
+    "yellow-chartreuse": {
+      "en": "Yellow Chartreuse",
+      "sv": "Gul Chartreuse",
+      "group": "liqueurs"
+    },
+    "green-chartreuse": {
+      "en": "Green Chartreuse",
+      "sv": "Grön Chartreuse",
+      "group": "liqueurs"
+    },
+    "aperol": {
+      "en": "Aperol",
+      "sv": "Aperol",
+      "group": "liqueurs"
+    },
+    "amaro-nonino": {
+      "en": "Amaro Nonino",
+      "sv": "Amaro Nonino",
+      "group": "liqueurs"
+    },
+    "red-wine": {
+      "en": "Dry red wine",
+      "sv": "Torrt rödvin",
+      "group": "pantry"
+    },
+    "tennessee-whiskey": {
+      "en": "Tennessee whiskey",
+      "sv": "Tennessee-whiskey",
+      "group": "spirits"
+    },
+    "maraschino-liqueur": {
+      "en": "Maraschino liqueur",
+      "sv": "Maraschinolikör",
+      "group": "liqueurs"
+    },
+    "creme-de-violette": {
+      "en": "Crème de violette",
+      "sv": "Crème de violette",
+      "group": "liqueurs"
+    },
+    "blackberry-liqueur": {
+      "en": "Blackberry liqueur",
+      "sv": "Björnbärslikör",
+      "group": "liqueurs"
+    },
+    "basil-leaves": {
+      "en": "Basil leaves",
+      "sv": "Basilikablad",
+      "group": "fresh"
+    },
+    "lillet-blanc": {
+      "en": "Lillet Blanc",
+      "sv": "Lillet Blanc",
+      "group": "liqueurs"
+    },
+    "fernet-branca": {
+      "en": "Fernet-Branca",
+      "sv": "Fernet-Branca",
+      "group": "liqueurs"
+    },
+    "orange-bitters": {
+      "en": "Orange bitters",
+      "sv": "Apelsinbitter",
+      "group": "pantry"
+    },
+    "orange-flower-water": {
+      "en": "Orange flower water",
+      "sv": "Apelsinblomsvatten",
+      "group": "pantry"
+    },
+    "cherry-liqueur": {
+      "en": "Cherry liqueur",
+      "sv": "Körsbärslikör",
+      "group": "liqueurs"
+    },
+    "pineapple-juice": {
+      "en": "Pineapple juice",
+      "sv": "Ananasjuice",
+      "group": "fresh"
+    },
+    "grenadine": {
+      "en": "Grenadine",
+      "sv": "Grenadin",
+      "group": "pantry"
+    },
+    "tonic-water": {
+      "en": "Tonic water",
+      "sv": "Tonic water",
+      "group": "pantry"
+    },
+    "olive-brine": {
+      "en": "Olive brine",
+      "sv": "Olivspad",
+      "group": "pantry"
+    },
+    "cola": {
+      "en": "Cola",
+      "sv": "Cola",
+      "group": "pantry"
+    },
+    "aged-rum": {
+      "en": "Aged rum",
+      "sv": "Lagrad rom",
+      "group": "spirits"
+    },
+    "dark-rum": {
+      "en": "Dark rum",
+      "sv": "Mörk rom",
+      "group": "spirits"
+    },
+    "demerara-rum": {
+      "en": "Demerara rum",
+      "sv": "Demerararom",
+      "group": "spirits"
+    },
+    "orgeat": {
+      "en": "Orgeat",
+      "sv": "Orgeat",
+      "group": "pantry"
+    },
+    "orange-curacao": {
+      "en": "Orange curaçao",
+      "sv": "Apelsincuraçao",
+      "group": "liqueurs"
+    },
+    "coconut-cream": {
+      "en": "Cream of coconut",
+      "sv": "Kokoskräm",
+      "group": "pantry"
+    },
+    "falernum": {
+      "en": "Falernum",
+      "sv": "Falernum",
+      "group": "liqueurs"
+    },
+    "cinnamon-syrup": {
+      "en": "Cinnamon syrup",
+      "sv": "Kanelsirap",
+      "group": "pantry"
+    },
+    "grapefruit-juice": {
+      "en": "Grapefruit juice",
+      "sv": "Grapefruktjuice",
+      "group": "fresh"
+    },
+    "passion-fruit-syrup": {
+      "en": "Passion fruit syrup",
+      "sv": "Passionsfruktssirap",
+      "group": "pantry"
+    },
+    "ground-nutmeg": {
+      "en": "Ground nutmeg",
+      "sv": "Riven muskot",
+      "group": "pantry"
+    },
+    "mezcal": {
+      "en": "Mezcal",
+      "sv": "Mezcal",
+      "group": "spirits"
+    },
+    "agave-syrup": {
+      "en": "Agave syrup",
+      "sv": "Agavesirap",
+      "group": "pantry"
+    },
+    "creme-de-cassis": {
+      "en": "Crème de cassis",
+      "sv": "Crème de cassis",
+      "group": "liqueurs"
+    },
+    "peach-liqueur": {
+      "en": "Peach liqueur",
+      "sv": "Persikolikör",
+      "group": "liqueurs"
+    },
+    "orange-juice": {
+      "en": "Orange juice",
+      "sv": "Apelsinjuice",
+      "group": "fresh"
+    },
+    "raspberry-liqueur": {
+      "en": "Raspberry liqueur",
+      "sv": "Hallonlikör",
+      "group": "liqueurs"
+    },
+    "galliano": {
+      "en": "Galliano",
+      "sv": "Galliano",
+      "group": "liqueurs"
+    },
+    "blue-curacao": {
+      "en": "Blue curaçao",
+      "sv": "Blå curaçao",
+      "group": "liqueurs"
+    },
+    "prosecco": {
+      "en": "Prosecco",
+      "sv": "Prosecco",
+      "group": "pantry"
+    },
+    "elderflower-liqueur": {
+      "en": "Elderflower liqueur",
+      "sv": "Fläderlikör",
+      "group": "liqueurs"
+    },
+    "peach-puree": {
+      "en": "White peach purée",
+      "sv": "Vit persikopuré",
+      "group": "fresh"
+    },
+    "sugar-cube": {
+      "en": "Sugar cube",
+      "sv": "Sockerbit",
+      "group": "pantry"
+    },
+    "creme-de-cacao-dark": {
+      "en": "Dark crème de cacao",
+      "sv": "Mörk crème de cacao",
+      "group": "liqueurs"
+    },
+    "creme-de-cacao-white": {
+      "en": "White crème de cacao",
+      "sv": "Vit crème de cacao",
+      "group": "liqueurs"
+    },
+    "creme-de-menthe-green": {
+      "en": "Green crème de menthe",
+      "sv": "Grön crème de menthe",
+      "group": "liqueurs"
+    },
+    "grand-marnier": {
+      "en": "Grand Marnier",
+      "sv": "Grand Marnier",
+      "group": "liqueurs"
+    },
+    "lemon-peel": {
+      "en": "Lemon peel",
+      "sv": "Citronskal",
+      "group": "fresh"
+    },
+    "orange-slice": {
+      "en": "Orange slice",
+      "sv": "Apelsinskiva",
+      "group": "fresh"
+    },
+    "pineapple-wedge": {
+      "en": "Pineapple wedge",
+      "sv": "Ananasklyfta",
+      "group": "fresh"
+    },
+    "sugar-cane-juice": {
+      "en": "Sugar cane juice",
+      "sv": "Sockerrörsjuice",
+      "group": "fresh"
+    },
+    "overproof-rum": {
+      "en": "Overproof rum",
+      "sv": "Overproof-rom",
+      "group": "spirits"
+    },
+    "chilled-water": {
+      "en": "Chilled water",
+      "sv": "Kallt vatten",
+      "group": "pantry"
+    },
+    "blanc-vermouth": {
+      "en": "Blanc vermouth",
+      "sv": "Vit vermouth",
+      "group": "liqueurs"
+    }
   },
   "drinks": [
     {
@@ -70,14 +625,37 @@
       "base": "tequila",
       "iba": true,
       "bar": true,
-      "tags": ["citrusy", "strong"],
+      "tags": [
+        "citrusy",
+        "strong"
+      ],
       "glass": "coupe",
-      "source": { "label": "IBA", "url": "https://iba-world.com/iba-cocktail/margarita/" },
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/margarita/"
+      },
       "ingredients": [
-        { "id": "tequila-blanco", "ml": 50, "essential": true },
-        { "id": "triple-sec", "ml": 20, "essential": true },
-        { "id": "lime-juice", "ml": 15, "essential": true },
-        { "id": "salt-rim", "qty": 1, "unit": "garnish", "essential": false }
+        {
+          "id": "tequila-blanco",
+          "ml": 50,
+          "essential": true
+        },
+        {
+          "id": "triple-sec",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "lime-juice",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "salt-rim",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
       ],
       "method": {
         "en": "Shake all ingredients with ice, strain into a chilled salt-rimmed coupe.",
@@ -91,13 +669,31 @@
       "base": "rum",
       "iba": true,
       "bar": true,
-      "tags": ["citrusy", "refreshing"],
+      "tags": [
+        "citrusy",
+        "refreshing"
+      ],
       "glass": "coupe",
-      "source": { "label": "IBA", "url": "https://iba-world.com/iba-cocktail/daiquiri/" },
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/daiquiri/"
+      },
       "ingredients": [
-        { "id": "white-rum", "ml": 45, "essential": true },
-        { "id": "lime-juice", "ml": 25, "essential": true },
-        { "id": "sugar-syrup", "ml": 15, "essential": true }
+        {
+          "id": "white-rum",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "lime-juice",
+          "ml": 25,
+          "essential": true
+        },
+        {
+          "id": "sugar-syrup",
+          "ml": 15,
+          "essential": true
+        }
       ],
       "method": {
         "en": "Shake with ice, double strain into a chilled coupe.",
@@ -111,15 +707,43 @@
       "base": "rum",
       "iba": true,
       "bar": true,
-      "tags": ["refreshing", "herbal"],
+      "tags": [
+        "refreshing",
+        "herbal"
+      ],
       "glass": "highball",
-      "source": { "label": "IBA", "url": "https://iba-world.com/iba-cocktail/mojito/" },
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/mojito/"
+      },
       "ingredients": [
-        { "id": "white-rum", "ml": 45, "essential": true },
-        { "id": "lime-juice", "ml": 30, "essential": true },
-        { "id": "sugar-syrup", "ml": 15, "essential": true },
-        { "id": "mint-leaves", "qty": 8, "unit": "leaf", "essential": true },
-        { "id": "soda-water", "qty": 1, "unit": "top", "essential": true }
+        {
+          "id": "white-rum",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "lime-juice",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "sugar-syrup",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "mint-leaves",
+          "qty": 8,
+          "unit": "leaf",
+          "essential": true
+        },
+        {
+          "id": "soda-water",
+          "qty": 1,
+          "unit": "top",
+          "essential": true
+        }
       ],
       "method": {
         "en": "Muddle mint gently with syrup and lime juice, add rum and crushed ice, top with soda water, stir, garnish with a mint sprig.",
@@ -133,14 +757,38 @@
       "base": "gin",
       "iba": true,
       "bar": true,
-      "tags": ["bitter", "stirred", "aperitif"],
+      "tags": [
+        "bitter",
+        "stirred",
+        "aperitif"
+      ],
       "glass": "rocks",
-      "source": { "label": "IBA", "url": "https://iba-world.com/iba-cocktail/negroni/" },
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/negroni/"
+      },
       "ingredients": [
-        { "id": "gin", "ml": 30, "essential": true },
-        { "id": "campari", "ml": 30, "essential": true },
-        { "id": "sweet-vermouth", "ml": 30, "essential": true },
-        { "id": "orange-peel", "qty": 1, "unit": "garnish", "essential": false }
+        {
+          "id": "gin",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "campari",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "sweet-vermouth",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "orange-peel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
       ],
       "method": {
         "en": "Stir all ingredients with ice, strain into a rocks glass over ice, garnish with orange peel.",
@@ -154,14 +802,39 @@
       "base": "whiskey",
       "iba": true,
       "bar": true,
-      "tags": ["strong", "stirred", "classic"],
+      "tags": [
+        "strong",
+        "stirred",
+        "classic"
+      ],
       "glass": "rocks",
-      "source": { "label": "IBA", "url": "https://iba-world.com/iba-cocktail/old-fashioned/" },
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/old-fashioned/"
+      },
       "ingredients": [
-        { "id": "bourbon", "ml": 60, "essential": true },
-        { "id": "sugar-syrup", "ml": 10, "essential": true },
-        { "id": "angostura-bitters", "qty": 3, "unit": "dash", "essential": true },
-        { "id": "orange-peel", "qty": 1, "unit": "garnish", "essential": false }
+        {
+          "id": "bourbon",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "sugar-syrup",
+          "ml": 10,
+          "essential": true
+        },
+        {
+          "id": "angostura-bitters",
+          "qty": 3,
+          "unit": "dash",
+          "essential": true
+        },
+        {
+          "id": "orange-peel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
       ],
       "method": {
         "en": "Stir bourbon, sugar syrup and bitters with ice, strain over a large ice cube in a rocks glass, express the orange peel over the top and drop it in.",
@@ -175,16 +848,49 @@
       "base": "whiskey",
       "iba": true,
       "bar": true,
-      "tags": ["citrusy", "frothy"],
+      "tags": [
+        "citrusy",
+        "frothy"
+      ],
       "glass": "rocks",
-      "source": { "label": "IBA", "url": "https://iba-world.com/iba-cocktail/whiskey-sour/" },
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/whiskey-sour/"
+      },
       "ingredients": [
-        { "id": "bourbon", "ml": 45, "essential": true },
-        { "id": "lemon-juice", "ml": 30, "essential": true },
-        { "id": "sugar-syrup", "ml": 15, "essential": true },
-        { "id": "egg-white", "qty": 1, "unit": "barspoon", "essential": false },
-        { "id": "angostura-bitters", "qty": 1, "unit": "dash", "essential": false },
-        { "id": "maraschino-cherry", "qty": 1, "unit": "garnish", "essential": false }
+        {
+          "id": "bourbon",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "sugar-syrup",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "egg-white",
+          "qty": 1,
+          "unit": "barspoon",
+          "essential": false
+        },
+        {
+          "id": "angostura-bitters",
+          "qty": 1,
+          "unit": "dash",
+          "essential": false
+        },
+        {
+          "id": "maraschino-cherry",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
       ],
       "method": {
         "en": "Dry shake with the egg white, then shake again with ice, strain into a rocks glass over ice, garnish with a cherry and a dash of bitters on the foam.",
@@ -198,13 +904,33 @@
       "base": "gin",
       "iba": true,
       "bar": true,
-      "tags": ["strong", "stirred", "dry"],
+      "tags": [
+        "strong",
+        "stirred",
+        "dry"
+      ],
       "glass": "martini",
-      "source": { "label": "IBA", "url": "https://iba-world.com/iba-cocktail/dry-martini/" },
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/dry-martini/"
+      },
       "ingredients": [
-        { "id": "gin", "ml": 60, "essential": true },
-        { "id": "dry-vermouth", "ml": 10, "essential": true },
-        { "id": "olive", "qty": 1, "unit": "garnish", "essential": false }
+        {
+          "id": "gin",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "dry-vermouth",
+          "ml": 10,
+          "essential": true
+        },
+        {
+          "id": "olive",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
       ],
       "method": {
         "en": "Stir gin and vermouth with ice, strain into a chilled martini glass, garnish with an olive.",
@@ -218,13 +944,32 @@
       "base": "gin",
       "iba": true,
       "bar": true,
-      "tags": ["citrusy", "gin-forward"],
+      "tags": [
+        "citrusy",
+        "gin-forward"
+      ],
       "glass": "martini",
-      "source": { "label": "Difford's Guide", "url": "https://www.diffordsguide.com/cocktails/recipe/854/gimlet" },
+      "source": {
+        "label": "Difford's Guide",
+        "url": "https://www.diffordsguide.com/cocktails/recipe/854/gimlet"
+      },
       "ingredients": [
-        { "id": "gin", "ml": 45, "essential": true },
-        { "id": "lime-cordial", "ml": 15, "essential": true },
-        { "id": "lime-wheel", "qty": 1, "unit": "garnish", "essential": false }
+        {
+          "id": "gin",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "lime-cordial",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "lime-wheel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
       ],
       "method": {
         "en": "Shake gin and lime cordial with ice, strain into a chilled martini glass, garnish with a lime wheel.",
@@ -238,14 +983,38 @@
       "base": "vodka",
       "iba": true,
       "bar": true,
-      "tags": ["coffee", "strong", "contemporary"],
+      "tags": [
+        "coffee",
+        "strong",
+        "contemporary"
+      ],
       "glass": "martini",
-      "source": { "label": "IBA", "url": "https://iba-world.com/iba-cocktail/espresso-martini/" },
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/espresso-martini/"
+      },
       "ingredients": [
-        { "id": "vodka", "ml": 40, "essential": true },
-        { "id": "coffee-liqueur", "ml": 20, "essential": true },
-        { "id": "espresso", "ml": 20, "essential": true },
-        { "id": "coffee-beans", "qty": 3, "unit": "piece", "essential": false }
+        {
+          "id": "vodka",
+          "ml": 40,
+          "essential": true
+        },
+        {
+          "id": "coffee-liqueur",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "espresso",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "coffee-beans",
+          "qty": 3,
+          "unit": "piece",
+          "essential": false
+        }
       ],
       "method": {
         "en": "Shake all liquids hard with ice, double strain into a chilled martini glass, garnish with three coffee beans.",
@@ -259,15 +1028,42 @@
       "base": "vodka",
       "iba": true,
       "bar": true,
-      "tags": ["citrusy", "vodka-forward"],
+      "tags": [
+        "citrusy",
+        "vodka-forward"
+      ],
       "glass": "martini",
-      "source": { "label": "IBA", "url": "https://iba-world.com/iba-cocktail/cosmopolitan/" },
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/cosmopolitan/"
+      },
       "ingredients": [
-        { "id": "vodka", "ml": 40, "essential": true },
-        { "id": "triple-sec", "ml": 15, "essential": true },
-        { "id": "cranberry-juice", "ml": 15, "essential": true },
-        { "id": "lime-juice", "ml": 10, "essential": true },
-        { "id": "orange-peel", "qty": 1, "unit": "garnish", "essential": false }
+        {
+          "id": "vodka",
+          "ml": 40,
+          "essential": true
+        },
+        {
+          "id": "triple-sec",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "cranberry-juice",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "lime-juice",
+          "ml": 10,
+          "essential": true
+        },
+        {
+          "id": "orange-peel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
       ],
       "method": {
         "en": "Shake with ice, strain into a chilled martini glass, garnish with an orange peel.",
@@ -281,18 +1077,61 @@
       "base": "vodka",
       "iba": true,
       "bar": true,
-      "tags": ["savory", "spicy"],
+      "tags": [
+        "savory",
+        "spicy"
+      ],
       "glass": "highball",
-      "source": { "label": "IBA", "url": "https://iba-world.com/iba-cocktail/bloody-mary/" },
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/bloody-mary/"
+      },
       "ingredients": [
-        { "id": "vodka", "ml": 45, "essential": true },
-        { "id": "tomato-juice", "ml": 90, "essential": true },
-        { "id": "lemon-juice", "ml": 15, "essential": true },
-        { "id": "worcestershire-sauce", "qty": 2, "unit": "dash", "essential": true },
-        { "id": "tabasco", "qty": 2, "unit": "dash", "essential": false },
-        { "id": "celery-salt", "qty": 1, "unit": "dash", "essential": false },
-        { "id": "black-pepper", "qty": 1, "unit": "dash", "essential": false },
-        { "id": "celery-stalk", "qty": 1, "unit": "garnish", "essential": false }
+        {
+          "id": "vodka",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "tomato-juice",
+          "ml": 90,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "worcestershire-sauce",
+          "qty": 2,
+          "unit": "dash",
+          "essential": true
+        },
+        {
+          "id": "tabasco",
+          "qty": 2,
+          "unit": "dash",
+          "essential": false
+        },
+        {
+          "id": "celery-salt",
+          "qty": 1,
+          "unit": "dash",
+          "essential": false
+        },
+        {
+          "id": "black-pepper",
+          "qty": 1,
+          "unit": "dash",
+          "essential": false
+        },
+        {
+          "id": "celery-stalk",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
       ],
       "method": {
         "en": "Stir all ingredients gently with ice and pour into a highball glass. Garnish with celery.",
@@ -306,13 +1145,33 @@
       "base": "rum",
       "iba": true,
       "bar": true,
-      "tags": ["citrusy", "refreshing"],
+      "tags": [
+        "citrusy",
+        "refreshing"
+      ],
       "glass": "rocks",
-      "source": { "label": "IBA", "url": "https://iba-world.com/iba-cocktail/caipirinha/" },
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/caipirinha/"
+      },
       "ingredients": [
-        { "id": "cachaca", "ml": 60, "essential": true },
-        { "id": "lime", "qty": 1, "unit": "piece", "essential": true },
-        { "id": "white-sugar", "qty": 4, "unit": "barspoon", "essential": true }
+        {
+          "id": "cachaca",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "lime",
+          "qty": 1,
+          "unit": "piece",
+          "essential": true
+        },
+        {
+          "id": "white-sugar",
+          "qty": 4,
+          "unit": "barspoon",
+          "essential": true
+        }
       ],
       "method": {
         "en": "Cut the lime into wedges and muddle gently with the sugar in a rocks glass. Fill with cracked ice, add cachaça and stir gently.",
@@ -326,15 +1185,43 @@
       "base": "gin",
       "iba": true,
       "bar": true,
-      "tags": ["berry", "frothy"],
+      "tags": [
+        "berry",
+        "frothy"
+      ],
       "glass": "coupe",
-      "source": { "label": "IBA", "url": "https://iba-world.com/iba-cocktail/clover-club/" },
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/clover-club/"
+      },
       "ingredients": [
-        { "id": "gin", "ml": 45, "essential": true },
-        { "id": "raspberry-syrup", "ml": 15, "essential": true },
-        { "id": "lemon-juice", "ml": 15, "essential": true },
-        { "id": "egg-white", "qty": 1, "unit": "barspoon", "essential": false },
-        { "id": "raspberries", "qty": 3, "unit": "garnish", "essential": false }
+        {
+          "id": "gin",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "raspberry-syrup",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "egg-white",
+          "qty": 1,
+          "unit": "barspoon",
+          "essential": false
+        },
+        {
+          "id": "raspberries",
+          "qty": 3,
+          "unit": "garnish",
+          "essential": false
+        }
       ],
       "method": {
         "en": "Shake all ingredients well with ice and strain into a chilled coupe. Garnish with fresh raspberries.",
@@ -348,14 +1235,36 @@
       "base": "gin",
       "iba": true,
       "bar": true,
-      "tags": ["sparkling", "citrusy"],
+      "tags": [
+        "sparkling",
+        "citrusy"
+      ],
       "glass": "highball",
-      "source": { "label": "IBA", "url": "https://iba-world.com/iba-cocktail/french-75/" },
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/french-75/"
+      },
       "ingredients": [
-        { "id": "gin", "ml": 30, "essential": true },
-        { "id": "lemon-juice", "ml": 15, "essential": true },
-        { "id": "sugar-syrup", "ml": 15, "essential": true },
-        { "id": "champagne", "ml": 60, "essential": true }
+        {
+          "id": "gin",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "sugar-syrup",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "champagne",
+          "ml": 60,
+          "essential": true
+        }
       ],
       "method": {
         "en": "Shake gin, lemon juice and syrup with ice, strain into a champagne flute, top with champagne and stir gently.",
@@ -369,15 +1278,43 @@
       "base": "gin",
       "iba": true,
       "bar": true,
-      "tags": ["sparkling", "citrusy"],
+      "tags": [
+        "sparkling",
+        "citrusy"
+      ],
       "glass": "highball",
-      "source": { "label": "IBA", "url": "https://iba-world.com/iba-cocktail/gin-fizz/" },
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/gin-fizz/"
+      },
       "ingredients": [
-        { "id": "gin", "ml": 45, "essential": true },
-        { "id": "lemon-juice", "ml": 30, "essential": true },
-        { "id": "sugar-syrup", "ml": 10, "essential": true },
-        { "id": "soda-water", "qty": 1, "unit": "top", "essential": true },
-        { "id": "lemon-wheel", "qty": 1, "unit": "garnish", "essential": false }
+        {
+          "id": "gin",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "sugar-syrup",
+          "ml": 10,
+          "essential": true
+        },
+        {
+          "id": "soda-water",
+          "qty": 1,
+          "unit": "top",
+          "essential": true
+        },
+        {
+          "id": "lemon-wheel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
       ],
       "method": {
         "en": "Shake everything except soda water with ice. Strain into a tall glass without ice, top with soda water and garnish with lemon.",
@@ -391,14 +1328,37 @@
       "base": "whiskey",
       "iba": true,
       "bar": true,
-      "tags": ["coffee", "warm"],
+      "tags": [
+        "coffee",
+        "warm"
+      ],
       "glass": "highball",
-      "source": { "label": "IBA", "url": "https://iba-world.com/iba-cocktail/irish-coffee/" },
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/irish-coffee/"
+      },
       "ingredients": [
-        { "id": "irish-whiskey", "ml": 50, "essential": true },
-        { "id": "hot-coffee", "ml": 120, "essential": true },
-        { "id": "fresh-cream", "ml": 50, "essential": true },
-        { "id": "white-sugar", "qty": 1, "unit": "barspoon", "essential": true }
+        {
+          "id": "irish-whiskey",
+          "ml": 50,
+          "essential": true
+        },
+        {
+          "id": "hot-coffee",
+          "ml": 120,
+          "essential": true
+        },
+        {
+          "id": "fresh-cream",
+          "ml": 50,
+          "essential": true
+        },
+        {
+          "id": "white-sugar",
+          "qty": 1,
+          "unit": "barspoon",
+          "essential": true
+        }
       ],
       "method": {
         "en": "Pour hot coffee into a preheated glass, add whiskey and sugar and stir until dissolved. Float the chilled cream carefully over the back of a spoon.",
@@ -412,14 +1372,37 @@
       "base": "vodka",
       "iba": true,
       "bar": true,
-      "tags": ["spicy", "refreshing"],
+      "tags": [
+        "spicy",
+        "refreshing"
+      ],
       "glass": "highball",
-      "source": { "label": "IBA", "url": "https://iba-world.com/iba-cocktail/moscow-mule/" },
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/moscow-mule/"
+      },
       "ingredients": [
-        { "id": "vodka", "ml": 45, "essential": true },
-        { "id": "ginger-beer", "ml": 120, "essential": true },
-        { "id": "lime-juice", "ml": 10, "essential": true },
-        { "id": "lime-wheel", "qty": 1, "unit": "garnish", "essential": false }
+        {
+          "id": "vodka",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "ginger-beer",
+          "ml": 120,
+          "essential": true
+        },
+        {
+          "id": "lime-juice",
+          "ml": 10,
+          "essential": true
+        },
+        {
+          "id": "lime-wheel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
       ],
       "method": {
         "en": "Build vodka, ginger beer and lime juice over ice in a mule cup or rocks glass. Stir gently and garnish with lime.",
@@ -433,15 +1416,43 @@
       "base": "tequila",
       "iba": true,
       "bar": true,
-      "tags": ["grapefruit", "refreshing"],
+      "tags": [
+        "grapefruit",
+        "refreshing"
+      ],
       "glass": "highball",
-      "source": { "label": "IBA", "url": "https://iba-world.com/iba-cocktail/paloma/" },
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/paloma/"
+      },
       "ingredients": [
-        { "id": "tequila-blanco", "ml": 50, "essential": true },
-        { "id": "lime-juice", "ml": 5, "essential": true },
-        { "id": "salt", "qty": 1, "unit": "dash", "essential": true },
-        { "id": "grapefruit-soda", "ml": 100, "essential": true },
-        { "id": "lime-wheel", "qty": 1, "unit": "garnish", "essential": false }
+        {
+          "id": "tequila-blanco",
+          "ml": 50,
+          "essential": true
+        },
+        {
+          "id": "lime-juice",
+          "ml": 5,
+          "essential": true
+        },
+        {
+          "id": "salt",
+          "qty": 1,
+          "unit": "dash",
+          "essential": true
+        },
+        {
+          "id": "grapefruit-soda",
+          "ml": 100,
+          "essential": true
+        },
+        {
+          "id": "lime-wheel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
       ],
       "method": {
         "en": "Pour tequila and lime juice into an ice-filled highball, add salt, top with grapefruit soda and stir gently. Garnish with lime.",
@@ -455,16 +1466,48 @@
       "base": "vodka",
       "iba": true,
       "bar": true,
-      "tags": ["tropical", "sparkling"],
+      "tags": [
+        "tropical",
+        "sparkling"
+      ],
       "glass": "martini",
-      "source": { "label": "IBA", "url": "https://iba-world.com/iba-cocktail/porn-star-martini/" },
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/porn-star-martini/"
+      },
       "ingredients": [
-        { "id": "vanilla-vodka", "ml": 50, "essential": true },
-        { "id": "passion-fruit-liqueur", "ml": 20, "essential": true },
-        { "id": "passion-fruit-puree", "ml": 50, "essential": true },
-        { "id": "vanilla-sugar", "qty": 2, "unit": "barspoon", "essential": true },
-        { "id": "champagne", "ml": 50, "essential": true },
-        { "id": "passion-fruit", "qty": 1, "unit": "garnish", "essential": false }
+        {
+          "id": "vanilla-vodka",
+          "ml": 50,
+          "essential": true
+        },
+        {
+          "id": "passion-fruit-liqueur",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "passion-fruit-puree",
+          "ml": 50,
+          "essential": true
+        },
+        {
+          "id": "vanilla-sugar",
+          "qty": 2,
+          "unit": "barspoon",
+          "essential": true
+        },
+        {
+          "id": "champagne",
+          "ml": 50,
+          "essential": true
+        },
+        {
+          "id": "passion-fruit",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
       ],
       "method": {
         "en": "Shake everything except champagne with ice and double strain into a chilled cocktail glass. Garnish with passion fruit and serve the champagne on the side.",
@@ -478,16 +1521,48 @@
       "base": "gin",
       "iba": true,
       "bar": true,
-      "tags": ["citrusy", "sparkling"],
+      "tags": [
+        "citrusy",
+        "sparkling"
+      ],
       "glass": "highball",
-      "source": { "label": "IBA", "url": "https://iba-world.com/iba-cocktail/john-collins/" },
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/john-collins/"
+      },
       "ingredients": [
-        { "id": "old-tom-gin", "ml": 45, "essential": true },
-        { "id": "lemon-juice", "ml": 30, "essential": true },
-        { "id": "sugar-syrup", "ml": 15, "essential": true },
-        { "id": "soda-water", "ml": 60, "essential": true },
-        { "id": "lemon-wheel", "qty": 1, "unit": "garnish", "essential": false },
-        { "id": "maraschino-cherry", "qty": 1, "unit": "garnish", "essential": false }
+        {
+          "id": "old-tom-gin",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "sugar-syrup",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "soda-water",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "lemon-wheel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        },
+        {
+          "id": "maraschino-cherry",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
       ],
       "method": {
         "en": "Build all ingredients directly in an ice-filled highball glass and stir gently. Garnish with lemon and a cherry.",
@@ -501,13 +1576,31 @@
       "base": "vodka",
       "iba": true,
       "bar": true,
-      "tags": ["coffee", "creamy"],
+      "tags": [
+        "coffee",
+        "creamy"
+      ],
       "glass": "rocks",
-      "source": { "label": "IBA", "url": "https://iba-world.com/iba-cocktail/black-russian/" },
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/black-russian/"
+      },
       "ingredients": [
-        { "id": "vodka", "ml": 50, "essential": true },
-        { "id": "coffee-liqueur", "ml": 20, "essential": true },
-        { "id": "fresh-cream", "ml": 30, "essential": true }
+        {
+          "id": "vodka",
+          "ml": 50,
+          "essential": true
+        },
+        {
+          "id": "coffee-liqueur",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "fresh-cream",
+          "ml": 30,
+          "essential": true
+        }
       ],
       "method": {
         "en": "Pour vodka and coffee liqueur into an ice-filled rocks glass. Float the cream on top and stir in slowly.",
@@ -521,15 +1614,43 @@
       "base": "other",
       "iba": false,
       "bar": true,
-      "tags": ["nutty", "citrusy"],
+      "tags": [
+        "nutty",
+        "citrusy"
+      ],
       "glass": "rocks",
-      "source": { "label": "Disaronno", "url": "https://disaronno.com/en-au/drinks/disaronno-sour/" },
+      "source": {
+        "label": "Disaronno",
+        "url": "https://disaronno.com/en-au/drinks/disaronno-sour/"
+      },
       "ingredients": [
-        { "id": "amaretto", "ml": 60, "essential": true },
-        { "id": "lemon-juice", "ml": 30, "essential": true },
-        { "id": "sugar-syrup", "ml": 5, "essential": false },
-        { "id": "egg-white", "qty": 1, "unit": "barspoon", "essential": false },
-        { "id": "lemon-wheel", "qty": 1, "unit": "garnish", "essential": false }
+        {
+          "id": "amaretto",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "sugar-syrup",
+          "ml": 5,
+          "essential": false
+        },
+        {
+          "id": "egg-white",
+          "qty": 1,
+          "unit": "barspoon",
+          "essential": false
+        },
+        {
+          "id": "lemon-wheel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
       ],
       "method": {
         "en": "Shake all ingredients with ice and strain into a rocks glass over ice. Garnish with lemon.",
@@ -543,15 +1664,43 @@
       "base": "brandy",
       "iba": true,
       "bar": true,
-      "tags": ["citrusy", "frothy"],
+      "tags": [
+        "citrusy",
+        "frothy"
+      ],
       "glass": "coupe",
-      "source": { "label": "IBA", "url": "https://iba-world.com/iba-cocktail/pisco-sour/" },
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/pisco-sour/"
+      },
       "ingredients": [
-        { "id": "pisco", "ml": 60, "essential": true },
-        { "id": "lemon-juice", "ml": 30, "essential": true },
-        { "id": "sugar-syrup", "ml": 20, "essential": true },
-        { "id": "egg-white", "qty": 1, "unit": "piece", "essential": true },
-        { "id": "angostura-bitters", "qty": 3, "unit": "dash", "essential": false }
+        {
+          "id": "pisco",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "sugar-syrup",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "egg-white",
+          "qty": 1,
+          "unit": "piece",
+          "essential": true
+        },
+        {
+          "id": "angostura-bitters",
+          "qty": 3,
+          "unit": "dash",
+          "essential": false
+        }
       ],
       "method": {
         "en": "Shake all ingredients with ice and strain into a chilled coupe. Finish with a few dashes of bitters on the foam.",
@@ -565,15 +1714,44 @@
       "base": "other",
       "iba": false,
       "bar": false,
-      "tags": ["coffee", "warm", "creamy"],
+      "tags": [
+        "coffee",
+        "warm",
+        "creamy"
+      ],
       "glass": "highball",
-      "source": { "label": "Systembolaget", "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/likordrinkar/kaffe-karlsson/" },
+      "source": {
+        "label": "Systembolaget",
+        "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/likordrinkar/kaffe-karlsson/"
+      },
       "ingredients": [
-        { "id": "cream-liqueur", "ml": 30, "essential": true },
-        { "id": "triple-sec", "ml": 30, "essential": true },
-        { "id": "hot-coffee", "ml": 150, "essential": true },
-        { "id": "fresh-cream", "qty": 1, "unit": "top", "essential": true },
-        { "id": "dark-chocolate", "qty": 1, "unit": "garnish", "essential": false }
+        {
+          "id": "cream-liqueur",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "triple-sec",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "hot-coffee",
+          "ml": 150,
+          "essential": true
+        },
+        {
+          "id": "fresh-cream",
+          "qty": 1,
+          "unit": "top",
+          "essential": true
+        },
+        {
+          "id": "dark-chocolate",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
       ],
       "method": {
         "en": "Build the liqueurs and hot coffee in a heatproof glass and stir. Float lightly whipped cream on top and garnish with grated dark chocolate.",
@@ -587,15 +1765,43 @@
       "base": "vodka",
       "iba": false,
       "bar": false,
-      "tags": ["apple", "sweet", "sparkling"],
+      "tags": [
+        "apple",
+        "sweet",
+        "sparkling"
+      ],
       "glass": "highball",
-      "source": { "label": "Systembolaget", "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/vodkadrinkar/p-2/" },
+      "source": {
+        "label": "Systembolaget",
+        "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/vodkadrinkar/p-2/"
+      },
       "ingredients": [
-        { "id": "vanilla-vodka", "ml": 30, "essential": true },
-        { "id": "apple-liqueur", "ml": 20, "essential": true },
-        { "id": "lime-juice", "ml": 20, "essential": true },
-        { "id": "lemon-lime-soda", "ml": 125, "essential": true },
-        { "id": "lime-wheel", "qty": 1, "unit": "garnish", "essential": false }
+        {
+          "id": "vanilla-vodka",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "apple-liqueur",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "lime-juice",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "lemon-lime-soda",
+          "ml": 125,
+          "essential": true
+        },
+        {
+          "id": "lime-wheel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
       ],
       "method": {
         "en": "Build all ingredients in an ice-filled highball glass and garnish with lime.",
@@ -609,20 +1815,3142 @@
       "base": "rum",
       "iba": false,
       "bar": false,
-      "tags": ["berry", "frozen", "refreshing"],
+      "tags": [
+        "berry",
+        "frozen",
+        "refreshing"
+      ],
       "glass": "coupe",
-      "source": { "label": "Systembolaget", "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/romdrinkar/frozen-strawberry-daiquiri/" },
+      "source": {
+        "label": "Systembolaget",
+        "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/romdrinkar/frozen-strawberry-daiquiri/"
+      },
       "ingredients": [
-        { "id": "white-rum", "ml": 60, "essential": true },
-        { "id": "lemon-juice", "ml": 40, "essential": true },
-        { "id": "sugar-syrup", "ml": 20, "essential": true },
-        { "id": "strawberries", "qty": 5, "unit": "piece", "essential": true },
-        { "id": "ice-cubes", "qty": 9, "unit": "piece", "essential": false },
-          { "id": "strawberry-garnish", "qty": 1, "unit": "garnish", "essential": false }
+        {
+          "id": "white-rum",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 40,
+          "essential": true
+        },
+        {
+          "id": "sugar-syrup",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "strawberries",
+          "qty": 5,
+          "unit": "piece",
+          "essential": true
+        },
+        {
+          "id": "ice-cubes",
+          "qty": 9,
+          "unit": "piece",
+          "essential": false
+        },
+        {
+          "id": "strawberry-garnish",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
       ],
       "method": {
         "en": "Blend all ingredients until smooth, pour into a chilled coupe and garnish with a strawberry.",
         "sv": "Mixa alla ingredienser till en slät konsistens, häll i ett kylt coupeglas och garnera med en jordgubbe."
+      }
+    },
+    {
+      "id": "manhattan",
+      "name": "Manhattan",
+      "type": "aromatic",
+      "base": "whiskey",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "spirit-forward",
+        "herbal",
+        "classic"
+      ],
+      "glass": "martini",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/manhattan/"
+      },
+      "ingredients": [
+        {
+          "id": "rye-whiskey",
+          "ml": 50,
+          "essential": true
+        },
+        {
+          "id": "sweet-vermouth",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "angostura-bitters",
+          "qty": 1,
+          "unit": "dash",
+          "essential": true
+        },
+        {
+          "id": "maraschino-cherry",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Stir with ice and strain into a chilled cocktail glass. Garnish with a cocktail cherry.",
+        "sv": "Rör med is och sila i ett kylt cocktailglas. Garnera med ett cocktailbär."
+      }
+    },
+    {
+      "id": "boulevardier",
+      "name": "Boulevardier",
+      "type": "spirit_forward",
+      "base": "whiskey",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "bitter",
+        "herbal",
+        "strong"
+      ],
+      "glass": "rocks",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/boulevardier/"
+      },
+      "ingredients": [
+        {
+          "id": "bourbon",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "campari",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "sweet-vermouth",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "orange-peel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Stir with ice, strain over fresh ice in a rocks glass and garnish with orange peel.",
+        "sv": "Rör med is, sila över ny is i ett rocksglas och garnera med apelsinskal."
+      }
+    },
+    {
+      "id": "sazerac",
+      "name": "Sazerac",
+      "type": "spirit_forward",
+      "base": "brandy",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "anise",
+        "aromatic",
+        "strong"
+      ],
+      "glass": "rocks",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/sazerac/"
+      },
+      "ingredients": [
+        {
+          "id": "cognac",
+          "ml": 50,
+          "essential": true
+        },
+        {
+          "id": "absinthe",
+          "ml": 10,
+          "essential": true
+        },
+        {
+          "id": "sugar-cube",
+          "qty": 1,
+          "unit": "piece",
+          "essential": true
+        },
+        {
+          "id": "peychauds-bitters",
+          "qty": 2,
+          "unit": "dash",
+          "essential": true
+        },
+        {
+          "id": "lemon-peel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Rinse a chilled rocks glass with absinthe. Stir the remaining ingredients with ice, strain into the glass and garnish with lemon peel.",
+        "sv": "Skölj ett kylt rocksglas med absint. Rör övriga ingredienser med is, sila i glaset och garnera med citronskal."
+      }
+    },
+    {
+      "id": "vieux-carre",
+      "name": "Vieux Carré",
+      "type": "spirit_forward",
+      "base": "whiskey",
+      "iba": true,
+      "bar": false,
+      "tags": [
+        "herbal",
+        "complex",
+        "strong"
+      ],
+      "glass": "rocks",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/vieux-carre/"
+      },
+      "ingredients": [
+        {
+          "id": "rye-whiskey",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "cognac",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "sweet-vermouth",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "benedictine",
+          "qty": 1,
+          "unit": "barspoon",
+          "essential": true
+        },
+        {
+          "id": "peychauds-bitters",
+          "qty": 2,
+          "unit": "dash",
+          "essential": true
+        },
+        {
+          "id": "angostura-bitters",
+          "qty": 1,
+          "unit": "dash",
+          "essential": true
+        },
+        {
+          "id": "lemon-peel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Stir with ice and strain over fresh ice in a rocks glass. Garnish with lemon peel.",
+        "sv": "Rör med is och sila över ny is i ett rocksglas. Garnera med citronskal."
+      }
+    },
+    {
+      "id": "rusty-nail",
+      "name": "Rusty Nail",
+      "type": "spirit_forward",
+      "base": "whiskey",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "honeyed",
+        "strong",
+        "simple"
+      ],
+      "glass": "rocks",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/rusty-nail/"
+      },
+      "ingredients": [
+        {
+          "id": "scotch-whisky",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "drambuie",
+          "ml": 25,
+          "essential": true
+        },
+        {
+          "id": "lemon-peel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Build over ice in a rocks glass, stir gently and garnish with lemon peel.",
+        "sv": "Bygg över is i ett rocksglas, rör försiktigt och garnera med citronskal."
+      }
+    },
+    {
+      "id": "rob-roy",
+      "name": "Rob Roy",
+      "type": "aromatic",
+      "base": "whiskey",
+      "iba": false,
+      "bar": true,
+      "tags": [
+        "spirit-forward",
+        "herbal",
+        "classic"
+      ],
+      "glass": "martini",
+      "source": {
+        "label": "Difford's Guide",
+        "url": "https://www.diffordsguide.com/cocktails/recipe/1681/rob-roy"
+      },
+      "ingredients": [
+        {
+          "id": "scotch-whisky",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "sweet-vermouth",
+          "ml": 25,
+          "essential": true
+        },
+        {
+          "id": "angostura-bitters",
+          "qty": 2,
+          "unit": "dash",
+          "essential": true
+        },
+        {
+          "id": "maraschino-cherry",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Stir with ice and strain into a chilled cocktail glass. Garnish with a cocktail cherry.",
+        "sv": "Rör med is och sila i ett kylt cocktailglas. Garnera med ett cocktailbär."
+      }
+    },
+    {
+      "id": "mint-julep",
+      "name": "Mint Julep",
+      "type": "contemporary",
+      "base": "whiskey",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "minty",
+        "refreshing",
+        "strong"
+      ],
+      "glass": "rocks",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/mint-julep/"
+      },
+      "ingredients": [
+        {
+          "id": "bourbon",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "sugar-syrup",
+          "ml": 10,
+          "essential": true
+        },
+        {
+          "id": "mint-leaves",
+          "qty": 8,
+          "unit": "leaf",
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Gently press the mint with syrup, add bourbon and crushed ice, then churn until chilled.",
+        "sv": "Pressa myntan försiktigt med sockerlag, tillsätt bourbon och krossad is och rör tills drinken är kall."
+      }
+    },
+    {
+      "id": "penicillin",
+      "name": "Penicillin",
+      "type": "sour",
+      "base": "whiskey",
+      "iba": true,
+      "bar": false,
+      "tags": [
+        "smoky",
+        "ginger",
+        "citrusy"
+      ],
+      "glass": "rocks",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/penicillin/"
+      },
+      "ingredients": [
+        {
+          "id": "scotch-whisky",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 22.5,
+          "essential": true
+        },
+        {
+          "id": "honey-syrup",
+          "ml": 22.5,
+          "essential": true
+        },
+        {
+          "id": "peated-scotch",
+          "ml": 7.5,
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Shake all but the peated whisky with ice and strain over fresh ice. Float the peated whisky on top.",
+        "sv": "Skaka allt utom den rökiga whiskyn med is och sila över ny is. Toppa med den rökiga whiskyn."
+      }
+    },
+    {
+      "id": "paper-plane",
+      "name": "Paper Plane",
+      "type": "sour",
+      "base": "whiskey",
+      "iba": true,
+      "bar": false,
+      "tags": [
+        "bitter",
+        "citrusy",
+        "modern"
+      ],
+      "glass": "coupe",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/paper-plane/"
+      },
+      "ingredients": [
+        {
+          "id": "bourbon",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "amaro-nonino",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "aperol",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 30,
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Shake with ice and strain into a chilled coupe.",
+        "sv": "Skaka med is och sila i ett kylt coupeglas."
+      }
+    },
+    {
+      "id": "new-york-sour",
+      "name": "New York Sour",
+      "type": "sour",
+      "base": "whiskey",
+      "iba": true,
+      "bar": false,
+      "tags": [
+        "citrusy",
+        "wine",
+        "layered"
+      ],
+      "glass": "rocks",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/new-york-sour/"
+      },
+      "ingredients": [
+        {
+          "id": "rye-whiskey",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "sugar-syrup",
+          "ml": 22.5,
+          "essential": true
+        },
+        {
+          "id": "egg-white",
+          "ml": 15,
+          "essential": false
+        },
+        {
+          "id": "red-wine",
+          "ml": 15,
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Shake everything except the wine with ice and strain over fresh ice. Float the red wine on top.",
+        "sv": "Skaka allt utom vinet med is och sila över ny is. Skikta rödvinet ovanpå."
+      }
+    },
+    {
+      "id": "gold-rush",
+      "name": "Gold Rush",
+      "type": "sour",
+      "base": "whiskey",
+      "iba": false,
+      "bar": false,
+      "tags": [
+        "honeyed",
+        "citrusy",
+        "modern"
+      ],
+      "glass": "rocks",
+      "source": {
+        "label": "Difford's Guide",
+        "url": "https://www.diffordsguide.com/cocktails/recipe/3629/gold-rush"
+      },
+      "ingredients": [
+        {
+          "id": "bourbon",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 22.5,
+          "essential": true
+        },
+        {
+          "id": "honey-syrup",
+          "ml": 22.5,
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Shake with ice and strain over fresh ice in a rocks glass.",
+        "sv": "Skaka med is och sila över ny is i ett rocksglas."
+      }
+    },
+    {
+      "id": "godfather",
+      "name": "Godfather",
+      "type": "spirit_forward",
+      "base": "whiskey",
+      "iba": false,
+      "bar": true,
+      "tags": [
+        "nutty",
+        "strong",
+        "simple"
+      ],
+      "glass": "rocks",
+      "source": {
+        "label": "Difford's Guide",
+        "url": "https://www.diffordsguide.com/cocktails/recipe/864/godfather-cocktail"
+      },
+      "ingredients": [
+        {
+          "id": "scotch-whisky",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "amaretto",
+          "ml": 15,
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Build over a large ice cube in a rocks glass and stir gently.",
+        "sv": "Bygg över en stor isbit i ett rocksglas och rör försiktigt."
+      }
+    },
+    {
+      "id": "lynchburg-lemonade",
+      "name": "Lynchburg Lemonade",
+      "type": "highball",
+      "base": "whiskey",
+      "iba": false,
+      "bar": true,
+      "tags": [
+        "citrusy",
+        "sparkling",
+        "refreshing"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "Jack Daniel's",
+        "url": "https://www.jackdaniels.com/en-us/recipes/lynchburg-lemonade"
+      },
+      "ingredients": [
+        {
+          "id": "tennessee-whiskey",
+          "ml": 35,
+          "essential": true
+        },
+        {
+          "id": "triple-sec",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "sugar-syrup",
+          "ml": 10,
+          "essential": true
+        },
+        {
+          "id": "lemon-lime-soda",
+          "ml": 100,
+          "essential": true
+        },
+        {
+          "id": "lemon-wheel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Shake the whiskey, liqueur, lemon and syrup with ice. Strain into an ice-filled highball, top with soda and garnish with lemon.",
+        "sv": "Skaka whiskey, likör, citron och sockerlag med is. Sila i ett highballglas med is, toppa med läsk och garnera med citron."
+      }
+    },
+    {
+      "id": "aviation",
+      "name": "Aviation",
+      "type": "sour",
+      "base": "gin",
+      "iba": true,
+      "bar": false,
+      "tags": [
+        "floral",
+        "citrusy",
+        "classic"
+      ],
+      "glass": "coupe",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/aviation/"
+      },
+      "ingredients": [
+        {
+          "id": "gin",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "maraschino-liqueur",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "creme-de-violette",
+          "qty": 1,
+          "unit": "barspoon",
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Shake with ice and strain into a chilled coupe.",
+        "sv": "Skaka med is och sila i ett kylt coupeglas."
+      }
+    },
+    {
+      "id": "last-word",
+      "name": "Last Word",
+      "type": "sour",
+      "base": "gin",
+      "iba": true,
+      "bar": false,
+      "tags": [
+        "herbal",
+        "citrusy",
+        "strong"
+      ],
+      "glass": "coupe",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/last-word/"
+      },
+      "ingredients": [
+        {
+          "id": "gin",
+          "ml": 22.5,
+          "essential": true
+        },
+        {
+          "id": "green-chartreuse",
+          "ml": 22.5,
+          "essential": true
+        },
+        {
+          "id": "maraschino-liqueur",
+          "ml": 22.5,
+          "essential": true
+        },
+        {
+          "id": "lime-juice",
+          "ml": 22.5,
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Shake with ice and strain into a chilled coupe.",
+        "sv": "Skaka med is och sila i ett kylt coupeglas."
+      }
+    },
+    {
+      "id": "bees-knees",
+      "name": "Bee's Knees",
+      "type": "sour",
+      "base": "gin",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "honeyed",
+        "citrusy",
+        "classic"
+      ],
+      "glass": "coupe",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/bees-knees/"
+      },
+      "ingredients": [
+        {
+          "id": "gin",
+          "ml": 52.5,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 22.5,
+          "essential": true
+        },
+        {
+          "id": "honey-syrup",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "lemon-peel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Shake with ice, strain into a chilled coupe and garnish with lemon peel.",
+        "sv": "Skaka med is, sila i ett kylt coupeglas och garnera med citronskal."
+      }
+    },
+    {
+      "id": "bramble",
+      "name": "Bramble",
+      "type": "sour",
+      "base": "gin",
+      "iba": true,
+      "bar": false,
+      "tags": [
+        "berry",
+        "citrusy",
+        "refreshing"
+      ],
+      "glass": "rocks",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/bramble/"
+      },
+      "ingredients": [
+        {
+          "id": "gin",
+          "ml": 50,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 25,
+          "essential": true
+        },
+        {
+          "id": "sugar-syrup",
+          "ml": 12.5,
+          "essential": true
+        },
+        {
+          "id": "blackberry-liqueur",
+          "ml": 15,
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Shake gin, lemon and syrup with ice. Strain over crushed ice and drizzle the blackberry liqueur on top.",
+        "sv": "Skaka gin, citron och sockerlag med is. Sila över krossad is och ringla björnbärslikören ovanpå."
+      }
+    },
+    {
+      "id": "gin-basil-smash",
+      "name": "Gin Basil Smash",
+      "type": "sour",
+      "base": "gin",
+      "iba": true,
+      "bar": false,
+      "tags": [
+        "herbal",
+        "citrusy",
+        "fresh"
+      ],
+      "glass": "rocks",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/gin-basil-smash/"
+      },
+      "ingredients": [
+        {
+          "id": "gin",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "sugar-syrup",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "basil-leaves",
+          "qty": 10,
+          "unit": "leaf",
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Gently muddle basil with lemon and syrup, add gin, shake with ice and fine-strain over fresh ice.",
+        "sv": "Muddla basilika försiktigt med citron och sockerlag, tillsätt gin, skaka med is och finsila över ny is."
+      }
+    },
+    {
+      "id": "southside",
+      "name": "Southside",
+      "type": "sour",
+      "base": "gin",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "minty",
+        "citrusy",
+        "fresh"
+      ],
+      "glass": "coupe",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/south-side/"
+      },
+      "ingredients": [
+        {
+          "id": "gin",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "sugar-syrup",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "mint-leaves",
+          "qty": 5,
+          "unit": "leaf",
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Shake with ice and mint, fine-strain into a chilled coupe and garnish with mint.",
+        "sv": "Skaka med is och mynta, finsila i ett kylt coupeglas och garnera med mynta."
+      }
+    },
+    {
+      "id": "corpse-reviver-no-2",
+      "name": "Corpse Reviver No. 2",
+      "type": "sour",
+      "base": "gin",
+      "iba": true,
+      "bar": false,
+      "tags": [
+        "citrusy",
+        "herbal",
+        "classic"
+      ],
+      "glass": "coupe",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/corpse-reviver-2/"
+      },
+      "ingredients": [
+        {
+          "id": "gin",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "triple-sec",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "lillet-blanc",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "absinthe",
+          "qty": 1,
+          "unit": "dash",
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Shake with ice and strain into a chilled coupe.",
+        "sv": "Skaka med is och sila i ett kylt coupeglas."
+      }
+    },
+    {
+      "id": "hanky-panky",
+      "name": "Hanky Panky",
+      "type": "aromatic",
+      "base": "gin",
+      "iba": true,
+      "bar": false,
+      "tags": [
+        "bitter",
+        "herbal",
+        "strong"
+      ],
+      "glass": "martini",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/hanky-panky/"
+      },
+      "ingredients": [
+        {
+          "id": "gin",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "sweet-vermouth",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "fernet-branca",
+          "ml": 7.5,
+          "essential": true
+        },
+        {
+          "id": "orange-peel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Stir with ice, strain into a chilled cocktail glass and garnish with orange peel.",
+        "sv": "Rör med is, sila i ett kylt cocktailglas och garnera med apelsinskal."
+      }
+    },
+    {
+      "id": "martinez",
+      "name": "Martinez",
+      "type": "aromatic",
+      "base": "gin",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "herbal",
+        "rich",
+        "classic"
+      ],
+      "glass": "martini",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/martinez/"
+      },
+      "ingredients": [
+        {
+          "id": "old-tom-gin",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "sweet-vermouth",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "maraschino-liqueur",
+          "qty": 1,
+          "unit": "barspoon",
+          "essential": true
+        },
+        {
+          "id": "orange-bitters",
+          "qty": 2,
+          "unit": "dash",
+          "essential": true
+        },
+        {
+          "id": "lemon-peel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Stir with ice, strain into a chilled cocktail glass and garnish with lemon peel.",
+        "sv": "Rör med is, sila i ett kylt cocktailglas och garnera med citronskal."
+      }
+    },
+    {
+      "id": "white-lady",
+      "name": "White Lady",
+      "type": "sour",
+      "base": "gin",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "citrusy",
+        "silky",
+        "classic"
+      ],
+      "glass": "coupe",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/white-lady/"
+      },
+      "ingredients": [
+        {
+          "id": "gin",
+          "ml": 40,
+          "essential": true
+        },
+        {
+          "id": "triple-sec",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "egg-white",
+          "ml": 15,
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Shake hard with ice and strain into a chilled coupe.",
+        "sv": "Skaka kraftigt med is och sila i ett kylt coupeglas."
+      }
+    },
+    {
+      "id": "ramos-gin-fizz",
+      "name": "Ramos Gin Fizz",
+      "type": "highball",
+      "base": "gin",
+      "iba": true,
+      "bar": false,
+      "tags": [
+        "creamy",
+        "citrusy",
+        "sparkling"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/ramos-fizz/"
+      },
+      "ingredients": [
+        {
+          "id": "gin",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "lime-juice",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "sugar-syrup",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "fresh-cream",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "egg-white",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "orange-flower-water",
+          "qty": 3,
+          "unit": "dash",
+          "essential": true
+        },
+        {
+          "id": "soda-water",
+          "qty": 1,
+          "unit": "top",
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Shake everything except soda without ice, then with ice. Strain into a highball and top slowly with soda.",
+        "sv": "Skaka allt utom soda utan is och sedan med is. Sila i ett highballglas och toppa långsamt med soda."
+      }
+    },
+    {
+      "id": "singapore-sling",
+      "name": "Singapore Sling",
+      "type": "highball",
+      "base": "gin",
+      "iba": true,
+      "bar": false,
+      "tags": [
+        "tropical",
+        "fruity",
+        "complex"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/singapore-sling/"
+      },
+      "ingredients": [
+        {
+          "id": "gin",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "cherry-liqueur",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "triple-sec",
+          "ml": 7.5,
+          "essential": true
+        },
+        {
+          "id": "benedictine",
+          "ml": 7.5,
+          "essential": true
+        },
+        {
+          "id": "pineapple-juice",
+          "ml": 120,
+          "essential": true
+        },
+        {
+          "id": "lime-juice",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "grenadine",
+          "ml": 10,
+          "essential": true
+        },
+        {
+          "id": "angostura-bitters",
+          "qty": 1,
+          "unit": "dash",
+          "essential": true
+        },
+        {
+          "id": "pineapple-wedge",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Shake with ice, strain into an ice-filled highball and garnish with pineapple.",
+        "sv": "Skaka med is, sila i ett highballglas fyllt med is och garnera med ananas."
+      }
+    },
+    {
+      "id": "gin-and-tonic",
+      "name": "Gin and Tonic",
+      "type": "highball",
+      "base": "gin",
+      "iba": false,
+      "bar": true,
+      "tags": [
+        "bitter",
+        "refreshing",
+        "simple"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "Difford's Guide",
+        "url": "https://www.diffordsguide.com/cocktails/recipe/835/gin-and-tonic"
+      },
+      "ingredients": [
+        {
+          "id": "gin",
+          "ml": 50,
+          "essential": true
+        },
+        {
+          "id": "tonic-water",
+          "ml": 150,
+          "essential": true
+        },
+        {
+          "id": "lime-wheel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Build over plenty of ice in a highball glass, stir briefly and garnish with lime.",
+        "sv": "Bygg över rikligt med is i ett highballglas, rör kort och garnera med lime."
+      }
+    },
+    {
+      "id": "dirty-martini",
+      "name": "Dirty Martini",
+      "type": "spirit_forward",
+      "base": "gin",
+      "iba": false,
+      "bar": true,
+      "tags": [
+        "salty",
+        "savory",
+        "strong"
+      ],
+      "glass": "martini",
+      "source": {
+        "label": "Difford's Guide",
+        "url": "https://www.diffordsguide.com/cocktails/recipe/650/dirty-martini"
+      },
+      "ingredients": [
+        {
+          "id": "gin",
+          "ml": 75,
+          "essential": true
+        },
+        {
+          "id": "dry-vermouth",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "olive-brine",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "olive",
+          "qty": 2,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Stir with ice and strain into a chilled martini glass. Garnish with olives.",
+        "sv": "Rör med is och sila i ett kylt martiniglas. Garnera med oliver."
+      }
+    },
+    {
+      "id": "cuba-libre",
+      "name": "Cuba Libre",
+      "type": "highball",
+      "base": "rum",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "citrusy",
+        "cola",
+        "refreshing"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/cuba-libre/"
+      },
+      "ingredients": [
+        {
+          "id": "white-rum",
+          "ml": 50,
+          "essential": true
+        },
+        {
+          "id": "cola",
+          "ml": 120,
+          "essential": true
+        },
+        {
+          "id": "lime-juice",
+          "ml": 10,
+          "essential": true
+        },
+        {
+          "id": "lime-wheel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Build over ice in a highball glass, stir gently and garnish with lime.",
+        "sv": "Bygg över is i ett highballglas, rör försiktigt och garnera med lime."
+      }
+    },
+    {
+      "id": "dark-n-stormy",
+      "name": "Dark 'n' Stormy",
+      "type": "highball",
+      "base": "rum",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "ginger",
+        "spicy",
+        "refreshing"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/dark-n-stormy/"
+      },
+      "ingredients": [
+        {
+          "id": "dark-rum",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "ginger-beer",
+          "ml": 100,
+          "essential": true
+        },
+        {
+          "id": "lime-juice",
+          "ml": 10,
+          "essential": true
+        },
+        {
+          "id": "lime-wheel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Build over ice in a highball glass, float the rum on top and garnish with lime.",
+        "sv": "Bygg över is i ett highballglas, skikta rommen ovanpå och garnera med lime."
+      }
+    },
+    {
+      "id": "mai-tai",
+      "name": "Mai Tai",
+      "type": "sour",
+      "base": "rum",
+      "iba": true,
+      "bar": false,
+      "tags": [
+        "tropical",
+        "nutty",
+        "citrusy"
+      ],
+      "glass": "rocks",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/mai-tai/"
+      },
+      "ingredients": [
+        {
+          "id": "aged-rum",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "orange-curacao",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "orgeat",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "lime-juice",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "sugar-syrup",
+          "ml": 7.5,
+          "essential": true
+        },
+        {
+          "id": "mint-leaves",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Shake with ice and pour over crushed ice in a rocks glass. Garnish with mint.",
+        "sv": "Skaka med is och häll över krossad is i ett rocksglas. Garnera med mynta."
+      }
+    },
+    {
+      "id": "pina-colada",
+      "name": "Piña Colada",
+      "type": "contemporary",
+      "base": "rum",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "tropical",
+        "creamy",
+        "pineapple"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/pina-colada/"
+      },
+      "ingredients": [
+        {
+          "id": "white-rum",
+          "ml": 50,
+          "essential": true
+        },
+        {
+          "id": "coconut-cream",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "pineapple-juice",
+          "ml": 50,
+          "essential": true
+        },
+        {
+          "id": "pineapple-wedge",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Blend with ice until smooth, pour into a chilled glass and garnish with pineapple.",
+        "sv": "Mixa med is till en slät konsistens, häll i ett kylt glas och garnera med ananas."
+      }
+    },
+    {
+      "id": "zombie",
+      "name": "Zombie",
+      "type": "contemporary",
+      "base": "rum",
+      "iba": true,
+      "bar": false,
+      "tags": [
+        "tropical",
+        "complex",
+        "strong"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/zombie/"
+      },
+      "ingredients": [
+        {
+          "id": "dark-rum",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "aged-rum",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "demerara-rum",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "lime-juice",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "falernum",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "grapefruit-juice",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "cinnamon-syrup",
+          "ml": 10,
+          "essential": true
+        },
+        {
+          "id": "grenadine",
+          "qty": 1,
+          "unit": "barspoon",
+          "essential": true
+        },
+        {
+          "id": "angostura-bitters",
+          "qty": 1,
+          "unit": "dash",
+          "essential": true
+        },
+        {
+          "id": "absinthe",
+          "qty": 1,
+          "unit": "dash",
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Blend briefly with crushed ice, pour into a tall glass and top with more crushed ice.",
+        "sv": "Mixa kort med krossad is, häll i ett högt glas och fyll på med mer krossad is."
+      }
+    },
+    {
+      "id": "jungle-bird",
+      "name": "Jungle Bird",
+      "type": "sour",
+      "base": "rum",
+      "iba": true,
+      "bar": false,
+      "tags": [
+        "tropical",
+        "bitter",
+        "pineapple"
+      ],
+      "glass": "rocks",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/jungle-bird/"
+      },
+      "ingredients": [
+        {
+          "id": "dark-rum",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "campari",
+          "ml": 22.5,
+          "essential": true
+        },
+        {
+          "id": "pineapple-juice",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "lime-juice",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "sugar-syrup",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "pineapple-wedge",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Shake with ice, strain over fresh ice and garnish with pineapple.",
+        "sv": "Skaka med is, sila över ny is och garnera med ananas."
+      }
+    },
+    {
+      "id": "planters-punch",
+      "name": "Planter's Punch",
+      "type": "sour",
+      "base": "rum",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "tropical",
+        "citrusy",
+        "classic"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/planters-punch/"
+      },
+      "ingredients": [
+        {
+          "id": "dark-rum",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "lime-juice",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "sugar-cane-juice",
+          "ml": 30,
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Pour into an ice-filled highball glass and stir gently.",
+        "sv": "Häll i ett highballglas fyllt med is och rör försiktigt."
+      }
+    },
+    {
+      "id": "hurricane",
+      "name": "Hurricane",
+      "type": "contemporary",
+      "base": "rum",
+      "iba": false,
+      "bar": false,
+      "tags": [
+        "tropical",
+        "passion-fruit",
+        "strong"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "Difford's Guide",
+        "url": "https://www.diffordsguide.com/cocktails/recipe/993/hurricane"
+      },
+      "ingredients": [
+        {
+          "id": "aged-rum",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "dark-rum",
+          "ml": 25,
+          "essential": true
+        },
+        {
+          "id": "pineapple-juice",
+          "ml": 25,
+          "essential": true
+        },
+        {
+          "id": "orange-juice",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "lime-juice",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "lime-cordial",
+          "ml": 10,
+          "essential": true
+        },
+        {
+          "id": "sugar-syrup",
+          "ml": 7.5,
+          "essential": true
+        },
+        {
+          "id": "passion-fruit-syrup",
+          "ml": 5,
+          "essential": true
+        },
+        {
+          "id": "orange-slice",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Shake with ice, strain into a tall glass over fresh ice and garnish with orange.",
+        "sv": "Skaka med is, sila i ett högt glas över ny is och garnera med apelsin."
+      }
+    },
+    {
+      "id": "painkiller",
+      "name": "Painkiller",
+      "type": "contemporary",
+      "base": "rum",
+      "iba": false,
+      "bar": false,
+      "tags": [
+        "tropical",
+        "creamy",
+        "pineapple"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "Difford's Guide",
+        "url": "https://www.diffordsguide.com/cocktails/recipe/1454/painkiller"
+      },
+      "ingredients": [
+        {
+          "id": "dark-rum",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "pineapple-juice",
+          "ml": 90,
+          "essential": true
+        },
+        {
+          "id": "orange-juice",
+          "ml": 22.5,
+          "essential": true
+        },
+        {
+          "id": "coconut-cream",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "ground-nutmeg",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Shake with ice, pour into a tall glass over fresh ice and garnish with grated nutmeg.",
+        "sv": "Skaka med is, häll i ett högt glas över ny is och garnera med riven muskot."
+      }
+    },
+    {
+      "id": "rum-punch",
+      "name": "Rum Punch",
+      "type": "contemporary",
+      "base": "rum",
+      "iba": false,
+      "bar": true,
+      "tags": [
+        "tropical",
+        "fruity",
+        "refreshing"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "Difford's Guide",
+        "url": "https://www.diffordsguide.com/cocktails/recipe/1712/rum-punch"
+      },
+      "ingredients": [
+        {
+          "id": "overproof-rum",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "lime-juice",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "sugar-syrup",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "angostura-bitters",
+          "qty": 2,
+          "unit": "dash",
+          "essential": true
+        },
+        {
+          "id": "chilled-water",
+          "ml": 60,
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Shake with ice and strain into an ice-filled highball glass.",
+        "sv": "Skaka med is och sila i ett highballglas fyllt med is."
+      }
+    },
+    {
+      "id": "hemingway-daiquiri",
+      "name": "Hemingway Daiquiri",
+      "type": "sour",
+      "base": "rum",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "grapefruit",
+        "dry",
+        "citrusy"
+      ],
+      "glass": "coupe",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/hemingway-special/"
+      },
+      "ingredients": [
+        {
+          "id": "white-rum",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "grapefruit-juice",
+          "ml": 40,
+          "essential": true
+        },
+        {
+          "id": "maraschino-liqueur",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "lime-juice",
+          "ml": 15,
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Shake with ice and strain into a chilled coupe.",
+        "sv": "Skaka med is och sila i ett kylt coupeglas."
+      }
+    },
+    {
+      "id": "el-presidente",
+      "name": "El Presidente",
+      "type": "aromatic",
+      "base": "rum",
+      "iba": false,
+      "bar": true,
+      "tags": [
+        "citrusy",
+        "herbal",
+        "elegant"
+      ],
+      "glass": "coupe",
+      "source": {
+        "label": "Difford's Guide",
+        "url": "https://www.diffordsguide.com/cocktails/recipe/701/el-presidente"
+      },
+      "ingredients": [
+        {
+          "id": "aged-rum",
+          "ml": 50,
+          "essential": true
+        },
+        {
+          "id": "dry-vermouth",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "blanc-vermouth",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "orange-curacao",
+          "ml": 10,
+          "essential": true
+        },
+        {
+          "id": "grenadine",
+          "ml": 2.5,
+          "essential": true
+        },
+        {
+          "id": "orange-peel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Stir with ice, strain into a chilled coupe and garnish with orange peel.",
+        "sv": "Rör med is, sila i ett kylt coupeglas och garnera med apelsinskal."
+      }
+    },
+    {
+      "id": "tommys-margarita",
+      "name": "Tommy's Margarita",
+      "type": "sour",
+      "base": "tequila",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "agave",
+        "citrusy",
+        "modern"
+      ],
+      "glass": "rocks",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/tommys-margarita/"
+      },
+      "ingredients": [
+        {
+          "id": "tequila-blanco",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "lime-juice",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "agave-syrup",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "lime-wheel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Shake with ice, strain over fresh ice and garnish with lime.",
+        "sv": "Skaka med is, sila över ny is och garnera med lime."
+      }
+    },
+    {
+      "id": "tequila-sunrise",
+      "name": "Tequila Sunrise",
+      "type": "highball",
+      "base": "tequila",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "orange",
+        "fruity",
+        "layered"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/tequila-sunrise/"
+      },
+      "ingredients": [
+        {
+          "id": "tequila-blanco",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "orange-juice",
+          "ml": 90,
+          "essential": true
+        },
+        {
+          "id": "grenadine",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "orange-slice",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Build tequila and orange juice over ice, then pour in grenadine without stirring to create the sunrise.",
+        "sv": "Bygg tequila och apelsinjuice över is och häll sedan i grenadin utan att röra för att skapa soluppgången."
+      }
+    },
+    {
+      "id": "el-diablo",
+      "name": "El Diablo",
+      "type": "highball",
+      "base": "tequila",
+      "iba": false,
+      "bar": false,
+      "tags": [
+        "berry",
+        "ginger",
+        "citrusy"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "Difford's Guide",
+        "url": "https://www.diffordsguide.com/cocktails/recipe/700/el-diablo-cocktail"
+      },
+      "ingredients": [
+        {
+          "id": "tequila-blanco",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "creme-de-cassis",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "lime-juice",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "ginger-beer",
+          "ml": 90,
+          "essential": true
+        },
+        {
+          "id": "lime-wheel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Shake tequila, cassis and lime with ice, strain into an ice-filled highball and top with ginger beer.",
+        "sv": "Skaka tequila, cassis och lime med is, sila i ett highballglas med is och toppa med ginger beer."
+      }
+    },
+    {
+      "id": "naked-and-famous",
+      "name": "Naked and Famous",
+      "type": "sour",
+      "base": "tequila",
+      "iba": true,
+      "bar": false,
+      "tags": [
+        "smoky",
+        "bitter",
+        "citrusy"
+      ],
+      "glass": "coupe",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/naked-and-famous/"
+      },
+      "ingredients": [
+        {
+          "id": "mezcal",
+          "ml": 22.5,
+          "essential": true
+        },
+        {
+          "id": "yellow-chartreuse",
+          "ml": 22.5,
+          "essential": true
+        },
+        {
+          "id": "aperol",
+          "ml": 22.5,
+          "essential": true
+        },
+        {
+          "id": "lime-juice",
+          "ml": 22.5,
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Shake with ice and strain into a chilled coupe.",
+        "sv": "Skaka med is och sila i ett kylt coupeglas."
+      }
+    },
+    {
+      "id": "mezcal-negroni",
+      "name": "Mezcal Negroni",
+      "type": "spirit_forward",
+      "base": "tequila",
+      "iba": false,
+      "bar": false,
+      "tags": [
+        "smoky",
+        "bitter",
+        "herbal"
+      ],
+      "glass": "rocks",
+      "source": {
+        "label": "Eater",
+        "url": "https://www.eater.com/2016/1/11/10748512/mezcal-negroni-recipe"
+      },
+      "ingredients": [
+        {
+          "id": "mezcal",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "campari",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "sweet-vermouth",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "orange-peel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Stir with ice, strain over fresh ice and garnish with orange peel.",
+        "sv": "Rör med is, sila över ny is och garnera med apelsinskal."
+      }
+    },
+    {
+      "id": "black-russian",
+      "name": "Black Russian",
+      "type": "spirit_forward",
+      "base": "vodka",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "coffee",
+        "strong",
+        "simple"
+      ],
+      "glass": "rocks",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/black-russian/"
+      },
+      "ingredients": [
+        {
+          "id": "vodka",
+          "ml": 50,
+          "essential": true
+        },
+        {
+          "id": "coffee-liqueur",
+          "ml": 20,
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Build over ice in a rocks glass and stir gently.",
+        "sv": "Bygg över is i ett rocksglas och rör försiktigt."
+      }
+    },
+    {
+      "id": "long-island-iced-tea",
+      "name": "Long Island Iced Tea",
+      "type": "highball",
+      "base": "vodka",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "citrusy",
+        "cola",
+        "strong"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/long-island-iced-tea/"
+      },
+      "ingredients": [
+        {
+          "id": "vodka",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "gin",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "tequila-blanco",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "white-rum",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "triple-sec",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 25,
+          "essential": true
+        },
+        {
+          "id": "sugar-syrup",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "cola",
+          "qty": 1,
+          "unit": "top",
+          "essential": true
+        },
+        {
+          "id": "lemon-wheel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Shake everything except cola with ice, strain into an ice-filled highball and top with cola.",
+        "sv": "Skaka allt utom cola med is, sila i ett highballglas fyllt med is och toppa med cola."
+      }
+    },
+    {
+      "id": "sex-on-the-beach",
+      "name": "Sex on the Beach",
+      "type": "highball",
+      "base": "vodka",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "fruity",
+        "orange",
+        "berry"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/sex-on-the-beach/"
+      },
+      "ingredients": [
+        {
+          "id": "vodka",
+          "ml": 40,
+          "essential": true
+        },
+        {
+          "id": "peach-liqueur",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "orange-juice",
+          "ml": 40,
+          "essential": true
+        },
+        {
+          "id": "cranberry-juice",
+          "ml": 40,
+          "essential": true
+        },
+        {
+          "id": "orange-slice",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Build over ice in a highball glass, stir gently and garnish with orange.",
+        "sv": "Bygg över is i ett highballglas, rör försiktigt och garnera med apelsin."
+      }
+    },
+    {
+      "id": "sea-breeze",
+      "name": "Sea Breeze",
+      "type": "highball",
+      "base": "vodka",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "grapefruit",
+        "berry",
+        "refreshing"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/sea-breeze/"
+      },
+      "ingredients": [
+        {
+          "id": "vodka",
+          "ml": 40,
+          "essential": true
+        },
+        {
+          "id": "cranberry-juice",
+          "ml": 120,
+          "essential": true
+        },
+        {
+          "id": "grapefruit-juice",
+          "ml": 30,
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Build over ice in a highball glass and stir gently.",
+        "sv": "Bygg över is i ett highballglas och rör försiktigt."
+      }
+    },
+    {
+      "id": "lemon-drop-martini",
+      "name": "Lemon Drop Martini",
+      "type": "sour",
+      "base": "vodka",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "citrusy",
+        "sweet",
+        "bright"
+      ],
+      "glass": "martini",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/lemon-drop-martini/"
+      },
+      "ingredients": [
+        {
+          "id": "vodka",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "triple-sec",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "sugar-syrup",
+          "ml": 10,
+          "essential": true
+        },
+        {
+          "id": "lemon-peel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Shake with ice, strain into a chilled martini glass and garnish with lemon peel.",
+        "sv": "Skaka med is, sila i ett kylt martiniglas och garnera med citronskal."
+      }
+    },
+    {
+      "id": "french-martini",
+      "name": "French Martini",
+      "type": "contemporary",
+      "base": "vodka",
+      "iba": true,
+      "bar": false,
+      "tags": [
+        "berry",
+        "pineapple",
+        "silky"
+      ],
+      "glass": "martini",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/french-martini/"
+      },
+      "ingredients": [
+        {
+          "id": "vodka",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "raspberry-liqueur",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "pineapple-juice",
+          "ml": 45,
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Shake hard with ice and fine-strain into a chilled martini glass.",
+        "sv": "Skaka kraftigt med is och finsila i ett kylt martiniglas."
+      }
+    },
+    {
+      "id": "caipiroska",
+      "name": "Caipiroska",
+      "type": "sour",
+      "base": "vodka",
+      "iba": false,
+      "bar": true,
+      "tags": [
+        "citrusy",
+        "fresh",
+        "simple"
+      ],
+      "glass": "rocks",
+      "source": {
+        "label": "Difford's Guide",
+        "url": "https://www.diffordsguide.com/cocktails/recipe/386/caipiroska"
+      },
+      "ingredients": [
+        {
+          "id": "vodka",
+          "ml": 50,
+          "essential": true
+        },
+        {
+          "id": "lime",
+          "qty": 1,
+          "unit": "piece",
+          "essential": true
+        },
+        {
+          "id": "white-sugar",
+          "qty": 2,
+          "unit": "barspoon",
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Muddle lime with sugar, fill the glass with crushed ice, add vodka and churn well.",
+        "sv": "Muddla lime med socker, fyll glaset med krossad is, tillsätt vodka och rör om ordentligt."
+      }
+    },
+    {
+      "id": "harvey-wallbanger",
+      "name": "Harvey Wallbanger",
+      "type": "highball",
+      "base": "vodka",
+      "iba": false,
+      "bar": false,
+      "tags": [
+        "orange",
+        "vanilla",
+        "retro"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "Difford's Guide",
+        "url": "https://www.diffordsguide.com/cocktails/recipe/936/harvey-wallbanger"
+      },
+      "ingredients": [
+        {
+          "id": "vodka",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "orange-juice",
+          "ml": 90,
+          "essential": true
+        },
+        {
+          "id": "galliano",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "orange-slice",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Build vodka and orange juice over ice, float Galliano on top and garnish with orange.",
+        "sv": "Bygg vodka och apelsinjuice över is, skikta Galliano ovanpå och garnera med apelsin."
+      }
+    },
+    {
+      "id": "blue-lagoon",
+      "name": "Blue Lagoon",
+      "type": "highball",
+      "base": "vodka",
+      "iba": false,
+      "bar": true,
+      "tags": [
+        "citrusy",
+        "sweet",
+        "blue"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "Difford's Guide",
+        "url": "https://www.diffordsguide.com/cocktails/recipe/264/blue-lagoon"
+      },
+      "ingredients": [
+        {
+          "id": "vodka",
+          "ml": 40,
+          "essential": true
+        },
+        {
+          "id": "blue-curacao",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "lemon-lime-soda",
+          "ml": 100,
+          "essential": true
+        },
+        {
+          "id": "lemon-wheel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Build over ice in a highball glass, stir gently and garnish with lemon.",
+        "sv": "Bygg över is i ett highballglas, rör försiktigt och garnera med citron."
+      }
+    },
+    {
+      "id": "aperol-spritz",
+      "name": "Aperol Spritz",
+      "type": "highball",
+      "base": "other",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "bitter",
+        "sparkling",
+        "refreshing"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/spritz/"
+      },
+      "ingredients": [
+        {
+          "id": "prosecco",
+          "ml": 90,
+          "essential": true
+        },
+        {
+          "id": "aperol",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "soda-water",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "orange-slice",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Build over ice in a large glass, stir gently and garnish with orange.",
+        "sv": "Bygg över is i ett stort glas, rör försiktigt och garnera med apelsin."
+      }
+    },
+    {
+      "id": "hugo-spritz",
+      "name": "Hugo Spritz",
+      "type": "highball",
+      "base": "other",
+      "iba": false,
+      "bar": false,
+      "tags": [
+        "floral",
+        "sparkling",
+        "refreshing"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "Difford's Guide",
+        "url": "https://www.diffordsguide.com/cocktails/recipe/5039/hugo-spritz"
+      },
+      "ingredients": [
+        {
+          "id": "elderflower-liqueur",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "prosecco",
+          "ml": 120,
+          "essential": true
+        },
+        {
+          "id": "soda-water",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "mint-leaves",
+          "qty": 4,
+          "unit": "leaf",
+          "essential": true
+        },
+        {
+          "id": "lime-wheel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Build over ice, stir gently and garnish with mint and lime.",
+        "sv": "Bygg över is, rör försiktigt och garnera med mynta och lime."
+      }
+    },
+    {
+      "id": "bellini",
+      "name": "Bellini",
+      "type": "contemporary",
+      "base": "other",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "peach",
+        "sparkling",
+        "fruity"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/bellini/"
+      },
+      "ingredients": [
+        {
+          "id": "prosecco",
+          "ml": 100,
+          "essential": true
+        },
+        {
+          "id": "peach-puree",
+          "ml": 50,
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Pour peach purée into a chilled flute, slowly add prosecco and stir gently.",
+        "sv": "Häll persikopuré i ett kylt flöjtglas, tillsätt prosecco långsamt och rör försiktigt."
+      }
+    },
+    {
+      "id": "mimosa",
+      "name": "Mimosa",
+      "type": "contemporary",
+      "base": "other",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "orange",
+        "sparkling",
+        "brunch"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/mimosa/"
+      },
+      "ingredients": [
+        {
+          "id": "prosecco",
+          "ml": 75,
+          "essential": true
+        },
+        {
+          "id": "orange-juice",
+          "ml": 75,
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Pour both chilled ingredients into a flute and stir gently.",
+        "sv": "Häll båda kylda ingredienserna i ett flöjtglas och rör försiktigt."
+      }
+    },
+    {
+      "id": "kir-royale",
+      "name": "Kir Royale",
+      "type": "contemporary",
+      "base": "other",
+      "iba": false,
+      "bar": false,
+      "tags": [
+        "berry",
+        "sparkling",
+        "elegant"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "Difford's Guide",
+        "url": "https://www.diffordsguide.com/cocktails/recipe/1109/kir-royale"
+      },
+      "ingredients": [
+        {
+          "id": "creme-de-cassis",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "champagne",
+          "ml": 90,
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Pour cassis into a chilled flute and slowly top with champagne.",
+        "sv": "Häll cassis i ett kylt flöjtglas och toppa långsamt med champagne."
+      }
+    },
+    {
+      "id": "champagne-cocktail",
+      "name": "Champagne Cocktail",
+      "type": "contemporary",
+      "base": "other",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "sparkling",
+        "aromatic",
+        "classic"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/champagne-cocktail/"
+      },
+      "ingredients": [
+        {
+          "id": "champagne",
+          "ml": 90,
+          "essential": true
+        },
+        {
+          "id": "cognac",
+          "ml": 10,
+          "essential": true
+        },
+        {
+          "id": "sugar-cube",
+          "qty": 1,
+          "unit": "piece",
+          "essential": true
+        },
+        {
+          "id": "angostura-bitters",
+          "qty": 2,
+          "unit": "dash",
+          "essential": true
+        },
+        {
+          "id": "orange-peel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Soak the sugar cube with bitters in a chilled flute, add cognac and top slowly with champagne.",
+        "sv": "Dränk sockerbiten med bitter i ett kylt flöjtglas, tillsätt cognac och toppa långsamt med champagne."
+      }
+    },
+    {
+      "id": "americano",
+      "name": "Americano",
+      "type": "highball",
+      "base": "other",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "bitter",
+        "herbal",
+        "light"
+      ],
+      "glass": "rocks",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/americano/"
+      },
+      "ingredients": [
+        {
+          "id": "campari",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "sweet-vermouth",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "soda-water",
+          "qty": 1,
+          "unit": "top",
+          "essential": true
+        },
+        {
+          "id": "orange-slice",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Build over ice, top with soda, stir gently and garnish with orange.",
+        "sv": "Bygg över is, toppa med soda, rör försiktigt och garnera med apelsin."
+      }
+    },
+    {
+      "id": "sidecar",
+      "name": "Sidecar",
+      "type": "sour",
+      "base": "brandy",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "citrusy",
+        "dry",
+        "classic"
+      ],
+      "glass": "coupe",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/sidecar/"
+      },
+      "ingredients": [
+        {
+          "id": "cognac",
+          "ml": 50,
+          "essential": true
+        },
+        {
+          "id": "triple-sec",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "orange-peel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Shake with ice, strain into a chilled coupe and garnish with orange peel.",
+        "sv": "Skaka med is, sila i ett kylt coupeglas och garnera med apelsinskal."
+      }
+    },
+    {
+      "id": "brandy-alexander",
+      "name": "Brandy Alexander",
+      "type": "contemporary",
+      "base": "brandy",
+      "iba": true,
+      "bar": false,
+      "tags": [
+        "creamy",
+        "chocolate",
+        "dessert"
+      ],
+      "glass": "coupe",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/alexander/"
+      },
+      "ingredients": [
+        {
+          "id": "cognac",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "creme-de-cacao-dark",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "fresh-cream",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "ground-nutmeg",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Shake with ice, strain into a chilled coupe and garnish with grated nutmeg.",
+        "sv": "Skaka med is, sila i ett kylt coupeglas och garnera med riven muskot."
+      }
+    },
+    {
+      "id": "french-connection",
+      "name": "French Connection",
+      "type": "spirit_forward",
+      "base": "brandy",
+      "iba": true,
+      "bar": true,
+      "tags": [
+        "nutty",
+        "strong",
+        "simple"
+      ],
+      "glass": "rocks",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/french-connection/"
+      },
+      "ingredients": [
+        {
+          "id": "cognac",
+          "ml": 35,
+          "essential": true
+        },
+        {
+          "id": "amaretto",
+          "ml": 35,
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Build over ice in a rocks glass and stir gently.",
+        "sv": "Bygg över is i ett rocksglas och rör försiktigt."
+      }
+    },
+    {
+      "id": "grasshopper",
+      "name": "Grasshopper",
+      "type": "contemporary",
+      "base": "other",
+      "iba": true,
+      "bar": false,
+      "tags": [
+        "minty",
+        "chocolate",
+        "creamy"
+      ],
+      "glass": "coupe",
+      "source": {
+        "label": "IBA",
+        "url": "https://iba-world.com/iba-cocktail/grasshopper/"
+      },
+      "ingredients": [
+        {
+          "id": "creme-de-cacao-white",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "creme-de-menthe-green",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "fresh-cream",
+          "ml": 30,
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Shake with ice and strain into a chilled coupe.",
+        "sv": "Skaka med is och sila i ett kylt coupeglas."
+      }
+    },
+    {
+      "id": "b-52",
+      "name": "B-52",
+      "type": "contemporary",
+      "base": "other",
+      "iba": false,
+      "bar": false,
+      "tags": [
+        "coffee",
+        "creamy",
+        "layered"
+      ],
+      "glass": "rocks",
+      "source": {
+        "label": "Difford's Guide",
+        "url": "https://www.diffordsguide.com/cocktails/recipe/133/b-52-shot"
+      },
+      "ingredients": [
+        {
+          "id": "coffee-liqueur",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "cream-liqueur",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "grand-marnier",
+          "ml": 20,
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Layer the coffee liqueur, cream liqueur and orange liqueur carefully in a chilled shot glass.",
+        "sv": "Skikta kaffelikör, gräddlikör och apelsinlikör försiktigt i ett kylt shotglas."
+      }
+    },
+    {
+      "id": "hot-shot",
+      "name": "Hot Shot",
+      "type": "contemporary",
+      "base": "other",
+      "iba": false,
+      "bar": false,
+      "tags": [
+        "coffee",
+        "warm",
+        "creamy"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "Difford's Guide",
+        "url": "https://www.diffordsguide.com/cocktails/recipe/986/hot-shot"
+      },
+      "ingredients": [
+        {
+          "id": "galliano",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "hot-coffee",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "fresh-cream",
+          "ml": 20,
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Layer Galliano, hot coffee and lightly whipped cream in a heatproof shot glass.",
+        "sv": "Skikta Galliano, varmt kaffe och lättvispad grädde i ett värmetåligt shotglas."
       }
     }
   ]
