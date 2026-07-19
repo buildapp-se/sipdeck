@@ -5,7 +5,7 @@ agent session. Story/AC references point into PRODUCT.md.
 
 ## v1 (the cut line is explicit below)
 
-Items 1–11 ✅ done 2026-07-19 (see HANDOFF.md "Current state"). Item 12 is in progress.
+Items 1–11 ✅ done 2026-07-19 (see HANDOFF.md "Current state"). Next up: item 12.
 
 1. ✅ **Scaffold** — `index.html` (inline the contents of `design/tokens.css` into
    `<style>`, inline `design/wordmark.svg` in the header), `app.js` (pure functions on
@@ -46,8 +46,16 @@ Items 1–11 ✅ done 2026-07-19 (see HANDOFF.md "Current state"). Item 12 is in
     `design/icon.svg` (192/512/apple-touch/maskable, on `#FBF7EF` except maskable which
     is full-bleed) and from `design/favicon.svg` (16/32) — see `design/README.md` for
     which file backs which size; don't rescale `icon.svg` down to 48/16. (H1)
-12. **Performance pass + deploy (in progress)** — static budgets, local HTTP smoke and the
-    Cloudflare Pages direct upload pass. The required throttled-phone trace and
+12. **Strict normal-bar audit** — research the reliably stocked baseline at representative
+    ordinary, non-specialist bars, then reassess every drink currently marked `bar: true`.
+    Review all essential ingredients drink by drink; IBA status and cocktail-bar availability
+    are not sufficient. If a normal bar is unlikely to stock or routinely prep even one
+    required spirit, liqueur, fortified wine, bitters, syrup, purée, juice, herb or other
+    ingredient, set the drink to `bar: false`. Record a concise decision and blocking
+    ingredient(s) for every reviewed drink, add regression coverage for the final allowlist,
+    and do not change recipes, ingredients or the 92-drink seed. (D1)
+13. **Performance pass + deploy (partially complete)** — static budgets, local HTTP smoke
+    and the Cloudflare Pages direct upload pass. The required throttled-phone trace and
     live mobile smoke remain pending because neither Chrome DevTools MCP nor a controllable
     browser backend was available on 2026-07-19.
 

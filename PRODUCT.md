@@ -19,7 +19,7 @@ lists). Personal + friends first, but every decision assumes it goes public late
 ## Target users
 
 - **Patrik + friends** (v1): browsing at home ("what can I make with what I have?") and
-  out ("what do I order at any decent bar?"). Swedish/English speakers, mobile-first.
+  out ("what can I reliably order at a normal bar?"). Swedish/English speakers, mobile-first.
 - **Public later**: same product, no pivot needed — accounts are additive sync only.
 
 ## Design principles (hard requirements)
@@ -47,9 +47,9 @@ lists). Personal + friends first, but every decision assumes it goes public late
 - **Units**: toggle cl / ml / oz, default **cl**, persisted. Bar rounding after scaling:
   oz to nearest ¼, cl to 0,5, ml to 5. Dashes/barspoons/counts scale but never convert.
   Serving stepper 1–8, linear scaling.
-- **Filters v1**: editorial boolean `bar` ("servable at any decent bar", IBA as starting
-  proxy) + base-spirit filter. Richer tags (style, strength, alcohol-free) live in the
-  data now, get UI later.
+- **Filters v1**: editorial boolean `bar` ("reliably servable at a normal, non-specialist
+  bar"; IBA is not sufficient evidence) + base-spirit filter. Richer tags (style, strength,
+  alcohol-free) live in the data now, get UI later.
 - **Pantry is in v1**: ingredient checklist + "what can I make" (essential-ingredient ids
   ⊆ pantry; non-essential ignored).
 - **i18n**: EN + SV string table from day 1. Swedish: decimal comma, space as thousands
@@ -203,12 +203,13 @@ This exact blob is what `PUT /state` will carry in v1.1. Never store derived dat
 
 ### Epic D — Filters
 
-**D1. As an orderer, I want a "servable at any decent bar" filter so that the deck matches
-where I am.**
+**D1. As an orderer, I want a "reliably servable at a normal bar" filter so that the deck
+matches where I am.**
 - Toggle drives the editorial `bar` flag. Deck rebuilds + reshuffles on change; a count of
   matching drinks is visible; state persists in `settings.filters`.
-- A drink that requires a specialty syrup, purée or bitters unlikely to be stocked by a
-  general cocktail bar is `bar: false`, even when the recipe is an IBA classic.
+- A drink is `bar: true` only when every essential ingredient is likely to be stocked or
+  routinely prepared by an ordinary, non-specialist bar. Cocktail-bar availability and IBA
+  status are not enough; one doubtful required ingredient makes the drink `bar: false`.
 
 **D2. As a browser, I want to filter by base spirit so that the deck matches my mood.**
 - Single-select base spirit (gin, vodka, rum, tequila, whiskey, brandy, none/other…),

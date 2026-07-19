@@ -5,8 +5,8 @@ Read this first, then PRODUCT.md (what to build + acceptance criteria), then BAC
 
 ## Current state in one paragraph
 
-**BACKLOG items 1–11 done; item 12 in progress** (updated 2026-07-19). The approved
-92-drink/123-ingredient seed and complete production artwork remain intact. Card pointer
+**BACKLOG items 1–11 done; item 12 next; item 13 partially verified** (updated 2026-07-19).
+The approved 92-drink/123-ingredient seed and complete production artwork remain intact. Card pointer
 gestures now suppress native image dragging and text selection; Arrow Left/Right use the
 same live skip/save path with focus continuity. Sazerac, Bee's Knees and Bellini are now
 `bar: false`, consistent with the existing treatment of specialty Peychaud's bitters,
@@ -15,7 +15,8 @@ unchanged. A relative standalone manifest and seven finalized PNG icon exports c
 item 11 without adding a service worker. `test.js`: 4101 checks green. Static size budgets,
 local HTTP smoke, deployment and production-origin smoke pass. Chrome DevTools MCP and
 browser discovery were both unavailable, so no throttled-phone trace, live interaction pass
-or browser-console result is claimed.
+or browser-console result is claimed. Before the final performance gate, item 12 must apply
+the user's stricter normal, non-specialist-bar standard to all 57 current `bar: true` drinks.
 
 ## Implementation notes for the next session (things the code assumes)
 
@@ -217,13 +218,16 @@ in PRODUCT.md "Locked decisions".
 
 ## Immediate next steps (in order)
 
-1. Configure the `chrome-devtools` MCP and run BACKLOG 12's throttled 4G phone trace against
+1. BACKLOG 12: research a normal-bar ingredient baseline and audit all 57 current
+   `bar: true` drinks, documenting each decision and blocking ingredient without changing
+   any recipe or the seed.
+2. Configure the `chrome-devtools` MCP and run BACKLOG 13's throttled 4G phone trace against
    production; verify the < 1 s repeat/< 2,5 s first-visit interaction budgets.
-2. When a controllable browser is available, run the full phone-viewport pass, including
+3. When a controllable browser is available, run the full phone-viewport pass, including
    fixed navigation, pointer/keyboard swipe, flip,
    live-element behavior, missing-image fallback, favorite detail/Back, controls,
    installability, persistence, links and console. Claim only what a controllable browser verifies.
-3. If both checks pass, mark BACKLOG 12 complete and close the v1 cut.
+4. If both checks pass, mark BACKLOG 13 complete and close the v1 cut.
 
 ## How to run / deploy
 
@@ -274,6 +278,6 @@ with correct MIME types for the document, app, data, manifest and representative
 `app.js` is 39,534 bytes unminified (< 60 kB), uses one production JS file and two font
 families. The worst-case uncompressed document/app/data/four-largest-image sum is 378,496
 bytes. Chrome DevTools MCP was not configured and browser discovery returned `[]`, so item
-12's measured phone performance and live mobile interaction/console checks remain open.
+13's measured phone performance and live mobile interaction/console checks remain open.
 Both production origins returned the updated manifest, representative icons, 92-drink data
 and corrected bar flags after deployment.
