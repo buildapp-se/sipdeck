@@ -6,7 +6,7 @@ const { STRINGS, t, detectLang, defaultState, normalizeState, favoriteIdFromHash
   scaleMl, convert, roundForUnit, formatNumber, formatOz, formatAmount, shuffle, advanceQueue,
   swipeDirectionForKey,
   formatLineAmount, drinkAsText,
-  BASE_FILTERS, matchesFilters, canMake, filterDrinks,
+  BASE_FILTERS, matchesFilters, canMake, filterDrinks, missingIngredients, mergeState,
   weightedSampleUnique, wheelCocktailWeight, buildSpinLineup, selectWheelIndex,
   wheelLandingRotation, wheelSectorPath,
   GLASS_SILHOUETTES, glassPlaceholder } = require('./app.js');
@@ -227,7 +227,8 @@ const htmlSource = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
 // budget bumped 60kB -> 65kB 2026-07-20 for BACKLOG 15 (accounts+sync, Firebase Auth + Worker/D1 client)
 // bumped 65kB -> 67kB 2026-07-20 for BACKLOG 18 (email+password sign-in)
 // bumped 67kB -> 68kB 2026-07-20 for BACKLOG 19 (account linking: add Google/password to an existing account)
-check(Buffer.byteLength(appSource) < 68000, 'bundle budget: app.js stays under 68 kB unminified');
+// bumped 68kB -> 70kB 2026-07-20 for pantry-missing badges/highlighting + pull-merge bugfix
+check(Buffer.byteLength(appSource) < 70000, 'bundle budget: app.js stays under 70 kB unminified');
 check(htmlSource.includes('href="#/hjul"') && appSource.includes("'#/hjul'"),
   'wheel route: starting-page entry and router target are wired');
 check(htmlSource.includes('view-transition-name:wheel-shared') && appSource.includes('document.startViewTransition'),
@@ -278,6 +279,24 @@ check(filterDrinks([pantryDrink], { bar: true, base: 'gin' }, ['gin', 'lime-juic
   'filterDrinks: pantry combines with bar and base');
 check(filterDrinks([pantryDrink], { bar: true, base: 'gin' }, []).length === 0,
   'filterDrinks: empty pantry has no makeable drinks');
+check(missingIngredients(pantryDrink, ['gin']).length === 1 && missingIngredients(pantryDrink, ['gin'])[0].id === 'lime-juice',
+  'missingIngredients: returns the missing essential line');
+check(missingIngredients(pantryDrink, ['gin', 'lime-juice']).length === 0,
+  'missingIngredients: empty when every essential is present');
+check(missingIngredients(pantryDrink, []).length === 2, 'missingIngredients: ignores non-essential lines');
+
+// ---------- sync merge (logged-out edits must never be lost on login) ----------
+const localState = { v: 1, favorites: ['margarita'], pantry: ['gin'], settings: { lang: 'sv', unit: 'cl', servings: 1, filters: { bar: false, base: null } } };
+const serverState = { v: 1, favorites: ['negroni'], pantry: ['lime-juice'], settings: { lang: 'en', unit: 'oz', servings: 2, filters: { bar: true, base: 'gin' } } };
+const merged = mergeState(localState, serverState);
+check(merged.favorites.includes('margarita') && merged.favorites.includes('negroni'),
+  'mergeState: unions favorites from both sides');
+check(merged.pantry.includes('gin') && merged.pantry.includes('lime-juice'),
+  'mergeState: unions pantry from both sides');
+check(merged.settings === serverState.settings, 'mergeState: settings stay server-wins');
+const dedupeMerged = mergeState({ v: 1, favorites: ['margarita'], pantry: [], settings: localState.settings },
+  { v: 1, favorites: ['margarita'], pantry: [], settings: serverState.settings });
+check(dedupeMerged.favorites.length === 1, 'mergeState: union dedupes shared entries');
 
 // ---------- drinks.json validator ----------
 const UNITS = ['dash', 'barspoon', 'piece', 'leaf', 'slice', 'garnish', 'top'];

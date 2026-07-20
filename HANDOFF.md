@@ -5,6 +5,44 @@ Read this first, then PRODUCT.md (what to build + acceptance criteria), then BAC
 
 ## Current state in one paragraph
 
+**Pantry-awareness pass done 2026-07-20 (grilled via `/grilling` before building, not on the
+backlog as a numbered item yet).** Three things, all sharing one new pure helper
+`missingIngredients(drink, pantry)` (app.js, next to `canMake`) that returns the essential
+ingredient lines a drink is missing from `state.pantry`: (1) favorite list rows
+(`viewFavorites()`) show a muted badge when a drink isn't makeable — the missing ingredient
+name(s) if 1-2 are missing, "Missing 3+" past that; the favorite **detail** view is untouched
+except missing essential ingredient rows get `--sd-ink-2` text via a new `.pantry-missing`
+class, kept strictly separate from the pre-existing `favChecked` mixing-checkoff (`.done`,
+strikethrough) — the two can coexist on the same row without conflict, verified in Playwright.
+(2) `viewPantry()` gained a "Nästan klara"/"Almost there" section listing every drink missing
+*exactly* one essential ingredient, each row a plain `<a href="#/drink/<id>">` (the existing
+BACKLOG-16 deep-link route, free reuse). (3) Bugfix: `pullState()` no longer does unconditional
+server-wins — it now unions `favorites`/`pantry` between local and server state via a new pure
+`mergeState(local, server)` (settings stay server-wins, unchanged direction) so pantry/favorite
+edits made while logged out survive the next login instead of being silently overwritten.
+`pullState()` also now pushes the merged result back after merging, so the server converges to
+the same union. No new state keys — still the exact `sipdeck` blob shape in PRODUCT.md. Design
+was grilled question-by-question first (three explicit decisions locked: badge text is
+name+cutoff not a bare count; the "already have" bonus in the detail view is a plain muted
+color, deliberately not reusing the save/skip gesture colors per the documented rule that
+skip-red is gesture-only; and the sync fix is a pure union-merge, not a warn-dialog or a
+pantry lock, since the "logged-out is the product" principle rules out locking and a union can
+never lose data in either direction). `app.js` grew to 69,641 bytes; `test.js` budget bumped
+70th time, 68 kB → 70 kB (comment dated in `test.js`). `node test.js`: 4,315 green (7 new:
+`missingIngredients` essential/non-essential/empty-pantry cases, `mergeState` union/dedupe/
+settings-server-wins cases). Playwright-verified on local HTTP (phone viewport, 390×760) with a
+seeded pantry/favorites state covering all badge cases (0, 1, 2, 3+ missing): favorite list
+badges render correct SV and EN text ("Saknar: Triple sec" / "Missing: Triple sec", etc.),
+"Nästan klara" lists exactly the 1-missing drinks with working deep links, the detail view's
+Triple sec row got `.pantry-missing` (muted color confirmed via computed style,
+`rgb(110, 100, 85)` = `--sd-ink-2`) while non-essential garnish rows stayed unaffected, and
+toggling the mixing checkbox on that same row added `.done` alongside `.pantry-missing` without
+disturbing either. Zero console errors on a clean reload. The merge-on-login fix itself is only
+unit-tested (`mergeState` in test.js) — a live two-device logged-out-edit-then-login scenario
+against the real Worker needs real Firebase credentials, same standing limitation as the
+Google-login and account-linking gaps noted below. Not yet promoted to a numbered BACKLOG item
+or deployed. Previous paragraph, superseded below, kept for history:
+
 **v1.2 is closed 2026-07-20 (BACKLOG 18 + 19, email + password sign-in and account
 linking).** BACKLOG 19 (requested same session, right after 18): a couple can now share one
 account across both sign-in methods instead of being forced into two separate accounts

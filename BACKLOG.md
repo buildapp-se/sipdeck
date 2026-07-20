@@ -129,18 +129,43 @@ Items 1–12 ✅ done 2026-07-19 (see HANDOFF.md "Current state"). Next up: item
     (`pwForm`/`updatePassword`) was not exercised end-to-end — same limitation as BACKLOG 15's
     real Google login, needs real credentials, left for the user's own first try.
 
+## v1.3 — closed 2026-07-20 (item 20 done)
+
+20. ✅ **Pantry-awareness + sync merge bugfix** (done 2026-07-20, grilled via `/grilling`
+    before building) — new pure `missingIngredients(drink, pantry)` shared by three pieces:
+    favorite list rows show a muted "Saknar: X"/"Missing: X" badge (names when 1-2 essentials
+    are missing, "Saknar 3+" beyond that), the favorite detail view mutes missing-essential
+    ingredient rows (`--sd-ink-2`, deliberately not the save/skip gesture colors) alongside
+    the pre-existing `favChecked` mixing-checkoff (kept fully separate, both classes coexist
+    on a row), and the pantry view gained a "Nästan klara"/"Almost there" section listing
+    drinks missing exactly one essential ingredient, linking via the existing `#/drink/<id>`
+    deep link. Also fixed BACKLOG 15's known accepted-limitation edge case: `pullState()` used
+    to unconditionally overwrite local state with server state on login, silently discarding
+    pantry/favorite edits made while logged out (they're never pushed, since `save()` only
+    pushes when `fbUser` is set). `pullState()` now unions `favorites`/`pantry` via a new pure
+    `mergeState(local, server)` and pushes the merged result back; `settings` stays
+    server-wins (scalar values, union doesn't apply). No new state keys, no Worker/D1 changes.
+    `app.js` grew to 69,641 bytes, `test.js` budget bumped 68 kB → 70 kB. `node test.js`:
+    4,315 green (7 new: `missingIngredients` and `mergeState` cases). Playwright-verified on
+    local HTTP (phone viewport) with a seeded pantry/favorites state covering 0/1/2/3+-missing
+    drinks in both SV and EN: badge text, "Nästan klara" list + working deep links, the
+    `.pantry-missing` muted class (confirmed via computed style) coexisting with `.done` on
+    the same row, zero console errors. The merge fix itself is unit-tested only — a live
+    two-device logged-out-edit-then-login run against the real Worker needs real Firebase
+    credentials (same standing limitation as BACKLOG 15/18/19's real-login gaps).
+
 ## v2 / ideas (unordered)
 
 - Richer filter UI over existing tags: style, strength, **alcohol-free mode**.
 - Search box (name + ingredient).
 - Custom domain once the name is final.
 - Service worker/offline (only if real-world use shows the need — recept precedent).
-- "Missing one ingredient" pantry view (shopping nudge).
 - Shake-to-shuffle, haptics on save (progressive enhancement only).
 
 ## Known accepted limitations
 
-- Last-write-wins sync (v1.1): fine, state has a single owner.
+- Last-write-wins sync applies to `settings` only (v1.3, BACKLOG 20): `pantry`/`favorites`
+  now merge (union) on login instead, so logged-out edits are never silently lost.
 - Pantry matching is id-exact: seeding discipline on ingredient ids is what makes it work.
 - No image = the drink's glass silhouette forever; acceptable for future additions and
   tracked per drink by file absence. All 92 current drinks have complete production art.

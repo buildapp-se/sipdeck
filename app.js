@@ -25,6 +25,7 @@ const STRINGS = {
     fav_back: 'Back',
     fav_unfavorite: 'Remove favorite',
     fav_add: 'Save',
+    missing_prefix: 'Missing: ', missing_many: 'Missing 3+',
     recipe_title: 'Recipe', ingredients_title: 'Ingredients', method_title: 'Method',
     ingredient_check_hint: 'Check off ingredients as you mix.',
     check_ingredient: 'Check off', copy_recipe: 'Copy recipe',
@@ -34,6 +35,7 @@ const STRINGS = {
     pantry_intro: 'Check off what you have. Optional garnishes never block a match.',
     pantry_group_spirits: 'Spirits', pantry_group_liqueurs: 'Liqueurs',
     pantry_group_fresh: 'Fresh & mixers', pantry_group_pantry: 'Pantry staples',
+    pantry_almost_title: 'Almost there',
     settings_title: 'Settings',
     settings_lang: 'Language', settings_unit: 'Unit', settings_servings: 'Servings',
     language_en: 'English', language_sv: 'Swedish',
@@ -81,6 +83,7 @@ const STRINGS = {
     fav_back: 'Tillbaka',
     fav_unfavorite: 'Ta bort favorit',
     fav_add: 'Spara',
+    missing_prefix: 'Saknar: ', missing_many: 'Saknar 3+',
     recipe_title: 'Recept', ingredients_title: 'Ingredienser', method_title: 'Gör så här',
     ingredient_check_hint: 'Bocka av ingredienserna medan du blandar.',
     check_ingredient: 'Bocka av', copy_recipe: 'Kopiera receptet',
@@ -90,6 +93,7 @@ const STRINGS = {
     pantry_intro: 'Bocka av vad du har. Valfri garnering stoppar aldrig en träff.',
     pantry_group_spirits: 'Sprit', pantry_group_liqueurs: 'Likörer',
     pantry_group_fresh: 'Färskt och blanddryck', pantry_group_pantry: 'Skafferivaror',
+    pantry_almost_title: 'Nästan klara',
     settings_title: 'Inställningar',
     settings_lang: 'Språk', settings_unit: 'Enhet', settings_servings: 'Portioner',
     language_en: 'Engelska', language_sv: 'Svenska',
@@ -246,6 +250,22 @@ function filterDrinks(drinks, filters, pantry) {
   const have = Array.isArray(pantry) ? new Set(pantry) : null;
   return (Array.isArray(drinks) ? drinks : [])
     .filter(drink => matchesFilters(drink, filters) && (!have || canMake(drink, have)));
+}
+
+function missingIngredients(drink, pantry) {
+  const have = pantry instanceof Set ? pantry : new Set(Array.isArray(pantry) ? pantry : []);
+  return Array.isArray(drink.ingredients)
+    ? drink.ingredients.filter(line => line.essential && !have.has(line.id))
+    : [];
+}
+
+function mergeState(local, server) { // union pantry/favorites (never lose a logged-out edit); settings stay server-wins
+  return {
+    v: 1,
+    favorites: Array.from(new Set([...server.favorites, ...local.favorites])),
+    pantry: Array.from(new Set([...server.pantry, ...local.pantry])),
+    settings: server.settings,
+  };
 }
 
 // ---------- spinning wheel: pure catalog, weighting and geometry ----------
@@ -430,6 +450,7 @@ if (typeof module !== 'undefined') module.exports = {
   NONCONVERTIBLE_UNITS, scaleMl, convert, roundForUnit, formatNumber, formatOz, formatAmount,
   formatLineAmount, drinkAsText,
   shuffle, advanceQueue, swipeDirectionForKey, BASE_FILTERS, matchesFilters, canMake, filterDrinks,
+  missingIngredients, mergeState,
   weightedSampleUnique, wheelCocktailWeight, buildSpinLineup, selectWheelIndex,
   wheelLandingRotation, wheelSectorPath,
   GLASS_SILHOUETTES, glassPlaceholder,
@@ -461,11 +482,15 @@ if (typeof document !== 'undefined') (function () {
     const headers = Object.assign({ 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, (opts && opts.headers) || {});
     return fetch(API + path, Object.assign({}, opts, { headers }));
   }
-  async function pullState() { // server-wins-on-load; empty server state uploads local instead
+  async function pullState() { // merge server state on load (union pantry/favorites, server-wins on settings); empty server state uploads local instead
     try {
       const res = await authedFetch('/state');
       const data = await res.json();
-      if (data.state) { state = normalizeState(data.state, lang()); localStorage.setItem(KEY, JSON.stringify(state)); }
+      if (data.state) {
+        state = mergeState(state, normalizeState(data.state, lang()));
+        localStorage.setItem(KEY, JSON.stringify(state));
+        pushState(); // write the merged union back so the server reflects any logged-out edits too
+      }
       else pushState();
     } catch (e) { /* offline/blocked: stay on local state */ }
   }
@@ -765,6 +790,15 @@ if (typeof document !== 'undefined') (function () {
     return favOpenId && db ? db.drinks.find(d => d.id === favOpenId) || null : null;
   }
 
+  function missingBadge(drink) {
+    const missing = missingIngredients(drink, state.pantry);
+    if (!missing.length) return '';
+    const text = missing.length > 2
+      ? t(lang(), 'missing_many')
+      : t(lang(), 'missing_prefix') + missing.map(line => ingName(line.id)).join(', ');
+    return `<span class="fav-missing">${esc(text)}</span>`;
+  }
+
   async function copyText(text) {
     if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
     const area = document.createElement('textarea');
@@ -787,9 +821,10 @@ if (typeof document !== 'undefined') (function () {
       const s = state.settings;
       const tags = open.ingredients.filter(line => line.essential)
         .map(line => `<span class="chip">${esc(ingName(line.id))}</span>`).join('');
+      const pantryMissing = new Set(missingIngredients(open, state.pantry).map(line => line.id));
       const ingredientRows = open.ingredients.map(line => {
         const checked = favChecked.has(line.id);
-        return `<label class="fav-ing-row${checked ? ' done' : ''}">
+        return `<label class="fav-ing-row${checked ? ' done' : ''}${pantryMissing.has(line.id) ? ' pantry-missing' : ''}">
           <input type="checkbox" data-fav-ing="${esc(line.id)}"${checked ? ' checked' : ''} aria-label="${esc(t(lang(), 'check_ingredient') + ' ' + ingName(line.id))}">
           <span class="amount">${esc(formatLineAmount(line, s.servings, s.unit, lang()))}</span>
           <span>${esc(ingName(line.id))}</span>
@@ -840,6 +875,7 @@ if (typeof document !== 'undefined') (function () {
           <span class="fav-info">
             <span class="name">${esc(d.name)}</span>
             <span class="meta">${esc(taxonomyName('type', d.type))}</span>
+            ${missingBadge(d)}
           </span>
         </button>
         <button class="fav-remove" data-act="fav" data-id="${esc(d.id)}" aria-label="${esc(t(lang(), 'fav_unfavorite'))}">&times;</button>
@@ -866,7 +902,17 @@ if (typeof document !== 'undefined') (function () {
         .join('');
       return items ? `<fieldset class="pantry-group"><legend>${esc(t(lang(), 'pantry_group_' + group))}</legend><div class="pantry-list">${items}</div></fieldset>` : '';
     }).join('');
-    return `${title}<p class="pantry-intro">${esc(t(lang(), 'pantry_intro'))}</p>${fieldsets}`;
+    const almost = db.drinks
+      .map(drink => ({ drink, missing: missingIngredients(drink, state.pantry) }))
+      .filter(x => x.missing.length === 1);
+    const almostSection = almost.length ? `
+      <h2 class="pantry-almost-title">${esc(t(lang(), 'pantry_almost_title'))}</h2>
+      <div class="pantry-almost-list">${almost.map(({ drink, missing }) => `
+        <a class="list-card pantry-almost-row" href="#/drink/${esc(drink.id)}">
+          <span class="name">${esc(drink.name)}</span>
+          <span class="meta">${esc(t(lang(), 'missing_prefix') + ingName(missing[0].id))}</span>
+        </a>`).join('')}</div>` : '';
+    return `${title}<p class="pantry-intro">${esc(t(lang(), 'pantry_intro'))}</p>${fieldsets}${almostSection}`;
   }
 
   function wheelMood() { return wheelData && wheelData.moods.find(mood => mood.id === wheelMoodId) || null; }
