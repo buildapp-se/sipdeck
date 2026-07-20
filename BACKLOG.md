@@ -80,6 +80,12 @@ Items 1–12 ✅ done 2026-07-19 (see HANDOFF.md "Current state"). Next up: item
 16. ✅ **Deep links** (done 2026-07-20) — `#/drink/<id>` opens the continuous illustrated
     detail directly (reuses the favorite-detail view), with a Save/Remove favorite toggle
     and a Back that returns to the deck (not the favorites list) when reached this way.
+17. **Security review of accounts + sync** — run a full check against `worker.js` (JWT
+    verification, D1 access, `/account` deletion), `app.js`'s new auth/sync code and the
+    Firebase project config, using the installed `security-review` skill/plugin (and any
+    other relevant installed security plugins). New surface since BACKLOG 15: a Cloudflare
+    Worker verifying third-party bearer tokens, a D1 table holding synced user state, and
+    a GDPR delete path — worth a dedicated pass rather than folding into feature work.
 
 ## v2 / ideas (unordered)
 
