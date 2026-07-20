@@ -570,3 +570,17 @@ Cloudflare Pages (`img-src/` moved out of the repo root first, restored after) p
 `git push` that updates the GitHub Pages origin. Both origins reverified after deploy —
 `app.js` on each serves `drinkIdFromHash`, and a Playwright load of
 `https://sipdeck.pages.dev/#/drink/margarita` produced zero console errors.
+
+Wheel heading reflow 2026-07-20 (user feedback from a screenshot): the mood
+emoji/name + "Hela hjulet är med." block sat above the wheel disc, cramped
+under the topbar. Moved `.wheel-heading` in `viewWheel()` (`app.js`) to render
+below `#wheelStage` and above `.wheel-controls`, so it now sits between the
+wheel and the fyllenivå/berusningsnivå slider. `index.html`'s `.wheel-heading`
+margin changed from `.1rem 0 .2rem` to `0 0 .5rem` (top margin dropped since
+`.wheel-stage` already carries `.6rem` below it; bottom margin grown so the
+text doesn't sit flush against the slider card border). Landscape mode is
+unaffected — its grid already places `heading` above `controls` via named
+grid-areas regardless of DOM order. `app.js` is 67,422 bytes, under the 68 kB
+budget; 4,308 tests green (no test covers heading DOM order). Committed as
+`a6f9f67` and pushed to main; not deployed to Cloudflare Pages/GitHub Pages
+(not requested).
