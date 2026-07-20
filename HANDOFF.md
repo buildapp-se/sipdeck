@@ -5,7 +5,29 @@ Read this first, then PRODUCT.md (what to build + acceptance criteria), then BAC
 
 ## Current state in one paragraph
 
-**v1.1 is closed 2026-07-20 (BACKLOG 15 accounts+sync, the last item, done).** Firebase
+**v1.1 is fully closed 2026-07-20, including BACKLOG 17 (security review of accounts+sync,
+the last item).** Both the `security-review` skill and an independent cross-check sub-agent
+reviewed `worker/worker.js` (JWT verification, D1 access, `/state` + `/account`),
+`worker/schema.sql` and the new `app.js`/`index.html` auth/sync code, diffed from the
+pre-BACKLOG-15 baseline (`e0cf8a2^..HEAD`). **No HIGH/MEDIUM confidence findings.** Verified:
+every D1 query is parameterized (no SQLi); `/state` and `/account` scope by `u.id` looked up
+via the JWT-verified `firebase_uid` (`claims.sub`), never a client-supplied id (no IDOR);
+`header.alg !== 'RS256'` is rejected before any JWKS key lookup and the signature is verified
+before claims are trusted, with `aud`/`iss` pinned to the `sipdeck` project (no algorithm-
+confusion); `accountSection()` runs `fbUser.email`/`displayName` through the existing `esc()`
+and pulled server state is re-run through `normalizeState()` before render/persist (no stored
+XSS via sync); the wildcard CORS origin is safe because auth is Bearer-token, not cookie-based
+(no CSRF vector). Two sub-threshold observations (confidence <8/10, logged not fixed): no
+Firebase ID-token revocation check (only `exp`/`aud`/`iss`/signature — accepted JWT tradeoff,
+not new); and the `/account` DELETE handler removes the D1 row before the client calls
+`fbUser.delete()`, so a failed Firebase call (e.g. `requires-recent-login`) orphans a deleted-
+but-still-existing Firebase account that silently re-provisions an empty D1 row on next
+login — a data-integrity/UX bug, not a security bypass, left as a known gap pending a user
+decision on whether to reorder the two deletes. `node test.js`: 4,308 green, unchanged (no
+code changes were required by the review). Previous paragraph, superseded below, kept for
+history:
+
+**v1.1 accounts+sync (BACKLOG 15), the second-to-last v1.1 item, done.** Firebase
 project `sipdeck` (Google account patz.lofgren@gmail.com) + Cloudflare Worker `sipdeck-api`
 (https://sipdeck-api.sipdeck.workers.dev, account subdomain `sipdeck`) + D1 `sipdeck`
 (`users(id, firebase_uid UNIQUE, state)`) implement `GET/PUT /state` + `DELETE /account`
@@ -339,11 +361,10 @@ in PRODUCT.md "Locked decisions".
 
 ## Immediate next steps (in order)
 
-**v1.1 is closed** (BACKLOG 1–16 all ✅, including the authorized-domains step — done
-2026-07-20). Next up: BACKLOG 17, a dedicated security review of the accounts+sync surface
-(JWT verification in `worker.js`, D1 access, `/account` deletion, the new client auth/sync
-code) using the installed `security-review` skill/plugin. No v2 item is prioritized yet
-beyond that; see BACKLOG.md "v2 / ideas".
+**v1.1 is fully closed** (BACKLOG 1–17 all ✅, done 2026-07-20). No v2 item is prioritized
+yet; see BACKLOG.md "v2 / ideas". One open, non-blocking gap from the BACKLOG 17 review: the
+`/account` DELETE-then-`fbUser.delete()` ordering can orphan a D1 row if the Firebase call
+fails — fix (swap the order, or catch-and-retry) is optional and not yet scheduled.
 
 ## v1 close-out (BACKLOG 13 + 14, 2026-07-19)
 

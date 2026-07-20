@@ -69,7 +69,7 @@ Items 1–12 ✅ done 2026-07-19 (see HANDOFF.md "Current state"). Next up: item
 
 ——————————— **v1 CUT — everything below ships after v1 is live** ———————————
 
-## v1.1 — closed 2026-07-20 (both items done)
+## v1.1 — closed 2026-07-20 (all three items done)
 
 15. ✅ **Accounts + sync** (done 2026-07-20) — Firebase project `sipdeck` + Cloudflare Worker
     `sipdeck-api` + D1 `users(id, firebase_uid UNIQUE, state)`, `GET/PUT /state` +
@@ -80,12 +80,15 @@ Items 1–12 ✅ done 2026-07-19 (see HANDOFF.md "Current state"). Next up: item
 16. ✅ **Deep links** (done 2026-07-20) — `#/drink/<id>` opens the continuous illustrated
     detail directly (reuses the favorite-detail view), with a Save/Remove favorite toggle
     and a Back that returns to the deck (not the favorites list) when reached this way.
-17. **Security review of accounts + sync** — run a full check against `worker.js` (JWT
-    verification, D1 access, `/account` deletion), `app.js`'s new auth/sync code and the
-    Firebase project config, using the installed `security-review` skill/plugin (and any
-    other relevant installed security plugins). New surface since BACKLOG 15: a Cloudflare
-    Worker verifying third-party bearer tokens, a D1 table holding synced user state, and
-    a GDPR delete path — worth a dedicated pass rather than folding into feature work.
+17. ✅ **Security review of accounts + sync** (done 2026-07-20) — `security-review` skill run
+    plus an independent sub-agent cross-check against `worker.js` (JWT verify, D1 access,
+    `/account` deletion) and `app.js`'s auth/sync code. No HIGH/MEDIUM findings: queries
+    parameterized, rows scoped by JWT-verified `firebase_uid` (no IDOR), RS256 pinned before
+    key lookup (no alg confusion), `esc()`/`normalizeState()` cover all new rendered/synced
+    fields (no XSS), CORS is safe given Bearer-token (not cookie) auth. Two sub-threshold,
+    non-blocking notes logged in HANDOFF.md (no token revocation check; `/account` delete
+    ordering can orphan a D1 row if `fbUser.delete()` fails) — data-integrity/UX, not
+    security bugs; left unfixed pending a decision.
 
 ## v2 / ideas (unordered)
 
