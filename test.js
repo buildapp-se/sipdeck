@@ -226,7 +226,8 @@ const appSource = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
 const htmlSource = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
 // budget bumped 60kB -> 65kB 2026-07-20 for BACKLOG 15 (accounts+sync, Firebase Auth + Worker/D1 client)
 // bumped 65kB -> 67kB 2026-07-20 for BACKLOG 18 (email+password sign-in)
-check(Buffer.byteLength(appSource) < 67000, 'bundle budget: app.js stays under 67 kB unminified');
+// bumped 67kB -> 68kB 2026-07-20 for BACKLOG 19 (account linking: add Google/password to an existing account)
+check(Buffer.byteLength(appSource) < 68000, 'bundle budget: app.js stays under 68 kB unminified');
 check(htmlSource.includes('href="#/hjul"') && appSource.includes("'#/hjul'"),
   'wheel route: starting-page entry and router target are wired');
 check(htmlSource.includes('view-transition-name:wheel-shared') && appSource.includes('document.startViewTransition'),

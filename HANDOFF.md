@@ -5,6 +5,34 @@ Read this first, then PRODUCT.md (what to build + acceptance criteria), then BAC
 
 ## Current state in one paragraph
 
+**v1.2 is closed 2026-07-20 (BACKLOG 18 + 19, email + password sign-in and account
+linking).** BACKLOG 19 (requested same session, right after 18): a couple can now share one
+account across both sign-in methods instead of being forced into two separate accounts
+(Firebase's default duplicate-email prevention rejects registering email/password on an
+email already tied to a Google account — there was no way to combine them before this).
+Signed-in `accountSection()` conditionally shows a "Koppla Google-inloggning" button
+(`fb.linkWithPopup`) when the account lacks a `google.com` provider, or a "Skapa lösenord"
+form (`fb.updatePassword` — adds the `password` provider to a Google-only account; this is
+the same call recept already runs in production) when it lacks a `password` provider,
+computed from `fbUser.providerData`. No risk/downside beyond the feature's own point (an
+account reachable by two auth factors instead of one is what "share with your partner"
+means) — no Worker/D1 changes, JWT verification stays provider-agnostic. `app.js` grew to
+67,422 bytes; `test.js` budget bumped again, 67 kB → 68 kB. `node test.js`: 4,308 green.
+Playwright-verified on local HTTP: a fresh password account shows exactly the "link Google"
+button (not the password form, since one already exists); clicking it opens the correct
+Firebase popup (`authType=linkViaPopup`, confirming the link flow, not a fresh sign-in); an
+unexpected `auth/credential-already-in-use` response (the automated Chrome profile had a
+cached Google session already linked elsewhere) surfaced cleanly in `#accError` with zero
+console errors, which incidentally exercised the failure path too. Test account deleted
+after. **Not exercised**: the Google-account → add-password direction end-to-end (needs a
+real Google login, same standing limitation as BACKLOG 15 — left for the user's own first
+try). One operational note from BACKLOG 18/19: `firebase_init` **overwrites** rather than
+merges `auth.providers` in `firebase.json` — calling it with only `emailPassword: true`
+silently dropped the already-configured `googleSignIn` block; caught via `git diff
+firebase.json` before commit and restored, then redeployed. Diff `firebase.json` after any
+`firebase_init` call that touches a feature with existing config. Previous paragraph,
+superseded below, kept for history:
+
 **v1.2 is closed 2026-07-20 (BACKLOG 18, email + password sign-in).** Second sign-in method
 alongside Google, same Firebase project `sipdeck`, zero Worker/D1 changes (JWT verification
 in `worker.js` is provider-agnostic). Firebase console step done via MCP instead of the
@@ -390,7 +418,7 @@ in PRODUCT.md "Locked decisions".
 
 ## Immediate next steps (in order)
 
-**v1.2 is closed** (BACKLOG 1–18 all ✅, done 2026-07-20). No v2 item is prioritized yet;
+**v1.2 is closed** (BACKLOG 1–19 all ✅, done 2026-07-20). No v2 item is prioritized yet;
 see BACKLOG.md "v2 / ideas" for unordered candidates (richer filter UI, search, custom
 domain, service worker/offline, "missing one ingredient" pantry view, shake-to-shuffle).
 

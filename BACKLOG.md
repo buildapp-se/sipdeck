@@ -92,7 +92,7 @@ Items 1–12 ✅ done 2026-07-19 (see HANDOFF.md "Current state"). Next up: item
     (using a pre-fetched token for the fire-and-forget D1 cleanup after), so a failed
     Firebase call leaves the D1 row fully intact instead.
 
-## v1.2 — closed 2026-07-20 (item 18 done)
+## v1.2 — closed 2026-07-20 (items 18-19 done)
 
 18. ✅ **Email + password sign-in** (done 2026-07-20) — added as a second sign-in method
     alongside Google, same Firebase project, zero Worker/D1 changes. `accountSection()`
@@ -107,6 +107,27 @@ Items 1–12 ✅ done 2026-07-19 (see HANDOFF.md "Current state"). Next up: item
     deletion — all with zero console errors. No error-code i18n map was added (matches the
     existing ponytail decision for the Google/delete flow: raw Firebase `err.message`, add
     translation only if real users hit it often).
+
+19. ✅ **Account linking** (done 2026-07-20, requested same session after 18) — lets a couple
+    share one account across both sign-in methods instead of ending up with two separate
+    accounts (registering email/password on an email already used by a Google account fails
+    with `auth/email-already-in-use`, Firebase's default duplicate-email prevention; there was
+    previously no way to combine them). Signed-in `accountSection()` now shows a "Link Google
+    sign-in" button (`fb.linkWithPopup`) when the account has no `google.com` provider, or a
+    "Create password" form (`fb.updatePassword`, adds the `password` provider to a Google-only
+    account per Firebase's account-linking semantics — same call recept already uses in
+    production) when it has no `password` provider; neither shows once both are present. Zero
+    Worker/D1 changes. `app.js` grew to 67,422 bytes, `test.js` budget bumped again, 67 kB →
+    68 kB. `node test.js`: 4,308 green. Playwright-verified on local HTTP: registering a
+    password account shows exactly the "Link Google sign-in" button (not the password form,
+    since one already exists); clicking it opens the correct Firebase popup
+    (`authType=linkViaPopup`, confirming the link flow and not a fresh sign-in); an
+    unexpected `auth/credential-already-in-use` response (the automated browser's cached
+    Google session was already linked to a different Firebase user) surfaced cleanly in
+    `#accError` with zero console errors or crashes, which incidentally verified the failure
+    path too. Test account deleted after. The Google-account → add-password direction
+    (`pwForm`/`updatePassword`) was not exercised end-to-end — same limitation as BACKLOG 15's
+    real Google login, needs real credentials, left for the user's own first try.
 
 ## v2 / ideas (unordered)
 

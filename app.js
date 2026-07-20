@@ -55,6 +55,8 @@ const STRINGS = {
     account_email: 'Email', account_password: 'Password', account_login: 'Log in',
     account_register: 'Create account', account_forgot: 'Forgot password?',
     account_forgot_sent: 'Password reset email sent.',
+    account_link_google: 'Link Google sign-in', account_create_password: 'Create password',
+    account_share_hint: 'Your partner can then sign in with this email and password too.',
   },
   sv: {
     wheel_entry: 'Välj åt mig', wheel_title: 'Välj åt mig', wheel_back: 'Tillbaka',
@@ -109,6 +111,8 @@ const STRINGS = {
     account_email: 'E-post', account_password: 'Lösenord', account_login: 'Logga in',
     account_register: 'Skapa konto', account_forgot: 'Glömt lösenordet?',
     account_forgot_sent: 'Återställningsmejl skickat.',
+    account_link_google: 'Koppla Google-inloggning', account_create_password: 'Skapa lösenord',
+    account_share_hint: 'Din partner kan då också logga in med samma e-post och lösenord.',
   },
 };
 function t(lang, key) { return (STRINGS[lang] && STRINGS[lang][key]) || STRINGS.en[key] || key; }
@@ -969,15 +973,25 @@ if (typeof document !== 'undefined') (function () {
 
   function accountSection() {
     if (!fb) return '';
-    if (fbUser) return `<section class="account">
+    if (fbUser) {
+      const providers = fbUser.providerData.map(p => p.providerId);
+      const linkGoogle = providers.includes('google.com') ? '' : `<p><button data-acc="link-google">${esc(t(lang(), 'account_link_google'))}</button></p>`;
+      const pwForm = providers.includes('password') ? '' : `<form id="pwForm" class="account-form">
+        <label>${esc(t(lang(), 'account_create_password'))} <input type="password" id="accNewPw" minlength="6" maxlength="64" autocomplete="new-password" required></label>
+        <p>${esc(t(lang(), 'account_share_hint'))}</p>
+        <button type="submit">${esc(t(lang(), 'account_create_password'))}</button>
+      </form>`;
+      return `<section class="account">
       <h2>${esc(t(lang(), 'account_title'))}</h2>
       <p>${esc(t(lang(), 'account_signed_in_as'))} ${esc(fbUser.email || fbUser.displayName || '')}</p>
+      ${linkGoogle}${pwForm}
       <div class="account-actions">
         <button data-acc="signout">${esc(t(lang(), 'account_signout'))}</button>
         <button data-acc="delete">${esc(t(lang(), 'account_delete'))}</button>
       </div>
       <p id="accError" class="warn" hidden></p>
     </section>`;
+    }
     return `<section class="account">
       <h2>${esc(t(lang(), 'account_title'))}</h2>
       <p>${esc(t(lang(), 'account_hint'))}</p>
@@ -1240,6 +1254,7 @@ if (typeof document !== 'undefined') (function () {
       try {
         const action = accBtn.dataset.acc;
         if (action === 'google') await fb.signInWithPopup(fb.auth, new fb.GoogleAuthProvider());
+        else if (action === 'link-google') { await fb.linkWithPopup(fbUser, new fb.GoogleAuthProvider()); render(); }
         else if (action === 'forgot') {
           await fb.sendPasswordResetEmail(fb.auth, $('#accEmail').value.trim());
           errEl.textContent = t(lang(), 'account_forgot_sent');
@@ -1317,15 +1332,18 @@ if (typeof document !== 'undefined') (function () {
   });
 
   $('#view').addEventListener('submit', async e => {
-    const form = e.target.closest('#emailForm');
+    const form = e.target.closest('#emailForm, #pwForm');
     if (!form) return;
     e.preventDefault();
     const errEl = $('#accError');
     errEl.hidden = true;
-    const mode = e.submitter ? e.submitter.dataset.mode : 'login';
     try {
-      if (mode === 'register') await fb.createUserWithEmailAndPassword(fb.auth, $('#accEmail').value.trim(), $('#accPw').value);
-      else await fb.signInWithEmailAndPassword(fb.auth, $('#accEmail').value.trim(), $('#accPw').value);
+      if (form.id === 'pwForm') { await fb.updatePassword(fbUser, $('#accNewPw').value); render(); }
+      else {
+        const mode = e.submitter ? e.submitter.dataset.mode : 'login';
+        if (mode === 'register') await fb.createUserWithEmailAndPassword(fb.auth, $('#accEmail').value.trim(), $('#accPw').value);
+        else await fb.signInWithEmailAndPassword(fb.auth, $('#accEmail').value.trim(), $('#accPw').value);
+      }
     } catch (err) { errEl.textContent = err.message; errEl.hidden = false; } // ponytail: raw Firebase message, matches the data-acc catch above
   });
 
