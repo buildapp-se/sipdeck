@@ -19,12 +19,16 @@ and pulled server state is re-run through `normalizeState()` before render/persi
 XSS via sync); the wildcard CORS origin is safe because auth is Bearer-token, not cookie-based
 (no CSRF vector). Two sub-threshold observations (confidence <8/10, logged not fixed): no
 Firebase ID-token revocation check (only `exp`/`aud`/`iss`/signature — accepted JWT tradeoff,
-not new); and the `/account` DELETE handler removes the D1 row before the client calls
-`fbUser.delete()`, so a failed Firebase call (e.g. `requires-recent-login`) orphans a deleted-
-but-still-existing Firebase account that silently re-provisions an empty D1 row on next
-login — a data-integrity/UX bug, not a security bypass, left as a known gap pending a user
-decision on whether to reorder the two deletes. `node test.js`: 4,308 green, unchanged (no
-code changes were required by the review). Previous paragraph, superseded below, kept for
+not new); and the `/account` DELETE handler removed the D1 row before the client called
+`fbUser.delete()`, so a failed Firebase call (e.g. `requires-recent-login`) could orphan a
+deleted-but-still-existing Firebase account that silently re-provisioned an empty D1 row on
+next login. **Fixed same day**: the client now grabs the ID token, calls `fbUser.delete()`
+first (the irreversible, user-visible commitment), and only then fires the `/account` DELETE
+using the pre-fetched token (fire-and-forget — `fbUser` is unusable for a fresh token once
+deleted, and if this best-effort cleanup fails the only cost is a harmless orphaned row under
+a now-dead `firebase_uid` that can never be reached again). If `fbUser.delete()` itself throws,
+nothing else runs and the D1 row stays fully intact. `node test.js`: 4,308 green; `app.js` is
+64,066 bytes (still under the 65 kB budget). Previous paragraph, superseded below, kept for
 history:
 
 **v1.1 accounts+sync (BACKLOG 15), the second-to-last v1.1 item, done.** Firebase
@@ -361,10 +365,8 @@ in PRODUCT.md "Locked decisions".
 
 ## Immediate next steps (in order)
 
-**v1.1 is fully closed** (BACKLOG 1–17 all ✅, done 2026-07-20). No v2 item is prioritized
-yet; see BACKLOG.md "v2 / ideas". One open, non-blocking gap from the BACKLOG 17 review: the
-`/account` DELETE-then-`fbUser.delete()` ordering can orphan a D1 row if the Firebase call
-fails — fix (swap the order, or catch-and-retry) is optional and not yet scheduled.
+**v1.1 is fully closed** (BACKLOG 1–17 all ✅, done 2026-07-20, including the account-deletion
+ordering fix). No v2 item is prioritized yet; see BACKLOG.md "v2 / ideas".
 
 ## v1 close-out (BACKLOG 13 + 14, 2026-07-19)
 

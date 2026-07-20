@@ -85,10 +85,12 @@ Items 1–12 ✅ done 2026-07-19 (see HANDOFF.md "Current state"). Next up: item
     `/account` deletion) and `app.js`'s auth/sync code. No HIGH/MEDIUM findings: queries
     parameterized, rows scoped by JWT-verified `firebase_uid` (no IDOR), RS256 pinned before
     key lookup (no alg confusion), `esc()`/`normalizeState()` cover all new rendered/synced
-    fields (no XSS), CORS is safe given Bearer-token (not cookie) auth. Two sub-threshold,
-    non-blocking notes logged in HANDOFF.md (no token revocation check; `/account` delete
-    ordering can orphan a D1 row if `fbUser.delete()` fails) — data-integrity/UX, not
-    security bugs; left unfixed pending a decision.
+    fields (no XSS), CORS is safe given Bearer-token (not cookie) auth. One sub-threshold
+    note logged in HANDOFF.md, not a security bug (no token revocation check — accepted JWT
+    tradeoff). The other sub-threshold note — `/account` delete ordering could orphan a D1
+    row if `fbUser.delete()` failed — was fixed same day: `fbUser.delete()` now runs first
+    (using a pre-fetched token for the fire-and-forget D1 cleanup after), so a failed
+    Firebase call leaves the D1 row fully intact instead.
 
 ## v2 / ideas (unordered)
 

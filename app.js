@@ -1227,8 +1227,9 @@ if (typeof document !== 'undefined') (function () {
         if (action === 'google') await fb.signInWithPopup(fb.auth, new fb.GoogleAuthProvider());
         else if (action === 'signout') await fb.signOut(fb.auth);
         else if (action === 'delete' && confirm(t(lang(), 'account_delete_confirm'))) {
-          await authedFetch('/account', { method: 'DELETE' });
-          await fbUser.delete();
+          const token = await fbUser.getIdToken(); // grab before delete: fbUser is unusable after
+          await fbUser.delete(); // irreversible step first; if this throws, D1 row stays intact
+          fetch(API + '/account', { method: 'DELETE', headers: { Authorization: 'Bearer ' + token } }).catch(() => {});
         }
       } catch (err) { // ponytail: raw Firebase message, no i18n error map; add one if real users hit this often
         if (errEl) { errEl.textContent = err.message; errEl.hidden = false; }
