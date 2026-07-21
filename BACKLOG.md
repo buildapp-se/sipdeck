@@ -208,7 +208,11 @@ Items 1–12 ✅ done 2026-07-19 (see HANDOFF.md "Current state"). Next up: item
     excluded-category fallback, `defaultState`/`normalizeState` round-trips). `node test.js`:
     4,335 green. Chrome DevTools MCP-verified on local HTTP: both settings persist across reload,
     wheel renders and spins with a shot excluded and favorites-only on with zero favorites saved
-    (full-catalog fallback, no crash), zero console errors.
+    (full-catalog fallback, no crash), zero console errors. Follow-up same day: moved the Konto
+    (account/sign-in) section up so it sits above both wheel-preference blocks instead of after
+    them — `viewSettings()` now renders `<dl class="settings">` (language/unit/servings/filters)
+    → `accountSection()` → a second `<dl class="settings">` (wheel favorites-only) → the outcome
+    checkboxes. Purely a markup reorder, no new strings or state.
 
 ## v2 / ideas (unordered)
 

@@ -1162,14 +1162,16 @@ if (typeof document !== 'undefined') (function () {
         <dt>${esc(t(lang(), 'settings_servings'))}</dt><dd>${esc(String(s.servings))}</dd>
         <dt>${esc(t(lang(), 'settings_filter_bar'))}</dt><dd>${esc(bool(s.filters.bar))}</dd>
         <dt>${esc(t(lang(), 'settings_filter_base'))}</dt><dd>${base}</dd>
+      </dl>
+      ${accountSection()}
+      <dl class="settings">
         <dt>${esc(t(lang(), 'settings_wheel_title'))}</dt>
         <dd>
           <label class="filter-toggle"><input type="checkbox" data-settings-act="wheel-favorites-only"${s.wheelFavoritesOnly ? ' checked' : ''}> <span>${esc(t(lang(), 'settings_wheel_favorites_only'))}</span></label>
           <p class="fav-hint">${esc(t(lang(), 'settings_wheel_favorites_only_hint'))}</p>
         </dd>
       </dl>
-      ${wheelOutcomeGroups(s)}
-      ${accountSection()}`;
+      ${wheelOutcomeGroups(s)}`;
   }
 
   function random01() {

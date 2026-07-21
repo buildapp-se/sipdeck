@@ -20,6 +20,9 @@ MCP-verified on local HTTP: both settings persist across reload, wheel spins cor
 shot excluded and with favorites-only on but zero favorites saved (full-catalog fallback, no
 crash), zero console errors. Not yet exercised: real multi-device sync of the two new settings
 fields, or a spin with enough real favorites saved to see the "only mine" pool actually bite.
+Follow-up same day: Konto (account/sign-in) moved up in `viewSettings()` to sit above both
+wheel-preference blocks (split into a second `<dl class="settings">` after `accountSection()`),
+markup reorder only, no new strings or state.
 Previous paragraph, superseded below, kept for history:
 
 **BACKLOG 21 done, v1.4 closed, deployed 2026-07-21.** Full-catalog search over all 92 drinks
