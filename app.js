@@ -178,7 +178,7 @@ function normalizeState(raw, lang) {
     settings: {
       lang: rs.lang === 'sv' || rs.lang === 'en' ? rs.lang : d.settings.lang,
       unit: UNITS.includes(rs.unit) ? rs.unit : 'cl',
-      servings: Number.isInteger(rs.servings) && rs.servings >= 1 && rs.servings <= 8 ? rs.servings : 1,
+      servings: Number.isInteger(rs.servings) && rs.servings >= 1 && rs.servings <= 100 ? rs.servings : 1,
       filters: {
         bar: rf.bar === true,
         base: typeof rf.base === 'string' && rf.base ? rf.base : null,
@@ -201,6 +201,11 @@ const drinkIdFromHash = h => hid(h, '#/drink/');
 
 // ---------- unit engine (BACKLOG 3) — canonical ml, linear scaling, bar rounding, display ----------
 function scaleMl(ml, servings) { return ml * servings; }
+const MAX_SERVINGS = 100;
+function normalizeServingCount(value) {
+  const count = Math.round(Number(value));
+  return Number.isFinite(count) ? Math.max(1, Math.min(MAX_SERVINGS, count)) : 1;
+}
 
 function convert(ml, unit) {
   if (unit === 'cl') return ml / 10;
@@ -541,6 +546,7 @@ if (typeof module !== 'undefined') module.exports = {
   formatLineAmount, drinkAsText,
   shuffle, advanceQueue, swipeDirectionForKey, BASE_FILTERS, matchesFilters, canMake, filterDrinks,
   missingIngredients, mergeState, searchHaystack, matchesSearch,
+  normalizeServingCount, MAX_SERVINGS,
   reconcileState,
   weightedSampleUnique, wheelCocktailWeight, buildSpinLineup, selectWheelIndex,
   wheelLandingRotation, wheelSectorPath,
@@ -756,6 +762,20 @@ if (typeof document !== 'undefined') (function () {
   let favHistoryEntry = false; // true only when this session opened detail from the favorite list
   let makeableOnly = false; // transient deck mode; pantry itself is the persisted source of truth
   let searchQuery = ''; // transient #/sok input; cleared whenever the route leaves search
+  let servingDrinkId = null, recipeServings = 1;
+
+  function servingsFor(id) {
+    if (servingDrinkId !== id) {
+      servingDrinkId = id;
+      recipeServings = 1;
+    }
+    return recipeServings;
+  }
+
+  function setServings(id, value) {
+    servingDrinkId = id;
+    recipeServings = normalizeServingCount(value);
+  }
 
   function filteredDrinks() {
     return filterDrinks(db.drinks, state.settings.filters, makeableOnly ? state.pantry : null);
@@ -779,8 +799,8 @@ if (typeof document !== 'undefined') (function () {
       .map(l => `<span class="chip${have.has(l.id) ? '' : ' missing'}">${esc(ingName(l.id))}</span>`).join('');
   }
 
-  function ingLine(line, have) {
-    const amt = formatLineAmount(line, state.settings.servings, state.settings.unit, lang());
+  function ingLine(line, have, servings) {
+    const amt = formatLineAmount(line, servings, state.settings.unit, lang());
     const missing = !have.has(line.id);
     return `<li${missing ? ' class="missing"' : ''}><span class="amount">${esc(amt)}</span> ${esc(ingName(line.id))}</li>`;
   }
@@ -809,6 +829,7 @@ if (typeof document !== 'undefined') (function () {
     const have = new Set(state.pantry);
     const tags = chipTags(drink.ingredients, have);
     const s = state.settings;
+    const servings = depth === 0 ? servingsFor(drink.id) : 1;
     const unitBtns = UNITS.map(u =>
       `<button data-act="unit" data-unit="${u}"${u === s.unit ? ' class="active"' : ''}>${u}</button>`).join('');
     el.innerHTML = `
@@ -821,12 +842,14 @@ if (typeof document !== 'undefined') (function () {
         </div>
         <div class="card-face card-back">
           <h2 class="card-name">${esc(drink.name)}</h2>
-          <ul class="ing">${drink.ingredients.map(l => ingLine(l, have)).join('')}</ul>
+          <ul class="ing">${drink.ingredients.map(l => ingLine(l, have, servings)).join('')}</ul>
           <p class="card-method">${esc(drink.method[lang()] || drink.method.en)}</p>
           <div class="card-ctrl">
             <div class="stepper" role="group" aria-label="${esc(t(lang(), 'servings'))}">
               <button data-act="dec" aria-label="${esc(t(lang(), 'servings_decrease'))}">−</button>
-              <span class="amount">${s.servings}</span>
+              <input class="servings-input amount" data-servings data-id="${esc(drink.id)}" type="number"
+                min="1" max="${MAX_SERVINGS}" step="1" inputmode="numeric" value="${servings}"
+                aria-label="${esc(t(lang(), 'servings'))}">
               <button data-act="inc" aria-label="${esc(t(lang(), 'servings_increase'))}">+</button>
             </div>
             <div class="units" role="group" aria-label="${esc(t(lang(), 'settings_unit'))}">${unitBtns}</div>
@@ -852,10 +875,11 @@ if (typeof document !== 'undefined') (function () {
       const b = e.target.closest('button[data-act]');
       if (!b) return;
       const s = state.settings;
-      if (b.dataset.act === 'inc') s.servings = Math.min(8, s.servings + 1);
-      else if (b.dataset.act === 'dec') s.servings = Math.max(1, s.servings - 1);
-      else if (b.dataset.act === 'unit') s.unit = b.dataset.unit;
-      save();
+      const card = b.closest('.card');
+      const input = card && card.querySelector('[data-servings]');
+      if (b.dataset.act === 'inc') setServings(card.dataset.id, Number(input.value) + 1);
+      else if (b.dataset.act === 'dec') setServings(card.dataset.id, Number(input.value) - 1);
+      else if (b.dataset.act === 'unit') { s.unit = b.dataset.unit; save(); }
       render(); // coarse re-render; deckQueue + flippedId survive, so the same card stays up, flipped
     });
     attachDrag(deckEl.querySelector('.card[data-depth="0"]'));
@@ -994,6 +1018,7 @@ if (typeof document !== 'undefined') (function () {
     if (favOpenId && !open) favOpenId = null; // favorite id vanished from db: just close, no crash
     if (open) {
       const s = state.settings;
+      const servings = servingsFor(open.id);
       const have = new Set(state.pantry);
       const tags = chipTags(open.ingredients, have);
       const pantryMissing = new Set(open.ingredients.filter(line => !have.has(line.id)).map(line => line.id));
@@ -1001,7 +1026,7 @@ if (typeof document !== 'undefined') (function () {
         const checked = favChecked.has(line.id);
         return `<label class="fav-ing-row${checked ? ' done' : ''}${pantryMissing.has(line.id) ? ' pantry-missing' : ''}">
           <input type="checkbox" data-fav-ing="${esc(line.id)}"${checked ? ' checked' : ''} aria-label="${esc(t(lang(), 'check_ingredient') + ' ' + ingName(line.id))}">
-          <span class="amount">${esc(formatLineAmount(line, s.servings, s.unit, lang()))}</span>
+          <span class="amount">${esc(formatLineAmount(line, servings, s.unit, lang()))}</span>
           <span>${esc(ingName(line.id))}</span>
         </label>`;
       }).join('');
@@ -1026,7 +1051,9 @@ if (typeof document !== 'undefined') (function () {
             <div class="fav-recipe-controls">
               <div class="stepper" role="group" aria-label="${esc(t(lang(), 'servings'))}">
                 <button data-fav-act="dec" aria-label="${esc(t(lang(), 'servings_decrease'))}">−</button>
-                <span class="amount">${s.servings}</span>
+                <input class="servings-input amount" data-servings data-id="${esc(open.id)}" type="number"
+                  min="1" max="${MAX_SERVINGS}" step="1" inputmode="numeric" value="${servings}"
+                  aria-label="${esc(t(lang(), 'servings'))}">
                 <button data-fav-act="inc" aria-label="${esc(t(lang(), 'servings_increase'))}">+</button>
               </div>
               <div class="units" role="group" aria-label="${esc(t(lang(), 'settings_unit'))}">${unitBtns}</div>
@@ -1276,18 +1303,12 @@ if (typeof document !== 'undefined') (function () {
 
   function viewSettings() {
     const s = state.settings;
-    const bool = v => t(lang(), v ? 'yes' : 'no');
-    const base = s.filters.base ? esc(taxonomyName('base', s.filters.base)) : esc(t(lang(), 'settings_filter_base_none'));
     loadWheelData();
     return `<h1 class="screen-title">${esc(t(lang(), 'settings_title'))}</h1>
       <dl class="settings">
         <dt>${esc(t(lang(), 'settings_lang'))}</dt><dd><div class="lang-toggle" role="group" aria-label="${esc(t(lang(), 'settings_lang'))}">
           ${['en', 'sv'].map(code => `<button data-lang="${code}"${code === s.lang ? ' class="active" aria-pressed="true"' : ' aria-pressed="false"'}>${esc(t(lang(), 'language_' + code))}</button>`).join('')}
         </div></dd>
-        <dt>${esc(t(lang(), 'settings_unit'))}</dt><dd>${esc(s.unit)}</dd>
-        <dt>${esc(t(lang(), 'settings_servings'))}</dt><dd>${esc(String(s.servings))}</dd>
-        <dt>${esc(t(lang(), 'settings_filter_bar'))}</dt><dd>${esc(bool(s.filters.bar))}</dd>
-        <dt>${esc(t(lang(), 'settings_filter_base'))}</dt><dd>${base}</dd>
       </dl>
       ${accountSection()}
       <dl class="settings">
@@ -1597,10 +1618,10 @@ if (typeof document !== 'undefined') (function () {
     const favAction = e.target.closest('[data-fav-act]');
     if (favAction) {
       const s = state.settings;
-      if (favAction.dataset.favAct === 'inc') s.servings = Math.min(8, s.servings + 1);
-      else if (favAction.dataset.favAct === 'dec') s.servings = Math.max(1, s.servings - 1);
-      else if (favAction.dataset.favAct === 'unit') s.unit = favAction.dataset.unit;
-      save();
+      const input = $('#view [data-servings]');
+      if (favAction.dataset.favAct === 'inc') setServings(favOpenId, Number(input.value) + 1);
+      else if (favAction.dataset.favAct === 'dec') setServings(favOpenId, Number(input.value) - 1);
+      else if (favAction.dataset.favAct === 'unit') { s.unit = favAction.dataset.unit; save(); }
       render();
       return;
     }
@@ -1608,7 +1629,7 @@ if (typeof document !== 'undefined') (function () {
     if (copyBtn) {
       const drink = favDrink();
       try {
-        await copyText(drinkAsText(drink, db.ingredients, state.settings.servings, state.settings.unit, lang()));
+        await copyText(drinkAsText(drink, db.ingredients, servingsFor(drink.id), state.settings.unit, lang()));
         copyBtn.textContent = t(lang(), 'copied');
       } catch (err) {
         copyBtn.textContent = t(lang(), 'copy_failed');
@@ -1652,6 +1673,20 @@ if (typeof document !== 'undefined') (function () {
       const currentError = $('#accError');
       if (currentError) { currentError.textContent = err.message; currentError.hidden = false; }
     } // ponytail: raw Firebase message, matches the data-acc catch above
+  });
+
+  $('#view').addEventListener('change', e => {
+    const control = e.target.closest('[data-servings]');
+    if (!control) return;
+    setServings(control.dataset.id, control.value);
+    render();
+  });
+
+  $('#view').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && e.target.matches('[data-servings]')) {
+      e.preventDefault();
+      e.target.blur();
+    }
   });
 
   $('#view').addEventListener('change', e => {

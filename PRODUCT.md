@@ -47,10 +47,11 @@ lists). Personal + friends first, but every decision assumes it goes public late
 - **Data**: own `drinks.json`, ~80–100 drinks seeded from the IBA official list + modern
   classics. Canonical amounts in **ml**. Every ingredient has a normalized id
   (`lime-juice`) and an `essential` flag (garnish/optional = false).
-- **Units**: toggle cl / ml / oz, default **cl**, persisted. Bar rounding after scaling:
+- **Units**: toggle cl / ml / oz, default **cl**, persisted. Recipe servings are transient
+  per active drink, directly editable from 1–100, and reset to 1 for another drink. Bar rounding after scaling:
   oz to nearest ¼, cl to 0,5, ml to 5. Dashes and counts scale without conversion.
   Barspoons scale and always include their 5 ml / 0,5 cl equivalent in parentheses,
-  independent of the selected display unit. Serving stepper 1–8, linear scaling.
+  independent of the selected display unit.
 - **Filters v1**: editorial boolean `bar` ("reliably servable at a normal, non-specialist
   bar"; IBA is not sufficient evidence) + base-spirit filter. Richer tags (style, strength,
   alcohol-free) live in the data now, get UI later.
@@ -113,7 +114,9 @@ One object, one localStorage key (`sipdeck`):
                 "filters": { "bar": false, "base": null } } }
 ```
 
-This exact blob is what `PUT /state` will carry in v1.1. Never store derived data in it.
+This exact blob is what `PUT /state` will carry in v1.1. `settings.servings` is retained as
+a legacy compatibility field fixed at its old value; the live per-recipe serving count is
+transient and never synced. Never store derived data in the blob.
 
 ## drinks.json schema
 
@@ -192,11 +195,12 @@ This exact blob is what `PUT /state` will carry in v1.1. Never store derived dat
 - All ingredient lines with amounts in the active unit; garnish/optional lines visually
   secondary. Method text in the active language.
 
-**B2. As a maker, I want a serving stepper so that I can mix for the group.**
-- Stepper 1–8, linear scaling from canonical ml, rounding applied **after** scaling.
+**B2. As a maker, I want an editable serving control so that I can mix for the group.**
+- Number input plus stepper buttons, 1–100, with linear scaling from canonical ml and
+  rounding applied **after** scaling.
 - Dash/barspoon/count amounts scale linearly. Barspoons additionally show 0,5 cl per
   spoon, so 2 barskedar × 2 portions renders as `4 barsked (2 cl)`.
-- Chosen serving count persists in `settings.servings`.
+- The count is transient for the active recipe; opening another recipe starts at 1.
 
 **B3. As a user, I want a cl/ml/oz toggle so that amounts match how I measure.**
 - Default cl; persisted in `settings.unit`; rounding: oz → nearest ¼ (vulgar-fraction

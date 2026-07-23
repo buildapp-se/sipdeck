@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const { STRINGS, t, detectLang, defaultState, normalizeState, favoriteIdFromHash, drinkIdFromHash,
-  scaleMl, convert, roundForUnit, formatNumber, formatOz, formatAmount, shuffle, advanceQueue,
+  scaleMl, normalizeServingCount, MAX_SERVINGS, convert, roundForUnit, formatNumber, formatOz, formatAmount, shuffle, advanceQueue,
   swipeDirectionForKey,
   formatLineAmount, drinkAsText,
   BASE_FILTERS, matchesFilters, canMake, filterDrinks, missingIngredients, mergeState, reconcileState,
@@ -58,7 +58,7 @@ check((() => { try { return normalizeState('garbage', 'en').v === 1; } catch (e)
   'normalizeState: garbage input never throws');
 check((() => { try { return normalizeState(null, 'en').settings.lang === 'en'; } catch (e) { return false; } })(),
   'normalizeState: null input falls back to nav lang');
-check(normalizeState({ settings: { servings: 99 } }, 'en').settings.servings === 1,
+check(normalizeState({ settings: { servings: 101 } }, 'en').settings.servings === 1,
   'normalizeState: out-of-range servings falls back to 1');
 check(!('wheel' in normalizeState({ wheel: { mood: 'fresh' } }, 'en')),
   'normalizeState: wheel visit state never enters the persisted blob');
@@ -84,7 +84,12 @@ check(drinkIdFromHash('#/favoriter/margarita') === null, 'drinkIdFromHash: does 
 // scaling
 check(scaleMl(45, 4) === 180, 'scaleMl: 45 x 4 = 180');
 check(scaleMl(45, 1) === 45, 'scaleMl: servings lower bound 1');
-check(scaleMl(45, 8) === 360, 'scaleMl: servings upper bound 8');
+check(scaleMl(45, 100) === 4500, 'scaleMl: servings upper bound 100');
+check(MAX_SERVINGS === 100 && normalizeServingCount(20) === 20,
+  'serving input: accepts a directly entered batch of 20');
+check(normalizeServingCount(0) === 1 && normalizeServingCount(101) === 100 &&
+  normalizeServingCount('bad') === 1,
+  'serving input: clamps invalid and out-of-range values');
 check((2 * 3) === 6, 'dash scaling: 2 dashes x 3 = 6 (qty x servings)');
 
 // conversion + rounding
@@ -293,7 +298,8 @@ const workerSource = fs.readFileSync(path.join(__dirname, 'worker', 'worker.js')
 // bumped 70kB -> 71kB 2026-07-21 for deck-card pantry-missing chips/ingredient list (favorites parity)
 // bumped 71kB -> 74kB 2026-07-21 for catalog search (#/sok: name+ingredient search, deep-links into detail view)
 // bumped 74kB -> 79kB 2026-07-21 for wheel prefs (favorites-only cocktails, per-outcome beer/wine/shot toggles)
-check(Buffer.byteLength(appSource) < 86000, 'bundle budget: app.js stays under 86 kB unminified');
+// bumped 86kB -> 87kB 2026-07-23 for transient editable 1–100 recipe servings
+check(Buffer.byteLength(appSource) < 87000, 'bundle budget: app.js stays under 87 kB unminified');
 check(!htmlSource.includes('fonts.googleapis.com') && htmlSource.includes("fonts/work-sans.woff2"),
   'privacy: fonts are self-hosted with no Google Fonts request');
 check(!htmlSource.includes('gstatic.com/firebase') && appSource.includes("async function ensureFirebase()"),
@@ -302,6 +308,15 @@ check(appSource.includes("const AUTH_KEY = KEY + '-auth'") && appSource.includes
   'privacy: requested account persistence resumes lazy auth without popup timing');
 check(appSource.split('href="info.html"').length === 3,
   'privacy: legal information is linked for signed-in and signed-out account views');
+check(appSource.split('data-servings').length >= 5 && appSource.includes('max="${MAX_SERVINGS}"') &&
+  appSource.includes('if (servingDrinkId !== id)'),
+  'recipe scaling: deck and favorite views accept 1–100 and another drink resets to 1');
+const settingsViewSource = appSource.slice(appSource.indexOf('function viewSettings()'),
+  appSource.indexOf('function random01()'));
+check(!settingsViewSource.includes("settings_unit')") &&
+  !settingsViewSource.includes("settings_filter_bar')") &&
+  !settingsViewSource.includes("settings_filter_base')"),
+  'settings: read-only unit and deck-filter summaries are not duplicated');
 check(infoSource.includes('Patrik Löfgren') && infoSource.includes('kontakt@orgutveckling.se') &&
   infoSource.includes('id="sv"') && infoSource.includes('id="en"'),
   'legal page: controller, contact and Swedish/English notices are present');

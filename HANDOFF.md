@@ -5,6 +5,14 @@ Read this first, then PRODUCT.md (what to build + acceptance criteria), then BAC
 
 ## Current state in one paragraph
 
+**Editable recipe scaling 2026-07-23.** Recipe cards and favorite details now use a number
+input plus minus/plus buttons for 1–100 servings. The count is transient to the active drink,
+so moving to another recipe starts at 1 instead of carrying a batch size across recipes.
+The legacy `settings.servings` field remains in the v1 sync shape for compatibility but is no
+longer used by the UI. The Settings screen no longer repeats the read-only unit, servings,
+bar-only or base-spirit values because those controls already live in their working contexts.
+`app.js?v=1.8` cache-busts the change.
+
 **Wheel-transition follow-up 2026-07-23.** The shared mini-to-full wheel transition now runs
 in Firefox again and is shortened from 560 ms to 360 ms. Opening displays the populated
 full-wheel snapshot while it grows; closing explicitly keeps that same populated snapshot
