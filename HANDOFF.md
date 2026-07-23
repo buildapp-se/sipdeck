@@ -5,6 +5,12 @@ Read this first, then PRODUCT.md (what to build + acceptance criteria), then BAC
 
 ## Current state in one paragraph
 
+**Garnish-overlap artwork fix 2026-07-23.** Champagne Cocktail, Cosmopolitan, Bee's
+Knees and El Presidente were precisely retouched so their citrus curls no longer pass
+through the glass; the tiny Old Fashioned peel tip that crossed the liquid line was
+removed as well. All five production assets remain exact 640×800 WebPs within the
+80 kB budget. `node test.js`: 4,930 green.
+
 **Editable recipe scaling 2026-07-23.** Recipe cards and favorite details now use a number
 input plus minus/plus buttons for 1–100 servings. Native browser spinner arrows are hidden so
 the larger controls remain the only visible steppers. The count is transient to the active drink,
@@ -511,7 +517,7 @@ in PRODUCT.md "Locked decisions".
    ```
 
    Filename **must** be `img/<drink-id>.webp`; verify every output is 640×800 and
-   ≤ 80 kB. Current range is 8,630–57,952 bytes across 93 production images.
+   ≤ 80 kB. Current range is 8,630–67,012 bytes across 93 production images.
 
    **Completed 66-drink expansion (2026-07-19).** Manhattan's preexisting reviewed source
    and 65 new one-call sources were curated in `drinks.json` order using Margarita, Mojito,
@@ -524,6 +530,13 @@ in PRODUCT.md "Locked decisions".
    correct the foam height and olive geometry. Cranberry Jack was generated once from
    the four frozen style references, then all three approved sources were converted with
    the same 640×800 quality-72/method-6 pipeline.
+
+   **2026-07-23 garnish-overlap correction.** Champagne Cocktail, Cosmopolitan, Bee's
+   Knees and El Presidente were edited from their production artwork to remove citrus
+   peel sections that appeared to pass through the glass. Old Fashioned received the
+   same targeted treatment for the small peel tip crossing its liquid line. The built-in
+   image editor was instructed to preserve the watercolor-and-ink style, composition and
+   all unrelated details; the approved results were center-fitted to 640×800 WebP.
 
    **Wheel extension (2026-07-19).** The reviewed inventory is `beer`, `cider`, `red-wine`,
    `white-wine`, `sparkling-wine`, `jagermeister-shot`, `fernet-shot`, `tequila-shot`,

@@ -37,7 +37,7 @@ Items 1–12 ✅ done 2026-07-19 (see HANDOFF.md "Current state"). Next up: item
    rules enforced in one format layer. Settings persists `settings.lang`; navigation,
    taxonomy labels, controls and accessibility labels all route through `t()`. (F1)
 9. ✅ **Image pipeline + placeholders** — frozen `gpt-image-2` reference workflow in
-   HANDOFF.md, exact 640×800 WebP outputs at 8–58 kB, complete id coverage and lazy
+   HANDOFF.md, exact 640×800 WebP outputs at 8–68 kB, complete id coverage and lazy
    loading for the top four cards. Resilient inline SVG silhouettes cover all 13 glass
    values used by the seed, with close-family silhouettes reused where appropriate. (G1)
 10. ✅ **Full drink seed** — 93 source-audited recipes and 149 normalized ingredients,
