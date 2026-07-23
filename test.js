@@ -304,8 +304,9 @@ check(!htmlSource.includes('fonts.googleapis.com') && htmlSource.includes("fonts
   'privacy: fonts are self-hosted with no Google Fonts request');
 check(!htmlSource.includes('gstatic.com/firebase') && appSource.includes("async function ensureFirebase()"),
   'privacy: Firebase is lazy-loaded only by account use or remembered sign-in');
-check(appSource.includes("const AUTH_KEY = KEY + '-auth'") && appSource.includes("signInWithRedirect"),
-  'privacy: requested account persistence resumes lazy auth without popup timing');
+check(appSource.includes("const AUTH_KEY = KEY + '-auth'") && appSource.includes("signInWithPopup") &&
+  !appSource.includes("signInWithRedirect"),
+  'privacy: requested account persistence resumes lazy auth with cross-origin-safe sign-in');
 check(appSource.split('href="info.html"').length === 3,
   'privacy: legal information is linked for signed-in and signed-out account views');
 check(appSource.split('data-servings').length >= 5 && appSource.includes('max="${MAX_SERVINGS}"') &&

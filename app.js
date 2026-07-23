@@ -1563,7 +1563,7 @@ if (typeof document !== 'undefined') (function () {
         await ensureFirebase();
         if (action === 'google') {
           localStorage.setItem(AUTH_KEY, '1');
-          await fb.signInWithRedirect(fb.auth, new fb.GoogleAuthProvider());
+          await fb.signInWithPopup(fb.auth, new fb.GoogleAuthProvider());
         }
         else if (action === 'link-google') { await fb.linkWithPopup(fbUser, new fb.GoogleAuthProvider()); render(); }
         else if (action === 'forgot') {
