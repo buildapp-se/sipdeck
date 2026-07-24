@@ -5,6 +5,34 @@ Read this first, then PRODUCT.md (what to build + acceptance criteria), then BAC
 
 ## Current state in one paragraph
 
+**Accessibility, metadata, response-header and wheel-transition pass 2026-07-24.**
+The deck now keeps every non-top card and hidden card face `inert`; Enter/Space flips the
+focused top card, Arrow Left/Right still skips/saves, and focus follows the promoted card.
+Card faces synchronize `aria-hidden`/`aria-expanded`, unit buttons expose `aria-pressed`,
+missing pantry ingredients have screen-reader text plus non-color visual cues, and Firebase
+account feedback is a field-associated polite live region. The deck and search routes gained
+localized visually hidden H1s; `index.html` and `info.html` declare their canonical
+`buildapp.se` URLs. New `_headers` supplies `nosniff`, clickjacking protection, referrer and
+permissions policies, a minimal enforced CSP, and a broader CSP Report-Only inventory for
+Cloudflare Pages. This file does not fix the canonical domain's current Cloudflare→GitHub
+Pages proxy: HTTP→HTTPS, matching response headers and any HSTS decision remain external
+zone work; do not enable `includeSubDomains` before inventorying all of `buildapp.se`.
+
+The same branch completes the premium wheel transition: the pointer has its own
+View Transition layer and delayed entrance/early exit. Firefox keeps the shared native
+transition geometry but uses a dedicated fade-only snapshot path to avoid nested compositor
+transforms; the CSS fallback remains available for browsers without View Transitions and
+stays active for 900 ms. Reduced motion disables the pointer animation, the cache key is
+`app.js?v=1.11`, and the mobile
+Safari project now targets iPhone 15 Pro. Tests: `node --check app.js` green,
+`node test.js` 4,936 green, Chromium accessibility 2/2 green, Chromium wheel 2/2 green
+(one Firefox-only case skipped), and the full non-Firefox matrix green across Chromium,
+WebKit, mobile Chrome and mobile Safari with zero browser-console warnings/errors in manual
+desktop/mobile checks. The installed Playwright Firefox runtime failed all five Firefox
+tests before navigation with `browserContext.newPage` reading `_page`; the same failure
+reproduced in isolation and is recorded as a local runner/browser blocker, not an app
+assertion failure. Nothing in this paragraph has been deployed yet.
+
 **Garnish-overlap artwork fix 2026-07-23.** Champagne Cocktail, Cosmopolitan, Bee's
 Knees and El Presidente were precisely retouched so their citrus curls no longer pass
 through the glass; the tiny Old Fashioned peel tip that crossed the liquid line was
@@ -591,6 +619,8 @@ driving it synthetically.
 ```
 python -m http.server            # from sipdeck/ — no build step
 node test.js                     # pure-function + data validation tests
+npm run test:e2e                 # wheel + accessibility matrix
+$env:BASE_URL='https://preview.example'; npm run test:e2e  # deployed preview
 npx wrangler pages deploy . --project-name sipdeck --branch main   # Cloudflare Pages
 cd worker && npx wrangler deploy                                   # sipdeck-api Worker
 ```
@@ -598,7 +628,11 @@ cd worker && npx wrangler deploy                                   # sipdeck-api
 Live: **https://sipdeck.pages.dev** (Cloudflare Pages, deploy = wrangler command above)
 and **https://buildapp.se/sipdeck/** (custom domain/subpath; asset paths must therefore
 stay relative). The custom domain, privacy page and API boundary were reverified after
-the 2026-07-23 deployment. Delete `.playwright-mcp/` before wrangler
+the 2026-07-23 deployment. `_headers` applies to the Cloudflare Pages origin; verify the
+same headers separately on `buildapp.se`, whose current proxy path exposes GitHub
+Pages/Fastly response headers. The canonical domain still answered HTTP with `200` during
+the 2026-07-24 audit, so configure an external permanent HTTP→HTTPS redirect before
+considering HSTS. Delete `.playwright-mcp/` before wrangler
 deploys — wrangler doesn't read `.gitignore`. API since 2026-07-20:
 **https://sipdeck-api.sipdeck.workers.dev** (Cloudflare Worker + D1, deploy = command
 above from `worker/`); smoke-tested directly (401 on unauthenticated `GET /state`).
@@ -615,7 +649,14 @@ Commit messages: `sipdeck: <what>`.
 
 ## Verification state
 
-`node test.js`: 4908 green; `node --check app.js`: green; `git diff --check`: green.
+`node test.js`: 4936 green; `node --check app.js`: green; `git diff --check`: green.
+`tests/a11y.spec.js` passes 2/2 in Chromium and passed in the non-Firefox projects during
+the full matrix. `tests/wheel.spec.js` passes 2/2 in Chromium (the Firefox-only fallback
+case is skipped there). Full matrix result on this Windows/Node 26 environment: 16 passed,
+4 expected skips and 5 Firefox startup failures before navigation; isolated Firefox gives
+the same Playwright-internal `browserContext.newPage`/`_page` error. Manual Playwright at
+390×844 and 1280×800 verified unchanged layout, keyboard flip/swipe focus continuity,
+non-color missing/unit states and zero console warnings/errors.
 The 93-drink dataset validates with 149 normalized ingredients, 13 supported glass values
 and source URLs that are present and unique for every recipe. All 93 production filenames
 exactly match the drink ids;

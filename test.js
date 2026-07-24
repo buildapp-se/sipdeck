@@ -299,9 +299,22 @@ const workerSource = fs.readFileSync(path.join(__dirname, 'worker', 'worker.js')
 // bumped 71kB -> 74kB 2026-07-21 for catalog search (#/sok: name+ingredient search, deep-links into detail view)
 // bumped 74kB -> 79kB 2026-07-21 for wheel prefs (favorites-only cocktails, per-outcome beer/wine/shot toggles)
 // bumped 86kB -> 87kB 2026-07-23 for transient editable 1–100 recipe servings
-check(Buffer.byteLength(appSource) < 87000, 'bundle budget: app.js stays under 87 kB unminified');
+// bumped 87kB -> 89kB 2026-07-24 for keyboard-safe card faces and accessible status semantics
+check(Buffer.byteLength(appSource) < 89000, 'bundle budget: app.js stays under 89 kB unminified');
 check(!htmlSource.includes('fonts.googleapis.com') && htmlSource.includes("fonts/work-sans.woff2"),
   'privacy: fonts are self-hosted with no Google Fonts request');
+check(htmlSource.includes('rel="canonical" href="https://buildapp.se/sipdeck/"') &&
+  infoSource.includes('rel="canonical" href="https://buildapp.se/sipdeck/info.html"'),
+  'seo: public HTML pages declare their canonical URLs');
+const headersSource = fs.readFileSync(path.join(__dirname, '_headers'), 'utf8');
+check(headersSource.includes('X-Content-Type-Options: nosniff') &&
+  headersSource.includes("frame-ancestors 'none'") &&
+  headersSource.includes('Permissions-Policy: camera=(), microphone=(), geolocation=()'),
+  'hosting: static responses declare the safe project-scoped security headers');
+check(appSource.includes('el.inert = depth !== 0') &&
+  appSource.includes("e.key !== 'Enter' && e.key !== ' '") &&
+  appSource.includes('aria-describedby="accError"'),
+  'accessibility: hidden cards leave the tab order, keyboard flips work and account errors are associated');
 check(!htmlSource.includes('gstatic.com/firebase') && appSource.includes("async function ensureFirebase()"),
   'privacy: Firebase is lazy-loaded only by account use or remembered sign-in');
 check(appSource.includes("const AUTH_KEY = KEY + '-auth'") && appSource.includes("signInWithPopup") &&
@@ -373,8 +386,8 @@ check(htmlSource.includes('<svg class="wheel-symbol" viewBox="0 0 100 100"') &&
 check(appSource.includes('draggable="false"'), 'pointer swipe: artwork disables native image dragging');
 check(appSource.includes('e.preventDefault(); // own the gesture'), 'pointer swipe: card owns pointer gesture');
 check(htmlSource.includes('user-select:none;-webkit-user-select:none'), 'pointer swipe: card text selection disabled');
-check(appSource.includes("aria-keyshortcuts', 'ArrowLeft ArrowRight'"),
-  'keyboard swipe: top card exposes arrow shortcuts');
+check(appSource.includes("aria-keyshortcuts', 'Enter Space ArrowLeft ArrowRight'"),
+  'keyboard card: top card exposes flip and swipe shortcuts');
 
 // ---------- glass placeholders (BACKLOG 9) ----------
 ['coupe', 'highball', 'rocks', 'martini', 'collins', 'flute', 'goblet', 'hurricane',

@@ -39,3 +39,20 @@ test('reduced motion keeps wheel navigation immediate', async ({ page }) => {
   await expect(page.locator('#wheelEntry')).toBeVisible();
   await expect(page.locator('html')).not.toHaveClass(/wheel-(?:closing|fallback)/);
 });
+
+test('firefox keeps the shared wheel transition compositor-safe', async ({ page, browserName }) => {
+  test.skip(browserName !== 'firefox');
+
+  await page.goto('/');
+  await page.locator('#wheelEntry').click();
+
+  await expect(page.locator('html')).toHaveClass(/wheel-opening/);
+  await expect(page.locator('html')).toHaveClass(/wheel-firefox/);
+  await expect(page.locator('html')).not.toHaveClass(/wheel-fallback-opening/);
+  await expect(page.locator('html')).not.toHaveClass(/wheel-(?:opening|firefox)/, { timeout: 2000 });
+
+  await page.locator('[data-wheel-act="back"]').click();
+  await expect(page.locator('html')).toHaveClass(/wheel-closing/);
+  await expect(page.locator('html')).toHaveClass(/wheel-firefox/);
+  await expect(page.locator('html')).not.toHaveClass(/wheel-(?:closing|firefox)/, { timeout: 2000 });
+});
