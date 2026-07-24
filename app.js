@@ -1563,10 +1563,28 @@ if (typeof document !== 'undefined') (function () {
 
   function renderRoute() {
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!reduced && document.startViewTransition) {
-      const root = document.documentElement;
-      root.classList.toggle('wheel-closing', document.body.classList.contains('wheel-mode') && location.hash !== '#/hjul');
-      document.startViewTransition(() => render()).finished.finally(() => root.classList.remove('wheel-closing'));
+    const root = document.documentElement;
+    const wasWheel = document.body.classList.contains('wheel-mode');
+    const enteringWheel = !wasWheel && location.hash === '#/hjul';
+    const leavingWheel = wasWheel && location.hash !== '#/hjul';
+    const nativeWebKit = /AppleWebKit/.test(navigator.userAgent) &&
+      !/(Chrome|Chromium|Edg|OPR)/.test(navigator.userAgent);
+    if (!reduced && document.startViewTransition && !nativeWebKit) {
+      root.classList.toggle('wheel-opening', enteringWheel);
+      root.classList.toggle('wheel-closing', leavingWheel);
+      const transition = document.startViewTransition(() => render());
+      const settle = () => root.classList.remove('wheel-opening', 'wheel-closing');
+      transition.finished.then(settle, settle);
+    } else if (!reduced && enteringWheel) {
+      root.classList.add('wheel-fallback-opening');
+      render();
+      setTimeout(() => root.classList.remove('wheel-fallback-opening'), 700);
+    } else if (!reduced && leavingWheel) {
+      root.classList.add('wheel-fallback-closing');
+      setTimeout(() => {
+        root.classList.remove('wheel-fallback-closing');
+        render();
+      }, 420);
     } else render();
   }
 

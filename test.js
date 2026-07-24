@@ -335,9 +335,16 @@ check(htmlSource.includes('href="#/hjul"') && appSource.includes("'#/hjul'"),
   'wheel route: starting-page entry and router target are wired');
 check(htmlSource.includes('view-transition-name:wheel-shared') && appSource.includes('document.startViewTransition'),
   'wheel transition: mini-wheel expands through progressive View Transitions');
-check(htmlSource.includes('html.wheel-closing::view-transition-new(wheel-shared){opacity:0}') &&
-  htmlSource.includes('animation-duration:360ms') && appSource.includes("root.classList.toggle('wheel-closing'"),
-  'wheel transition: closing shrinks the populated wheel with a short shared-element animation');
+check(htmlSource.includes('html.wheel-opening::view-transition-new(wheel-shared)') &&
+  htmlSource.includes('html.wheel-closing::view-transition-old(wheel-shared)') &&
+  appSource.includes("root.classList.toggle('wheel-opening'") &&
+  appSource.includes("root.classList.toggle('wheel-closing'"),
+  'wheel transition: opening and closing use composed, directional shared-element scenes');
+check(htmlSource.includes('wheel-fallback-screen-in') && htmlSource.includes('wheel-fallback-screen-out') &&
+  appSource.includes("root.classList.add('wheel-fallback-opening')") &&
+  appSource.includes("root.classList.add('wheel-fallback-closing')") &&
+  appSource.includes('const nativeWebKit = /AppleWebKit/'),
+  'wheel transition: unsupported and native WebKit engines retain a deliberate fallback');
 check(appSource.includes("matchMedia('(prefers-reduced-motion: reduce)')"),
   'wheel accessibility: reduced motion is honored');
 check(appSource.includes('aria-live="polite"') && appSource.includes('aria-valuetext='),

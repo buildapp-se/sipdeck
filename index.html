@@ -335,12 +335,86 @@ body.wheel-mode .brand,body.wheel-mode .bottom-nav,body.search-mode .brand,body.
 .wheel-result-name .fav-open{padding:0;text-align:left;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
 .wheel-result-note{font:500 .72rem/1.35 var(--sd-font-ui);color:#6e6455;margin-top:.25rem}
 .wheel-live{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-::view-transition-group(wheel-shared){animation-duration:360ms;animation-timing-function:var(--sd-ease-list)}
-::view-transition-old(wheel-shared),::view-transition-new(wheel-shared){
-  animation:none;mix-blend-mode:normal
+/* The wheel route is one composed scene: the disc travels first, then its controls settle around it. */
+::view-transition-old(root),::view-transition-new(root),
+::view-transition-old(wheel-shared),::view-transition-new(wheel-shared){mix-blend-mode:normal}
+::view-transition-group(wheel-shared){z-index:40;animation-duration:760ms;
+  animation-timing-function:cubic-bezier(.16,1,.3,1)}
+
+html.wheel-opening::view-transition-old(root){animation:wheel-scene-old-out 420ms cubic-bezier(.4,0,1,1) both}
+html.wheel-opening::view-transition-new(root){animation:wheel-scene-new-in 620ms cubic-bezier(.16,1,.3,1) both}
+html.wheel-opening::view-transition-old(wheel-shared){animation:wheel-mini-out 300ms cubic-bezier(.4,0,.8,1) both}
+html.wheel-opening::view-transition-new(wheel-shared){animation:wheel-disc-in 760ms cubic-bezier(.16,1,.3,1) both}
+
+html.wheel-closing::view-transition-group(wheel-shared){animation-duration:620ms;
+  animation-timing-function:cubic-bezier(.7,0,.2,1)}
+html.wheel-closing::view-transition-old(root){animation:wheel-scene-close-old 360ms cubic-bezier(.4,0,1,1) both}
+html.wheel-closing::view-transition-new(root){animation:wheel-scene-close-new 560ms 80ms cubic-bezier(.16,1,.3,1) both}
+html.wheel-closing::view-transition-old(wheel-shared){animation:wheel-disc-out 620ms cubic-bezier(.7,0,.2,1) both}
+html.wheel-closing::view-transition-new(wheel-shared){animation:wheel-mini-in 620ms cubic-bezier(.7,0,.2,1) both}
+
+@keyframes wheel-scene-old-out{
+  to{opacity:0;transform:scale(.985)}
 }
-html.wheel-closing::view-transition-new(wheel-shared){opacity:0}
-html.wheel-closing::view-transition-old(wheel-shared){opacity:1}
+@keyframes wheel-scene-new-in{
+  from{opacity:0;transform:scale(1.012)}
+  45%{opacity:1}
+  to{opacity:1;transform:scale(1)}
+}
+@keyframes wheel-mini-out{
+  0%{opacity:1;transform:scale(1) rotate(0)}
+  70%,100%{opacity:0;transform:scale(.9) rotate(-8deg)}
+}
+@keyframes wheel-disc-in{
+  0%,20%{opacity:0;transform:scale(.9) rotate(-5deg)}
+  58%{opacity:1;transform:scale(1.018) rotate(.8deg)}
+  78%{transform:scale(.995) rotate(-.2deg)}
+  100%{opacity:1;transform:scale(1) rotate(0)}
+}
+@keyframes wheel-scene-close-old{
+  to{opacity:0;transform:scale(1.012)}
+}
+@keyframes wheel-scene-close-new{
+  from{opacity:0;transform:scale(.988)}
+  to{opacity:1;transform:scale(1)}
+}
+@keyframes wheel-disc-out{
+  0%,42%{opacity:1;transform:scale(1) rotate(0)}
+  100%{opacity:0;transform:scale(.94) rotate(5deg)}
+}
+@keyframes wheel-mini-in{
+  0%,50%{opacity:0;transform:scale(.86) rotate(7deg)}
+  82%{opacity:1;transform:scale(1.06) rotate(-1deg)}
+  100%{opacity:1;transform:scale(1) rotate(0)}
+}
+
+/* Browsers without same-document View Transitions still get a deliberate entrance/exit. */
+html.wheel-fallback-opening .wheel-screen{animation:wheel-fallback-screen-in 520ms cubic-bezier(.16,1,.3,1) both}
+html.wheel-fallback-opening .wheel-stage{animation:wheel-fallback-disc-in 680ms cubic-bezier(.16,1,.3,1) both}
+html.wheel-fallback-opening .wheel-topbar{animation:wheel-fallback-chrome-in 420ms 90ms cubic-bezier(.16,1,.3,1) both}
+html.wheel-fallback-opening .wheel-heading{animation:wheel-fallback-chrome-in 440ms 150ms cubic-bezier(.16,1,.3,1) both}
+html.wheel-fallback-opening .wheel-controls{animation:wheel-fallback-chrome-in 460ms 215ms cubic-bezier(.16,1,.3,1) both}
+html.wheel-fallback-closing .wheel-screen{animation:wheel-fallback-screen-out 400ms cubic-bezier(.4,0,1,1) both}
+html.wheel-fallback-closing .wheel-stage{animation:wheel-fallback-disc-out 400ms cubic-bezier(.4,0,1,1) both}
+@keyframes wheel-fallback-screen-in{
+  from{opacity:0;transform:scale(1.012)}
+  to{opacity:1;transform:scale(1)}
+}
+@keyframes wheel-fallback-disc-in{
+  from{opacity:0;transform:scale(.76) rotate(-6deg)}
+  68%{opacity:1;transform:scale(1.018) rotate(.8deg)}
+  to{opacity:1;transform:scale(1) rotate(0)}
+}
+@keyframes wheel-fallback-chrome-in{
+  from{opacity:0;transform:translateY(12px) scale(.988)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes wheel-fallback-screen-out{
+  to{opacity:0;transform:scale(.985)}
+}
+@keyframes wheel-fallback-disc-out{
+  to{opacity:0;transform:scale(.72) rotate(5deg)}
+}
 
 @media (max-width:370px){
   .wheel-entry{max-width:116px;padding-right:.55rem}.wheel-symbol{width:42px;height:42px;flex-basis:42px}
@@ -358,6 +432,10 @@ html.wheel-closing::view-transition-old(wheel-shared){opacity:1}
 }
 @media (prefers-reduced-motion:reduce){
   ::view-transition-group(wheel-shared){animation-duration:0ms}.wheel-pointer.tick{animation:none}
+  html.wheel-fallback-opening .wheel-screen,html.wheel-fallback-opening .wheel-stage,
+  html.wheel-fallback-opening .wheel-topbar,html.wheel-fallback-opening .wheel-heading,
+  html.wheel-fallback-opening .wheel-controls,html.wheel-fallback-closing .wheel-screen,
+  html.wheel-fallback-closing .wheel-stage{animation:none}
 }
 </style>
 </head>
@@ -412,6 +490,6 @@ html.wheel-closing::view-transition-old(wheel-shared){opacity:1}
   <a href="#/skafferi" data-match="#/skafferi"></a>
   <a href="#/installningar" data-match="#/installningar"></a>
 </nav>
-<script src="app.js?v=1.9"></script>
+<script src="app.js?v=1.10"></script>
 </body>
 </html>
