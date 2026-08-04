@@ -9,7 +9,7 @@ reviewedAt: 2026-07-24
 
 # Handoff: Sipdeck
 
-Read this first, then PRODUCT.md (what to build + acceptance criteria), then BACKLOG.md
+Read this first, then docs/PRODUCT.md (what to build + acceptance criteria), then BACKLOG.md
 (what's next). Written for AI agent sessions picking this up cold.
 
 ## Current state in one paragraph
@@ -149,7 +149,7 @@ server-wins — it now unions `favorites`/`pantry` between local and server stat
 `mergeState(local, server)` (settings stay server-wins, unchanged direction) so pantry/favorite
 edits made while logged out survive the next login instead of being silently overwritten.
 `pullState()` also now pushes the merged result back after merging, so the server converges to
-the same union. No new state keys — still the exact `sipdeck` blob shape in PRODUCT.md. Design
+the same union. No new state keys — still the exact `sipdeck` blob shape in docs/PRODUCT.md. Design
 was grilled question-by-question first (three explicit decisions locked: badge text is
 name+cutoff not a bare count; the "already have" bonus in the detail view is a plain muted
 color, deliberately not reusing the save/skip gesture colors per the documented rule that
@@ -346,7 +346,7 @@ before item 14's remaining browser gate can close the v1 cut.
   seed uses `coupe`, `highball`, `rocks` and `martini`; unknown future values degrade to
   `rocks`. All 93 current ids have production art; the fallback remains resilient for
   future additions or failed requests. `convert()` uses 30 ml/oz (bar standard;
-  PRODUCT.md doesn't pin it).
+  docs/PRODUCT.md doesn't pin it).
 - The `#view` click/change delegates are attached ONCE at startup (the element is never
   replaced). `#deck` listeners attach when the view is rendered and survive successive
   swipes; each newly promoted top card only gets its pointer handlers once.
@@ -365,11 +365,11 @@ the same day; Svepa was the agent's recommendation).
 Tagline: *"Swipe. Save. Shake."* Tone: stylish, dry, slightly playful.
 
 **Visual identity is finalized** (2026-07-18, same Claude design session per
-`DESIGN-BRIEF.md`). Concept: "the garnished deck" — monoline wordmark/icon, one fixed
+`docs/DESIGN-BRIEF.md`). Concept: "the garnished deck" — monoline wordmark/icon, one fixed
 accent (vermouth green) as the only color the brand itself uses. Real assets live in
 `design/`: `tokens.css`, `wordmark.svg`, `icon.svg` + `icon-48.svg` + `favicon.svg`,
 plus `identity-full.html` (full archived rationale) and `README.md` (usage map). Summary
-in PRODUCT.md's "Visual identity" section. One implementation deviation from the raw
+in docs/PRODUCT.md's "Visual identity" section. One implementation deviation from the raw
 design output, documented in `tokens.css`'s header comment: dark mode is wired to
 `prefers-color-scheme` automatically instead of a manual `[data-theme]` attribute,
 because v1 has no theme toggle (YAGNI) — the color values themselves are unchanged.
@@ -383,7 +383,7 @@ user's own to-do before going public.
    any roadmap.
 2. **Accounts = v1.1, not v1** (pushback accepted: v1 already fat with pantry + i18n +
    asset pipeline; localStorage-first makes sync purely additive). v1's only obligation:
-   state stays one sync-shaped blob under one key — already specified in PRODUCT.md.
+   state stays one sync-shaped blob under one key — already specified in docs/PRODUCT.md.
 3. **Accounts backend = recept pattern, minimal cut**: Firebase Auth identity-only +
    Cloudflare Worker + D1, whole-state JSON blob, debounced PUT, last-write-wins. Only
    `GET/PUT /state` + `DELETE /account`. No feed/groups/PIN — deliberate subset.
@@ -391,7 +391,7 @@ user's own to-do before going public.
    Årshjul. Custom domain deferred until the name is final.
 
 Earlier locked decisions (data model, units/rounding, filters, pantry, i18n, images) are
-in PRODUCT.md "Locked decisions".
+in docs/PRODUCT.md "Locked decisions".
 
 ## Accounts + sync implementation (locked 2026-07-20, BACKLOG 15 done)
 
@@ -603,7 +603,7 @@ domain, service worker/offline, "missing one ingredient" pantry view, shake-to-s
 
 ## v1 close-out (BACKLOG 13 + 14, 2026-07-19)
 
-BACKLOG 13: strict normal-bar audit done per BAR-AUDIT.md — 37 drinks stay `bar: true`,
+BACKLOG 13: strict normal-bar audit done per docs/BAR-AUDIT.md — 37 drinks stay `bar: true`,
 20 flipped to false (blocking essentials documented per drink); the exact allowlist is
 under regression in test.js (4,303 checks green). Recipes, ingredients and the seed are
 untouched.
@@ -754,7 +754,7 @@ to the green save tint): `--sd-skip` moved from bitters amber `#8A5A21` to a mut
 red `#A03B2E` (dark mode `#D8A659` -> `#DE8070`), in `index.html`, `design/tokens.css` and
 both design docs (`design/README.md`, `design/identity-full.html`, including its
 recomputed contrast table rows). Still explicitly gesture feedback, never reused for
-errors — PRODUCT.md's D1/color section and the identity doc's usage rules were reworded
+errors — docs/PRODUCT.md's D1/color section and the identity doc's usage rules were reworded
 to say "skip-red" instead of "skip-amber". Contrast improved: 6.22:1 light (was 5.51:1),
 6.54:1 dark AA (was 8.38:1 AAA — still comfortably above the 4.5:1 floor). Verified
 visually via a Playwright drag-left/drag-right screenshot pair; deployed to both

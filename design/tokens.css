@@ -1,5 +1,5 @@
 /* Sipdeck design tokens — output of the Claude design session, baked in 2026-07-18.
-   Source: DESIGN-BRIEF.md → design/identity-full.html. Inline this block into
+   Source: docs/DESIGN-BRIEF.md → design/identity-full.html. Inline this block into
    index.html's <style> at scaffold time (project convention: tokens in :root, no
    separate stylesheet request, no build step).
 

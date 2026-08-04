@@ -3,7 +3,7 @@
 > Tvärprojekt-prio: se `../master-backlog.md`, uppdatera båda vid ändring.
 
 Ordered by priority. Work top-down; each item is meant to be finishable in one focused
-agent session. Story/AC references point into PRODUCT.md.
+agent session. Story/AC references point into docs/PRODUCT.md.
 
 ## v1 (the cut line is explicit below)
 
@@ -13,9 +13,9 @@ Items 1–12 ✅ done 2026-07-19 (see HANDOFF.md "Current state"). Next up: item
    `<style>`, inline `design/wordmark.svg` in the header), `app.js` (pure functions on
    top, exported for test), hash views `#/` deck, `#/favoriter`, `#/skafferi`,
    `#/installningar`; state load/save to localStorage key `sipdeck` (blob shape in
-   PRODUCT.md). Mobile-first bottom nav, recept/Årshjul conventions. Visual identity is
+   docs/PRODUCT.md). Mobile-first bottom nav, recept/Årshjul conventions. Visual identity is
    final (`design/README.md`) — use it, don't reinvent tokens or motion curves.
-2. ✅ **Data schema + validator + first 10 drinks** — `drinks.json` per PRODUCT.md schema;
+2. ✅ **Data schema + validator + first 10 drinks** — `drinks.json` per docs/PRODUCT.md schema;
    validator in `test.js` (unique ids, every ingredient id resolvable, `essential`
    explicit, `ml` xor `qty`+`unit`, method en+sv). 10 well-known IBA drinks as seed.
 3. ✅ **Unit engine** — pure functions: linear scaling, cl/ml/oz conversion, bar rounding
@@ -55,7 +55,7 @@ Items 1–12 ✅ done 2026-07-19 (see HANDOFF.md "Current state"). Next up: item
     water sectors and always lands on water. Includes exact landing geometry, re-spin/New
     wheel behavior, sound/mute, ticking, one landing haptic, reduced-motion handling,
     repeat safety copy and 13 optimized illustrations with reusable local masters. (J1)
-13. ✅ **Strict normal-bar audit** (done 2026-07-19, see BAR-AUDIT.md: 37 stay `bar: true`,
+13. ✅ **Strict normal-bar audit** (done 2026-07-19, see docs/BAR-AUDIT.md: 37 stay `bar: true`,
     20 flipped, exact allowlist under regression) — research the reliably stocked baseline at representative
     ordinary, non-specialist bars, then reassess every drink currently marked `bar: true`.
     Review all essential ingredients drink by drink; IBA status and cocktail-bar availability
