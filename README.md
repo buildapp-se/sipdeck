@@ -39,7 +39,7 @@ $env:BASE_URL='https://preview.example'; npm run test:e2e  # test a deployed pre
 ## Docs
 
 - `HANDOFF.md` — start here: current state, conventions, next steps
-- `PRODUCT.md` — product spec, locked decisions, acceptance criteria
+- `docs/PRODUCT.md` — product spec, locked decisions, acceptance criteria
 - `BACKLOG.md` — ordered work list
 - `design/` — finalized visual identity (tokens, wordmark, icons)
 
