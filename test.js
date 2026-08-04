@@ -516,7 +516,7 @@ check(wheelArt.size === 13, 'wheel.json: exact 13-image wheel artwork inventory'
   const drink = data.drinks.find(item => item.id === id);
   check(drink && drink.bar === false, `bar-ready editorial exception: ${id}`);
 });
-// BACKLOG 13 strict normal-bar audit: the exact allowlist, per BAR-AUDIT.md.
+// BACKLOG 13 strict normal-bar audit: the exact allowlist, per docs/BAR-AUDIT.md.
 const BAR_ALLOWLIST = ['amaretto-sour', 'americano', 'aperol-spritz', 'black-russian',
   'bloody-mary', 'blue-lagoon', 'boulevardier', 'caipiroska', 'cosmopolitan', 'cuba-libre',
   'daiquiri', 'dark-n-stormy', 'dry-martini', 'espresso-martini', 'french-connection',
@@ -526,7 +526,7 @@ const BAR_ALLOWLIST = ['amaretto-sour', 'americano', 'aperol-spritz', 'black-rus
   'sidecar', 'southside', 'tequila-sunrise', 'whiskey-sour', 'white-lady', 'white-russian'];
 const barIds = data.drinks.filter(drink => drink.bar).map(drink => drink.id).sort();
 check(barIds.length === 37, 'bar audit: exactly 37 drinks pass the strict normal-bar bar');
-check(barIds.join() === BAR_ALLOWLIST.join(), 'bar audit: allowlist matches BAR-AUDIT.md exactly');
+check(barIds.join() === BAR_ALLOWLIST.join(), 'bar audit: allowlist matches docs/BAR-AUDIT.md exactly');
 BAR_ALLOWLIST.forEach(id => check(data.drinks.some(drink => drink.id === id && drink.bar === true),
   `bar audit allowlist: ${id} is bar: true`));
 new Set(data.drinks.map(drink => drink.type)).forEach(type => {
