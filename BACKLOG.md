@@ -281,6 +281,9 @@ counts.
 - [x] ~~Custom domain once the name is final.~~ Done 2026-07-21: live at buildapp.se/sipdeck.
 - [ ] Service worker/offline (only if real-world use shows the need — recept precedent).
 - [ ] Shake-to-shuffle, haptics on save (progressive enhancement only).
+Att lägga till fler recept på välkända drinkar.
+Att eventuellt lägga in fler variationer på varje kort på något roligt sätt om dom är väldigt lika varandra.
+Att få ihop total vätska på X antal drinkar och hur mycket vätska det ska vara i varje drink. (Kan man blanda X liter och sen dela upp i Y per glas)
 
 ## Known accepted limitations
 
