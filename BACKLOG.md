@@ -257,25 +257,30 @@ Items 1–12 ✅ done 2026-07-19 (see HANDOFF.md "Current state"). Next up: item
 
 ## v2 / ideas (unordered)
 
-- **Canonical-domain transport/header follow-up**: `buildapp.se/sipdeck/` is currently
+The numbered v1–v1.5 items above stay as they are: they are the shipped record, and
+their numbers are cross-referenced from this file and from `HANDOFF.md`. Only what is
+genuinely open is written as a task checkbox, which is also what the project cockpit
+counts.
+
+- [ ] **Canonical-domain transport/header follow-up**: `buildapp.se/sipdeck/` is currently
   Cloudflare-fronted but exposes GitHub Pages/Fastly origin behavior. Configure permanent
   HTTP→HTTPS and mirror `_headers` at that external proxy/zone. Inventory every
   `buildapp.se` subdomain before any HSTS `includeSubDomains` rollout.
-- **CSP promotion**: exercise Firebase email/Google sign-in and sync on a deployed preview,
+- [ ] **CSP promotion**: exercise Firebase email/Google sign-in and sync on a deployed preview,
   inspect the Report-Only console/reports, then narrow and promote directives only if no
   required origin is blocked.
-- Richer filter UI over existing tags: style, strength.
-- **Alcohol-free mode**: separate boolean toggle (same pattern as the `bar` filter, D1),
+- [ ] Richer filter UI over existing tags: style, strength.
+- [ ] **Alcohol-free mode**: separate boolean toggle (same pattern as the `bar` filter, D1),
   off by default. Mixing mocktails into the normal deck unprompted isn't wanted (nobody
   asked for tequila-free surprises); an explicit "Alkoholfritt"/"Alcohol-free" toggle that
   only shows alcohol-free-tagged drinks is the actual ask.
-- Fill out alcohol-free-tagged drinks in the seed — only worth doing once the toggle
+- [ ] Fill out alcohol-free-tagged drinks in the seed — only worth doing once the toggle
   above exists, otherwise they're stuck behind a tag nothing filters on.
-- Weighted shuffle: bias the deck shuffle away from recently-surfaced top drinks
+- [ ] Weighted shuffle: bias the deck shuffle away from recently-surfaced top drinks
   (recency-only, no new data, pure shuffle-logic tweak).
-- ~~Custom domain once the name is final.~~ Done 2026-07-21: live at buildapp.se/sipdeck.
-- Service worker/offline (only if real-world use shows the need — recept precedent).
-- Shake-to-shuffle, haptics on save (progressive enhancement only).
+- [x] ~~Custom domain once the name is final.~~ Done 2026-07-21: live at buildapp.se/sipdeck.
+- [ ] Service worker/offline (only if real-world use shows the need — recept precedent).
+- [ ] Shake-to-shuffle, haptics on save (progressive enhancement only).
 
 ## Known accepted limitations
 
