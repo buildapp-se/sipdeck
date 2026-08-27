@@ -4,7 +4,7 @@ status: active
 currentGoal: Keep Sipdeck live and pick up v2 items as they become worth doing
 nextAction: Mirror the _headers response headers at the buildapp.se Cloudflare zone and settle HTTP to HTTPS, inventorying every subdomain before any HSTS includeSubDomains rollout
 blockers: []
-reviewedAt: 2026-08-09
+reviewedAt: 2026-08-27
 ---
 
 # Handoff: Sipdeck
@@ -13,6 +13,17 @@ Read this first, then docs/PRODUCT.md (what to build + acceptance criteria), the
 (what's next). Written for AI agent sessions picking this up cold.
 
 ## Current state in one paragraph
+
+**Cloudflare Web Analytics on the buildapp.se zone, info.html v1.1, 2026-08-27.** The
+zone now auto-injects `beacon.min.js` (cookieless page-view stats) into all proxied HTML,
+so `buildapp.se/sipdeck/` reports page views without any code change. `info.html` (sv + en)
+describes it: new sentence under "Utan konto", a visit-statistics legal basis, and the
+cookies paragraph no longer claims "no client-side analytics service". Pushed to main only,
+which updates the GitHub Pages origin behind `buildapp.se`; **not** wrangler-uploaded to
+`sipdeck.pages.dev`, which also gets no beacon (different zone). The enforced CSP in
+`_headers` applies to the Pages origin only, so it does not block the beacon on the canonical
+domain; if those headers are ever mirrored to the zone (nextAction), add
+`https://static.cloudflareinsights.com` to `script-src`.
 
 **Accessibility, metadata, response-header and wheel-transition pass 2026-07-24.**
 The deck now keeps every non-top card and hidden card face `inert`; Enter/Space flips the
