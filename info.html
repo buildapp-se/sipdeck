@@ -36,7 +36,7 @@ p,ul{margin:.4rem 0 1rem}li+li{margin-top:.35rem}.meta{color:var(--muted);font-s
 
   <article id="sv" lang="sv">
     <h1>Integritet, lokal lagring och villkor</h1>
-    <p class="meta">Senast uppdaterad 23 juli 2026 · Version 1.0</p>
+    <p class="meta">Senast uppdaterad 27 augusti 2026 · Version 1.1</p>
     <p class="notice">Sipdeck är ett gratis hobbyprojekt utan annonser, beteendespårning eller försäljning av personuppgifter.</p>
 
     <h2>Vem ansvarar för uppgifterna?</h2>
@@ -46,7 +46,8 @@ p,ul{margin:.4rem 0 1rem}li+li{margin-top:.35rem}.meta{color:var(--muted);font-s
     <h2>Vilka uppgifter behandlas?</h2>
     <h3>Utan konto</h3>
     <p>Favoriter, skafferi och inställningar sparas bara lokalt i din webbläsare. Sipdeck tar inte emot dessa uppgifter så länge du är utloggad.
-      Cloudflare behandlar tekniska uppgifter som IP-adress, tidpunkt, efterfrågad adress och webbläsarinformation när sidan levereras och skyddas.</p>
+      Cloudflare behandlar tekniska uppgifter som IP-adress, tidpunkt, efterfrågad adress och webbläsarinformation när sidan levereras och skyddas.
+      Cloudflare Web Analytics ger dessutom aggregerad besöksstatistik (sida, land, webbläsare, hänvisande sida, laddningstid) via ett skript, <code>beacon.min.js</code> från <code>static.cloudflareinsights.com</code>, som Cloudflare lägger in i sidan. Det sätter inga cookies, skapar ingen enhetsprofil och sparar inte din IP-adress.</p>
     <h3>Med konto</h3>
     <p>Firebase Authentication behandlar e-postadress, inloggningsleverantör, tekniska identifierare, IP-adress och webbläsarinformation.
       Sipdeck lagrar ett Firebase-UID tillsammans med dina synkade favoriter, ditt skafferi och dina inställningar i Cloudflare D1.
@@ -58,11 +59,12 @@ p,ul{margin:.4rem 0 1rem}li+li{margin-top:.35rem}.meta{color:var(--muted);font-s
       <li><strong>Appfunktioner och lokal lagring:</strong> för att tillhandahålla funktionerna du uttryckligen använder.</li>
       <li><strong>Konto och synk:</strong> för att fullgöra den kostnadsfria tjänst du begär när du skapar eller använder ett konto.</li>
       <li><strong>Säkerhet och teknisk drift:</strong> berättigat intresse av att förebygga missbruk, felsöka och hålla tjänsten säker.</li>
+      <li><strong>Besöksstatistik:</strong> berättigat intresse av att veta vilka sidor som används och hur snabbt de laddar. Statistiken är aggregerad och kan inte kopplas till dig.</li>
       <li><strong>Support:</strong> för att besvara din begäran och, där det behövs, vårt berättigade intresse av att dokumentera lösta ärenden.</li>
     </ul>
 
     <h2>Cookies och lagring på din enhet</h2>
-    <p>Sipdeck använder inga annonserings- eller analyscookies och laddar ingen klientbaserad analystjänst. Appen använder:</p>
+    <p>Sipdeck använder inga annonserings- eller analyscookies. Besöksstatistiken från Cloudflare Web Analytics lagrar ingenting på din enhet och använder ingen identifierare som följer dig mellan besök. Appen använder:</p>
     <ul>
       <li><code>localStorage</code> för appens state, senaste synkbas och för att minnas att du tidigare har valt kontosynk.</li>
       <li>Firebase-lagring i IndexedDB först när du använder kontofunktionen eller tidigare har valt att vara inloggad.</li>
@@ -113,7 +115,7 @@ p,ul{margin:.4rem 0 1rem}li+li{margin-top:.35rem}.meta{color:var(--muted);font-s
 
   <article id="en" lang="en">
     <h1>Privacy, local storage and terms</h1>
-    <p class="meta">Last updated 23 July 2026 · Version 1.0</p>
+    <p class="meta">Last updated 27 August 2026 · Version 1.1</p>
     <p class="notice">Sipdeck is a free hobby project with no advertising, behavioural tracking or sale of personal data.</p>
 
     <h2>Who is responsible for the data?</h2>
@@ -123,7 +125,8 @@ p,ul{margin:.4rem 0 1rem}li+li{margin-top:.35rem}.meta{color:var(--muted);font-s
     <h2>What data is processed?</h2>
     <h3>Without an account</h3>
     <p>Favorites, pantry contents and settings are stored only in your browser. Sipdeck does not receive this data while you are signed out.
-      Cloudflare processes technical data such as IP address, time, requested address and browser information to deliver and protect the site.</p>
+      Cloudflare processes technical data such as IP address, time, requested address and browser information to deliver and protect the site.
+      Cloudflare Web Analytics also provides aggregated visit statistics (page, country, browser, referring page, load time) through a script, <code>beacon.min.js</code> from <code>static.cloudflareinsights.com</code>, that Cloudflare injects into the page. It sets no cookies, builds no device profile and does not store your IP address.</p>
     <h3>With an account</h3>
     <p>Firebase Authentication processes your email address, sign-in provider, technical identifiers, IP address and browser information.
       Sipdeck stores a Firebase UID with your synced favorites, pantry and settings in Cloudflare D1. Sipdeck never receives your password.</p>
@@ -134,11 +137,12 @@ p,ul{margin:.4rem 0 1rem}li+li{margin-top:.35rem}.meta{color:var(--muted);font-s
       <li><strong>App features and local storage:</strong> to provide features you explicitly use.</li>
       <li><strong>Account and sync:</strong> to perform the free service you request when creating or using an account.</li>
       <li><strong>Security and technical operation:</strong> our legitimate interest in preventing abuse, troubleshooting and keeping the service secure.</li>
+      <li><strong>Visit statistics:</strong> our legitimate interest in knowing which pages are used and how fast they load. The statistics are aggregated and cannot be linked to you.</li>
       <li><strong>Support:</strong> to answer your request and, where needed, our legitimate interest in documenting resolved matters.</li>
     </ul>
 
     <h2>Cookies and storage on your device</h2>
-    <p>Sipdeck uses no advertising or analytics cookies and loads no client-side analytics service. The app uses:</p>
+    <p>Sipdeck uses no advertising or analytics cookies. The visit statistics from Cloudflare Web Analytics store nothing on your device and use no identifier that follows you between visits. The app uses:</p>
     <ul>
       <li><code>localStorage</code> for app state, the latest sync base and to remember that you previously chose account sync.</li>
       <li>Firebase storage in IndexedDB only after you use the account feature or have previously chosen to stay signed in.</li>
