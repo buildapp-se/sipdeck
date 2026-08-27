@@ -14,18 +14,23 @@ Read this first, then docs/PRODUCT.md (what to build + acceptance criteria), the
 
 ## Recent work
 
-**2026-08-27: the privacy page existed but was unreachable.**
+**2026-08-27: bundle-budgettestet mätte fel sak.**
 
-- `info.html` has been accurate and complete since 23 July, but the only links to
-  it sat inside the account section, so a signed-out visitor could not find it.
-  Settings now links it too (`viewSettings`, reusing the existing `account_legal`
-  translation key rather than adding a new one).
-- **`test.js` bundle budget was measuring the wrong thing.** It byte-counted the
-  working copy, and a Windows checkout is CRLF, which adds ~1.8 kB that never
-  ships. The check was already failing before this change for that reason alone.
-  It now strips CR first, so it measures what git stores and Pages serves.
-- The count-based privacy check (`=== 3`) became `>= 3`, plus a new check that
-  settings reaches the legal page. `npm test`: 4937 passed, 0 failed.
+- `test.js` byte-räknade arbetskopian mot en budget på 89 kB. En Windows-utcheckning
+  är CRLF och lägger på ~1,8 kB som aldrig deployas, så checken var röd utan att
+  något faktiskt vuxit: 89 078 byte mot 89 000, medan filen i git är 87 243. Den
+  strippar nu CR först och mäter alltså det git lagrar och Pages levererar.
+
+**Samma dag, en ändring som togs tillbaka efter preview:** `viewSettings` fick en
+länk till `info.html`, på antagandet att policysidan inte gick att nå utan konto.
+Fel. `accountSection()` innehåller redan länken för både inloggat och utloggat läge
+och renderas inuti `viewSettings`, så den var redan nåbar. Länken blev en synlig
+dubblett på inställningsskärmen och plockades bort. Testet `split('href="info.html")
+.length === 3` fångade det korrekt och lämnades orört.
+
+**Läxa:** kontrollera renderingen innan du drar slutsatsen att något inte går att nå.
+Ett grep på var länken står i källan visade två träffar i kontosektionen och sa
+ingenting om vilken vy den hamnar i.
 
 ## Current state in one paragraph
 
