@@ -12,6 +12,21 @@ reviewedAt: 2026-08-27
 Read this first, then docs/PRODUCT.md (what to build + acceptance criteria), then BACKLOG.md
 (what's next). Written for AI agent sessions picking this up cold.
 
+## Recent work
+
+**2026-08-27: the privacy page existed but was unreachable.**
+
+- `info.html` has been accurate and complete since 23 July, but the only links to
+  it sat inside the account section, so a signed-out visitor could not find it.
+  Settings now links it too (`viewSettings`, reusing the existing `account_legal`
+  translation key rather than adding a new one).
+- **`test.js` bundle budget was measuring the wrong thing.** It byte-counted the
+  working copy, and a Windows checkout is CRLF, which adds ~1.8 kB that never
+  ships. The check was already failing before this change for that reason alone.
+  It now strips CR first, so it measures what git stores and Pages serves.
+- The count-based privacy check (`=== 3`) became `>= 3`, plus a new check that
+  settings reaches the legal page. `npm test`: 4937 passed, 0 failed.
+
 ## Current state in one paragraph
 
 **Cloudflare Web Analytics on the buildapp.se zone, info.html v1.1, 2026-08-27.** The
