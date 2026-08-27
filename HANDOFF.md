@@ -4,13 +4,28 @@ status: active
 currentGoal: Keep Sipdeck live and pick up v2 items as they become worth doing
 nextAction: Mirror the _headers response headers at the buildapp.se Cloudflare zone and settle HTTP to HTTPS, inventorying every subdomain before any HSTS includeSubDomains rollout
 blockers: []
-reviewedAt: 2026-08-09
+reviewedAt: 2026-08-27
 ---
 
 # Handoff: Sipdeck
 
 Read this first, then docs/PRODUCT.md (what to build + acceptance criteria), then BACKLOG.md
 (what's next). Written for AI agent sessions picking this up cold.
+
+## Recent work
+
+**2026-08-27: the privacy page existed but was unreachable.**
+
+- `info.html` has been accurate and complete since 23 July, but the only links to
+  it sat inside the account section, so a signed-out visitor could not find it.
+  Settings now links it too (`viewSettings`, reusing the existing `account_legal`
+  translation key rather than adding a new one).
+- **`test.js` bundle budget was measuring the wrong thing.** It byte-counted the
+  working copy, and a Windows checkout is CRLF, which adds ~1.8 kB that never
+  ships. The check was already failing before this change for that reason alone.
+  It now strips CR first, so it measures what git stores and Pages serves.
+- The count-based privacy check (`=== 3`) became `>= 3`, plus a new check that
+  settings reaches the legal page. `npm test`: 4937 passed, 0 failed.
 
 ## Current state in one paragraph
 
