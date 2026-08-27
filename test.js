@@ -323,7 +323,7 @@ check(!htmlSource.includes('gstatic.com/firebase') && appSource.includes("async 
 check(appSource.includes("const AUTH_KEY = KEY + '-auth'") && appSource.includes("signInWithPopup") &&
   !appSource.includes("signInWithRedirect"),
   'privacy: requested account persistence resumes lazy auth with cross-origin-safe sign-in');
-check(appSource.split('href="info.html"').length >= 3,
+check(appSource.split('href="info.html"').length === 3,
   'privacy: legal information is linked for signed-in and signed-out account views');
 check(appSource.split('data-servings').length >= 5 && appSource.includes('max="${MAX_SERVINGS}"') &&
   appSource.includes('if (servingDrinkId !== id)'),
@@ -333,8 +333,6 @@ check(htmlSource.includes('.servings-input::-webkit-inner-spin-button') &&
   'recipe scaling: native number spinners stay hidden beside the larger minus/plus controls');
 const settingsViewSource = appSource.slice(appSource.indexOf('function viewSettings()'),
   appSource.indexOf('function random01()'));
-check(settingsViewSource.includes('href="info.html"'),
-  'privacy: settings reaches the legal page without signing in');
 check(!settingsViewSource.includes("settings_unit')") &&
   !settingsViewSource.includes("settings_filter_bar')") &&
   !settingsViewSource.includes("settings_filter_base')"),

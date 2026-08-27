@@ -1349,8 +1349,7 @@ if (typeof document !== 'undefined') (function () {
           <p class="fav-hint">${esc(t(lang(), 'settings_wheel_favorites_only_hint'))}</p>
         </dd>
       </dl>
-      ${wheelOutcomeGroups(s)}
-      <p class="settings-legal"><a href="info.html">${esc(t(lang(), 'account_legal'))}</a></p>`;
+      ${wheelOutcomeGroups(s)}`;
   }
 
   function random01() {
