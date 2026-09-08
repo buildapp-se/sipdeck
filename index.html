@@ -190,6 +190,10 @@ dl.settings dd{min-width:0}
 .account h2{font:400 1.3rem/1.2 var(--sd-font-display);margin-bottom:.5rem}
 .account p{font:400 .88rem/1.4 var(--sd-font-ui);color:var(--sd-ink-2);margin-bottom:.6rem}
 .account-actions{display:flex;gap:.5rem;flex-wrap:wrap}
+/* Google-knappen: developers.google.com/identity/branding-guidelines, ljust tema. Roboto bara lokalt, CSP font-src 'self'. */
+.account .gsi{display:inline-flex;align-items:center;gap:10px;height:40px;padding:0 12px;background:#fff;color:#1f1f1f;border:1px solid #747775;border-radius:20px;font-family:Roboto,system-ui,sans-serif;font-weight:500;font-size:14px;line-height:20px;letter-spacing:.25px}
+.account .gsi:hover{background:#f6f6f6}
+.gsi-logo{width:20px;height:20px;flex:none}
 .account button{border:1px solid rgba(33,27,18,.18);border-radius:8px;padding:.45rem .8rem;
   color:#211B12;font:500 .82rem/1.2 var(--sd-font-ui);background:var(--sd-card)}
 .account a{text-decoration:underline;text-underline-offset:2px}

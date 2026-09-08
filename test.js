@@ -300,7 +300,10 @@ const workerSource = fs.readFileSync(path.join(__dirname, 'worker', 'worker.js')
 // bumped 74kB -> 79kB 2026-07-21 for wheel prefs (favorites-only cocktails, per-outcome beer/wine/shot toggles)
 // bumped 86kB -> 87kB 2026-07-23 for transient editable 1–100 recipe servings
 // bumped 87kB -> 89kB 2026-07-24 for keyboard-safe card faces and accessible status semantics
-check(Buffer.byteLength(appSource) < 89000, 'bundle budget: app.js stays under 89 kB unminified');
+// Mät LF-storleken, alltså det git lagrar och GitHub Pages levererar. En Windows-
+// arbetskopia checkas ut med CRLF och lägger på ~1,8 kB som aldrig deployas.
+check(Buffer.byteLength(appSource.split('\r').join('')) < 89000,
+  'bundle budget: app.js stays under 89 kB unminified');
 check(!htmlSource.includes('fonts.googleapis.com') && htmlSource.includes("fonts/work-sans.woff2"),
   'privacy: fonts are self-hosted with no Google Fonts request');
 check(htmlSource.includes('rel="canonical" href="https://buildapp.se/sipdeck/"') &&
