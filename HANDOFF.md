@@ -4,13 +4,50 @@ status: active
 currentGoal: Keep Sipdeck live and pick up v2 items as they become worth doing
 nextAction: Mirror the _headers response headers at the buildapp.se Cloudflare zone and settle HTTP to HTTPS, inventorying every subdomain before any HSTS includeSubDomains rollout
 blockers: []
-reviewedAt: 2026-08-27
+reviewedAt: 2026-09-08
 ---
 
 # Handoff: Sipdeck
 
 Read this first, then docs/PRODUCT.md (what to build + acceptance criteria), then BACKLOG.md
 (what's next). Written for AI agent sessions picking this up cold.
+
+## Recent work
+
+**2026-09-08: Google-knappen enligt Googles riktlinjer, plus tre äldre commits som låg och väntade. Rebasad på main och pushad.**
+
+- "Logga in med Google" under Inställningar → Konto följer nu
+  developers.google.com/identity/branding-guidelines (ljust tema): vit, 1 px `#747775`,
+  färgad G-logga som inline-SVG i `app.js`, medium 14/20. Roboto används bara om den
+  finns lokalt, CSP:n har `font-src 'self'`. `.account .gsi` vinner över `.account button`
+  på specificitet. Samma ändring gjord i Grammat och Beefcake samma dag.
+- **Fälla som upptäcktes före pushen:** `policy-reachable` grenade av före `80c1528`,
+  som skrev in Cloudflare Web Analytics i `info.html` (version 1.1). En merge rakt av
+  hade backat policyn till version 1.0 och återinfört påståendet att sajten inte laddar
+  någon klientbaserad analystjänst, vilket är fel och står på en publik sida. Branchen
+  rebasades därför på `origin/main` först, och `info.html` är nu oförändrad mot main.
+  Kontrollen som fångade det: `git diff origin/main..HEAD -- info.html`.
+- `node test.js` 4 936 gröna efter rebasen, bundle-budgeten håller. Verifierat i Chrome
+  på inställningsskärmen: knappen renderar med logga och 40 px höjd, exakt en länk till
+  `info.html`, inga konsolfel.
+
+**2026-08-27: bundle-budgettestet mätte fel sak.**
+
+- `test.js` byte-räknade arbetskopian mot en budget på 89 kB. En Windows-utcheckning
+  är CRLF och lägger på ~1,8 kB som aldrig deployas, så checken var röd utan att
+  något faktiskt vuxit: 89 078 byte mot 89 000, medan filen i git är 87 243. Den
+  strippar nu CR först och mäter alltså det git lagrar och Pages levererar.
+
+**Samma dag, en ändring som togs tillbaka efter preview:** `viewSettings` fick en
+länk till `info.html`, på antagandet att policysidan inte gick att nå utan konto.
+Fel. `accountSection()` innehåller redan länken för både inloggat och utloggat läge
+och renderas inuti `viewSettings`, så den var redan nåbar. Länken blev en synlig
+dubblett på inställningsskärmen och plockades bort. Testet `split('href="info.html")
+.length === 3` fångade det korrekt och lämnades orört.
+
+**Läxa:** kontrollera renderingen innan du drar slutsatsen att något inte går att nå.
+Ett grep på var länken står i källan visade två träffar i kontosektionen och sa
+ingenting om vilken vy den hamnar i.
 
 ## Current state in one paragraph
 
