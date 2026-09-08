@@ -4,7 +4,7 @@ status: active
 currentGoal: Keep Sipdeck live and pick up v2 items as they become worth doing
 nextAction: Mirror the _headers response headers at the buildapp.se Cloudflare zone and settle HTTP to HTTPS, inventorying every subdomain before any HSTS includeSubDomains rollout
 blockers: []
-reviewedAt: 2026-08-27
+reviewedAt: 2026-09-08
 ---
 
 # Handoff: Sipdeck
@@ -13,6 +13,19 @@ Read this first, then docs/PRODUCT.md (what to build + acceptance criteria), the
 (what's next). Written for AI agent sessions picking this up cold.
 
 ## Recent work
+
+**2026-09-08: Google-knappen enligt Googles riktlinjer. Committad lokalt på `policy-reachable`, INTE pushad.**
+
+- "Logga in med Google" under Inställningar → Konto följer nu
+  developers.google.com/identity/branding-guidelines (ljust tema): vit, 1 px `#747775`,
+  färgad G-logga som inline-SVG i `app.js`, medium 14/20. Roboto används bara om den
+  finns lokalt, CSP:n har `font-src 'self'`. `.account .gsi` vinner över `.account button`
+  på specificitet. Samma ändring gjord i Grammat och Beefcake samma dag.
+- `node test.js` 4 936 gröna, bundle-budgeten håller. Verifierad i Chromium på 400 px
+  via lokal server, inga konsolfel.
+- Sipdeck har externa användare, så push till `origin/policy-reachable` och merge till
+  `main` väntar på Patriks uttryckliga ja (regel 1). Branchen låg redan tre commits
+  före `origin/main` (`61f917c`, `c04b93a`, `cae784b`) innan den här.
 
 **2026-08-27: bundle-budgettestet mätte fel sak.**
 
