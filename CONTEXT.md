@@ -133,3 +133,4 @@ Read by the cockpit Audits tab. One `- Label: YYYY-MM-DD, result` per check; con
 
 - OWASP Top 10: 2026-07-25, clean code
 - Headers: 2026-08-04, fail, 0 of 6 on buildapp.se/sipdeck (GitHub Pages ignores _headers)
+- Search Console: 2026-09-15, fail, URL unknown to Google, buildapp.se has no sitemap
