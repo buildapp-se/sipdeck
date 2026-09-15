@@ -132,4 +132,4 @@ _Avoid_: Flick, throw
 Read by the cockpit Audits tab. One `- Label: YYYY-MM-DD, result` per check; conventions in elwyn-dash `docs/security.md`.
 
 - OWASP Top 10: 2026-07-25, clean code
-- Headers: 2026-08-04, 0 of 6 on buildapp.se/sipdeck (GitHub Pages ignores _headers)
+- Headers: 2026-08-04, fail, 0 of 6 on buildapp.se/sipdeck (GitHub Pages ignores _headers)
