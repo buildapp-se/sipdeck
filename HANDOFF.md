@@ -9,6 +9,15 @@ reviewedAt: 2026-09-16
 
 # Handoff: Sipdeck
 
+## 2026-09-16: tryckytor 44 px, PR #15
+
+Fitts-fyndet rättat på branchen `fix/tryckytor-44px` (två commits): bottennav,
+logga och filterväljare 44 px, kortens stegare, enheter och portionsfält 48 px
+eftersom korten i leken ritas skalade ner till 0,93. Mätt lokalt mot
+`http.server`: 2 ytor kvar, kryssrutorna (etiketten är ytan). `node test.js`
+grönt; e2e inte körd, Playwright-webbläsarna för 1.61 saknas på maskinen.
+**Inte mergad, inte deployad**: Sipdeck har riktiga användare, du mergar.
+
 Read this first, then docs/PRODUCT.md (what to build + acceptance criteria), then BACKLOG.md
 (what's next). Written for AI agent sessions picking this up cold.
 
