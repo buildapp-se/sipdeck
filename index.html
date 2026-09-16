@@ -87,6 +87,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .wrap{max-width:640px;margin:0 auto;padding:1.25rem 1.25rem calc(6rem + env(safe-area-inset-bottom))}
 header.brand{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:1rem;padding:.5rem 0 1rem}
+header.brand a{display:inline-flex;align-items:center;min-height:44px}
 .brand-copy{display:flex;flex-direction:column;gap:.35rem;min-width:0}
 header.brand .wordmark{color:var(--sd-ink);width:112px;height:auto;display:block}
 header.brand .tagline{font:500 .8rem/1.4 var(--sd-font-ui);color:var(--sd-ink-2);letter-spacing:.02em}
@@ -113,7 +114,8 @@ header.brand .tagline{font:500 .8rem/1.4 var(--sd-font-ui);color:var(--sd-ink-2)
   border-top:1px solid var(--sd-line);box-shadow:var(--sd-shadow);z-index:10;
   padding-bottom:env(safe-area-inset-bottom)}
 .bottom-nav a{flex:1;text-align:center;padding:.75rem .25rem;font:500 .68rem/1.2 var(--sd-font-ui);
-  letter-spacing:.03em;color:var(--sd-ink-2);border-top:2px solid transparent}
+  letter-spacing:.03em;color:var(--sd-ink-2);border-top:2px solid transparent;
+  min-height:44px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .bottom-nav a.active{color:var(--sd-accent);border-top-color:var(--sd-accent)}
 
 .screen-title{font:400 2rem/1.1 var(--sd-font-display);margin-bottom:1rem}
@@ -130,7 +132,7 @@ header.brand .tagline{font:500 .8rem/1.4 var(--sd-font-ui);color:var(--sd-ink-2)
 .filter-toggle{display:flex;align-items:center;gap:.45rem}
 .filter-toggle input{accent-color:var(--sd-accent);width:1rem;height:1rem}
 .filter-select{display:flex;align-items:center;justify-content:space-between;gap:1rem}
-.filter-select select{min-width:9rem;padding:.35rem 1.8rem .35rem .55rem;border:1px solid var(--sd-line);
+.filter-select select{min-width:9rem;min-height:44px;padding:.35rem 1.8rem .35rem .55rem;border:1px solid var(--sd-line);
   border-radius:8px;background:var(--sd-card);color:#211B12;font:500 .82rem/1.3 var(--sd-font-ui)}
 
 /* ---- deck & cards (BACKLOG item 4) ---- */
@@ -169,9 +171,10 @@ header.brand .tagline{font:500 .8rem/1.4 var(--sd-font-ui);color:var(--sd-ink-2)
 .card-method{font:400 .85rem/1.5 var(--sd-font-ui);color:#211B12;overflow-y:auto;min-height:0}
 .card-ctrl{margin-top:auto;padding-top:.7rem;display:flex;align-items:center;justify-content:space-between}
 .stepper{display:flex;align-items:center;gap:.7rem}
+/* 44 px tryckytor (Fitts, granskningen 2026-09-16): stegare, enheter, portioner, filter och loggan */
 .stepper button,.units button{border:1px solid rgba(33,27,18,.18);border-radius:8px;color:#211B12;
-  padding:.3rem .65rem;font:500 .85rem/1 var(--sd-font-ui);background:none}
-.servings-input{width:3.8rem;padding:.3rem .25rem;border:1px solid rgba(33,27,18,.18);
+  padding:.3rem .65rem;font:500 .85rem/1 var(--sd-font-ui);background:none;min-height:44px;min-width:44px}
+.servings-input{width:3.8rem;min-height:44px;padding:.3rem .25rem;border:1px solid rgba(33,27,18,.18);
   border-radius:8px;background:#fbf7ef;color:#211b12;text-align:center;font:500 .85rem/1 var(--sd-font-ui);
   appearance:textfield;-moz-appearance:textfield}
 .servings-input::-webkit-inner-spin-button,.servings-input::-webkit-outer-spin-button{appearance:none;margin:0}
