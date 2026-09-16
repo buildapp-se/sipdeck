@@ -14,7 +14,7 @@ Read this first, then docs/PRODUCT.md (what to build + acceptance criteria), the
 
 ## Recent work
 
-- **2026-09-16, policy 1.2 (PR #13):** info.html said Cloudflare hosts the app; the files are on GitHub Pages, now named as host with its logs. Firebase code is fetched from gstatic.com only when the account feature is used, now stated in both languages. Found by an external privacy review of a sister site. `node test.js` 4936 passed. Merge is the owner's call: main is protected and Sipdeck has live users.
+- **2026-09-16, policy 1.2 (PR #13):** info.html said Cloudflare hosts the app; the files are on GitHub Pages, now named as host with its logs. Firebase code is fetched from gstatic.com only when the account feature is used, now stated in both languages. Found by an external privacy review of a sister site. `node test.js` 4936 passed. Merged by squash on the owner's order the same afternoon (`41f85a8`), policy 1.2 verified live.
 
 **2026-09-08: Google-knappen enligt Googles riktlinjer, plus tre äldre commits som låg och väntade. Rebasad på main och pushad.**
 
