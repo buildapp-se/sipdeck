@@ -2,7 +2,7 @@
 schemaVersion: 1
 status: active
 currentGoal: Keep Sipdeck live and pick up v2 items as they become worth doing
-nextAction: Owner review and approval to publish Tinto de verano and the mobile recipe-control fix
+nextAction: Verify green CI and the PR branch on Cloudflare Pages, then merge as authorized by the owner
 blockers: []
 reviewedAt: 2026-09-16
 ---
@@ -11,7 +11,7 @@ reviewedAt: 2026-09-16
 
 ## 2026-09-16: Tinto de verano och receptkontroller, lokalt verifierat
 
-Väntar på ägarens kontroll och godkännande för publicering. Inget pushat eller deployat i detta pass.
+Ägaren godkände publicering via PR och sedan merge den 2026-09-16, med förtydligandet att invänta CI och verifiera PR-grenen på Cloudflare först. Lokal verifiering nedan är klar; merge sker först efter grön CI och kontrollerad Pages-preview.
 
 - `drinks.json`: Tinto de verano med 80 ml vardera torrt rödvin, sodavatten och citronläsk, samt citronskiva. Ny ingrediens `lemon-soda`, separat från citron- och limeläsk. Saveur använder lika delar vin och läsk med valfritt sodavatten; både källtext och metod märker vår 1:1:1-anpassning. `bar: false`, drinken har inte genomgått bargranskningen. Katalogen har nu 94 drinkar och 150 ingredienser.
 - Bild skapad med inbyggd ImageGen och de fyra frysta referenserna. Original och exakt prompt: `img-src/tinto-de-verano.png` och `img-src/tinto-de-verano-prompt.txt`. Produktionsbild: `img/tinto-de-verano.webp`, 640 × 800, 46 776 byte, Pillow quality 72/method 6. Original och färdig bild visuellt kontrollerade.
@@ -26,7 +26,7 @@ logga och filterväljare 44 px, kortens stegare, enheter och portionsfält 48 px
 eftersom korten i leken ritas skalade ner till 0,93. Mätt lokalt mot
 `http.server`: 2 ytor kvar, kryssrutorna (etiketten är ytan). `node test.js`
 grönt; e2e inte körd, Playwright-webbläsarna för 1.61 saknas på maskinen.
-**Inte mergad, inte deployad**: Sipdeck har riktiga användare, du mergar. Förhandsvisning av grenen på Cloudflare Pages (preview, inte produktion): https://fix-tryckytor-44px.sipdeck.pages.dev (2026-09-16, `wrangler pages deploy` ur `git archive`).
+**Mergad som `0fbef8f` via PR #15 den 2026-09-16.** Förhandsvisning av grenen på Cloudflare Pages (preview, inte produktion): https://fix-tryckytor-44px.sipdeck.pages.dev (2026-09-16, `wrangler pages deploy` ur `git archive`).
 
 Read this first, then docs/PRODUCT.md (what to build + acceptance criteria), then BACKLOG.md
 (what's next). Written for AI agent sessions picking this up cold.
