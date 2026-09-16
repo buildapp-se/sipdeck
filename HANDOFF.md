@@ -4,7 +4,7 @@ status: active
 currentGoal: Keep Sipdeck live and pick up v2 items as they become worth doing
 nextAction: Mirror the _headers response headers at the buildapp.se Cloudflare zone and settle HTTP to HTTPS, inventorying every subdomain before any HSTS includeSubDomains rollout
 blockers: []
-reviewedAt: 2026-09-08
+reviewedAt: 2026-09-16
 ---
 
 # Handoff: Sipdeck
@@ -13,6 +13,8 @@ Read this first, then docs/PRODUCT.md (what to build + acceptance criteria), the
 (what's next). Written for AI agent sessions picking this up cold.
 
 ## Recent work
+
+- **2026-09-16, policy 1.2 (PR #13):** info.html said Cloudflare hosts the app; the files are on GitHub Pages, now named as host with its logs. Firebase code is fetched from gstatic.com only when the account feature is used, now stated in both languages. Found by an external privacy review of a sister site. `node test.js` 4936 passed. Merge is the owner's call: main is protected and Sipdeck has live users.
 
 **2026-09-08: Google-knappen enligt Googles riktlinjer, plus tre äldre commits som låg och väntade. Rebasad på main och pushad.**
 
@@ -852,3 +854,7 @@ opacity-dip keyframe (`index.html`, 180ms, mid-point `opacity:.55`) toggled on
 `#wheelDisc` for that branch only; it's a fade, not motion, so it's untouched
 by the existing `prefers-reduced-motion` media query that zeroes the pointer
 tick and view-transition durations.
+
+## Granskning 2026-09-16
+
+Cross-project audit run from elwyn-dash (session 5 in the daily note). Results written to `## Audits` in CONTEXT.md, findings appended to BACKLOG.md under `## Granskning 2026-09-16`. Headers on buildapp.se and the TLS grade are zone-level and are fixed once in Cloudflare, not here. Committed locally only: a push deploys GitHub Pages to live users. The branch `docs/audits-section` carries an older version of the same section; take main's when merging.

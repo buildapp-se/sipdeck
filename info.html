@@ -36,7 +36,7 @@ p,ul{margin:.4rem 0 1rem}li+li{margin-top:.35rem}.meta{color:var(--muted);font-s
 
   <article id="sv" lang="sv">
     <h1>Integritet, lokal lagring och villkor</h1>
-    <p class="meta">Senast uppdaterad 27 augusti 2026 · Version 1.1</p>
+    <p class="meta">Senast uppdaterad 16 september 2026 · Version 1.2</p>
     <p class="notice">Sipdeck är ett gratis hobbyprojekt utan annonser, beteendespårning eller försäljning av personuppgifter.</p>
 
     <h2>Vem ansvarar för uppgifterna?</h2>
@@ -51,7 +51,8 @@ p,ul{margin:.4rem 0 1rem}li+li{margin-top:.35rem}.meta{color:var(--muted);font-s
     <h3>Med konto</h3>
     <p>Firebase Authentication behandlar e-postadress, inloggningsleverantör, tekniska identifierare, IP-adress och webbläsarinformation.
       Sipdeck lagrar ett Firebase-UID tillsammans med dina synkade favoriter, ditt skafferi och dina inställningar i Cloudflare D1.
-      Sipdeck tar aldrig emot ditt lösenord.</p>
+      Sipdeck tar aldrig emot ditt lösenord. Koden som sköter inloggningen (Firebase) hämtas från Googles CDN
+      (<code>gstatic.com</code>) först när du använder kontofunktionen; då går din IP-adress till Google även för den hämtningen.</p>
     <p>Ingen profilering eller automatiserat beslutsfattande med rättsliga eller liknande betydande effekter sker.</p>
 
     <h2>Varför och med vilken rättslig grund?</h2>
@@ -85,7 +86,7 @@ p,ul{margin:.4rem 0 1rem}li+li{margin-top:.35rem}.meta{color:var(--muted);font-s
     </ul>
 
     <h2>Leverantörer och överföring utanför EU/EES</h2>
-    <p>Cloudflare tillhandahåller hosting, trafikskydd, Worker-API och D1-databas. Google tillhandahåller Firebase Authentication.
+    <p>GitHub Pages är webbhotellet för appens filer och för motsvarande tekniska loggar. Cloudflare tillhandahåller leverans, trafikskydd, Worker-API och D1-databas. Google tillhandahåller Firebase Authentication och Firebase-koden.
       Firebase Authentication behandlar data i USA. Cloudflare kan behandla data globalt och den nuvarande D1-databasen har inte en låst
       EU-jurisdiktion. Leverantörernas dataskyddsvillkor och godkända överföringsmekanismer, exempelvis Data Privacy Framework och
       standardavtalsklausuler där de är tillämpliga, används för dessa överföringar.</p>
@@ -115,7 +116,7 @@ p,ul{margin:.4rem 0 1rem}li+li{margin-top:.35rem}.meta{color:var(--muted);font-s
 
   <article id="en" lang="en">
     <h1>Privacy, local storage and terms</h1>
-    <p class="meta">Last updated 27 August 2026 · Version 1.1</p>
+    <p class="meta">Last updated 16 September 2026 · Version 1.2</p>
     <p class="notice">Sipdeck is a free hobby project with no advertising, behavioural tracking or sale of personal data.</p>
 
     <h2>Who is responsible for the data?</h2>
@@ -129,7 +130,9 @@ p,ul{margin:.4rem 0 1rem}li+li{margin-top:.35rem}.meta{color:var(--muted);font-s
       Cloudflare Web Analytics also provides aggregated visit statistics (page, country, browser, referring page, load time) through a script, <code>beacon.min.js</code> from <code>static.cloudflareinsights.com</code>, that Cloudflare injects into the page. It sets no cookies, builds no device profile and does not store your IP address.</p>
     <h3>With an account</h3>
     <p>Firebase Authentication processes your email address, sign-in provider, technical identifiers, IP address and browser information.
-      Sipdeck stores a Firebase UID with your synced favorites, pantry and settings in Cloudflare D1. Sipdeck never receives your password.</p>
+      Sipdeck stores a Firebase UID with your synced favorites, pantry and settings in Cloudflare D1. Sipdeck never receives your password.
+      The sign-in code (Firebase) is fetched from Google's CDN (<code>gstatic.com</code>) only when you use the account feature; your IP address
+      then goes to Google for that fetch as well.</p>
     <p>No profiling or automated decision-making with legal or similarly significant effects takes place.</p>
 
     <h2>Purposes and legal bases</h2>
@@ -163,7 +166,7 @@ p,ul{margin:.4rem 0 1rem}li+li{margin-top:.35rem}.meta{color:var(--muted);font-s
     </ul>
 
     <h2>Providers and transfers outside the EU/EEA</h2>
-    <p>Cloudflare provides hosting, traffic protection, the Worker API and D1 database. Google provides Firebase Authentication.
+    <p>GitHub Pages hosts the app's files and keeps equivalent technical logs. Cloudflare provides delivery, traffic protection, the Worker API and D1 database. Google provides Firebase Authentication and the Firebase code.
       Firebase Authentication processes data in the United States. Cloudflare may process data globally and the current D1 database is not locked
       to an EU jurisdiction. Provider data protection terms and approved transfer mechanisms, such as the Data Privacy Framework and Standard
       Contractual Clauses where applicable, are used for these transfers.</p>

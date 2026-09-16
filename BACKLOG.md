@@ -294,3 +294,10 @@ counts.
 - Pantry matching is id-exact: seeding discipline on ingredient ids is what makes it work.
 - No image = the drink's glass silhouette forever; acceptable for future additions and
   tracked per drink by file absence. All 93 current drinks have complete production art.
+
+## Granskning 2026-09-16
+
+Fynd från cockpitens granskningskolumner (Lighthouse mobil, W3C, UX-skript, headers, TLS, OWASP). Mätvärdena står under `## Audits` i CONTEXT.md.
+
+- [ ] `[P2]` UX, Fitts: 21 tryckytor under 44 px på telefon (390 px): portionsstegaren 24 px, rubrikraden 23 till 37 px. Skriptet `ux-checks.mjs` listar dem.
+- [ ] `[P3]` W3C: 29 CSS-fel, stickprovet är `view-transition-name` och `::view-transition-*` som validatorn inte känner. Kontrollera att inget riktigt fel gömmer sig bland dem.
