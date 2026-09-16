@@ -126,3 +126,15 @@ An explicit request to replace the current spin lineup while keeping the selecte
 **Spin / Snurra**:
 The canonical English and Swedish names of the action that starts the spinning wheel.
 _Avoid_: Flick, throw
+
+## Audits
+
+Read by the cockpit Audits tab. One `- Label: YYYY-MM-DD, result` per check; conventions in elwyn-dash `docs/security.md`.
+- OWASP Top 10: 2026-07-25, clean code
+- Headers: 2026-09-16, fail, 0 of 6 on buildapp.se/sipdeck (GitHub Pages ignores _headers), staging sipdeck.pages.dev 5 of 6
+- TLS: 2026-09-16, warn, SSL Labs B on buildapp.se, TLS 1.0 and 1.1 still enabled on the zone, no HSTS
+- Lighthouse: 2026-09-16, pass, a11y 100, best practices 100, SEO 100 (mobile, no perf)
+- Markup: 2026-09-16, warn, W3C 29 CSS errors, the sampled ones are view-transition rules the validator does not know, 0 broken links
+- UX: 2026-09-16, fail, 4 of 6 script checks pass, 21 targets under 44 px (portion stepper 24 px, header 23 to 37 px), no --interact
+- npm audit: 2026-09-16, pass, 0 in production and dev
+- Search Console: 2026-09-15, warn, unknown to Google, now in submitted buildapp.se sitemap

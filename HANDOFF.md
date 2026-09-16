@@ -4,7 +4,7 @@ status: active
 currentGoal: Keep Sipdeck live and pick up v2 items as they become worth doing
 nextAction: Mirror the _headers response headers at the buildapp.se Cloudflare zone and settle HTTP to HTTPS, inventorying every subdomain before any HSTS includeSubDomains rollout
 blockers: []
-reviewedAt: 2026-09-08
+reviewedAt: 2026-09-16
 ---
 
 # Handoff: Sipdeck
@@ -852,3 +852,7 @@ opacity-dip keyframe (`index.html`, 180ms, mid-point `opacity:.55`) toggled on
 `#wheelDisc` for that branch only; it's a fade, not motion, so it's untouched
 by the existing `prefers-reduced-motion` media query that zeroes the pointer
 tick and view-transition durations.
+
+## Granskning 2026-09-16
+
+Cross-project audit run from elwyn-dash (session 5 in the daily note). Results written to `## Audits` in CONTEXT.md, findings appended to BACKLOG.md under `## Granskning 2026-09-16`. Headers on buildapp.se and the TLS grade are zone-level and are fixed once in Cloudflare, not here. Committed locally only: a push deploys GitHub Pages to live users. The branch `docs/audits-section` carries an older version of the same section; take main's when merging.
