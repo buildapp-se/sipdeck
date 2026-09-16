@@ -16,7 +16,7 @@ logga och filterväljare 44 px, kortens stegare, enheter och portionsfält 48 px
 eftersom korten i leken ritas skalade ner till 0,93. Mätt lokalt mot
 `http.server`: 2 ytor kvar, kryssrutorna (etiketten är ytan). `node test.js`
 grönt; e2e inte körd, Playwright-webbläsarna för 1.61 saknas på maskinen.
-**Inte mergad, inte deployad**: Sipdeck har riktiga användare, du mergar.
+**Inte mergad, inte deployad**: Sipdeck har riktiga användare, du mergar. Förhandsvisning av grenen på Cloudflare Pages (preview, inte produktion): https://fix-tryckytor-44px.sipdeck.pages.dev (2026-09-16, `wrangler pages deploy` ur `git archive`).
 
 Read this first, then docs/PRODUCT.md (what to build + acceptance criteria), then BACKLOG.md
 (what's next). Written for AI agent sessions picking this up cold.
