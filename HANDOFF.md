@@ -2,12 +2,22 @@
 schemaVersion: 1
 status: active
 currentGoal: Keep Sipdeck live and pick up v2 items as they become worth doing
-nextAction: Mirror the _headers response headers at the buildapp.se Cloudflare zone and settle HTTP to HTTPS, inventorying every subdomain before any HSTS includeSubDomains rollout
+nextAction: Owner review and approval to publish Tinto de verano and the mobile recipe-control fix
 blockers: []
 reviewedAt: 2026-09-16
 ---
 
 # Handoff: Sipdeck
+
+## 2026-09-16: Tinto de verano och receptkontroller, lokalt verifierat
+
+Väntar på ägarens kontroll och godkännande för publicering. Inget pushat eller deployat i detta pass.
+
+- `drinks.json`: Tinto de verano med 80 ml vardera torrt rödvin, sodavatten och citronläsk, samt citronskiva. Ny ingrediens `lemon-soda`, separat från citron- och limeläsk. Saveur använder lika delar vin och läsk med valfritt sodavatten; både källtext och metod märker vår 1:1:1-anpassning. `bar: false`, drinken har inte genomgått bargranskningen. Katalogen har nu 94 drinkar och 150 ingredienser.
+- Bild skapad med inbyggd ImageGen och de fyra frysta referenserna. Original och exakt prompt: `img-src/tinto-de-verano.png` och `img-src/tinto-de-verano-prompt.txt`. Produktionsbild: `img/tinto-de-verano.webp`, 640 × 800, 46 776 byte, Pillow quality 72/method 6. Original och färdig bild visuellt kontrollerade.
+- Enhets- och portionskontroller radbryts utan mindre tryckytor. Svenskt läge visar cl/ml; ett sparat oz-val visas och kopieras som cl men behålls för engelskt läge. Långa kortrecept scrollar inom kortet, knapparna ligger kvar. Native vertikal touchscroll behöver `touch-action:pan-y` på själva scrollbehållaren; bara på kortets förälder räcker inte. Avbruten pekargest städas utan att vända eller spara kortet.
+- Verifierat: `node --check app.js`, `node test.js` (4 977 gröna), `git diff --check`, tio Playwright-test i installerad Chrome. 320/375/390 px, svenska/engelska, enhetsbyte, portionsskalning, bildladdning, kopiering, tangentbordsstyrning samt vertikal touchscroll och horisontellt spara-svep. En kommentarbaserad pekartest ersattes av beteendetest. Firefox och Safari inte körda i detta pass.
+- Lokal verktygsväg: Playwrights förväntade browserrevision saknas; installerad Chrome fungerar via `channel: 'chrome'` och lokal `img-src/verify.config.cjs`. `uv` behöver skrivbar cache, här `img-src/.uv-cache`; Pillow hämtades med godkänd nätåtkomst. Inga appberoenden tillagda.
 
 ## 2026-09-16: tryckytor 44 px, PR #15
 
