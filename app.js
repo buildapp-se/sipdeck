@@ -599,6 +599,8 @@ if (typeof document !== 'undefined') (function () {
   save(); // persist first-run defaults immediately
 
   function lang() { return state.settings.lang; }
+  function unit() { return lang() === 'sv' && state.settings.unit === 'oz' ? 'cl' : state.settings.unit; }
+  function recipeUnits() { return lang() === 'sv' ? UNITS.slice(0, 2) : UNITS; }
 
   async function authedFetch(path, opts) {
     const user = fbUser;
@@ -805,7 +807,7 @@ if (typeof document !== 'undefined') (function () {
   }
 
   function ingLine(line, have, servings) {
-    const amt = formatLineAmount(line, servings, state.settings.unit, lang());
+    const amt = formatLineAmount(line, servings, unit(), lang());
     const missing = !have.has(line.id);
     return `<li${missing ? ' class="missing"' : ''}>${missing ? `<span class="sr-only">${esc(t(lang(), 'missing_prefix'))}</span>` : ''}<span class="amount">${esc(amt)}</span> ${esc(ingName(line.id))}</li>`;
   }
@@ -835,10 +837,10 @@ if (typeof document !== 'undefined') (function () {
     el.setAttribute('aria-label', drink.name);
     const have = new Set(state.pantry);
     const tags = chipTags(drink.ingredients, have);
-    const s = state.settings;
+    const selectedUnit = unit();
     const servings = depth === 0 ? servingsFor(drink.id) : 1;
-    const unitBtns = UNITS.map(u =>
-      `<button data-act="unit" data-unit="${u}" aria-pressed="${u === s.unit}"${u === s.unit ? ' class="active"' : ''}>${u}</button>`).join('');
+    const unitBtns = recipeUnits().map(u =>
+      `<button data-act="unit" data-unit="${u}" aria-pressed="${u === selectedUnit}"${u === selectedUnit ? ' class="active"' : ''}>${u}</button>`).join('');
     el.innerHTML = `
       <div class="card-inner">
         <div class="card-face card-front">
@@ -849,8 +851,10 @@ if (typeof document !== 'undefined') (function () {
         </div>
         <div class="card-face card-back">
           <h2 class="card-name">${esc(drink.name)}</h2>
-          <ul class="ing">${drink.ingredients.map(l => ingLine(l, have, servings)).join('')}</ul>
-          <p class="card-method">${esc(drink.method[lang()] || drink.method.en)}</p>
+          <div class="card-recipe">
+            <ul class="ing">${drink.ingredients.map(l => ingLine(l, have, servings)).join('')}</ul>
+            <p class="card-method">${esc(drink.method[lang()] || drink.method.en)}</p>
+          </div>
           <div class="card-ctrl">
             <div class="stepper" role="group" aria-label="${esc(t(lang(), 'servings'))}">
               <button data-act="dec" aria-label="${esc(t(lang(), 'servings_decrease'))}">−</button>
@@ -950,7 +954,7 @@ if (typeof document !== 'undefined') (function () {
 
     card.addEventListener('pointerdown', e => {
       if (e.target.closest('.card-ctrl')) return; // controls are dead zones
-      e.preventDefault(); // own the gesture: no native image drag or text selection
+      if (!e.target.closest('.card-recipe')) e.preventDefault(); // let recipe text scroll vertically
       dragging = true; moved = false;
       startX = lastX = e.clientX; startY = e.clientY; dx = dy = vx = 0; lastT = e.timeStamp;
       try { card.setPointerCapture(e.pointerId); } catch (err) { /* capture is nice-to-have; drag works without it */ }
@@ -991,7 +995,12 @@ if (typeof document !== 'undefined') (function () {
       }
     }
     card.addEventListener('pointerup', settle);
-    card.addEventListener('pointercancel', settle);
+    card.addEventListener('pointercancel', () => {
+      dragging = false;
+      card.style.willChange = '';
+      card.style.transform = '';
+      tintSave.style.opacity = tintSkip.style.opacity = 0;
+    });
     card.addEventListener('dragstart', e => e.preventDefault());
   }
 
@@ -1047,7 +1056,7 @@ if (typeof document !== 'undefined') (function () {
     const open = favDrink();
     if (favOpenId && !open) favOpenId = null; // favorite id vanished from db: just close, no crash
     if (open) {
-      const s = state.settings;
+      const selectedUnit = unit();
       const servings = servingsFor(open.id);
       const have = new Set(state.pantry);
       const tags = chipTags(open.ingredients, have);
@@ -1056,11 +1065,11 @@ if (typeof document !== 'undefined') (function () {
         const checked = favChecked.has(line.id);
         return `<label class="fav-ing-row${checked ? ' done' : ''}${pantryMissing.has(line.id) ? ' pantry-missing' : ''}">
           <input type="checkbox" data-fav-ing="${esc(line.id)}"${checked ? ' checked' : ''} aria-label="${esc(t(lang(), 'check_ingredient') + ' ' + ingName(line.id))}">
-          <span class="amount">${esc(formatLineAmount(line, servings, s.unit, lang()))}</span>
+          <span class="amount">${esc(formatLineAmount(line, servings, selectedUnit, lang()))}</span>
           <span>${esc(ingName(line.id))}</span>
         </label>`;
       }).join('');
-      const unitBtns = UNITS.map(unit => `<button data-fav-act="unit" data-unit="${unit}" aria-pressed="${unit === s.unit}"${unit === s.unit ? ' class="active"' : ''}>${unit}</button>`).join('');
+      const unitBtns = recipeUnits().map(u => `<button data-fav-act="unit" data-unit="${u}" aria-pressed="${u === selectedUnit}"${u === selectedUnit ? ' class="active"' : ''}>${u}</button>`).join('');
       const source = open.source && open.source.url && open.source.label
         ? `<p class="fav-source"><a href="${esc(open.source.url)}" target="_blank" rel="noopener noreferrer">${esc(t(lang(), 'source_label'))}: ${esc(open.source.label)}</a></p>`
         : '';
@@ -1696,7 +1705,7 @@ if (typeof document !== 'undefined') (function () {
     if (copyBtn) {
       const drink = favDrink();
       try {
-        await copyText(drinkAsText(drink, db.ingredients, servingsFor(drink.id), state.settings.unit, lang()));
+        await copyText(drinkAsText(drink, db.ingredients, servingsFor(drink.id), unit(), lang()));
         copyBtn.textContent = t(lang(), 'copied');
       } catch (err) {
         copyBtn.textContent = t(lang(), 'copy_failed');

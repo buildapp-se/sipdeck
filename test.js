@@ -387,7 +387,7 @@ check(htmlSource.includes('<svg class="wheel-symbol" viewBox="0 0 100 100"') &&
   htmlSource.split('class="wheel-sector"').length >= 13,
   'wheel entry: mini symbol is the same twelve-sector disc as the big wheel');
 check(appSource.includes('draggable="false"'), 'pointer swipe: artwork disables native image dragging');
-check(appSource.includes('e.preventDefault(); // own the gesture'), 'pointer swipe: card owns pointer gesture');
+// Pointer dragging and native recipe scrolling are exercised in recipe-controls.spec.js.
 check(htmlSource.includes('user-select:none;-webkit-user-select:none'), 'pointer swipe: card text selection disabled');
 check(appSource.includes("aria-keyshortcuts', 'Enter Space ArrowLeft ArrowRight'"),
   'keyboard card: top card exposes flip and swipe shortcuts');

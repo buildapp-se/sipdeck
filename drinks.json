@@ -281,6 +281,11 @@
       "sv": "Syrlig äppellikör",
       "group": "liqueurs"
     },
+    "lemon-soda": {
+      "en": "Lemon soda",
+      "sv": "Citronläsk",
+      "group": "pantry"
+    },
     "lemon-lime-soda": {
       "en": "Lemon-lime soda",
       "sv": "Citron- och limeläsk",
@@ -4837,6 +4842,51 @@
       "method": {
         "en": "Pour vodka, blue curaçao and lime juice into a Collins glass and briefly stir. Fill with ice, top with lemon-lime soda and stir briefly. Garnish with an orange slice and maraschino cherry.",
         "sv": "Häll vodka, blå curaçao och limejuice i ett collinsglas och rör kort. Fyll med is, toppa med citron- och limeläsk och rör kort igen. Garnera med en apelsinskiva och ett maraschinobär."
+      }
+    },
+    {
+      "id": "tinto-de-verano",
+      "name": "Tinto de verano",
+      "type": "highball",
+      "base": "other",
+      "iba": false,
+      "bar": false,
+      "tags": [
+        "fruity",
+        "sparkling",
+        "refreshing"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "Saveur (Sipdeck 1:1:1)",
+        "url": "https://www.saveur.com/article/recipes/tinto-de-verano/"
+      },
+      "ingredients": [
+        {
+          "id": "red-wine",
+          "ml": 80,
+          "essential": true
+        },
+        {
+          "id": "soda-water",
+          "ml": 80,
+          "essential": true
+        },
+        {
+          "id": "lemon-soda",
+          "ml": 80,
+          "essential": true
+        },
+        {
+          "id": "lemon-wheel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Fill a large highball glass with ice. Add chilled red wine, soda water and lemon soda, then stir gently. Garnish with a lemon slice. Sipdeck's lighter 1:1:1 version; the usual recipe uses equal parts wine and lemon soda.",
+        "sv": "Fyll ett stort highballglas med is. Häll i kylt rödvin, sodavatten och citronläsk och rör försiktigt. Garnera med en citronskiva. Sipdecks lättare variant med lika delar av alla tre; vanligtvis används lika delar vin och citronläsk."
       }
     },
     {
