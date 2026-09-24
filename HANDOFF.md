@@ -7,6 +7,8 @@ blockers: []
 reviewedAt: 2026-09-24
 ---
 
+**2026-09-24, audits från aifabriken (`tools/audit-run.mjs`).** Actions: `persist-credentials: false` på checkout i ci.yml. Nya auditrader Secrets (pass, två Firebase-nycklar granskade som publika i `.gitleaksignore`) och Actions (pass). Lokal commit, ej pushad (externa användare).
+
 # Handoff: Sipdeck
 
 ## 2026-09-23: Rosa pantern, lokalt verifierad

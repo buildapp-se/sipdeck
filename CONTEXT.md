@@ -135,5 +135,7 @@ Read by the cockpit Audits tab. One `- Label: YYYY-MM-DD, result` per check; con
 - Lighthouse: 2026-09-16, pass, a11y 100, best practices 100, SEO 100 (mobile, no perf)
 - Markup: 2026-09-16, warn, W3C 29 CSS errors, the sampled ones are view-transition rules the validator does not know, 0 broken links
 - UX: 2026-09-16, fail, 21 targets under 44 px live; fix in PR #15 measured locally at 2 remaining (checkboxes), remeasure after merge, no --interact
-- npm audit: 2026-09-16, pass, 0 in production and dev
+- npm audit: 2026-09-24, pass, 0 in production, 0 in the dev chain
 - Search Console: 2026-09-15, warn, unknown to Google, now in submitted buildapp.se sitemap
+- Secrets: 2026-09-24, pass, gitleaks 0 findings in 82 commits, 2 reviewed as public in .gitleaksignore
+- Actions: 2026-09-24, pass, zizmor 0 high, 0 medium, 0 low
