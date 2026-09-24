@@ -139,3 +139,4 @@ Read by the cockpit Audits tab. One `- Label: YYYY-MM-DD, result` per check; con
 - Search Console: 2026-09-15, warn, unknown to Google, now in submitted buildapp.se sitemap
 - Secrets: 2026-09-24, pass, gitleaks 0 findings in 82 commits, 2 reviewed as public in .gitleaksignore
 - Actions: 2026-09-24, pass, zizmor 0 high, 0 medium, 0 low
+- WCAG 2.2 AA: 2026-09-24, warn, axe 4.13.0 0 violations on buildapp.se/sipdeck (mobile, one page); manual keyboard pass not done
