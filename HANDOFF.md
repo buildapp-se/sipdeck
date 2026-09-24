@@ -2,9 +2,9 @@
 schemaVersion: 1
 status: active
 currentGoal: Keep Sipdeck live and pick up v2 items as they become worth doing
-nextAction: Review Rosa pantern on feat/rosa-pantern; request approval before push or deployment
+nextAction: No remaining publication work for Rosa pantern; choose the next prioritized change
 blockers: []
-reviewedAt: 2026-09-23
+reviewedAt: 2026-09-24
 ---
 
 # Handoff: Sipdeck
@@ -885,3 +885,7 @@ tick and view-transition durations.
 ## Granskning 2026-09-16
 
 Cross-project audit run from elwyn-dash (session 5 in the daily note). Results written to `## Audits` in CONTEXT.md, findings appended to BACKLOG.md under `## Granskning 2026-09-16`. Headers on buildapp.se and the TLS grade are zone-level and are fixed once in Cloudflare, not here. Committed locally only: a push deploys GitHub Pages to live users. The branch `docs/audits-section` carries an older version of the same section; take main's when merging.
+
+## Session 2026-09-24: Rosa pantern publicerad
+
+Ägaren godkände PR, squash-merge och publicering. PR #17 mergades som `cf91f3a` efter grön CI (`tests`) och verifierad Cloudflare-preview `https://8f6a6369.sipdeck.pages.dev`. Den mergade `main`-versionen laddades upp till Cloudflare Pages som `https://399b846f.sipdeck.pages.dev`. Riktade Chrome-kontroller på både `https://sipdeck.pages.dev/#/drink/rosa-pantern` och `https://buildapp.se/sipdeck/#/drink/rosa-pantern` bekräftade recept, samtliga ingredienser, laddad 640 px-bild och inga sidfel i mobilvyn. Den första skärmbilden fångade avsiktlig bildfade; kontroll efter full opacitet visade rätt illustration utan synlig fallback.
