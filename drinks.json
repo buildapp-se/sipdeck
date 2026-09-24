@@ -750,6 +750,16 @@
       "en": "Water",
       "sv": "Vatten",
       "group": "pantry"
+    },
+    "vanilla-liqueur": {
+      "en": "Vanilla liqueur",
+      "sv": "Vaniljlikör",
+      "group": "liqueurs"
+    },
+    "milk": {
+      "en": "Milk",
+      "sv": "Mjölk",
+      "group": "fresh"
     }
   },
   "drinks": [
@@ -5443,6 +5453,55 @@
       "method": {
         "en": "Preheat a shot glass, then layer the ingredients carefully in the listed order.",
         "sv": "Förvärm ett shotglas och skikta sedan ingredienserna försiktigt i angiven ordning."
+      }
+    },
+    {
+      "id": "rosa-pantern",
+      "name": "Rosa pantern",
+      "type": "contemporary",
+      "base": "vodka",
+      "iba": false,
+      "bar": false,
+      "tags": [
+        "sweet",
+        "creamy"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "Systembolaget",
+        "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/vodkadrinkar/rosa-pantern/"
+      },
+      "ingredients": [
+        {
+          "id": "vodka",
+          "ml": 20,
+          "essential": true
+        },
+        {
+          "id": "vanilla-liqueur",
+          "ml": 40,
+          "essential": true
+        },
+        {
+          "id": "milk",
+          "ml": 120,
+          "essential": true
+        },
+        {
+          "id": "grenadine",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "maraschino-cherry",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Shake all liquid ingredients with ice for 8–12 seconds. Strain into an ice-filled highball glass and garnish with a red cocktail cherry.",
+        "sv": "Skaka alla flytande ingredienser med is i 8–12 sekunder. Sila upp i ett highballglas fyllt med is och garnera med ett rött cocktailbär."
       }
     }
   ]
