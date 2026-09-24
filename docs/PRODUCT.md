@@ -158,8 +158,8 @@ transient and never synced. Never store derived data in the blob.
   its 0,5 cl-per-spoon equivalent.
 - Ingredient metadata has `en`, `sv` and pantry `group`; group is one of `spirits`,
   `liqueurs`, `fresh`, `pantry` and drives the grouped checklist.
-- `name` is a string (cocktail names are proper nouns); allow `{en, sv}` object override
-  for the rare translated name. `type`, `base`, `glass`, `tags`, `unit` are ids resolved
+- `name` is a non-empty string (cocktail names are proper nouns). `type`, `base`,
+  `glass`, `tags`, `unit` are ids resolved
   through the string table.
 - `source` is required in the current seed and contains a short source label and a unique
   HTTPS link to the specific published recipe; favorite detail renders it as a small link

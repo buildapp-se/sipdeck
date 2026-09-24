@@ -2,12 +2,20 @@
 schemaVersion: 1
 status: active
 currentGoal: Keep Sipdeck live and pick up v2 items as they become worth doing
-nextAction: Verify green CI and the PR branch on Cloudflare Pages, then merge as authorized by the owner
+nextAction: Review Rosa pantern on feat/rosa-pantern; request approval before push or deployment
 blockers: []
-reviewedAt: 2026-09-16
+reviewedAt: 2026-09-23
 ---
 
 # Handoff: Sipdeck
+
+## 2026-09-23: Rosa pantern, lokalt verifierad
+
+PR #16 för Tinto de verano är mergad på `origin/main` som `2002a31`. Den nya lokala grenen `feat/rosa-pantern` utgår från den versionen. Ingen push eller driftsättning är gjord.
+
+- `drinks.json`: Systembolagets recept med 20 ml vodka, 40 ml vaniljlikör, 120 ml mjölk och 15 ml grenadin, samt rött cocktailbär i highballglas. Nya ingredienser: `vanilla-liqueur` och `milk`. `bar: false` tills en separat bargranskning gjorts. Katalogen har 95 drinkar och 152 ingredienser.
+- Bild: inbyggd ImageGen med de fyra frysta stilreferenserna. Källa och exakt prompt finns lokalt i `img-src/rosa-pantern.png` och `img-src/rosa-pantern-prompt.txt`; produktionsfilen är `img/rosa-pantern.webp`, 640 × 800, 27 586 byte, Pillow quality 72/method 6. Original och WebP har granskats visuellt.
+- `node test.js`: 5 027 godkända, 0 fel. `git diff --check`: godkänd. `docs/PRODUCT.md` är rättad: den körbara validatorn kräver ett namn som sträng.
 
 ## 2026-09-16: Tinto de verano och receptkontroller, lokalt verifierat
 
