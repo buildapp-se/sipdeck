@@ -324,12 +324,17 @@ curated: user input reaches `drinks.json` only through the suggestion review bel
 - **K2 My drinks.** Without an account a person can create drinks (name, glass, liquid
   colour, ingredients, amounts, method, optional source). Stored locally under
   `sipdeck.custom`, outside the state blob; synced per drink through `user_drinks` when
-  signed in. Shown in deck and favorites marked "Own", with generic art (K4).
+  signed in (`GET /drinks`, `GET/PUT/DELETE /drinks/:id`, newest edit wins, a deletion is
+  kept as a tombstone). Shown in the deck and search marked "Own" and in their own "My
+  drinks" section of Favorites; never on the wheel (not bar-audited). Glass silhouette
+  until the generic art (K4) exists. Shape rules shared with the catalog validator in
+  `worker/drink-rules.js`.
 - **K3 Suggestions.** Signed-in users can suggest a drink to the catalog after a Jaccard
   similarity check (≥ 0.6 offers "as variant" or "as new drink") and explicit consent to
   publication, editing and illustration. Worker `POST /suggestions` (max 5 per day and
-  UID), `GET /suggestions/mine`, admin routes behind a Worker secret. Account deletion
-  removes open suggestions and all user drinks.
+  UID), `GET /suggestions/mine`, admin routes behind a Worker secret (`ADMIN_TOKEN`),
+  curator CLI `scripts/suggestions.js`. Account deletion removes new and declined
+  suggestions and all user drinks; accepted and published ones stay, unlinked from the UID.
 - **K4 Generic art.** 8 glasses × 6 liquid colours = 48 generic illustrations in
   `img-generic/<glass>-<colour>.webp`, made with the frozen image pipeline, none
   confusable with a catalog drink.

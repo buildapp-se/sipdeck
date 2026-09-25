@@ -331,6 +331,47 @@ details.account[open] .account-chevron{transform:rotate(90deg)}
 .fav-copy{margin-top:1.25rem;border-radius:9px;padding:.65rem .9rem;background:#2F6B3F;color:#FBF7EF;
   font:600 .85rem/1.2 var(--sd-font-ui)}
 
+/* ---- F2 own drinks + F3 suggestions (4a, lofi in the existing style) ---- */
+.chip.custom-chip{background:#2F6B3F;border-color:#2F6B3F;color:#FBF7EF;font:600 11px/1.4 var(--sd-font-ui)}
+.fav-tools{display:flex;gap:.5rem}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin:1.8rem 0 .75rem}
+.section-head .pantry-almost-title{margin:0}
+.custom-form fieldset{border:0;margin:1rem 0 0}
+.custom-form legend{font:500 .82rem/1.3 var(--sd-font-ui);color:var(--sd-ink-2);margin-bottom:.4rem}
+.custom-form textarea,.custom-line select{display:block;width:100%;margin-top:.25rem;padding:.5rem .6rem;border:1px solid rgba(33,27,18,.18);
+  border-radius:10px;font:400 .9rem/1.35 var(--sd-font-ui);color:#211B12;background:var(--sd-card);resize:vertical}
+.custom-form input:not([type=radio]):not([type=checkbox]){min-height:44px;border-radius:10px}
+.picks{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:.6rem}
+.custom-form .pick{position:relative;display:flex;align-items:center;min-height:44px;padding:0 14px;border:1px solid rgba(33,27,18,.16);border-radius:999px;
+  background:#FBF7EF;color:#211B12;font:500 13px/1 var(--sd-font-ui);cursor:pointer}
+.pick input{position:absolute;opacity:0;width:1px;height:1px}
+.custom-form .pick:has(:checked){background:var(--sd-ink);border-color:var(--sd-ink);color:var(--sd-bg)}
+.pick:has(:focus-visible){outline:3px solid var(--sd-accent);outline-offset:2px}
+@media (prefers-color-scheme:dark){.custom-form .pick:has(:checked){background:var(--sd-accent);border-color:var(--sd-accent)}}
+.custom-form .pick[style]{width:44px;padding:0;background:var(--swatch);border-color:rgba(33,27,18,.25)}
+.custom-form .pick[style]:has(:checked){background:var(--swatch);box-shadow:inset 0 0 0 3px #FBF7EF,0 0 0 2px var(--sd-ink)}
+.custom-line{display:grid;grid-template-columns:4rem 4.8rem minmax(0,1fr) 44px;gap:6px;align-items:center;margin-bottom:6px}
+.custom-line input,.custom-line select{margin:0 !important;min-height:44px}
+.custom-line input[name=amount]{text-align:right;font-variant-numeric:tabular-nums}
+.custom-line button{height:44px;color:var(--sd-ink-2);font-size:1.2rem}
+.custom-form .account-link{min-height:44px;color:var(--sd-accent);font:600 .85rem/1 var(--sd-font-ui)}
+.custom-save{display:block;width:100%;height:48px;margin-top:1rem;border-radius:999px;font:600 14px/1 var(--sd-font-ui)}
+.custom-save:disabled{opacity:.6}
+.suggest-drink{font:400 1.5rem/1.2 var(--sd-font-display);margin-bottom:.5rem}
+.suggest-similar{padding:.9rem;border-radius:16px;background:var(--sd-card);color:#211B12;box-shadow:var(--sd-shadow)}
+.custom-form .suggest-similar legend{float:left;width:100%;padding:0;margin-bottom:.6rem;color:#211B12;font-weight:600}
+.suggest-similar .fav-row{clear:both;gap:.85rem}
+.suggest-similar .fav-thumb{width:48px;height:60px}
+.suggest-similar .name{font:400 1.2rem/1.2 var(--sd-font-display)}
+.suggest-similar .meta{font:500 .78rem/1.4 var(--sd-font-ui);color:#6E6455}
+.suggest-similar .picks{margin:.7rem 0 0}
+.custom-form .suggest-consent{display:flex;align-items:flex-start;gap:.6rem;margin-top:1rem;color:var(--sd-ink);font:400 .88rem/1.4 var(--sd-font-ui)}
+.suggest-consent input{margin-top:.15rem;flex-shrink:0;width:1.2rem;height:1.2rem;accent-color:var(--sd-accent)}
+.suggest-status{margin-top:1rem;font:400 .88rem/1.45 var(--sd-font-ui)}
+.suggest-status a{text-decoration:underline;text-underline-offset:2px}
+.suggest-open{margin-top:1rem}
+#view>.fav-hint,.custom-form>.fav-hint{color:var(--sd-ink-2)} /* on the page background, not on paper */
+
 /* ---- pantry (BACKLOG item 7) ---- */
 .pantry-intro{color:var(--sd-ink-2);font-size:.88rem;margin:-.4rem 0 1.2rem}
 .pantry-group{border:0;margin:0 0 1.2rem}
@@ -485,6 +526,6 @@ body.search-mode .brand,body.search-mode .bottom-nav{display:none}
   <a href="#/installningar" data-match="#/installningar"></a>
 </nav>
 <div id="wheelLayer" hidden></div>
-<script src="app.js?v=1.17"></script>
+<script src="app.js?v=1.18"></script>
 </body>
 </html>

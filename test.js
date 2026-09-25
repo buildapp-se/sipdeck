@@ -10,7 +10,10 @@ const { STRINGS, t, detectLang, defaultState, normalizeState, favoriteIdFromHash
   searchHaystack, matchesSearch, ingredientCounts, authErrorKey, AUTH_ERRORS,
   weightedSampleUnique, wheelCocktailWeight, buildSpinLineup, selectWheelIndex,
   wheelSectorPath, springLinear, SPIN_MS, spinAngle, landingTravel, sectorAtAngle, WHEEL_COLORS,
-  GLASS_SILHOUETTES, glassPlaceholder } = require('./app.js');
+  GLASS_SILHOUETTES, glassPlaceholder,
+  CUSTOM_GLASSES, CUSTOM_COLORS, slugify, buildCustomDrink, similarDrink, mergeCustom } = require('./app.js');
+// node 22.12+ loads the Worker's ES module with require(); the same rules guard the catalog below
+const { drinkErrors, GLASSES, COLORS, QTY_UNITS: RULE_UNITS } = require('./worker/drink-rules.js');
 
 let pass = 0, fail = 0;
 function check(cond, msg) {
@@ -220,6 +223,65 @@ check(famDiff.added.join() === 'agave' && Object.keys(famDiff.changed).join() ==
 check(variantDiff(famDrinks[0], famDrinks[0]).added.length === 0 && variantDiff(famDrinks[0], null).removed.length === 0,
   'variantDiff: the primary itself has no diff');
 
+// ---------- F2 own drinks + F3 suggestions ----------
+const customIngredients = { bourbon: { en: 'Bourbon', sv: 'Bourbon' }, 'lemon-juice': { en: 'Lemon juice', sv: 'Citronjuice' },
+  flader: { en: 'Fläder', sv: 'Fläder', custom: true } };
+const built = buildCustomDrink({ id: 'egen-abc', name: ' Kvällens sour ', glass: 'coupe', color: 'citrus', method: 'Skaka hårt.',
+  source: 'Egen skapelse', lines: [
+    { amount: '5', unit: 'cl', name: 'bourbon' }, { amount: '2.5', unit: 'cl', name: 'Citronjuice' },
+    { amount: '', unit: 'garnish', name: 'Äppelskiva' }, { amount: '1', unit: 'oz', name: 'Fläder' }, { amount: '3', unit: 'cl', name: '  ' },
+  ] }, customIngredients);
+check(drinkErrors(built).length === 0, 'buildCustomDrink: the form result passes the Worker rules');
+check(built.name === 'Kvällens sour' && built.custom === true && built.bar === false && built.method.en === 'Skaka hårt.',
+  'buildCustomDrink: trimmed name, own marker, never bar-audited');
+check(built.ingredients.length === 4, 'buildCustomDrink: empty rows are dropped');
+check(built.ingredients[0].id === 'bourbon' && built.ingredients[0].ml === 50 && !('label' in built.ingredients[0]) &&
+  built.ingredients[1].id === 'lemon-juice' && built.ingredients[1].ml === 25,
+  'buildCustomDrink: names in either language map to catalog ids, cl becomes ml');
+check(built.ingredients[2].id === 'appelskiva' && built.ingredients[2].label === 'Äppelskiva' &&
+  built.ingredients[2].unit === 'garnish' && built.ingredients[2].qty === 1 && built.ingredients[2].essential === false,
+  'buildCustomDrink: free text keeps its label, garnish is optional');
+check(built.ingredients[3].id === 'flader' && built.ingredients[3].label === 'Fläder' && built.ingredients[3].ml === 30,
+  'buildCustomDrink: an earlier free-text name is not taken for a catalog ingredient');
+check(built.source.label === 'Egen skapelse' && !('url' in built.source) &&
+  buildCustomDrink({ id: 'egen-x', name: 'X', glass: 'rocks', color: 'red', method: 'M', source: 'https://example.com/r', lines: [] }, {}).source.url === 'https://example.com/r',
+  'buildCustomDrink: source is a label, a https link also becomes the url');
+check(slugify('Äppel  Juice!') === 'appel-juice' && slugify('***') === '', 'slugify: accents folded, kebab-case');
+check(CUSTOM_GLASSES.length === 8 && Object.keys(CUSTOM_COLORS).length === 6 &&
+  CUSTOM_GLASSES.every(g => GLASSES.includes(g) && GLASS_SILHOUETTES[g]) && Object.keys(CUSTOM_COLORS).join() === COLORS.join(),
+  'custom form: 8 glasses × 6 colours, all known to the rules and drawn as silhouettes');
+check(Object.keys(GLASS_SILHOUETTES).sort().join() === GLASSES.slice().sort().join(), 'drink rules: glass list matches the silhouettes');
+check(drinkErrors(Object.assign({}, built, { ingredients: [{ id: 'gin', ml: 50, qty: 1, unit: 'dash', essential: true }] })).length === 1 &&
+  drinkErrors(Object.assign({}, built, { ingredients: [{ id: 'gin', qty: 1, unit: 'bucket', essential: true }] })).length === 1 &&
+  drinkErrors(Object.assign({}, built, { name: '' })).join() === 'name' && drinkErrors(null).length === 1,
+  'drink rules: ml xor qty+unit, unit set, name and shape');
+const simCatalog = [
+  { id: 'whiskey-sour', ingredients: [{ id: 'bourbon', essential: true }, { id: 'lemon-juice', essential: true }, { id: 'sugar-syrup', essential: true }, { id: 'egg-white', essential: false }] },
+  { id: 'old-fashioned', ingredients: [{ id: 'bourbon', essential: true }, { id: 'sugar', essential: true }, { id: 'bitters', essential: true }] },
+];
+const simOwn = { id: 'egen-1', ingredients: [{ id: 'bourbon', essential: true }, { id: 'lemon-juice', essential: true },
+  { id: 'sugar-syrup', essential: true }, { id: 'flader', essential: true }, { id: 'mint', essential: false }] };
+const sim = similarDrink(simOwn, simCatalog);
+check(sim && sim.drink.id === 'whiskey-sour' && sim.shared === 3 && sim.all === 4 && sim.score === 0.75,
+  'similarDrink: Jaccard on essential ids, 3 of 4 in common');
+check(similarDrink({ id: 'egen-2', ingredients: [{ id: 'bourbon', essential: true }, { id: 'lemon-juice', essential: true }, { id: 'x', essential: true }, { id: 'y', essential: true }] }, simCatalog) === null,
+  'similarDrink: below 0,6 is no match (2 of 5 = 0,4)');
+check(similarDrink({ id: 'e', ingredients: [{ id: 'bourbon', essential: true }, { id: 'lemon-juice', essential: true }, { id: 'x', essential: true }] },
+  [{ id: 'three', ingredients: [{ id: 'bourbon', essential: true }, { id: 'lemon-juice', essential: true }, { id: 'y', essential: true }, { id: 'z', essential: true }] }]) === null &&
+  similarDrink({ id: 'e', ingredients: simCatalog[0].ingredients }, [{ id: 'mine', custom: true, ingredients: simCatalog[0].ingredients }]) === null &&
+  similarDrink({ id: 'e', ingredients: [{ id: 'a', essential: true }, { id: 'b', essential: true }, { id: 'c', essential: true }] },
+    [{ id: 'p', ingredients: [{ id: 'a', essential: true }, { id: 'b', essential: true }, { id: 'c', essential: true }, { id: 'd', essential: true }, { id: 'e', essential: true }] }]).score === 0.6,
+  'similarDrink: exactly 0,6 counts, 2 of 5 does not, own drinks are never the match');
+const merged2 = mergeCustom([{ id: 'a', drink: { n: 1 }, updatedAt: 5 }, { id: 'b', drink: { n: 2 }, updatedAt: 9 }],
+  [{ id: 'a', drink: null, updatedAt: 7 }, { id: 'b', drink: { n: 3 }, updatedAt: 8 }, { id: 'c', drink: { n: 4 }, updatedAt: 1 }]);
+check(merged2.length === 3 && merged2.find(e => e.id === 'a').drink === null && merged2.find(e => e.id === 'b').drink.n === 2 &&
+  merged2.find(e => e.id === 'c').drink.n === 4, 'mergeCustom: newer edit wins per drink, a newer deletion too, new ones join');
+check(['en', 'sv'].every(l => Object.keys(CUSTOM_COLORS).every(c => t(l, 'color_' + c) !== 'color_' + c) &&
+  ['new', 'accepted', 'published', 'declined'].every(s => t(l, 'suggest_status_' + s) !== 'suggest_status_' + s)),
+  'i18n: colour names and every suggestion status in EN + SV');
+check(RULE_UNITS.join() === ['dash', 'barspoon', 'teaspoon', 'drop', 'piece', 'leaf', 'slice', 'garnish', 'splash', 'top'].join(),
+  'drink rules: the same qty units as the catalog validator');
+
 check(swipeDirectionForKey('ArrowLeft') === -1, 'keyboard swipe: left skips');
 check(swipeDirectionForKey('ArrowRight') === 1, 'keyboard swipe: right saves');
 check(swipeDirectionForKey('Enter') === 0, 'keyboard swipe: unrelated keys are ignored');
@@ -366,10 +428,12 @@ const workerSource = fs.readFileSync(path.join(__dirname, 'worker', 'worker.js')
 // bumped 99kB -> 104kB 2026-09-25 for design review batch 3 (wheel layer, FLIP, runSpin, mood buttons, result card, wave patch)
 // bumped 104kB -> 113kB 2026-09-25 for design review batch 4 (pantry search/count, account modes, forgot step, delete dialog, auth error copy)
 // bumped 113kB -> 120kB 2026-09-25 for design review batch 5 (F1 variants: family deck/wheel units, variant switch, diff, grouped search)
+// bumped 120kB -> 140kB 2026-09-25 for design review batch 6 (F2 own-drink form, local store + per-drink sync, F3 similarity
+// check, suggestion form and status; about 6,5 kB of it is the new EN + SV copy)
 // Mät LF-storleken, alltså det git lagrar och GitHub Pages levererar. En Windows-
 // arbetskopia checkas ut med CRLF och lägger på ~1,8 kB som aldrig deployas.
-check(Buffer.byteLength(appSource.split('\r').join('')) < 120000,
-  'bundle budget: app.js stays under 120 kB unminified');
+check(Buffer.byteLength(appSource.split('\r').join('')) < 140000,
+  'bundle budget: app.js stays under 140 kB unminified');
 check(!htmlSource.includes('fonts.googleapis.com') && htmlSource.includes("fonts/work-sans.woff2"),
   'privacy: fonts are self-hosted with no Google Fonts request');
 check(htmlSource.includes('rel="canonical" href="https://buildapp.se/sipdeck/"') &&
@@ -428,6 +492,9 @@ check(infoSource.includes('Patrik Löfgren') && infoSource.includes('kontakt@org
 check(infoSource.includes('inga annonserings- eller analyscookies') &&
   infoSource.includes('current D1 database is not locked'),
   'legal page: current storage, analytics and D1 jurisdiction are disclosed');
+check(infoSource.includes('sipdeck.custom') && infoSource.includes('Förslag till katalogen') && infoSource.includes('Suggestions to the catalog') &&
+  infoSource.includes('redigera och illustrera det i appen') && infoSource.includes('and illustrate it in the app'),
+  'legal page (F2/F3): own drinks, suggestion storage, retention and publishing rights in both languages');
 ['instrument-serif-regular.woff2', 'instrument-serif-italic.woff2', 'work-sans.woff2'].forEach(file => {
   const font = fs.readFileSync(path.join(__dirname, 'fonts', file));
   check(font.subarray(0, 4).toString() === 'wOF2', `self-hosted font: ${file} is valid WOFF2`);
@@ -550,6 +617,11 @@ check(appSource.indexOf("authedFetch('/account'") < appSource.indexOf('await use
 check(workerSource.includes('allowDeleted = false') && workerSource.includes('deletedAt: Date.now()') &&
   workerSource.includes('Date.now() - 2 * 60 * 60 * 1000'),
   'account deletion: tombstone blocks old tokens and is purged after token expiry');
+check(workerSource.includes("DELETE FROM user_drinks WHERE firebase_uid = ?") &&
+  workerSource.includes("status IN ('new', 'declined')") && workerSource.includes('SUGGESTIONS_PER_DAY = 5'),
+  'account deletion: own drinks and unpublished suggestions go with the account (worker.test.mjs runs it)');
+check(appSource.includes("const CUSTOM_KEY = 'sipdeck.custom'") && !('custom' in normalizeState({ custom: [1] }, 'en')),
+  'F2: own drinks live under sipdeck.custom, never in the synced state blob');
 check(workerSource.includes('!refreshed && Date.now() - jwksMissRefresh') &&
   workerSource.includes('c.iat <= now') && workerSource.includes('c.auth_time <= now'),
   'Firebase verifier: unknown keys refresh once and required time claims are checked');
@@ -706,6 +778,7 @@ data.drinks.forEach(drink => {
     check(!drink.method.sv.includes('—'), `${drink.id}: method.sv has no em-dash`);
   }
 
+  check(drinkErrors(drink).length === 0, `${drink.id}: passes the shared drink rules (${drinkErrors(drink)})`);
   check(Array.isArray(drink.ingredients) && drink.ingredients.length > 0,
     `${drink.id}: ingredients is a non-empty array`);
   (drink.ingredients || []).forEach((line, i) => {

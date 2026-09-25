@@ -95,6 +95,24 @@ const STRINGS = {
     variants_one: '+1 variant', variants_many: '+{n} variants', variants_label: 'Variants',
     variant_new: 'new', variant_was: 'was {a}', variant_without: 'Without: ',
     variant_of: 'Variant of {name} · {n} in the family', search_tagged: 'Tagged: {tags}',
+    custom_tag: 'Own', custom_title: 'My drinks', custom_new: '+ New drink', custom_new_title: 'New drink',
+    custom_edit_title: 'Edit drink', custom_empty: 'Drinks you create end up here, in the deck and in search.',
+    custom_name: 'Name', custom_glass: 'Glass and colour', custom_amount: 'Amount', custom_ingredient: 'Ingredient',
+    custom_add_line: '+ Add ingredient', custom_remove_line: 'Remove ingredient',
+    custom_source: 'Source or origin (optional)', custom_source_ph: 'Link or "My own creation"',
+    custom_save: 'Save to My drinks', custom_edit: 'Edit', custom_delete: 'Delete',
+    custom_need_line: 'Add at least one ingredient with an amount.', toast_deleted: 'Deleted',
+    color_clear: 'Clear', color_citrus: 'Citrus yellow', color_red: 'Red', color_green: 'Green', color_amber: 'Amber', color_pink: 'Pink',
+    suggest_title: 'Suggest to Sipdeck', suggest_login: 'Suggestions need an account, so you can follow what happens to yours.',
+    suggest_login_link: 'Sign in under Settings', suggest_similar: 'Similar to something already here',
+    suggest_shared: '{n} of {m} ingredients in common', suggest_kind: 'Suggest it',
+    suggest_as_variant: 'As a variant', suggest_as_new: 'As a new drink',
+    suggest_name: 'Display name if it is published (optional)',
+    suggest_consent: 'I agree that Sipdeck may publish, edit and illustrate the recipe.',
+    suggest_send: 'Send suggestion', suggest_hint: 'The status shows in My drinks: Sent → In review → Published',
+    suggest_status_new: 'Sent', suggest_status_accepted: 'In review', suggest_status_published: 'Published',
+    suggest_status_declined: 'Declined', suggest_in_deck: 'Now in the deck',
+    suggest_limit: 'Five suggestions a day is the limit. Try again tomorrow.', suggest_failed: "Couldn't send the suggestion. Try again.",
   },
   sv: {
     wheel_entry: 'Välj åt mig', wheel_title: 'Välj åt mig', wheel_back: 'Tillbaka',
@@ -189,6 +207,24 @@ const STRINGS = {
     variants_one: '+1 variant', variants_many: '+{n} varianter', variants_label: 'Varianter',
     variant_new: 'ny', variant_was: 'var {a}', variant_without: 'Utan: ',
     variant_of: 'Variant av {name} · {n} i familjen', search_tagged: 'Taggad: {tags}',
+    custom_tag: 'Egen', custom_title: 'Mina drinkar', custom_new: '+ Ny drink', custom_new_title: 'Ny drink',
+    custom_edit_title: 'Redigera drink', custom_empty: 'Drinkar du skapar hamnar här, i kortleken och i sökningen.',
+    custom_name: 'Namn', custom_glass: 'Glas och färg', custom_amount: 'Mängd', custom_ingredient: 'Ingrediens',
+    custom_add_line: '+ Lägg till ingrediens', custom_remove_line: 'Ta bort ingrediens',
+    custom_source: 'Källa eller ursprung (valfritt)', custom_source_ph: 'Länk eller "Egen skapelse"',
+    custom_save: 'Spara i Mina drinkar', custom_edit: 'Redigera', custom_delete: 'Radera',
+    custom_need_line: 'Lägg till minst en ingrediens med mängd.', toast_deleted: 'Raderad',
+    color_clear: 'Klar', color_citrus: 'Citrusgul', color_red: 'Röd', color_green: 'Grön', color_amber: 'Bärnsten', color_pink: 'Rosa',
+    suggest_title: 'Föreslå till Sipdeck', suggest_login: 'Förslag kräver ett konto, så att du kan följa vad som händer med ditt.',
+    suggest_login_link: 'Logga in under Inställningar', suggest_similar: 'Liknar något som redan finns',
+    suggest_shared: '{n} av {m} ingredienser gemensamma', suggest_kind: 'Föreslå den',
+    suggest_as_variant: 'Som variant', suggest_as_new: 'Som ny drink',
+    suggest_name: 'Visningsnamn om den publiceras (valfritt)',
+    suggest_consent: 'Jag godkänner att Sipdeck får publicera, redigera och illustrera receptet.',
+    suggest_send: 'Skicka förslag', suggest_hint: 'Status syns i Mina drinkar: Skickad → Granskas → Publicerad',
+    suggest_status_new: 'Skickad', suggest_status_accepted: 'Granskas', suggest_status_published: 'Publicerad',
+    suggest_status_declined: 'Avböjd', suggest_in_deck: 'Nu i kortleken',
+    suggest_limit: 'Max fem förslag per dygn. Försök igen i morgon.', suggest_failed: 'Kunde inte skicka förslaget. Försök igen.',
   },
 };
 function t(lang, key) { return (STRINGS[lang] && STRINGS[lang][key]) || STRINGS.en[key] || key; }
@@ -691,6 +727,60 @@ function drinkAsText(drink, ingredients, servings, unit, lang) {
   return lines.join('\n');
 }
 
+// ---------- F2 own drinks + F3 suggestions ----------
+// the form's 8 glasses and 6 liquid colours are the F4 generic-image grid (img-generic/<glass>-<color>.webp)
+const CUSTOM_GLASSES = ['coupe', 'rocks', 'highball', 'martini', 'flute', 'wine', 'shot', 'collins'];
+const CUSTOM_COLORS = { clear: '#E9E4D6', citrus: '#E6D36A', red: '#CF6A5C', green: '#93C27F', amber: '#C4863F', pink: '#E39AB8' };
+const QTY_UNITS = ['dash', 'barspoon', 'teaspoon', 'drop', 'piece', 'leaf', 'slice', 'garnish', 'splash', 'top'];
+const ML_PER = { cl: 10, ml: 1, oz: 30 };
+
+function slugify(text) {
+  return String(text).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 64);
+}
+
+// form fields -> a drink in the catalog's own shape. A typed name that matches a catalog ingredient
+// (either language) uses its id, so the pantry and the similarity check see it; anything else keeps its text as label.
+function buildCustomDrink(f, ingredients) {
+  const byName = {};
+  Object.keys(ingredients).filter(id => !ingredients[id].custom)
+    .forEach(id => [ingredients[id].en, ingredients[id].sv].forEach(n => { if (n) byName[n.toLowerCase()] = id; }));
+  const lines = f.lines.filter(l => l.name.trim()).map(l => {
+    const name = l.name.trim(), known = byName[name.toLowerCase()], amount = Number(l.amount);
+    const line = { id: known || slugify(name) || 'ingrediens', essential: l.unit !== 'garnish' };
+    if (ML_PER[l.unit]) line.ml = Math.round(amount * ML_PER[l.unit] * 10) / 10;
+    else Object.assign(line, { qty: l.unit === 'top' || !(amount > 0) ? 1 : amount, unit: l.unit });
+    if (!known) line.label = name.slice(0, 60);
+    return line;
+  });
+  const drink = { id: f.id, custom: true, name: f.name.trim().slice(0, 80), glass: f.glass, color: f.color,
+    bar: false, tags: [], ingredients: lines, method: { en: f.method.trim() } };
+  if (f.source.trim()) drink.source = /^https:\/\/\S+$/.test(f.source.trim()) ? { label: f.source.trim(), url: f.source.trim() } : { label: f.source.trim() };
+  return drink;
+}
+
+function essentialIds(drink) { return new Set(drink.ingredients.filter(l => l.essential).map(l => l.id)); }
+
+// F3: the closest catalog drink when the essential ingredients overlap by Jaccard ≥ 0,6, else null
+function similarDrink(drink, catalog) {
+  const own = essentialIds(drink);
+  let best = null;
+  catalog.forEach(other => {
+    if (other.custom || other.id === drink.id) return;
+    const theirs = essentialIds(other), shared = Array.from(own).filter(id => theirs.has(id)).length;
+    const all = own.size + theirs.size - shared, score = all ? shared / all : 0;
+    if (score >= 0.6 && (!best || score > best.score)) best = { drink: other, score, shared, all };
+  });
+  return best;
+}
+
+// F2 sync: entries {id, drink, updatedAt}; per drink the newer edit wins, and a deletion (drink null) is an edit too
+function mergeCustom(local, remote) {
+  const out = {};
+  local.concat(remote).forEach(e => { if (!out[e.id] || e.updatedAt > out[e.id].updatedAt) out[e.id] = e; });
+  return Object.values(out);
+}
+
 if (typeof module !== 'undefined') module.exports = {
   STRINGS, t, UNITS, detectLang, defaultState, normalizeState, favoriteIdFromHash, drinkIdFromHash,
   scaleMl, convert, roundForUnit, formatNumber, formatOz, formatAmount,
@@ -703,6 +793,7 @@ if (typeof module !== 'undefined') module.exports = {
   weightedSampleUnique, wheelCocktailWeight, buildSpinLineup, selectWheelIndex,
   wheelSectorPath, springLinear, SPIN, SPIN_MS, spinAngle, landingTravel, sectorAtAngle, WHEEL_COLORS,
   GLASS_SILHOUETTES, glassPlaceholder,
+  CUSTOM_GLASSES, CUSTOM_COLORS, QTY_UNITS, slugify, buildCustomDrink, similarDrink, mergeCustom,
 };
 
 // ---------- app (browser only) ----------
@@ -834,22 +925,69 @@ if (typeof document !== 'undefined') (function () {
       if (user) {
         localStorage.setItem(AUTH_KEY, '1');
         await pullState();
+        await Promise.all([pullCustom().catch(() => {}), loadMine().catch(() => {})]);
       }
       else {
         localStorage.removeItem(AUTH_KEY);
         clearTimeout(pushTimer);
         syncUid = syncBase = syncEtag = null;
+        mySuggestions = {};
       }
       render();
     });
   }
 
-  let db = null;       // null = loading; {ingredients, drinks} once fetch resolves
+  let db = null;       // null = loading; {ingredients, catalog, drinks = catalog + own drinks, families} once fetch resolves
   let drinksFailed = false;
   fetch('drinks.json').then(r => r.json()).then(data => {
-    db = { ingredients: data.ingredients || {}, drinks: Array.isArray(data.drinks) ? data.drinks : [], families: data.families || {} };
+    db = { ingredients: data.ingredients || {}, catalog: Array.isArray(data.drinks) ? data.drinks : [], drinks: [], families: data.families || {} };
+    applyCustom();
     render();
   }).catch(() => { drinksFailed = true; render(); });
+
+  // F2: own drinks live outside the state blob (64 kB cap, three-way merge) as {id, drink, updatedAt}
+  // entries, one per drink; drink null is a deletion that must win over a stale device too
+  const CUSTOM_KEY = 'sipdeck.custom';
+  let custom = [], mySuggestions = {};
+  try { custom = JSON.parse(localStorage.getItem(CUSTOM_KEY) || '[]'); } catch (e) { /* unreadable = none */ }
+  custom = Array.isArray(custom) ? custom.filter(e => e && typeof e.id === 'string' && Number.isFinite(e.updatedAt) &&
+    (e.drink === null || (e.drink && Array.isArray(e.drink.ingredients)))) : [];
+  function customDrinks() { return custom.filter(e => e.drink).map(e => e.drink); }
+  function applyCustom() {
+    db.drinks = db.catalog.concat(customDrinks());
+    customDrinks().forEach(d => d.ingredients.forEach(l => { // free-text ingredients get a name for pantry and lists
+      if (!db.ingredients[l.id]) db.ingredients[l.id] = { en: l.label || l.id, sv: l.label || l.id, group: 'pantry', custom: true };
+    }));
+    deckQueue = null;
+  }
+  function putCustom(id, drink) {
+    const old = custom.find(e => e.id === id);
+    const entry = { id, drink, updatedAt: Math.max(Date.now(), old ? old.updatedAt + 1 : 0) };
+    custom = mergeCustom(custom, [entry]);
+    localStorage.setItem(CUSTOM_KEY, JSON.stringify(custom));
+    applyCustom();
+    if (fbUser) pushCustom(entry).catch(() => {}); // offline: the next sign-in's pull uploads it
+  }
+  function pushCustom(e) {
+    return authedFetch('/drinks/' + e.id + (e.drink ? '' : '?updatedAt=' + e.updatedAt),
+      e.drink ? { method: 'PUT', body: JSON.stringify({ drink: e.drink, updatedAt: e.updatedAt }) } : { method: 'DELETE' });
+  }
+  async function pullCustom() {
+    const res = await authedFetch('/drinks');
+    if (!res.ok) return; // an API without /drinks keeps own drinks local
+    const remote = (await res.json()).drinks;
+    const newer = custom.filter(e => !remote.some(r => r.id === e.id && r.updatedAt >= e.updatedAt));
+    custom = mergeCustom(custom, remote);
+    localStorage.setItem(CUSTOM_KEY, JSON.stringify(custom));
+    if (db) applyCustom();
+    await Promise.all(newer.map(pushCustom));
+  }
+  async function loadMine() {
+    const res = await authedFetch('/suggestions/mine');
+    if (!res.ok) return;
+    mySuggestions = {};
+    (await res.json()).suggestions.forEach(s => { mySuggestions[s.custom_id] = s; });
+  }
 
   let wheelData = null, wheelFailed = false, wheelPromise = null;
   let wheelMoodId = null, wheelLineup = null, wheelResult = null;
@@ -1011,9 +1149,10 @@ if (typeof document !== 'undefined') (function () {
   }
 
   const METHOD_TAGS = ['stirred', 'frozen', 'layered'];
+  function kindName(drink) { return drink.custom ? t(lang(), 'custom_tag') : taxonomyName('type', drink.type); }
   function recipeMeta(drink, withMethod) {
     const method = withMethod && (drink.tags || []).find(tag => METHOD_TAGS.includes(tag));
-    return [taxonomyName('type', drink.type), taxonomyName('glass', drink.glass), method && taxonomyName('method', method)]
+    return [!drink.custom && taxonomyName('type', drink.type), taxonomyName('glass', drink.glass), method && taxonomyName('method', method)]
       .filter(Boolean).join(' · ');
   }
 
@@ -1066,6 +1205,7 @@ if (typeof document !== 'undefined') (function () {
   }
 
   function artMarkup(drink) {
+    if (drink.custom) return glassPlaceholder(drink.glass); // ponytail: silhouette until F4's img-generic/<glass>-<color>.webp
     return `${glassPlaceholder(drink.glass)}<img class="cocktail-art" src="img/${esc(drink.art || drink.id)}.webp" alt="" loading="lazy" decoding="async" draggable="false">`;
   }
 
@@ -1096,7 +1236,7 @@ if (typeof document !== 'undefined') (function () {
           <div class="card-art">${artMarkup(drink)}</div>
           <div class="card-title"><h2 class="card-name">${esc(drink.name)}</h2>${hint}</div>
           <div class="card-meta">${esc(recipeMeta(drink, false))}</div>
-          <div class="card-tags">${tags}${variants}</div>
+          <div class="card-tags">${tags}${variants}${drink.custom ? `<span class="chip custom-chip">${esc(t(lang(), 'custom_tag'))}</span>` : ''}</div>
         </div>
         <div class="card-face card-back">
           ${variantSeg(drink, 'act')}
@@ -1117,7 +1257,7 @@ if (typeof document !== 'undefined') (function () {
       <span class="swipe-label swipe-label-skip" aria-hidden="true">${esc(t(lang(), 'swipe_skip'))}</span>` : ''}`;
     const art = el.querySelector('.cocktail-art');
     setCardFlipped(el, flipped);
-    wireArt(art);
+    if (art) wireArt(art); // own drinks draw only the silhouette
     return el;
   }
 
@@ -1362,13 +1502,20 @@ if (typeof document !== 'undefined') (function () {
           <span>${missing ? `<span class="sr-only">${esc(t(lang(), 'missing_prefix'))}</span>` : ''}${esc(ingName(line.id))}</span>${lineTag(line, missing, diff, servings)}
         </label>`;
       }).join('');
-      const source = open.source && open.source.url && open.source.label
-        ? `<p class="fav-source"><a href="${esc(open.source.url)}" target="_blank" rel="noopener noreferrer">${esc(t(lang(), 'source_label'))}: ${esc(open.source.label)}</a></p>`
-        : '';
+      const sourceText = open.source && open.source.label ? `${esc(t(lang(), 'source_label'))}: ${esc(open.source.label)}` : '';
+      const source = !sourceText ? '' : open.source.url
+        ? `<p class="fav-source"><a href="${esc(open.source.url)}" target="_blank" rel="noopener noreferrer">${sourceText}</a></p>`
+        : `<p class="fav-source">${sourceText}</p>`;
+      const tools = open.custom
+        ? `<span class="fav-tools"><a class="fav-remove" href="#/egen/${esc(open.id)}">${esc(t(lang(), 'custom_edit'))}</a>
+          <button class="fav-remove" data-custom-act="delete" data-id="${esc(open.id)}">${esc(t(lang(), 'custom_delete'))}</button></span>`
+        : `<button class="fav-remove" data-act="fav" data-id="${esc(open.id)}">${esc(t(lang(), state.favorites.includes(open.id) ? 'fav_unfavorite' : 'fav_add'))}</button>`;
+      const suggest = !open.custom ? '' : mySuggestions[open.id] ? suggestStatus(mySuggestions[open.id])
+        : `<p><a class="pill-btn suggest-open" href="#/foresla/${esc(open.id)}">${esc(t(lang(), 'suggest_title'))}</a></p>`;
       return `${title}
         <div class="fav-toolbar">
           <button id="favClose" class="fav-back">${esc(t(lang(), 'fav_back'))}</button>
-          <button class="fav-remove" data-act="fav" data-id="${esc(open.id)}">${esc(t(lang(), state.favorites.includes(open.id) ? 'fav_unfavorite' : 'fav_add'))}</button>
+          ${tools}
         </div>
         <article class="fav-detail">
           <section class="fav-hero">
@@ -1389,25 +1536,96 @@ if (typeof document !== 'undefined') (function () {
             <p class="fav-method">${esc(open.method[lang()] || open.method.en)}</p>
             ${source}
             <button class="fav-copy" data-copy-fav>${esc(t(lang(), 'copy_recipe'))}</button>
+            ${suggest}
           </section>
         </article>`;
     }
-    const rows = state.favorites.map(id => db.drinks.find(d => d.id === id)).filter(Boolean); // skip ids not in db
-    if (!rows.length) return `${title}<p class="empty">${esc(t(lang(), 'favorites_empty'))}</p>
-      <p class="empty-action"><a class="pill-btn" href="#/">${esc(t(lang(), 'favorites_to_deck'))}</a></p>`;
-    const list = rows.map(d => `
+    // own drinks get their own section below, so they are not listed twice when also saved
+    const rows = state.favorites.map(id => db.drinks.find(d => d.id === id)).filter(d => d && !d.custom); // skip ids not in db
+    const row = d => `
       <div class="list-card fav-row">
         <button class="fav-open" data-id="${esc(d.id)}">
           <span class="fav-thumb">${artMarkup(d)}</span>
           <span class="fav-info">
             <span class="name">${esc(d.name)}</span>
-            <span class="meta">${esc(taxonomyName('type', d.type))}</span>
+            <span class="meta">${esc(kindName(d))}${d.custom && mySuggestions[d.id] ? ' · ' + esc(t(lang(), 'suggest_status_' + mySuggestions[d.id].status)) : ''}</span>
             ${missingBadge(d)}
           </span>
         </button>
-        <button class="fav-remove" data-act="fav" data-id="${esc(d.id)}" aria-label="${esc(t(lang(), 'fav_unfavorite'))}">&times;</button>
-      </div>`).join('');
-    return `${title}${list}`;
+        ${d.custom ? '' : `<button class="fav-remove" data-act="fav" data-id="${esc(d.id)}" aria-label="${esc(t(lang(), 'fav_unfavorite'))}">&times;</button>`}
+      </div>`;
+    const mine = customDrinks();
+    const own = `<div class="section-head"><h2 class="pantry-almost-title">${esc(t(lang(), 'custom_title'))}</h2>
+      <a class="pill-btn" href="#/egen">${esc(t(lang(), 'custom_new'))}</a></div>
+      ${mine.length ? mine.map(row).join('') : `<p class="fav-hint">${esc(t(lang(), 'custom_empty'))}</p>`}`;
+    if (!rows.length) return `${title}<p class="empty">${esc(t(lang(), 'favorites_empty'))}</p>
+      <p class="empty-action"><a class="pill-btn" href="#/">${esc(t(lang(), 'favorites_to_deck'))}</a></p>${own}`;
+    return `${title}${rows.map(row).join('')}${own}`;
+  }
+
+  // F3: Sent → In review → Published (with a link to the catalog drink) or Declined with the curator's note
+  function suggestStatus(s) {
+    const note = s.status === 'declined' && s.note ? ': ' + esc(s.note) : '';
+    const link = s.status === 'published' && s.drink_id ? ` · <a href="#/drink/${esc(s.drink_id)}">${esc(t(lang(), 'suggest_in_deck'))}</a>` : '';
+    return `<p class="suggest-status">${esc(t(lang(), 'suggest_title'))}: <strong>${esc(t(lang(), 'suggest_status_' + s.status))}</strong>${note}${link}</p>`;
+  }
+
+  const pick = (name, value, on, label, extra) => `<label class="pick"${extra || ''}><input type="radio" name="${name}" value="${esc(value)}"${on ? ' checked' : ''}${extra ? ` aria-label="${esc(label)}"` : ''}><span>${extra ? '' : esc(label)}</span></label>`;
+  function customLine(l) {
+    const u = !l || typeof l.ml === 'number' ? unit() : l.unit;
+    const amount = !l ? '' : typeof l.ml === 'number' ? Math.round(convert(l.ml, u) * 100) / 100 : l.qty;
+    const units = recipeUnits().concat(QTY_UNITS).map(x =>
+      `<option value="${x}"${x === u ? ' selected' : ''}>${esc(UNITS.includes(x) ? x : t(lang(), 'unit_' + x))}</option>`).join('');
+    return `<div class="custom-line"><input name="amount" type="number" min="0" step="any" inputmode="decimal" aria-label="${esc(t(lang(), 'custom_amount'))}" value="${amount}"><select name="unit" aria-label="${esc(t(lang(), 'settings_unit'))}">${units}</select><input name="ing" list="ingredientList" maxlength="60" aria-label="${esc(t(lang(), 'custom_ingredient'))}" value="${l ? esc(ingName(l.id)) : ''}"><button type="button" data-custom-act="remove-line" aria-label="${esc(t(lang(), 'custom_remove_line'))}">&times;</button></div>`;
+  }
+
+  function viewCustomForm() {
+    const id = hid(location.hash, '#/egen/'), d = id && db ? db.drinks.find(x => x.id === id && x.custom) : null;
+    const title = `<h1 class="screen-title">${esc(t(lang(), d ? 'custom_edit_title' : 'custom_new_title'))}</h1>`;
+    if (!db) return `${title}<p class="empty">${esc(t(lang(), 'deck_loading'))}</p>`;
+    const glass = d ? d.glass : CUSTOM_GLASSES[0], color = d && d.color ? d.color : 'clear';
+    return `${title}<form id="customForm" class="account-form custom-form" data-id="${d ? esc(d.id) : ''}">
+      <label>${esc(t(lang(), 'custom_name'))} <input name="name" required maxlength="80" value="${d ? esc(d.name) : ''}"></label>
+      <fieldset><legend>${esc(t(lang(), 'custom_glass'))}</legend>
+        <div class="picks">${CUSTOM_GLASSES.map(g => pick('glass', g, g === glass, taxonomyName('glass', g))).join('')}</div>
+        <div class="picks">${Object.keys(CUSTOM_COLORS).map(c => pick('color', c, c === color, t(lang(), 'color_' + c), ` style="--swatch:${CUSTOM_COLORS[c]}"`)).join('')}</div>
+      </fieldset>
+      <fieldset><legend>${esc(t(lang(), 'ingredients_title'))}</legend>
+        <div id="customLines">${(d ? d.ingredients : [null, null]).map(customLine).join('')}</div>
+        <button type="button" class="account-link" data-custom-act="add-line">${esc(t(lang(), 'custom_add_line'))}</button>
+      </fieldset>
+      <label>${esc(t(lang(), 'method_title'))} <textarea name="method" required maxlength="2000" rows="4">${d ? esc(d.method.en) : ''}</textarea></label>
+      <label>${esc(t(lang(), 'custom_source'))} <input name="source" maxlength="200" placeholder="${esc(t(lang(), 'custom_source_ph'))}" value="${d && d.source ? esc(d.source.label) : ''}"></label>
+      <p id="customError" class="warn" role="status" hidden></p>
+      <button type="submit" class="deck-save custom-save">${esc(t(lang(), 'custom_save'))}</button>
+      <datalist id="ingredientList">${Object.keys(db.ingredients).filter(i => !db.ingredients[i].custom).map(i => `<option value="${esc(ingName(i))}">`).join('')}</datalist>
+    </form>`;
+  }
+
+  function viewSuggest() {
+    const id = hid(location.hash, '#/foresla/'), d = id && db ? db.drinks.find(x => x.id === id && x.custom) : null;
+    const title = `<h1 class="screen-title">${esc(t(lang(), 'suggest_title'))}</h1>`;
+    if (!d) return `${title}<p class="empty">${esc(t(lang(), db ? 'search_empty' : 'deck_loading'))}</p>`;
+    const head = `${title}<div class="fav-toolbar"><a class="fav-back" href="#/favoriter/${esc(d.id)}">${esc(t(lang(), 'fav_back'))}</a></div>
+      <p class="suggest-drink">${esc(d.name)}</p>`;
+    if (!fbUser) return `${head}<p class="fav-hint">${esc(t(lang(), 'suggest_login'))}</p>
+      <p><a class="pill-btn" href="#/installningar">${esc(t(lang(), 'suggest_login_link'))}</a></p>`;
+    if (mySuggestions[d.id]) return head + suggestStatus(mySuggestions[d.id]);
+    const similar = similarDrink(d, db.catalog);
+    const box = similar ? `<fieldset class="suggest-similar"><legend>${esc(t(lang(), 'suggest_similar'))}</legend>
+        <div class="fav-row"><span class="fav-thumb">${artMarkup(similar.drink)}</span><span class="fav-info"><span class="name">${esc(similar.drink.name)}</span>
+        <span class="meta">${esc(t(lang(), 'suggest_shared').replace('{n}', similar.shared).replace('{m}', similar.all))}</span></span></div>
+        <div class="picks" role="group" aria-label="${esc(t(lang(), 'suggest_kind'))}">${pick('kind', 'variant', false, t(lang(), 'suggest_as_variant')).replace('<input', '<input required')}${pick('kind', 'new', false, t(lang(), 'suggest_as_new'))}</div>
+      </fieldset>` : '';
+    return `${head}<form id="suggestForm" class="account-form custom-form" data-id="${esc(d.id)}" data-similar="${similar ? esc(similar.drink.id) : ''}">
+      ${box}
+      <label>${esc(t(lang(), 'custom_source'))} <input name="source" maxlength="200" placeholder="${esc(t(lang(), 'custom_source_ph'))}" value="${d.source ? esc(d.source.label) : ''}"></label>
+      <label>${esc(t(lang(), 'suggest_name'))} <input name="displayName" maxlength="60" autocomplete="nickname"></label>
+      <label class="filter-toggle suggest-consent"><input type="checkbox" name="consent" required> <span>${esc(t(lang(), 'suggest_consent'))}</span></label>
+      <p id="suggestError" class="warn" role="status" hidden></p>
+      <button type="submit" class="deck-save custom-save">${esc(t(lang(), 'suggest_send'))}</button>
+      <p class="fav-hint">${esc(t(lang(), 'suggest_hint'))}</p>
+    </form>`;
   }
 
   function viewPantry() {
@@ -1688,7 +1906,7 @@ if (typeof document !== 'undefined') (function () {
     });
     const meta = d => familyPrimary(d)
       ? t(lang(), 'variant_of').replace('{name}', familyOf(d).name).replace('{n}', familyOf(d).order.length)
-      : taxonomyName('type', d.type);
+      : kindName(d);
     const group = (title, list) => list.length ? (title ? `<h2 class="search-group">${esc(title)}</h2>` : '') + list.map(d => `
       <div class="list-card fav-row">
         <button class="fav-open" data-id="${esc(d.id)}">
@@ -1947,6 +2165,8 @@ if (typeof document !== 'undefined') (function () {
     '#/favoriter': { view: viewFavorites, match: '#/favoriter' },
     '#/skafferi': { view: viewPantry, match: '#/skafferi' },
     '#/installningar': { view: viewSettings, match: '#/installningar' },
+    '#/egen': { view: viewCustomForm, match: '#/favoriter' },
+    '#/foresla': { view: viewSuggest, match: '#/favoriter' },
   };
 
   function closeFavoriteDetail() {
@@ -1970,7 +2190,7 @@ if (typeof document !== 'undefined') (function () {
   function render() {
     const hash = location.hash || '#/';
     const detailId = favoriteIdFromHash(hash) || drinkIdFromHash(hash);
-    const route = detailId !== null ? ROUTES['#/favoriter'] : (ROUTES[hash] || ROUTES['#/']);
+    const route = detailId !== null ? ROUTES['#/favoriter'] : (ROUTES[hash.replace(/^(#\/(?:egen|foresla))\/.+$/, '$1')] || ROUTES['#/']);
     const isWheel = route.view === viewWheel, layer = $('#wheelLayer');
     const base = isWheel ? viewDeck : route.view; // the wheel is a layer over the deck, which stays in #view
     const keepBase = base === viewDeck && renderedBase === viewDeck && (isWheel || !layer.hidden);
@@ -1992,7 +2212,7 @@ if (typeof document !== 'undefined') (function () {
     if (!keepBase) {
       $('#view').innerHTML = base();
       if (base === viewDeck && db) mountDeck();
-      if (base === viewFavorites || base === viewSearch) $('#view').querySelectorAll('.cocktail-art').forEach(wireArt);
+      if (base !== viewDeck) $('#view').querySelectorAll('.cocktail-art').forEach(wireArt);
       if (base === viewSearch && matchMedia('(pointer: fine)').matches) $('#searchInput').focus();
       if ($('#pantrySearch')) filterPantry();
       renderedBase = base === viewDeck && !db ? null : base; // a loading deck is redrawn once the data lands
@@ -2110,6 +2330,23 @@ if (typeof document !== 'undefined') (function () {
       if (again) again.focus(); // the re-render replaced the pressed button
       return;
     }
+    const customAct = e.target.closest('[data-custom-act]');
+    if (customAct) {
+      const act = customAct.dataset.customAct, lines = $('#customLines');
+      if (act === 'add-line') {
+        lines.insertAdjacentHTML('beforeend', customLine());
+        lines.lastElementChild.querySelector('input').focus();
+      } else if (act === 'remove-line') {
+        customAct.closest('.custom-line').remove();
+        $('[data-custom-act="add-line"]').focus();
+      } else if (act === 'delete') { // no dialog: the toast's undo brings it back
+        const id = customAct.dataset.id, drink = customDrinks().find(d => d.id === id);
+        putCustom(id, null);
+        closeFavoriteDetail();
+        showToast(t(lang(), 'toast_deleted'), () => { putCustom(id, drink); render(); });
+      }
+      return;
+    }
     const deckBtn = e.target.closest('[data-deck]');
     if (deckBtn) {
       const card = $('#deck .card[data-depth="0"]');
@@ -2204,6 +2441,36 @@ if (typeof document !== 'undefined') (function () {
     } catch (err) {
       showAccountError(err);
     }
+  });
+
+  // F2 save and F3 send
+  $('#view').addEventListener('submit', async e => {
+    const form = e.target.closest('#customForm, #suggestForm');
+    if (!form) return;
+    e.preventDefault();
+    const f = new FormData(form), err = form.querySelector('.warn');
+    const fail = key => { err.textContent = t(lang(), key); err.hidden = false; };
+    if (form.id === 'customForm') {
+      const id = form.dataset.id || 'egen-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+      const lines = Array.from(form.querySelectorAll('.custom-line')).map(row =>
+        ({ amount: row.children[0].value, unit: row.children[1].value, name: row.children[2].value }));
+      const drink = buildCustomDrink({ id, name: f.get('name'), glass: f.get('glass'), color: f.get('color'),
+        method: f.get('method'), source: f.get('source'), lines }, db.ingredients);
+      if (!drink.ingredients.length || drink.ingredients.some(l => 'ml' in l && !(l.ml > 0))) return fail('custom_need_line');
+      putCustom(id, drink);
+      location.replace('#/favoriter/' + id);
+      return;
+    }
+    const drink = customDrinks().find(d => d.id === form.dataset.id), button = form.querySelector('[type="submit"]');
+    button.disabled = true;
+    const res = await authedFetch('/suggestions', { method: 'POST', body: JSON.stringify({
+      drink, kind: f.get('kind') || 'new', similarTo: form.dataset.similar || null,
+      source: f.get('source').trim() || null, displayName: f.get('displayName').trim() || null, consent: f.get('consent') === 'on',
+    }) }).catch(() => null);
+    button.disabled = false;
+    if (!res || !res.ok) return fail(res && res.status === 429 ? 'suggest_limit' : 'suggest_failed');
+    await loadMine().catch(() => {});
+    render();
   });
 
   // <details> toggle does not bubble, so listen in the capture phase

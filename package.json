@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "test": "node test.js",
+    "test": "node test.js && node worker/worker.test.mjs",
     "test:e2e": "playwright test"
   },
   "devDependencies": {
