@@ -3,7 +3,7 @@
 // PUT    /state    (Bearer) <- hela state-bloben {v,favorites,pantry,settings}
 // GET    /drinks   (Bearer) -> {drinks:[{id,drink,updatedAt}]}  F2, drink null = raderad
 // GET|PUT|DELETE /drinks/:id (Bearer)  PUT <- {drink,updatedAt}, DELETE ?updatedAt=; nyaste ändringen vinner
-// POST   /suggestions      (Bearer) <- {drink,kind,similarTo,source,displayName,consent}  F3, max 5 per dygn
+// POST   /suggestions      (Bearer) <- {drink,kind,similarTo,source,displayName,consent}  F3, max 5 per dygn, mejlar kuratorn
 // GET    /suggestions/mine (Bearer) -> {suggestions:[...]}
 // GET    /admin/suggestions?status=new, POST /admin/suggestions/:id <- {status,note,drink_id}  (Bearer ADMIN_TOKEN)
 // DELETE /account  (Bearer) -> {ok}  raderar state, egna drinkar och ej publicerade förslag; spärrmarkören städas efter två timmar
@@ -38,6 +38,22 @@ async function isAdmin(req, env) {
   const token = (req.headers.get('Authorization') || '').replace(/^Bearer /, '');
   if (typeof env.ADMIN_TOKEN !== 'string' || env.ADMIN_TOKEN.length < 32) return false;
   return await stateEtag(token) === await stateEtag(env.ADMIN_TOKEN);
+}
+// Avisering till kuratorn. send_email-bindningen är låst till en verifierad mottagare i wrangler.toml.
+const NOTIFY_FROM = 'forslag@buildapp.se', NOTIFY_TO = 'patz.lofgren@gmail.com';
+function suggestionMail(id, p) {
+  return {
+    from: { email: NOTIFY_FROM, name: 'Sipdeck' }, to: NOTIFY_TO,
+    subject: 'Sipdeck: nytt förslag #' + id,
+    text: [
+      'Drink: ' + p.drink.name,
+      'Typ: ' + (p.kind === 'variant' ? 'variant' : 'ny drink'),
+      'Liknar: ' + (p.similarTo || 'ingen katalogdrink'),
+      '',
+      'Hämta:',
+      'SIPDECK_ADMIN_TOKEN=$(cat ~/.config/sipdeck/admin-token) node scripts/suggestions.js pull',
+    ].join('\n'),
+  };
 }
 const drinkRow = r => ({ id: r.id, drink: r.drink_json ? JSON.parse(r.drink_json) : null, updatedAt: r.updated_at });
 const suggestionRow = r => Object.assign(r, { payload: JSON.parse(r.payload) });
@@ -116,7 +132,7 @@ async function stateEtag(raw) {
 }
 
 export default {
-  async fetch(req, env) {
+  async fetch(req, env, ctx) {
     if (req.method === 'OPTIONS') return new Response(null, { headers: cors });
     const url = new URL(req.url), path = url.pathname;
     try {
@@ -218,7 +234,10 @@ export default {
           source: s.source || null, displayName: s.displayName || null, consentAt: now };
         const result = await env.DB.prepare('INSERT INTO suggestions (firebase_uid, payload, created_at) VALUES (?, ?, ?)')
           .bind(u.firebase_uid, JSON.stringify(payload), now).run();
-        return json({ id: result.meta.last_row_id, status: 'new' }, 201);
+        const id = result.meta.last_row_id;
+        // efter svaret: ett mejl som kastar får aldrig stoppa eller fördröja förslaget
+        if (env.MAIL) ctx.waitUntil(env.MAIL.send(suggestionMail(id, payload)).catch(e => console.error('mejl #' + id, e)));
+        return json({ id, status: 'new' }, 201);
       }
       if (path === '/suggestions/mine' && req.method === 'GET') {
         const u = await requireUser(req, env);

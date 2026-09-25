@@ -19,7 +19,11 @@ const DB = {
     return q;
   },
 };
-const env = { DB, ADMIN_TOKEN: 'a'.repeat(40) };
+const mails = [], pending = [];
+let mailFails = false;
+const MAIL = { send: async m => { if (mailFails) throw new Error('testfel: smtp nere'); mails.push(m); } };
+const env = { DB, MAIL, ADMIN_TOKEN: 'a'.repeat(40) };
+const ctx = { waitUntil: p => pending.push(p) };
 
 const { publicKey, privateKey } = await crypto.subtle.generateKey(
   { name: 'RSASSA-PKCS1-v1_5', modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: 'SHA-256' }, true, ['sign', 'verify']);
@@ -36,7 +40,8 @@ async function token(sub) {
 const tokens = { alice: await token('alice'), bob: await token('bob') };
 async function call(method, path, { who, body, auth } = {}) {
   const headers = { Authorization: auth || (who ? 'Bearer ' + tokens[who] : '') };
-  const res = await worker.fetch(new Request('https://api.test' + path, { method, headers, body: body && JSON.stringify(body) }), env);
+  const res = await worker.fetch(new Request('https://api.test' + path, { method, headers, body: body && JSON.stringify(body) }), env, ctx);
+  await Promise.all(pending.splice(0));
   return { status: res.status, data: await res.json() };
 }
 
@@ -68,9 +73,17 @@ check((await call('POST', '/suggestions', { who: 'alice', body: Object.assign({}
   'suggestions: consent is required');
 const first = await call('POST', '/suggestions', { who: 'alice', body: suggestion });
 check(first.status === 201 && first.data.status === 'new', 'suggestions: created as new');
+check(mails.length === 1 && mails[0].to === 'patz.lofgren@gmail.com' && mails[0].subject === 'Sipdeck: nytt förslag #' + first.data.id &&
+  /Kvällens sour/.test(mails[0].text) && /Typ: variant/.test(mails[0].text) && /whiskey-sour/.test(mails[0].text) &&
+  /suggestions\.js pull/.test(mails[0].text), 'suggestions: one mail with id, name, kind, similar drink and pull command');
 for (let i = 0; i < 4; i++) await call('POST', '/suggestions', { who: 'alice', body: suggestion });
 check((await call('POST', '/suggestions', { who: 'alice', body: suggestion })).status === 429, 'suggestions: the sixth in a day is refused');
-check((await call('POST', '/suggestions', { who: 'bob', body: suggestion })).status === 201, 'suggestions: the limit is per user');
+check(mails.length === 5, 'suggestions: no mail for a 400 or a 429');
+mailFails = true;
+const bobs = await call('POST', '/suggestions', { who: 'bob', body: suggestion });
+mailFails = false;
+check(bobs.status === 201 && sqlite.prepare("SELECT COUNT(*) AS n FROM suggestions WHERE firebase_uid = 'bob'").get().n === 1,
+  'suggestions: the limit is per user, and a throwing mail still saves the suggestion');
 const mine = (await call('GET', '/suggestions/mine', { who: 'alice' })).data.suggestions;
 check(mine.length === 5 && mine[0].custom_id === 'egen-9' && mine[0].status === 'new', 'suggestions/mine: own rows with the drink id');
 
