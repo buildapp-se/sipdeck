@@ -451,10 +451,11 @@ const workerSource = fs.readFileSync(path.join(__dirname, 'worker', 'worker.js')
 // bumped 113kB -> 120kB 2026-09-25 for design review batch 5 (F1 variants: family deck/wheel units, variant switch, diff, grouped search)
 // bumped 120kB -> 140kB 2026-09-25 for design review batch 6 (F2 own-drink form, local store + per-drink sync, F3 similarity
 // check, suggestion form and status; about 6,5 kB of it is the new EN + SV copy)
+// bumped 140kB -> 150kB 2026-09-25, owner's call: wheel extras, spin profiles, level 5 lines, mood card over the wheel
 // Mät LF-storleken, alltså det git lagrar och GitHub Pages levererar. En Windows-
 // arbetskopia checkas ut med CRLF och lägger på ~1,8 kB som aldrig deployas.
 check(Buffer.byteLength(appSource.split('\r').join('')) < 140000,
-  'bundle budget: app.js stays under 140 kB unminified');
+  'bundle budget: app.js stays under 150 kB unminified');
 check(!htmlSource.includes('fonts.googleapis.com') && htmlSource.includes("fonts/work-sans.woff2"),
   'privacy: fonts are self-hosted with no Google Fonts request');
 check(htmlSource.includes('rel="canonical" href="https://buildapp.se/sipdeck/"') &&

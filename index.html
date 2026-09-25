@@ -459,6 +459,17 @@ body.search-mode .brand,body.search-mode .bottom-nav{display:none}
 .wheel-mood[aria-pressed="true"]{background:#211B12;border-color:var(--sd-ink);color:#FBF7EF}
 .wheel-mood:disabled{opacity:.5;cursor:not-allowed}
 .wheel-mood-copy{margin-top:8px;text-align:center;font:400 13px/1.35 var(--sd-font-ui);color:var(--sd-ink-2)}
+.wheel-disc,.wheel-pointer,.wheel-window{transition:scale .55s cubic-bezier(.2,.9,.3,1.12),opacity .35s ease}
+.wheel-hub-button{transition:transform var(--sd-t-micro) var(--sd-ease-list),opacity .35s ease .15s}
+.wheel-intro .wheel-disc{scale:.88;opacity:.4}
+.wheel-intro :is(.wheel-hub-button,.wheel-pointer,.wheel-window){opacity:0;visibility:hidden}
+.wheel-intro-card{position:absolute;z-index:4;top:0;bottom:0;left:-24px;right:-24px;height:max-content;margin:auto 0;padding:12px 10px;
+  border-radius:16px;background:var(--sd-card);color:#211B12;box-shadow:var(--sd-shadow);display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.wheel-intro-card h2{grid-column:1/-1;text-align:center;font:400 22px/1.15 var(--sd-font-display);margin-bottom:2px}
+.wheel-intro-mood{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:64px;padding:4px 2px;
+  border:1px solid rgba(33,27,18,.16);border-radius:12px;background:#FBF7EF;color:#211B12;font:500 11.5px/1.15 var(--sd-font-ui);text-wrap:balance}
+.wheel-intro-mood span{font-size:22px;line-height:1}
+.wheel-intro-mood:active{background:#211B12;color:#FBF7EF}
 .wheel-result{padding:14px;border-radius:16px;background:var(--sd-card);color:#211B12;box-shadow:var(--sd-shadow)}
 .wheel-result-head{display:flex;align-items:center;gap:14px}
 .wheel-result-art{width:72px;height:72px;flex:0 0 72px;border-radius:14px;object-fit:contain;background:#FBF7EF}
@@ -476,6 +487,7 @@ body.search-mode .brand,body.search-mode .bottom-nav{display:none}
 }
 @media (prefers-reduced-motion:reduce){
   .wheel-disc svg>*{transition:none}
+  .wheel-disc,.wheel-hub-button,.wheel-pointer,.wheel-window{transition:opacity .15s linear}
 }
 </style>
 </head>
@@ -527,6 +539,6 @@ body.search-mode .brand,body.search-mode .bottom-nav{display:none}
   <a href="#/installningar" data-match="#/installningar"></a>
 </nav>
 <div id="wheelLayer" hidden></div>
-<script src="app.js?v=1.21"></script>
+<script src="app.js?v=1.22"></script>
 </body>
 </html>

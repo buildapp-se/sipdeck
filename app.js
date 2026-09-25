@@ -10,7 +10,7 @@ const STRINGS = {
     wheel_intro: 'How are you feeling?', wheel_choose: 'Choose a mood to build your wheel.',
     wheel_spin: 'Spin', wheel_respin: 'Re-spin', wheel_result: 'Your order',
     wheel_first: 'First', wheel_under: 'Under the pointer', wheel_turning: 'Spinning', wheel_landed: 'It landed on',
-    wheel_pick_below: 'Choose a mood below', wheel_change: 'Change mood', wheel_recipe: 'Show recipe',
+    wheel_pick_below: 'Choose a mood', wheel_change: 'Change mood', wheel_recipe: 'Show recipe',
     wheel_loading: 'Preparing the wheel...', wheel_error: "Couldn't load the wheel. Reload to try again.",
     wheel_spinning: 'The wheel is spinning', wheel_ready: 'Wheel ready to spin',
     deck_empty: 'No drinks yet. Deal the deck once drinks.json ships.',
@@ -120,7 +120,7 @@ const STRINGS = {
     wheel_intro: 'Hur känns det?', wheel_choose: 'Välj ett läge för att bygga hjulet.',
     wheel_spin: 'Snurra', wheel_respin: 'Snurra igen', wheel_result: 'Din beställning',
     wheel_first: 'Först', wheel_under: 'Under pekaren', wheel_turning: 'Snurrar', wheel_landed: 'Det blev',
-    wheel_pick_below: 'Välj läge nedan', wheel_change: 'Byt läge', wheel_recipe: 'Visa recept',
+    wheel_pick_below: 'Välj ett läge', wheel_change: 'Byt läge', wheel_recipe: 'Visa recept',
     wheel_loading: 'Förbereder hjulet...', wheel_error: 'Kunde inte ladda hjulet. Ladda om sidan för att försöka igen.',
     wheel_spinning: 'Hjulet snurrar', wheel_ready: 'Hjulet är redo att snurra',
     nav_deck: 'Kortlek', nav_favorites: 'Favoriter', nav_pantry: 'Skafferi', nav_settings: 'Inställningar',
@@ -1755,6 +1755,7 @@ if (typeof document !== 'undefined') (function () {
   function wheelPanelMarkup() {
     const mood = wheelMood(), entry = wheelResult;
     if (!wheelData || !db) return `<p class="wheel-mood-copy">${esc(t(lang(), wheelFailed ? 'wheel_error' : 'wheel_loading'))}</p>`;
+    if (!mood) return ''; // the moods sit in #wheelIntro over the wheel until the first choice
     if (entry && !wheelPicker) {
       const forced = !!(mood && mood.forcedOutcome);
       const safety = forced ? `<p class="wheel-safety">${esc(forcedResultLine(mood))}</p>` : '';
@@ -1778,6 +1779,16 @@ if (typeof document !== 'undefined') (function () {
       <p class="wheel-mood-copy">${esc(wheelSupportingCopy(mood))}</p>`;
   }
 
+  // Owner 2026-09-25: before the first choice of a visit the moods sit on a card over a shrunken, faded
+  // wheel, so it is obvious what to do first. Choosing one sends the card down and grows the wheel.
+  function wheelIntroMarkup() {
+    if (wheelMood() || !wheelData || !db) return '';
+    const moods = wheelData.moods.map((item, i) =>
+      `<button class="wheel-intro-mood" data-wheel-mood="${i}"><span aria-hidden="true">${esc(item.emoji)}</span>${esc(localText(item.name))}</button>`).join('');
+    return `<div class="wheel-intro-card" id="wheelIntro" role="group" aria-labelledby="wheelIntroQ">
+      <h2 id="wheelIntroQ">${esc(t(lang(), 'wheel_intro'))}</h2>${moods}</div>`;
+  }
+
   function viewWheel() {
     loadWheelData();
     const canSpin = !!(wheelMood() && wheelLineup && !wheelSpinning);
@@ -1788,7 +1799,7 @@ if (typeof document !== 'undefined') (function () {
         <h1 class="wheel-title">${esc(t(lang(), 'wheel_title'))}</h1>
         <button class="wheel-sound" data-wheel-act="sound" aria-pressed="${!wheelMuted}">${esc(t(lang(), wheelMuted ? 'wheel_sound_off' : 'wheel_sound_on'))}</button>
       </header>
-      <div class="wheel-body">
+      <div class="wheel-body${wheelMood() ? '' : ' wheel-intro'}" id="wheelBody">
         <div class="wheel-window" aria-hidden="true">
           <p class="wheel-window-label" id="wheelWindowLabel"></p><p class="wheel-window-name" id="wheelWindowName"></p>
         </div>
@@ -1796,6 +1807,7 @@ if (typeof document !== 'undefined') (function () {
           <div class="wheel-disc" id="wheelDisc" style="transform:rotate(${wheelRotation}deg)">${wheelSvgMarkup()}</div>
           <button class="wheel-hub-button" id="wheelHub" data-wheel-act="spin"${canSpin ? '' : ' disabled'}>${esc(t(lang(), wheelResult ? 'wheel_respin' : 'wheel_spin'))}</button>
           <div class="wheel-pointer" id="wheelPointer" aria-hidden="true"></div>
+          ${wheelIntroMarkup()}
         </div>
         <div class="wheel-lower">
           <div class="wheel-legend" id="wheelLegend" aria-hidden="true">${wheelLegendMarkup()}</div>
@@ -2009,6 +2021,20 @@ if (typeof document !== 'undefined') (function () {
     }
     $('#wheelLegend').innerHTML = wheelLegendMarkup();
     $('#wheelPanel').innerHTML = wheelPanelMarkup();
+    const intro = $('#wheelIntro');
+    if (intro) {
+      // the card drops toward the picker's new place while the wheel grows back (CSS transition on .wheel-intro)
+      const from = intro.querySelector('button').getBoundingClientRect(), to = ($('#wheelPanel .wheel-moods') || $('#wheelPanel')).getBoundingClientRect();
+      $('#wheelBody').classList.remove('wheel-intro');
+      intro.inert = true; // leaving: no second choice, and the picker below is now the only one
+      intro.querySelectorAll('[data-wheel-mood]').forEach(el => el.removeAttribute('data-wheel-mood'));
+      const drop = reduced ? [{ opacity: 1 }, { opacity: 0 }]
+        : [{ opacity: 1 }, { opacity: 0, transform: `translateY(${Math.max(0, to.top - from.top)}px) scale(.9)` }];
+      intro.animate(drop, { duration: reduced ? 150 : 380, easing: 'cubic-bezier(.3,0,.2,1)', fill: 'forwards' }).finished
+        .then(() => intro.remove(), () => intro.remove());
+      if (!reduced) $('#wheelPanel').animate([{ opacity: 0, transform: 'translateY(-12px)' }, { opacity: 1, transform: 'none' }],
+        { duration: 320, delay: 220, easing: 'cubic-bezier(.2,0,0,1)', fill: 'backwards' });
+    }
     const hub = $('#wheelHub');
     hub.disabled = false;
     hub.textContent = t(lang(), 'wheel_spin');
@@ -2149,7 +2175,9 @@ if (typeof document !== 'undefined') (function () {
     const layer = $('#wheelLayer'), mini = $('#wheelEntry .wheel-symbol'), home = $('.wrap'), disc = $('#wheelDisc');
     const a = mini.getBoundingClientRect(), b = $('#wheelStage').getBoundingClientRect();
     const rot = `rotate(${wheelRotation}deg)`, ez = 'cubic-bezier(.2,0,0,1)';
-    const fly = `translate(${a.left + a.width / 2 - b.left - b.width / 2}px,${a.top + a.height / 2 - b.top - b.height / 2}px) scale(${a.width / b.width}) ${rot}`;
+    // the CSS `scale` of the intro state applies outside this transform, so divide it back out
+    const s = Number(getComputedStyle(disc).scale) || 1;
+    const fly = `translate(${(a.left + a.width / 2 - b.left - b.width / 2) / s}px,${(a.top + a.height / 2 - b.top - b.height / 2) / s}px) scale(${a.width / b.width / s}) ${rot}`;
     const bg = layer.querySelector('.wheel-bg'), groups = ['.wheel-topbar', '.wheel-window,.wheel-hub-button,.wheel-pointer', '.wheel-lower'];
     const scaled = [{ transform: 'scale(.96)', opacity: .4 }], rest = [{ transform: 'none', opacity: 1 }];
     if (open) {
@@ -2157,6 +2185,7 @@ if (typeof document !== 'undefined') (function () {
       home.animate(rest.concat(scaled), { duration: 420, easing: ez, fill: 'both' });
       bg.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 280 });
       groups.forEach((sel, i) => layer.querySelectorAll(sel).forEach(el => el.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 320, delay: 220 + i * 40, easing: ez, fill: 'backwards' })));
+      $('#wheelIntro')?.animate([{ opacity: 0, transform: 'translateY(12px) scale(.96)' }, { opacity: 1, transform: 'none' }], { duration: 340, delay: 420, easing: ez, fill: 'backwards' });
       return disc.animate([{ transform: fly }, { transform: rot }], { duration: 600, easing: springLinear(.8, 600) }).finished
         .then(() => home.getAnimations().forEach(anim => anim.cancel()));
     }

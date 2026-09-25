@@ -20,7 +20,13 @@ test('wheel starts neutral, spins, lands and closes back onto the deck', async (
   await expect(page.locator('#wheelStage svg')).toHaveClass(/wheel-unset/);
   await expect(page.locator('[data-wheel-mood][aria-pressed="true"]')).toHaveCount(0);
 
-  await page.locator('[data-wheel-mood="1"]').click();
+  // owner 2026-09-25: the moods start on a card over a shrunken wheel, the panel below is empty
+  await expect(page.locator('#wheelIntro [data-wheel-mood]')).toHaveCount(5);
+  await expect(page.locator('#wheelPanel [data-wheel-mood]')).toHaveCount(0);
+  await expect(page.locator('#wheelDisc')).toHaveCSS('scale', '0.88');
+  await page.locator('#wheelIntro [data-wheel-mood="1"]').click();
+  await expect(page.locator('#wheelIntro')).toHaveCount(0);
+  await expect(page.locator('#wheelDisc')).toHaveCSS('scale', 'none');
   await expect(page.locator('[data-wheel-mood="1"]')).toHaveAttribute('aria-pressed', 'true');
   await expect(hub).toBeEnabled();
   await expect(page.locator('#wheelWindowName')).not.toBeEmpty();
