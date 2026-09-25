@@ -165,10 +165,13 @@ test('suggest: signed in, similarity choice, required consent, status afterwards
   const send = page.getByRole('button', { name: 'Skicka förslag' });
   await send.click();
   expect(api.posted).toBeUndefined(); // kind and consent are required
-  // after the empty submit, headless Firefox's native "select one" bubble sits over the label now and then
-  // and eats pointer clicks (CI run 36159471345); check the radio itself. Clicking a .pick label is covered
-  // by the own-drink test ('rocksglas'), which has no empty submit before it
-  await box.locator('.pick', { hasText: 'Som variant' }).locator('input').check({ force: true });
+  // after the empty submit, Firefox's native "select one" bubble sits on the invalid radio and eats pointer
+  // clicks there, even forced ones (CI runs 36159471345, 36161866466). Choose with the keyboard instead, as
+  // a keyboard user would; clicking a .pick label is covered by the own-drink test ('rocksglas')
+  const variant = box.locator('.pick', { hasText: 'Som variant' }).locator('input');
+  await variant.focus();
+  await page.keyboard.press('Space');
+  await expect(variant).toBeChecked();
   await send.click();
   expect(api.posted).toBeUndefined();
   await page.getByLabel('Visningsnamn om den publiceras (valfritt)').fill('Patrik');
