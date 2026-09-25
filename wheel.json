@@ -84,7 +84,7 @@
       "strongWeight": 2,
       "slots": [
         "cocktail", "shot", "beer-cider", "cocktail", "wine", "shot",
-        "cocktail", "beer-cider", "cocktail", "shot", "cocktail", "flex"
+        "cocktail", "beer-cider", "cocktail", "cocktail", "cocktail", "flex"
       ]
     },
     {
@@ -98,7 +98,7 @@
       "strongWeight": 1,
       "slots": [
         "cocktail", "shot", "beer-cider", "cocktail", "wine", "beer-cider",
-        "cocktail", "shot", "beer-cider", "cocktail", "wine", "cocktail"
+        "cocktail", "cocktail", "beer-cider", "cocktail", "wine", "cocktail"
       ]
     },
     {
@@ -111,7 +111,7 @@
       },
       "strongWeight": 0.5,
       "slots": [
-        "cocktail", "beer-cider", "wine", "cocktail", "shot", "beer-cider",
+        "cocktail", "beer-cider", "wine", "cocktail", "cocktail", "beer-cider",
         "cocktail", "wine", "beer-cider", "cocktail", "wine", "cocktail"
       ]
     },

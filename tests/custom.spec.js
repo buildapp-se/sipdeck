@@ -151,9 +151,10 @@ test('suggest: signed in, similarity choice, required consent, status afterwards
 
   // the sign-in pull merged the remote drink and pushed the local one
   await expect(page.locator('#suggestForm')).toBeVisible();
+  // the pull runs after sign-in, so it can finish after the form shows: wait for it, don't sample once
+  await expect.poll(() => api.puts.map(p => p.drink.id)).toEqual(['egen-w']);
   expect(api.calls).toContain('GET /drinks');
-  expect(api.puts.map(p => p.drink.id)).toEqual(['egen-w']);
-  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('sipdeck.custom')).map(e => e.id).sort())).toEqual(['egen-remote', 'egen-w']);
+  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('sipdeck.custom')).map(e => e.id).sort())).toEqual(['egen-remote', 'egen-w']);
 
   const box = page.locator('.suggest-similar');
   await expect(box).toContainText('Liknar något som redan finns');
@@ -164,11 +165,18 @@ test('suggest: signed in, similarity choice, required consent, status afterwards
   const send = page.getByRole('button', { name: 'Skicka förslag' });
   await send.click();
   expect(api.posted).toBeUndefined(); // kind and consent are required
-  await box.locator('.pick', { hasText: 'Som variant' }).click();
+  // after the empty submit, headless Firefox's native "select one" bubble sits over the label now and then
+  // and eats pointer clicks (CI run 36159471345); check the radio itself. Clicking a .pick label is covered
+  // by the own-drink test ('rocksglas'), which has no empty submit before it
+  await box.locator('.pick', { hasText: 'Som variant' }).locator('input').check({ force: true });
   await send.click();
   expect(api.posted).toBeUndefined();
   await page.getByLabel('Visningsnamn om den publiceras (valfritt)').fill('Patrik');
   await page.getByLabel('Jag godkänner att Sipdeck får publicera, redigera och illustrera receptet.').check();
+  // a background render (the sign-in sync finishing late, CI Firefox) must keep what was filled in
+  await page.evaluate(() => window.dispatchEvent(new HashChangeEvent('hashchange')));
+  await expect(box.locator('.pick', { hasText: 'Som variant' }).locator('input')).toBeChecked();
+  await expect(page.getByLabel('Visningsnamn om den publiceras (valfritt)')).toHaveValue('Patrik');
   await send.click();
   await expect(page.locator('.suggest-status')).toContainText('Skickad');
   expect(api.posted).toMatchObject({ kind: 'variant', similarTo: 'whiskey-sour', displayName: 'Patrik', consent: true, drink: { id: 'egen-w' } });

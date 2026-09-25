@@ -88,12 +88,13 @@ test('settings: folded account first, unit, wheel extras; login, register and fo
   const langTop = (await page.locator('[data-lang="en"]').boundingBox()).y;
   expect((await account.boundingBox()).y).toBeLessThan(langTop);
 
-  // beer, wine and shots start off in the wheel and are opt-in toggles
+  // shots start on, beer and wine off; all three are toggles
   const wine = page.locator('[data-wheel-extra="wine"]');
-  await expect(page.locator('[data-wheel-extra][aria-pressed="false"]')).toHaveCount(3);
+  await expect(page.locator('[data-wheel-extra="shot"]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('[data-wheel-extra][aria-pressed="false"]')).toHaveCount(2);
   await wine.click();
   await expect(wine).toHaveAttribute('aria-pressed', 'true');
-  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('sipdeck')).settings.wheelExtras)).toEqual(['wine']);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('sipdeck')).settings.wheelExtras)).toEqual(['shot', 'wine']);
 
   await account.locator('summary').click();
   const submit = page.locator('#emailForm [type="submit"]');

@@ -247,14 +247,14 @@ function defaultState(lang) {
       servings: 1,
       filters: { bar: false, base: null },
       wheelFavoritesOnly: false,
-      wheelExtras: [],
+      wheelExtras: ['shot'],
       wheelLabels: false,
       seenFlipHint: false,
     },
   };
 }
 
-// Beer, wine (with the bottle) and shots are opt-in in the wheel (owner 2026-09-25). Water and Red Bull stay.
+// Beer and wine (with the bottle) are opt-in in the wheel, shots start on (owner 2026-09-25). Water and Red Bull stay.
 const WHEEL_EXTRAS = ['beer-cider', 'wine', 'shot'];
 
 function normalizeState(raw, lang) {
@@ -275,7 +275,7 @@ function normalizeState(raw, lang) {
         base: typeof rf.base === 'string' && rf.base ? rf.base : null,
       },
       wheelFavoritesOnly: rs.wheelFavoritesOnly === true,
-      wheelExtras: Array.isArray(rs.wheelExtras) ? rs.wheelExtras.filter(x => WHEEL_EXTRAS.includes(x)) : [],
+      wheelExtras: Array.isArray(rs.wheelExtras) ? rs.wheelExtras.filter(x => WHEEL_EXTRAS.includes(x)) : d.settings.wheelExtras,
       wheelLabels: rs.wheelLabels === true,
       seenFlipHint: rs.seenFlipHint === true,
     },
@@ -2252,7 +2252,14 @@ if (typeof document !== 'undefined') (function () {
       favHistoryEntry = false;
     }
     if (!keepBase) {
+      // a background render (sign-in sync) must not wipe a form being filled in: same form, same fields -> same values
+      const form = $('#view form[data-id]'), kept = form && { id: form.id, key: form.dataset.id,
+        values: Array.from(form.elements, el => /radio|checkbox/.test(el.type) ? el.checked : el.value) };
       $('#view').innerHTML = base();
+      const again = kept && $('#' + kept.id);
+      if (again && again.dataset.id === kept.key && again.elements.length === kept.values.length) {
+        Array.from(again.elements).forEach((el, i) => { if (/radio|checkbox/.test(el.type)) el.checked = kept.values[i]; else if (el.type !== 'submit') el.value = kept.values[i]; });
+      }
       if (base === viewDeck && db) mountDeck();
       if (base !== viewDeck) $('#view').querySelectorAll('.cocktail-art').forEach(wireArt);
       if (base === viewSearch && matchMedia('(pointer: fine)').matches) $('#searchInput').focus();

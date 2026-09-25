@@ -35,8 +35,8 @@ check(d.v === 1 && d.settings.lang === 'sv' && d.settings.unit === 'cl' && d.set
   'defaultState: shape + lang passthrough');
 check(Array.isArray(d.favorites) && d.favorites.length === 0, 'defaultState: empty favorites');
 check(d.settings.wheelFavoritesOnly === false, 'defaultState: wheel favorites-only off by default');
-check(Array.isArray(d.settings.wheelExtras) && d.settings.wheelExtras.length === 0,
-  'defaultState: beer, wine and shots are off in the wheel by default (opt-in)');
+check(Array.isArray(d.settings.wheelExtras) && d.settings.wheelExtras.join() === 'shot',
+  'defaultState: shots start on in the wheel, beer and wine are opt-in');
 
 // normalizeState round-trip: a valid blob comes back unchanged in shape
 const valid = { v: 1, favorites: ['margarita'], pantry: ['gin'],
@@ -56,8 +56,9 @@ check(normalizeState({ settings: { wheelLabels: true } }, 'en').settings.wheelLa
   normalizeState({ settings: { wheelLabels: 'yes' } }, 'en').settings.wheelLabels === false &&
   defaultState('en').settings.wheelLabels === false,
   'normalizeState: wheel sector labels are off by default and only true survives');
-check(normalizeState({ settings: { wheelExtras: 'not-an-array' } }, 'en').settings.wheelExtras.length === 0,
-  'normalizeState: garbage wheelExtras falls back to empty');
+check(normalizeState({ settings: { wheelExtras: 'not-an-array' } }, 'en').settings.wheelExtras.join() === 'shot' &&
+  normalizeState({ settings: { wheelExtras: [] } }, 'en').settings.wheelExtras.length === 0,
+  'normalizeState: garbage or missing wheelExtras falls back to the default, an explicit empty choice stays');
 
 // normalizeState never throws on garbage, falls back to defaults
 check((() => { try { return normalizeState('garbage', 'en').v === 1; } catch (e) { return false; } })(),
@@ -308,14 +309,14 @@ const lineups = Object.fromEntries(wheelData.moods.map(mood => [
 Object.entries(lineups).forEach(([mood, lineup]) => {
   check(lineup.length === 12, `wheel lineup ${mood}: exactly 12 visible sectors`);
 });
-check(lineups.fresh.filter(item => item.category === 'shot').length === 3,
-  'wheel lineup fresh: three shot sectors');
+check(lineups.fresh.filter(item => item.category === 'shot').length === 2,
+  'wheel lineup fresh: two shot sectors (owner 2026-09-25)');
 check(lineups.fresh.filter(item => item.category === 'bottle').length === 1,
   'wheel lineup fresh: bottle appears when flex draw is below one third');
-check(lineups.groove.filter(item => item.category === 'shot').length === 2,
-  'wheel lineup groove: two shot sectors');
-check(lineups.tipsy.filter(item => item.category === 'shot').length === 1,
-  'wheel lineup tipsy: one shot sector');
+check(lineups.groove.filter(item => item.category === 'shot').length === 1,
+  'wheel lineup groove: one shot sector');
+check(lineups.tipsy.every(item => item.category !== 'shot'),
+  'wheel lineup tipsy: no shots, so the first three levels differ with only cocktails and shots on');
 check(lineups.wobbly.every(item => item.category !== 'shot'),
   'wheel lineup wobbly: no shot sectors');
 check(lineups.wobbly.filter(item => item.category === 'water').length === 2,
@@ -333,7 +334,7 @@ check(lineups.groove[selectWheelIndex(lineups.groove, () => 0.99)].eligible,
   'wheel selection normal mood: selected visible sector is eligible');
 
 // wheel prefs: favorites-only cocktails + per-outcome beer/wine/shot exclusion
-const favEnough = ['drink-0', 'drink-1', 'drink-2', 'drink-3', 'drink-4']; // groove needs 5 cocktail slots
+const favEnough = ['drink-0', 'drink-1', 'drink-2', 'drink-3', 'drink-4', 'drink-5']; // groove needs 6 cocktail slots
 const lineupFavEnough = buildSpinLineup(wheelData, 'groove', wheelFixture, () => 0.5,
   { favoritesOnly: true, favorites: favEnough });
 check(lineupFavEnough.length === 12, 'wheel prefs: favorites-only keeps 12 sectors when favorites suffice');
