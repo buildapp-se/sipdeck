@@ -49,8 +49,8 @@ const STRINGS = {
     settings_filter_base_none: 'Any',
     settings_wheel_title: 'Spinning wheel',
     settings_wheel_favorites_only: 'Only favorite drinks',
-    settings_wheel_favorites_only_hint: "Tops up from the full menu if you don't have enough favorites.",
-    settings_wheel_outcomes_title: 'Beer, wine & shots in the wheel',
+    settings_wheel_extras: 'Also in the wheel',
+    wheel_extra_wine: 'Wine & bubbly',
     settings_wheel_labels: 'Show names in the wheel sectors',
     wheel_cat_beer_cider: 'Beer & cider', wheel_cat_wine: 'Wine', wheel_cat_shot: 'Shots',
     wheel_cat_cocktail: 'Cocktail', wheel_cat_water: 'Water', wheel_cat_red_bull: 'Red Bull', wheel_cat_bottle: 'Bottle',
@@ -161,8 +161,8 @@ const STRINGS = {
     settings_filter_base_none: 'Alla',
     settings_wheel_title: 'Snurrhjul',
     settings_wheel_favorites_only: 'Bara favoritdrinkar',
-    settings_wheel_favorites_only_hint: 'Fyller på med hela menyn om du inte har tillräckligt många favoriter.',
-    settings_wheel_outcomes_title: 'Öl, vin och shots i hjulet',
+    settings_wheel_extras: 'Även i hjulet',
+    wheel_extra_wine: 'Vin & bubbel',
     settings_wheel_labels: 'Visa namn i hjulets sektorer',
     wheel_cat_beer_cider: 'Öl & cider', wheel_cat_wine: 'Vin', wheel_cat_shot: 'Shots',
     wheel_cat_cocktail: 'Cocktail', wheel_cat_water: 'Vatten', wheel_cat_red_bull: 'Red Bull', wheel_cat_bottle: 'Flaska',
@@ -247,12 +247,15 @@ function defaultState(lang) {
       servings: 1,
       filters: { bar: false, base: null },
       wheelFavoritesOnly: false,
-      wheelOutcomesExcluded: [],
+      wheelExtras: [],
       wheelLabels: false,
       seenFlipHint: false,
     },
   };
 }
+
+// Beer, wine (with the bottle) and shots are opt-in in the wheel (owner 2026-09-25). Water and Red Bull stay.
+const WHEEL_EXTRAS = ['beer-cider', 'wine', 'shot'];
 
 function normalizeState(raw, lang) {
   const d = defaultState(lang);
@@ -272,8 +275,7 @@ function normalizeState(raw, lang) {
         base: typeof rf.base === 'string' && rf.base ? rf.base : null,
       },
       wheelFavoritesOnly: rs.wheelFavoritesOnly === true,
-      wheelOutcomesExcluded: Array.isArray(rs.wheelOutcomesExcluded)
-        ? rs.wheelOutcomesExcluded.filter(x => typeof x === 'string') : [],
+      wheelExtras: Array.isArray(rs.wheelExtras) ? rs.wheelExtras.filter(x => WHEEL_EXTRAS.includes(x)) : [],
       wheelLabels: rs.wheelLabels === true,
       seenFlipHint: rs.seenFlipHint === true,
     },
@@ -466,8 +468,7 @@ function reconcileState(base, local, remote) {
       },
       wheelFavoritesOnly: changed(base.settings.wheelFavoritesOnly,
         local.settings.wheelFavoritesOnly, remote.settings.wheelFavoritesOnly),
-      wheelOutcomesExcluded: set(base.settings.wheelOutcomesExcluded,
-        local.settings.wheelOutcomesExcluded, remote.settings.wheelOutcomesExcluded),
+      wheelExtras: set(base.settings.wheelExtras, local.settings.wheelExtras, remote.settings.wheelExtras),
       wheelLabels: changed(base.settings.wheelLabels, local.settings.wheelLabels, remote.settings.wheelLabels),
       seenFlipHint: local.settings.seenFlipHint || remote.settings.seenFlipHint,
     },
@@ -510,13 +511,19 @@ function wheelDrinkName(drink) {
   return { en: drink.name.en || drink.name.sv || drink.id, sv: drink.name.sv || drink.name.en || drink.id };
 }
 
+function wheelExcludedOutcomes(wheel, extras) {
+  const on = new Set((extras || []).concat((extras || []).includes('wine') ? ['bottle'] : []));
+  return Object.keys((wheel && wheel.outcomes) || {}).filter(id =>
+    ['beer-cider', 'wine', 'bottle', 'shot'].includes(wheel.outcomes[id].category) && !on.has(wheel.outcomes[id].category));
+}
+
 function buildSpinLineup(wheel, moodId, drinks, rng, prefs) {
   if (!wheel || !Array.isArray(wheel.moods) || !wheel.outcomes) return [];
   const mood = wheel.moods.find(item => item.id === moodId);
   if (!mood || !Array.isArray(mood.slots) || mood.slots.length !== 12) return [];
   const options = prefs || {};
   const excluded = new Set(Array.isArray(options.excludedOutcomes) ? options.excludedOutcomes : []);
-  const useBottle = moodId === 'fresh' && mood.slots.includes('flex') && wheelRng(rng) < 1 / 3;
+  const wantBottle = moodId === 'fresh' && mood.slots.includes('flex') && wheelRng(rng) < 1 / 3;
 
   const categoryPools = {};
   const categoryIndexes = {};
@@ -530,6 +537,7 @@ function buildSpinLineup(wheel, moodId, drinks, rng, prefs) {
     categoryPools[category] = shuffle(categoryPools[category], rng);
     categoryIndexes[category] = 0;
   });
+  const useBottle = wantBottle && !!(categoryPools.bottle && categoryPools.bottle.length);
   // a slot whose whole category got excluded falls back to a cocktail instead of breaking the lineup
   const deadCategorySlots = mood.slots
     .filter(slot => slot !== 'cocktail' && slot !== 'flex' && !(categoryPools[slot] && categoryPools[slot].length))
@@ -625,17 +633,22 @@ function springLinear(zeta, dur, n) {
   return `linear(${pts.join(',')})`;
 }
 
-// 200 ms wind-up of −10°, one 3600 ms main curve whose speed is zero at both ends
-// (derivative 20u(1−u)^3), a 4° overshoot and a 350 ms settle back. 4150 ms in total.
-const SPIN = { windup: 200, main: 3600, settle: 350, windupDeg: 10, overshootDeg: 4, turns: 4 };
-function spinAngle(t, travel) {
-  const s = SPIN;
+// 200 ms wind-up of −10°, one main curve whose speed is zero at both ends (derivative
+// n(n+1)u(1−u)^(n−1), n = tail), a 4° overshoot and a 350 ms settle back.
+// Owner 2026-09-25: the first three spins of a visit are slow with a long crawl before the stop,
+// for suspense; after that the wheel spins quickly for whoever is spinning until they like the result.
+const SPIN_BASE = { windup: 200, settle: 350, windupDeg: 10, overshootDeg: 4 };
+const SPIN_SLOW = Object.assign({ main: 5600, turns: 4, tail: 3 }, SPIN_BASE);
+const SPIN_FAST = Object.assign({ main: 2000, turns: 3, tail: 4 }, SPIN_BASE);
+const SLOW_SPINS = 3;
+const spinMs = s => s.windup + s.main + s.settle;
+function spinAngle(t, travel, s = SPIN_SLOW) {
   if (t <= 0) return 0;
   if (t < s.windup) return -s.windupDeg * (1 - Math.cos(Math.PI * t / s.windup)) / 2;
   const t2 = t - s.windup;
   if (t2 < s.main) {
     const u = t2 / s.main;
-    return -s.windupDeg + (travel + s.windupDeg + s.overshootDeg) * (1 - Math.pow(1 - u, 4) * (1 + 4 * u));
+    return -s.windupDeg + (travel + s.windupDeg + s.overshootDeg) * (1 - Math.pow(1 - u, s.tail) * (1 + s.tail * u));
   }
   const t3 = t2 - s.main;
   if (t3 < s.settle) {
@@ -644,14 +657,13 @@ function spinAngle(t, travel) {
   }
   return travel;
 }
-const SPIN_MS = SPIN.windup + SPIN.main + SPIN.settle;
 
-// Degrees from the current angle to a random safe spot inside sector `index`, after four full turns.
-function landingTravel(current, index, rng, count) {
+// Degrees from the current angle to a random safe spot inside sector `index`, after the profile's full turns.
+function landingTravel(current, index, rng, count, s = SPIN_SLOW) {
   const sectors = count || 12, step = 360 / sectors, jitter = (wheelRng(rng) * 2 - 1) * step * 0.34;
   const desired = ((-index * step - jitter) % 360 + 360) % 360;
   const cur = ((current % 360) + 360) % 360;
-  return SPIN.turns * 360 + ((desired - cur) % 360 + 360) % 360;
+  return s.turns * 360 + ((desired - cur) % 360 + 360) % 360;
 }
 
 // Sector under the top pointer for a disc rotated `angle` degrees.
@@ -791,9 +803,9 @@ if (typeof module !== 'undefined') module.exports = {
   normalizeServingCount, MAX_SERVINGS,
   reconcileState,
   weightedSampleUnique, wheelCocktailWeight, buildSpinLineup, selectWheelIndex,
-  wheelSectorPath, springLinear, SPIN, SPIN_MS, spinAngle, landingTravel, sectorAtAngle, WHEEL_COLORS,
+  wheelSectorPath, springLinear, SPIN_SLOW, SPIN_FAST, SLOW_SPINS, spinMs, spinAngle, landingTravel, sectorAtAngle, WHEEL_COLORS,
   GLASS_SILHOUETTES, glassPlaceholder,
-  CUSTOM_GLASSES, CUSTOM_COLORS, QTY_UNITS, slugify, buildCustomDrink, similarDrink, mergeCustom,
+  WHEEL_EXTRAS, wheelExcludedOutcomes, CUSTOM_GLASSES, CUSTOM_COLORS, QTY_UNITS, slugify, buildCustomDrink, similarDrink, mergeCustom,
 };
 
 // ---------- app (browser only) ----------
@@ -992,7 +1004,7 @@ if (typeof document !== 'undefined') (function () {
   let wheelData = null, wheelFailed = false, wheelPromise = null;
   let wheelMoodId = null, wheelLineup = null, wheelResult = null;
   let wheelRotation = 0, wheelSpinning = false, wheelMuted = false, wheelLevel5Spins = 0;
-  let wheelVisitActive = false, wheelOpenedFromHome = false, wheelSpinId = 0, wheelResultIndex = -1, wheelPicker = false;
+  let wheelVisitActive = false, wheelOpenedFromHome = false, wheelSpinId = 0, wheelSpins = 0, wheelResultIndex = -1, wheelPicker = false;
 
   function loadWheelData() {
     if (wheelPromise) return wheelPromise;
@@ -1016,6 +1028,7 @@ if (typeof document !== 'undefined') (function () {
 
   function resetWheelVisit() {
     wheelSpinId++; // an unfinished spin never lands after the visit
+    wheelSpins = 0;
     wheelPicker = false;
     wheelMoodId = null;
     wheelLineup = null;
@@ -1922,23 +1935,12 @@ if (typeof document !== 'undefined') (function () {
       || `<p class="empty">${esc(t(lang(), 'search_empty'))}</p>`;
   }
 
-  function wheelOutcomeGroups(s) {
-    if (!wheelData || !wheelData.outcomes) return '';
-    const excluded = new Set(s.wheelOutcomesExcluded);
-    const groups = ['beer-cider', 'wine', 'shot'].map(category => {
-      const items = Object.keys(wheelData.outcomes)
-        .filter(id => wheelData.outcomes[id].category === category)
-        .map(id => `<label class="filter-toggle"><input type="checkbox" data-wheel-outcome="${esc(id)}"${excluded.has(id) ? '' : ' checked'}> <span>${esc(localText(wheelData.outcomes[id].sector))}</span></label>`)
-        .join('');
-      return items ? `<fieldset class="pantry-group"><legend>${esc(t(lang(), 'wheel_cat_' + category.replace(/-/g, '_')))}</legend><div class="pantry-list">${items}</div></fieldset>` : '';
-    }).join('');
-    return groups ? `<h2 class="pantry-almost-title">${esc(t(lang(), 'settings_wheel_outcomes_title'))}</h2>${groups}` : '';
-  }
-
   function viewSettings() {
     const s = state.settings;
     loadWheelData();
+    const extraName = c => t(lang(), c === 'wine' ? 'wheel_extra_wine' : 'wheel_cat_' + c.replace(/-/g, '_'));
     return `<h1 class="screen-title">${esc(t(lang(), 'settings_title'))}</h1>
+      ${accountSection()}
       <dl class="settings">
         <dt>${esc(t(lang(), 'settings_lang'))}</dt><dd><div class="lang-toggle" role="group" aria-label="${esc(t(lang(), 'settings_lang'))}">
           ${['en', 'sv'].map(code => `<button data-lang="${code}"${code === s.lang ? ' class="active" aria-pressed="true"' : ' aria-pressed="false"'}>${esc(t(lang(), 'language_' + code))}</button>`).join('')}
@@ -1951,12 +1953,12 @@ if (typeof document !== 'undefined') (function () {
         <dt>${esc(t(lang(), 'settings_wheel_title'))}</dt>
         <dd>
           <label class="filter-toggle"><input type="checkbox" data-settings-act="wheel-favorites-only"${s.wheelFavoritesOnly ? ' checked' : ''}> <span>${esc(t(lang(), 'settings_wheel_favorites_only'))}</span></label>
-          <p class="fav-hint">${esc(t(lang(), 'settings_wheel_favorites_only_hint'))}</p>
           <label class="filter-toggle"><input type="checkbox" data-settings-act="wheel-labels"${s.wheelLabels ? ' checked' : ''}> <span>${esc(t(lang(), 'settings_wheel_labels'))}</span></label>
         </dd>
-      </dl>
-      ${wheelOutcomeGroups(s)}
-      ${accountSection()}`;
+        <dt>${esc(t(lang(), 'settings_wheel_extras'))}</dt><dd><div class="lang-toggle" role="group" aria-label="${esc(t(lang(), 'settings_wheel_extras'))}">
+          ${WHEEL_EXTRAS.map(c => `<button data-wheel-extra="${c}"${s.wheelExtras.includes(c) ? ' class="active" aria-pressed="true"' : ' aria-pressed="false"'}>${esc(extraName(c))}</button>`).join('')}
+        </div></dd>
+      </dl>`;
   }
 
   function random01() {
@@ -1967,7 +1969,7 @@ if (typeof document !== 'undefined') (function () {
     return {
       favoritesOnly: state.settings.wheelFavoritesOnly,
       favorites: state.favorites,
-      excludedOutcomes: state.settings.wheelOutcomesExcluded,
+      excludedOutcomes: wheelExcludedOutcomes(wheelData, state.settings.wheelExtras),
     };
   }
 
@@ -2090,7 +2092,8 @@ if (typeof document !== 'undefined') (function () {
     if (wheelSpinning || !wheelLineup || !disc) return;
     const index = selectWheelIndex(wheelLineup, random01);
     if (index < 0) return;
-    const spin = ++wheelSpinId, from = wheelRotation, travel = landingTravel(from, index, random01, 12);
+    const profile = ++wheelSpins > SLOW_SPINS ? SPIN_FAST : SPIN_SLOW, total = spinMs(profile);
+    const spin = ++wheelSpinId, from = wheelRotation, travel = landingTravel(from, index, random01, 12, profile);
     wheelSpinning = true;
     wheelResult = null;
     wheelPicker = false;
@@ -2113,12 +2116,12 @@ if (typeof document !== 'undefined') (function () {
     const t0 = performance.now();
     const frame = now => {
       if (spin !== wheelSpinId) return;
-      const elapsed = now - t0, angle = from + spinAngle(elapsed, travel), sector = sectorAtAngle(angle, 12);
+      const elapsed = now - t0, angle = from + spinAngle(elapsed, travel, profile), sector = sectorAtAngle(angle, 12);
       disc.style.transform = `rotate(${angle}deg)`;
       if (sector !== last) {
         last = sector;
         name.textContent = localText(wheelLineup[sector].sector);
-        const speed = Math.abs(spinAngle(elapsed + 8, travel) - spinAngle(elapsed - 8, travel)) / 16 * 1000;
+        const speed = Math.abs(spinAngle(elapsed + 8, travel, profile) - spinAngle(elapsed - 8, travel, profile)) / 16 * 1000;
         kick = Math.min(20, 7 + speed * .012);
         if (now - lastTick > 50) { // tick pitch and volume follow the speed, at most ~20 a second
           lastTick = now;
@@ -2128,10 +2131,10 @@ if (typeof document !== 'undefined') (function () {
       }
       kick *= .8;
       pointer.style.transform = `rotate(${kick}deg)`;
-      if (elapsed < SPIN_MS) requestAnimationFrame(frame); else finish();
+      if (elapsed < total) requestAnimationFrame(frame); else finish();
     };
     requestAnimationFrame(frame);
-    setTimeout(finish, SPIN_MS + 400); // a background tab pauses rAF, the result still arrives
+    setTimeout(finish, total + 400); // a background tab pauses rAF, the result still arrives
   }
 
   // T15: FLIP between the header's mini wheel and the big disc, the same in every browser.
@@ -2529,13 +2532,13 @@ if (typeof document !== 'undefined') (function () {
     save();
   });
 
-  $('#view').addEventListener('change', e => {
-    const control = e.target.closest('[data-wheel-outcome]');
-    if (!control) return;
-    const id = control.dataset.wheelOutcome;
-    const excluded = state.settings.wheelOutcomesExcluded;
-    if (!control.checked && !excluded.includes(id)) excluded.push(id);
-    if (control.checked) state.settings.wheelOutcomesExcluded = excluded.filter(item => item !== id);
+  $('#view').addEventListener('click', e => {
+    const button = e.target.closest('[data-wheel-extra]');
+    if (!button) return;
+    const id = button.dataset.wheelExtra, on = !state.settings.wheelExtras.includes(id);
+    state.settings.wheelExtras = on ? state.settings.wheelExtras.concat(id) : state.settings.wheelExtras.filter(x => x !== id);
+    button.classList.toggle('active', on);
+    button.setAttribute('aria-pressed', String(on));
     save();
   });
 

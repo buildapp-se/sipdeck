@@ -9,9 +9,9 @@ const { STRINGS, t, detectLang, defaultState, normalizeState, favoriteIdFromHash
   BASE_FILTERS, matchesFilters, canMake, filterDrinks, groupFamilies, deckCards, variantDiff, missingIngredients, mergeState, reconcileState,
   searchHaystack, matchesSearch, ingredientCounts, authErrorKey, AUTH_ERRORS,
   weightedSampleUnique, wheelCocktailWeight, buildSpinLineup, selectWheelIndex,
-  wheelSectorPath, springLinear, SPIN_MS, spinAngle, landingTravel, sectorAtAngle, WHEEL_COLORS,
+  wheelSectorPath, springLinear, SPIN_SLOW, SPIN_FAST, SLOW_SPINS, spinMs, spinAngle, landingTravel, sectorAtAngle, WHEEL_COLORS,
   GLASS_SILHOUETTES, glassPlaceholder,
-  CUSTOM_GLASSES, CUSTOM_COLORS, slugify, buildCustomDrink, similarDrink, mergeCustom } = require('./app.js');
+  WHEEL_EXTRAS, wheelExcludedOutcomes, CUSTOM_GLASSES, CUSTOM_COLORS, slugify, buildCustomDrink, similarDrink, mergeCustom } = require('./app.js');
 // node 22.12+ loads the Worker's ES module with require(); the same rules guard the catalog below
 const { drinkErrors, GLASSES, COLORS, QTY_UNITS: RULE_UNITS } = require('./worker/drink-rules.js');
 
@@ -35,8 +35,8 @@ check(d.v === 1 && d.settings.lang === 'sv' && d.settings.unit === 'cl' && d.set
   'defaultState: shape + lang passthrough');
 check(Array.isArray(d.favorites) && d.favorites.length === 0, 'defaultState: empty favorites');
 check(d.settings.wheelFavoritesOnly === false, 'defaultState: wheel favorites-only off by default');
-check(Array.isArray(d.settings.wheelOutcomesExcluded) && d.settings.wheelOutcomesExcluded.length === 0,
-  'defaultState: no wheel outcomes excluded by default (opt-out, everything starts checked)');
+check(Array.isArray(d.settings.wheelExtras) && d.settings.wheelExtras.length === 0,
+  'defaultState: beer, wine and shots are off in the wheel by default (opt-in)');
 
 // normalizeState round-trip: a valid blob comes back unchanged in shape
 const valid = { v: 1, favorites: ['margarita'], pantry: ['gin'],
@@ -47,18 +47,17 @@ check(rt.settings.unit === 'oz' && rt.settings.servings === 4, 'normalizeState: 
 check(rt.settings.filters.bar === true && rt.settings.filters.base === 'gin', 'normalizeState: filters survive');
 
 const validWithWheelPrefs = Object.assign({}, valid, { settings: Object.assign({}, valid.settings,
-  { wheelFavoritesOnly: true, wheelOutcomesExcluded: ['fernet-shot', 42, 'red-wine'] }) });
+  { wheelFavoritesOnly: true, wheelExtras: ['shot', 42, 'water', 'wine'] }) });
 const rtWheelPrefs = normalizeState(validWithWheelPrefs, 'sv');
 check(rtWheelPrefs.settings.wheelFavoritesOnly === true, 'normalizeState: wheel favorites-only survives');
-check(rtWheelPrefs.settings.wheelOutcomesExcluded.join() === 'fernet-shot,red-wine',
-  'normalizeState: wheel outcomes excluded survives, non-string entries dropped');
+check(rtWheelPrefs.settings.wheelExtras.join() === 'shot,wine',
+  'normalizeState: wheel extras survive, anything but beer-cider/wine/shot is dropped');
 check(normalizeState({ settings: { wheelLabels: true } }, 'en').settings.wheelLabels === true &&
   normalizeState({ settings: { wheelLabels: 'yes' } }, 'en').settings.wheelLabels === false &&
   defaultState('en').settings.wheelLabels === false,
   'normalizeState: wheel sector labels are off by default and only true survives');
-check(normalizeState({ settings: { wheelOutcomesExcluded: 'not-an-array' } }, 'en')
-  .settings.wheelOutcomesExcluded.length === 0,
-  'normalizeState: garbage wheelOutcomesExcluded falls back to empty');
+check(normalizeState({ settings: { wheelExtras: 'not-an-array' } }, 'en').settings.wheelExtras.length === 0,
+  'normalizeState: garbage wheelExtras falls back to empty');
 
 // normalizeState never throws on garbage, falls back to defaults
 check((() => { try { return normalizeState('garbage', 'en').v === 1; } catch (e) { return false; } })(),
@@ -365,6 +364,22 @@ check(lineupNoShots.every(item => item.category !== 'shot'),
 check(lineupNoShots.filter(item => item.kind === 'cocktail').length === 9,
   'wheel prefs: slots freed by an excluded category fall back to extra cocktails');
 {
+  const cats = ids => new Set(ids.map(id => wheelData.outcomes[id].category));
+  const none = cats(wheelExcludedOutcomes(wheelData, []));
+  check(['beer-cider', 'wine', 'bottle', 'shot'].every(c => none.has(c)) && !none.has('water') && !none.has('red-bull'),
+    'wheel extras: by default beer, wine, the bottle and shots are excluded; water and Red Bull stay');
+  const wine = cats(wheelExcludedOutcomes(wheelData, ['wine']));
+  check(!wine.has('wine') && !wine.has('bottle') && wine.has('shot'), 'wheel extras: wine brings the bottle with it');
+  check(wheelExcludedOutcomes(wheelData, WHEEL_EXTRAS).length === 0, 'wheel extras: all on excludes nothing');
+  // fresh with the flex draw under a third wants the bottle; with wine off it must still be 12 sectors
+  const lineupBarOnly = buildSpinLineup(wheelData, 'fresh', wheelFixture, () => 0, { excludedOutcomes: wheelExcludedOutcomes(wheelData, []) });
+  check(lineupBarOnly.length === 12 && lineupBarOnly.every(item => item.kind === 'cocktail'),
+    'wheel extras: default fresh wheel is 12 bar cocktails, the bottle slot falls back too');
+  const shitfaced = buildSpinLineup(wheelData, 'shitfaced', wheelFixture, () => 0.5, { excludedOutcomes: wheelExcludedOutcomes(wheelData, []) });
+  check(shitfaced.length === 12 && shitfaced.some(item => item.outcomeId === 'water' && item.eligible),
+    'wheel extras: level 5 still lands on water by default');
+}
+{
   // 8 of 16 drinks are one family; without the family rule about half the cocktail sectors would be members
   const wheelFam = Array.from({ length: 16 }, (_, i) => Object.assign({ id: `drink-${i}`, name: `Drink ${i}`, bar: true, tags: [] },
     i < 8 ? { family: 'fam' } : {}));
@@ -380,28 +395,34 @@ check(lineupNoShots.filter(item => item.kind === 'cocktail').length === 9,
 
 for (const [from, index, r] of [[17, 4, 0.5], [0, 0, 0], [123.4, 11, 0.999], [-40, 7, 0.2]]) {
   const end = from + landingTravel(from, index, () => r, 12);
+  const endFast = from + landingTravel(from, index, () => r, 12, SPIN_FAST);
+  check(endFast - from >= 3 * 360 && endFast - from < 4 * 360 && sectorAtAngle(endFast, 12) === index,
+    `wheel landing ${index}: a quick spin makes three turns and still lands in the sector`);
   check(end - from >= 4 * 360 && end - from < 5 * 360, `wheel landing ${index}: four full turns plus under one`);
   check(sectorAtAngle(end, 12) === index, `wheel landing ${index}: finishes inside the selected sector`);
   const centre = ((-end % 360) + 360) % 360, off = Math.abs((((centre - index * 30) + 540) % 360) - 180);
   check(off <= 10.2 + 1e-9, `wheel landing ${index}: keeps a safe margin from the sector edges`);
 }
 {
-  // T16: one continuous curve, no velocity jumps, lands exactly on the travel
-  let peak = 0, maxJump = 0, prev = null;
-  for (const travel of [1440, 1620, 1799]) {
-    for (let t = 0; t <= SPIN_MS; t += 1) {
-      const v = (spinAngle(t + 0.5, travel) - spinAngle(t - 0.5, travel)) * 1000;
-      if (t > 0 && prev !== null) maxJump = Math.max(maxJump, Math.abs(v - prev));
-      prev = v;
-      if (travel === 1620) peak = Math.max(peak, Math.abs(v));
+  // T16: one continuous curve per profile, no velocity jumps, lands exactly on the travel
+  for (const [profile, travels] of [[SPIN_SLOW, [1440, 1620, 1799]], [SPIN_FAST, [1080, 1260, 1439]]]) {
+    let maxJump = 0, prev = null;
+    for (const travel of travels) {
+      for (let t = 0; t <= spinMs(profile); t += 1) {
+        const v = (spinAngle(t + 0.5, travel, profile) - spinAngle(t - 0.5, travel, profile)) * 1000;
+        if (t > 0 && prev !== null) maxJump = Math.max(maxJump, Math.abs(v - prev));
+        prev = v;
+      }
+      check(Math.abs(spinAngle(spinMs(profile), travel, profile) - travel) < 1e-9 && spinAngle(spinMs(profile) + 500, travel, profile) === travel,
+        `wheel spin ${profile.main} ms, ${travel}°: rests exactly on the travel`);
+      prev = null;
     }
-    check(Math.abs(spinAngle(SPIN_MS, travel) - travel) < 1e-9 && spinAngle(SPIN_MS + 500, travel) === travel,
-      `wheel spin ${travel}°: rests exactly on the travel`);
-    prev = null;
+    check(maxJump < 10, `wheel spin ${profile.main} ms: speed is continuous (largest change per ms ${maxJump.toFixed(2)}°/s)`);
   }
-  check(maxJump < 5, `wheel spin: speed is continuous (largest change per ms ${maxJump.toFixed(2)}°/s)`);
-  check(peak <= 1000, `wheel spin: peak speed at a typical travel is ≤ 1000°/s (${Math.round(peak)})`);
-  check(SPIN_MS === 4150, 'wheel spin: about 4 s, 4150 ms including the settle');
+  // owner 2026-09-25: the first spins crawl through the last sectors, spammed spins are quick
+  const lastSectors = ms => 1620 - spinAngle(spinMs(SPIN_SLOW) - SPIN_SLOW.settle - ms, 1620, SPIN_SLOW);
+  check(lastSectors(2000) > 150 && lastSectors(1000) > 25, `wheel spin slow: still passing sectors near the end (${Math.round(lastSectors(2000))}° in the last 2 s)`);
+  check(spinMs(SPIN_SLOW) > 5500 && spinMs(SPIN_FAST) < 3000 && SLOW_SPINS === 3, 'wheel spin: three slow spins of about 6 s, then about 2,5 s');
   check(springLinear(0.8, 600).startsWith('linear(0.0000,') && springLinear(0.8, 600).endsWith(',1)'),
     'wheel spring: CSS linear() easing starts at 0 and rests at 1');
   check(Object.keys(WHEEL_COLORS).length === 7, 'wheel colours: one per outcome category');
@@ -468,8 +489,8 @@ check(settingsViewSource.includes('data-unit-setting') &&
   !settingsViewSource.includes("settings_filter_bar')") &&
   !settingsViewSource.includes("settings_filter_base')"),
   'settings: unit is a control, deck-filter summaries are not duplicated');
-check(settingsViewSource.indexOf('settings_wheel_title') < settingsViewSource.indexOf('accountSection()'),
-  'settings: wheel settings come before the folded account');
+check(settingsViewSource.indexOf('accountSection()') < settingsViewSource.indexOf('settings_lang'),
+  'settings: the folded account comes first (owner 2026-09-25, overrides the review spec)');
 check(!appSource.includes('confirm(') && appSource.includes('<dialog class="confirm-dialog" id="accDelete"'),
   'account deletion: confirmed in a <dialog>, never window.confirm');
 check(authErrorKey({ code: 'auth/wrong-password' }) === 'auth_wrong_password' &&
@@ -519,10 +540,10 @@ check(appSource.includes('navigator.vibrate(18)') && appSource.includes('wheelMu
 check(appSource.includes('sound is optional and must never block a spin') &&
   appSource.includes('wheelAudio = null;'),
   'wheel resilience: unavailable Web Audio cannot block a spin');
-check(appSource.includes('setTimeout(finish, SPIN_MS + 400)') && appSource.includes('if (spin !== wheelSpinId) return;'),
+check(appSource.includes('setTimeout(finish, total + 400)') && appSource.includes('if (spin !== wheelSpinId) return;'),
   'wheel resilience: a paused rAF still lands, and a finished or abandoned spin never lands twice');
 const spinSource = appSource.slice(appSource.indexOf('  function spinWheel()'), appSource.indexOf('  function wheelFlip('));
-const frameSource = spinSource.slice(spinSource.indexOf('const frame'), spinSource.indexOf('setTimeout(finish, SPIN_MS'));
+const frameSource = spinSource.slice(spinSource.indexOf('const frame'), spinSource.indexOf('setTimeout(finish, total'));
 check(frameSource.length > 200 && !/classList|getBoundingClientRect|offset(Width|Height)|getComputedStyle/.test(frameSource),
   'wheel spin (T16): the animation frame writes transforms only, no class toggles or layout reads');
 check(reconcileState(defaultState('en'), defaultState('en'), Object.assign(defaultState('en'), { settings: Object.assign(defaultState('en').settings, { wheelLabels: true }) })).settings.wheelLabels === true,

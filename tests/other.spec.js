@@ -46,7 +46,7 @@ test('pantry: search filters in place, count is live, almost-there comes first',
   await expect(page.locator('.pantry-group:visible')).toHaveCount(0);
 });
 
-test('settings: unit and wheel before a folded account; login, register and forgot modes', async ({ page }) => {
+test('settings: folded account first, unit, wheel extras; login, register and forgot modes', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await seed(page, { settings: { lang: 'en', unit: 'cl' } });
   await page.goto('/#/installningar');
@@ -58,8 +58,15 @@ test('settings: unit and wheel before a folded account; login, register and forg
   const account = page.locator('details#account');
   await expect(account).not.toHaveAttribute('open', '');
   await expect(account.locator('summary')).toContainText('Sync between devices');
-  const wheelTop = (await page.locator('[data-settings-act="wheel-labels"]').boundingBox()).y;
-  expect(wheelTop).toBeLessThan((await account.boundingBox()).y);
+  const langTop = (await page.locator('[data-lang="en"]').boundingBox()).y;
+  expect((await account.boundingBox()).y).toBeLessThan(langTop);
+
+  // beer, wine and shots start off in the wheel and are opt-in toggles
+  const wine = page.locator('[data-wheel-extra="wine"]');
+  await expect(page.locator('[data-wheel-extra][aria-pressed="false"]')).toHaveCount(3);
+  await wine.click();
+  await expect(wine).toHaveAttribute('aria-pressed', 'true');
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('sipdeck')).settings.wheelExtras)).toEqual(['wine']);
 
   await account.locator('summary').click();
   const submit = page.locator('#emailForm [type="submit"]');
