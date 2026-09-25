@@ -41,4 +41,4 @@ async function main() {
   }
 }
 
-main().catch(err => { console.error(err.message); process.exit(1); });
+main().catch(err => { console.error(err.message); process.exitCode = 1; }); // exit() mid-fetch trips a libuv assert on Windows
