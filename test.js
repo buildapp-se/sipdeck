@@ -7,7 +7,7 @@ const { STRINGS, t, detectLang, defaultState, normalizeState, favoriteIdFromHash
   swipeDirectionForKey,
   formatLineAmount, drinkAsText,
   BASE_FILTERS, matchesFilters, canMake, filterDrinks, missingIngredients, mergeState, reconcileState,
-  searchHaystack, matchesSearch,
+  searchHaystack, matchesSearch, ingredientCounts, authErrorKey, AUTH_ERRORS,
   weightedSampleUnique, wheelCocktailWeight, buildSpinLineup, selectWheelIndex,
   wheelSectorPath, springLinear, SPIN_MS, spinAngle, landingTravel, sectorAtAngle, WHEEL_COLORS,
   GLASS_SILHOUETTES, glassPlaceholder } = require('./app.js');
@@ -330,10 +330,11 @@ const workerSource = fs.readFileSync(path.join(__dirname, 'worker', 'worker.js')
 // bumped 90kB -> 97kB 2026-09-25 for design review batch 2 (deck buttons, undo toast, filter chips, segmented recipe controls, in-place updates)
 // bumped 97kB -> 99kB 2026-09-25 for design review batch 3 part 1 (wheel motion: spinAngle, landingTravel, springLinear)
 // bumped 99kB -> 104kB 2026-09-25 for design review batch 3 (wheel layer, FLIP, runSpin, mood buttons, result card, wave patch)
+// bumped 104kB -> 113kB 2026-09-25 for design review batch 4 (pantry search/count, account modes, forgot step, delete dialog, auth error copy)
 // Mät LF-storleken, alltså det git lagrar och GitHub Pages levererar. En Windows-
 // arbetskopia checkas ut med CRLF och lägger på ~1,8 kB som aldrig deployas.
-check(Buffer.byteLength(appSource.split('\r').join('')) < 104000,
-  'bundle budget: app.js stays under 104 kB unminified');
+check(Buffer.byteLength(appSource.split('\r').join('')) < 113000,
+  'bundle budget: app.js stays under 113 kB unminified');
 check(!htmlSource.includes('fonts.googleapis.com') && htmlSource.includes("fonts/work-sans.woff2"),
   'privacy: fonts are self-hosted with no Google Fonts request');
 check(htmlSource.includes('rel="canonical" href="https://buildapp.se/sipdeck/"') &&
@@ -363,10 +364,29 @@ check(htmlSource.includes('.servings-input::-webkit-inner-spin-button') &&
   'recipe scaling: native number spinners stay hidden beside the larger minus/plus controls');
 const settingsViewSource = appSource.slice(appSource.indexOf('function viewSettings()'),
   appSource.indexOf('function random01()'));
-check(!settingsViewSource.includes("settings_unit')") &&
+// fas 4: the unit is a real control in settings (data-unit-setting); deck filters stay on the deck
+check(settingsViewSource.includes('data-unit-setting') &&
   !settingsViewSource.includes("settings_filter_bar')") &&
   !settingsViewSource.includes("settings_filter_base')"),
-  'settings: read-only unit and deck-filter summaries are not duplicated');
+  'settings: unit is a control, deck-filter summaries are not duplicated');
+check(settingsViewSource.indexOf('settings_wheel_title') < settingsViewSource.indexOf('accountSection()'),
+  'settings: wheel settings come before the folded account');
+check(!appSource.includes('confirm(') && appSource.includes('<dialog class="confirm-dialog" id="accDelete"'),
+  'account deletion: confirmed in a <dialog>, never window.confirm');
+check(authErrorKey({ code: 'auth/wrong-password' }) === 'auth_wrong_password' &&
+  authErrorKey({ code: 'auth/email-already-in-use' }) === 'auth_email_already_in_use' &&
+  authErrorKey({ code: 'auth/network-request-failed' }) === 'auth_generic' &&
+  authErrorKey(new Error('Kunde inte radera synkad data.')) === null,
+  'auth errors: known codes map to own copy, other codes to the generic line, app errors keep their text');
+check(AUTH_ERRORS.every(code => {
+  const key = authErrorKey({ code: 'auth/' + code });
+  return STRINGS.en[key] && STRINGS.sv[key];
+}), 'auth errors: every mapped code has English and Swedish copy');
+const counted = ingredientCounts([
+  { ingredients: [{ id: 'gin' }, { id: 'lime-juice' }, { id: 'gin' }] },
+  { ingredients: [{ id: 'gin' }] },
+]);
+check(counted.gin === 2 && counted['lime-juice'] === 1, 'ingredientCounts: counts drinks, not lines');
 check(infoSource.includes('Patrik Löfgren') && infoSource.includes('kontakt@orgutveckling.se') &&
   infoSource.includes('id="sv"') && infoSource.includes('id="en"'),
   'legal page: controller, contact and Swedish/English notices are present');

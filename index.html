@@ -118,10 +118,11 @@ header.brand .wordmark{color:var(--sd-ink);width:84px;height:auto;display:block}
 .search-entry:focus-visible{outline:3px solid var(--sd-accent);outline-offset:3px}
 .search-symbol{width:20px;height:20px}
 
-.bottom-nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--sd-chrome);
+.bottom-nav{position:fixed;left:0;right:0;bottom:0;max-width:640px;margin:0 auto;display:flex;background:var(--sd-chrome);
   border-top:1px solid var(--sd-line);box-shadow:var(--sd-shadow);z-index:10;
   padding-bottom:env(safe-area-inset-bottom)}
-.bottom-nav a{flex:1;text-align:center;padding:.75rem .25rem;font:500 .68rem/1.2 var(--sd-font-ui);
+@media (min-width:641px){.bottom-nav{border:1px solid var(--sd-line);border-bottom:0;border-radius:16px 16px 0 0}}
+.bottom-nav a{flex:1;text-align:center;padding:.75rem .25rem;font:500 12px/1.2 var(--sd-font-ui);
   letter-spacing:.03em;color:var(--sd-ink-2);border-top:2px solid transparent;
   min-height:44px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:.3rem}
 .bottom-nav a.active{color:var(--sd-accent);border-top-color:var(--sd-accent)}
@@ -229,7 +230,7 @@ header.brand .wordmark{color:var(--sd-ink);width:84px;height:auto;display:block}
 .toast[hidden]{display:none}
 .toast span::after{content:" ·"}
 .toast button{min-height:44px;padding:0 .8rem;color:#FBF7EF;font-weight:600;text-decoration:underline;text-underline-offset:3px}
-dl.settings{display:grid;grid-template-columns:auto 1fr;gap:.4rem 1rem;font-size:.95rem}
+dl.settings{display:grid;grid-template-columns:auto 1fr;gap:.6rem 1rem;font-size:.95rem;margin-bottom:1.5rem}
 dl.settings dt{color:var(--sd-ink-2)}
 dl.settings dd{min-width:0}
 dl.settings .fav-hint{color:var(--sd-ink-2)}
@@ -253,6 +254,31 @@ dl.settings .fav-hint{color:var(--sd-ink-2)}
 .lang-toggle button{border:1px solid var(--sd-line);border-radius:8px;padding:.35rem .65rem;
   color:var(--sd-ink);font:500 .82rem/1.2 var(--sd-font-ui)}
 .lang-toggle button.active{background:var(--sd-accent);border-color:var(--sd-accent);color:var(--sd-bg)}
+/* fas 4: the account folds to one row after the other settings */
+details.account summary{display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:44px;
+  cursor:pointer;list-style:none;font:500 .95rem/1.3 var(--sd-font-ui)}
+details.account summary::-webkit-details-marker{display:none}
+details.account summary:focus-visible{outline:3px solid var(--sd-accent);outline-offset:3px;border-radius:8px}
+.account-who{display:block;font:400 .8rem/1.3 var(--sd-font-ui);color:var(--sd-ink-2)}
+.account-chevron{font-size:1.3rem;color:var(--sd-ink-2);transition:transform var(--sd-t-micro) var(--sd-ease-list)}
+details.account[open] .account-chevron{transform:rotate(90deg)}
+#accBody{padding-top:.5rem}
+.account button,.account .gsi{min-height:44px}
+.account h3{font:600 .95rem/1.3 var(--sd-font-ui);margin-bottom:.4rem}
+.account-modes{display:flex;margin:1rem 0 .2rem;border:1px solid rgba(33,27,18,.18);border-radius:999px;overflow:hidden;background:var(--sd-card)}
+.account .account-modes button{flex:1;border:0;border-radius:0;background:none}
+.account .account-modes button[aria-pressed="true"]{background:#211B12;color:#FBF7EF}
+.account-form{margin-bottom:1rem}
+.account-form .account-actions{margin-top:.9rem;align-items:center}
+.account .account-primary{background:var(--sd-paper-accent);border-color:var(--sd-paper-accent);color:#FBF7EF;font-weight:600}
+.account .account-link{border:0;background:none;color:var(--sd-ink-2);text-decoration:underline;text-underline-offset:2px}
+.account .danger{color:#A03B2E;border-color:#A03B2E}
+.confirm-dialog{margin:auto;width:min(360px,calc(100% - 32px));padding:1.25rem;border:0;border-radius:16px;
+  background:var(--sd-card);color:#211B12;box-shadow:var(--sd-shadow)}
+.confirm-dialog::backdrop{background:rgba(23,19,14,.5)}
+.confirm-dialog h2{font:400 1.4rem/1.2 var(--sd-font-display)}
+.account .confirm-dialog p{color:#6E6455;margin:.5rem 0 1rem}
+.confirm-dialog .account-actions{justify-content:flex-end}
 
 /* ---- favorites: compact art rows + continuous recipe detail ---- */
 .fav-row{display:flex;align-items:center;gap:.55rem;color:#211B12}
@@ -300,9 +326,14 @@ dl.settings .fav-hint{color:var(--sd-ink-2)}
   font:500 .76rem/1.3 var(--sd-font-ui)}
 .pantry-item input{accent-color:#2F6B3F;flex-shrink:0;width:1rem;height:1rem}
 .pantry-item span{min-width:0}
+.pantry-item[hidden]{display:none}
+.pantry-count{font:600 .95rem/1.3 var(--sd-font-ui);margin:-.25rem 0 1rem;font-variant-numeric:tabular-nums}
 .pantry-almost-title{font:400 1.3rem/1.2 var(--sd-font-display);margin:0 0 .55rem}
-.pantry-almost-list{display:grid;gap:.5rem}
-.pantry-almost-row{display:flex;flex-direction:column;text-align:left;color:#211B12}
+/* a sideways row: checking an item changes this row, never the height above the checkboxes */
+.pantry-almost-list{display:flex;gap:.5rem;overflow-x:auto;scrollbar-width:none;margin:0 -1.25rem .2rem;padding:4px 1.25rem 24px}
+.pantry-almost-list::-webkit-scrollbar{display:none}
+.pantry-almost-row{display:flex;flex-direction:column;flex:0 0 11.5rem;text-align:left;color:#211B12}
+.pantry-almost-row:focus-visible{outline:3px solid var(--sd-accent);outline-offset:2px}
 
 /* ---- full-screen search, and the topbar it shares with the wheel ---- */
 body.wheel-mode,body.search-mode{overflow:hidden}
@@ -439,6 +470,6 @@ body.search-mode .brand,body.search-mode .bottom-nav{display:none}
   <a href="#/installningar" data-match="#/installningar"></a>
 </nav>
 <div id="wheelLayer" hidden></div>
-<script src="app.js?v=1.15"></script>
+<script src="app.js?v=1.16"></script>
 </body>
 </html>

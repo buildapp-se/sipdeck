@@ -39,6 +39,9 @@ const STRINGS = {
     pantry_group_spirits: 'Spirits', pantry_group_liqueurs: 'Liqueurs',
     pantry_group_fresh: 'Fresh & mixers', pantry_group_pantry: 'Pantry staples',
     pantry_almost_title: 'Almost there',
+    pantry_search: 'Search ingredients', pantry_search_empty: 'No ingredient matches that search.',
+    pantry_count_one: 'You can mix 1 drink', pantry_count_many: 'You can mix {n} drinks',
+    settings_sync: 'Sync between devices',
     settings_title: 'Settings',
     settings_lang: 'Language', settings_unit: 'Unit',
     language_en: 'English', language_sv: 'Swedish',
@@ -71,6 +74,15 @@ const STRINGS = {
     account_link_google: 'Link Google sign-in', account_create_password: 'Create password',
     account_share_hint: 'Your partner can then sign in with this email and password too.',
     account_legal: 'Privacy, storage & terms',
+    account_delete_title: 'Delete account?', account_cancel: 'Cancel',
+    account_forgot_title: 'Reset password', account_forgot_send: 'Send reset link',
+    account_forgot_hint: "Enter your email and we'll send a link for choosing a new password.",
+    auth_wrong_password: 'Wrong email or password.', auth_invalid_credential: 'Wrong email or password.',
+    auth_user_not_found: 'No account uses that email. Create one instead.',
+    auth_email_already_in_use: 'That email already has an account. Log in instead.',
+    auth_invalid_email: "That doesn't look like an email address.",
+    auth_too_many_requests: 'Too many attempts. Wait a moment and try again.',
+    auth_generic: 'Something went wrong. Try again.',
     deck_skip: '‹ Skip', deck_save: 'Save ›', flip_hint: 'Tap for recipe',
     swipe_save: 'Save', swipe_skip: 'Skip', toast_saved: 'Saved', toast_removed: 'Removed', undo: 'Undo',
     chip_all: 'All', chip_matches: 'Matches', chip_bar: 'Bar-servable', chip_makeable: 'Can make', chip_base: 'Base',
@@ -117,7 +129,10 @@ const STRINGS = {
     pantry_intro: 'Bocka av vad du har. Valfri garnering stoppar aldrig en träff.',
     pantry_group_spirits: 'Sprit', pantry_group_liqueurs: 'Likörer',
     pantry_group_fresh: 'Färskt och blanddryck', pantry_group_pantry: 'Skafferivaror',
-    pantry_almost_title: 'Nästan klara',
+    pantry_almost_title: 'Nästan klart',
+    pantry_search: 'Sök ingrediens', pantry_search_empty: 'Ingen ingrediens matchar sökningen.',
+    pantry_count_one: 'Du kan blanda 1 drink', pantry_count_many: 'Du kan blanda {n} drinkar',
+    settings_sync: 'Synka mellan enheter',
     settings_title: 'Inställningar',
     settings_lang: 'Språk', settings_unit: 'Enhet',
     language_en: 'Engelska', language_sv: 'Svenska',
@@ -150,6 +165,15 @@ const STRINGS = {
     account_link_google: 'Koppla Google-inloggning', account_create_password: 'Skapa lösenord',
     account_share_hint: 'Din partner kan då också logga in med samma e-post och lösenord.',
     account_legal: 'Integritet, lokal lagring och villkor',
+    account_delete_title: 'Radera kontot?', account_cancel: 'Avbryt',
+    account_forgot_title: 'Återställ lösenord', account_forgot_send: 'Skicka återställningslänk',
+    account_forgot_hint: 'Skriv din e-post så skickar vi en länk där du väljer ett nytt lösenord.',
+    auth_wrong_password: 'Fel e-post eller lösenord.', auth_invalid_credential: 'Fel e-post eller lösenord.',
+    auth_user_not_found: 'Inget konto använder den e-posten. Skapa ett i stället.',
+    auth_email_already_in_use: 'E-posten har redan ett konto. Logga in i stället.',
+    auth_invalid_email: 'Det ser inte ut som en e-postadress.',
+    auth_too_many_requests: 'För många försök. Vänta en stund och försök igen.',
+    auth_generic: 'Något gick fel. Försök igen.',
     deck_skip: '‹ Hoppa över', deck_save: 'Spara ›', flip_hint: 'Tryck för recept',
     swipe_save: 'Spara', swipe_skip: 'Hoppa över', toast_saved: 'Sparad', toast_removed: 'Borttagen', undo: 'Ångra',
     chip_all: 'Alla', chip_matches: 'Träffar', chip_bar: 'Barserverbara', chip_makeable: 'Kan blanda', chip_base: 'Bas',
@@ -318,6 +342,21 @@ function missingIngredients(drink, pantry) {
   return Array.isArray(drink.ingredients)
     ? drink.ingredients.filter(line => line.essential && !have.has(line.id))
     : [];
+}
+
+// how many drinks use each ingredient; the pantry lists the most used first in every group
+function ingredientCounts(drinks) {
+  const counts = {};
+  drinks.forEach(drink => new Set(drink.ingredients.map(line => line.id)).forEach(id => { counts[id] = (counts[id] || 0) + 1; }));
+  return counts;
+}
+
+// Firebase auth codes the account UI names in its own words. Other Firebase codes get the generic
+// line; errors without a code are the app's own (already worded) messages, so null keeps them.
+const AUTH_ERRORS = ['wrong-password', 'invalid-credential', 'user-not-found', 'email-already-in-use', 'invalid-email', 'too-many-requests'];
+function authErrorKey(err) {
+  const code = err && typeof err.code === 'string' ? err.code.replace(/^auth\//, '') : '';
+  return AUTH_ERRORS.includes(code) ? 'auth_' + code.replace(/-/g, '_') : code ? 'auth_generic' : null;
 }
 
 function mergeState(local, server) { // union pantry/favorites (never lose a logged-out edit); settings stay server-wins
@@ -611,7 +650,7 @@ if (typeof module !== 'undefined') module.exports = {
   scaleMl, convert, roundForUnit, formatNumber, formatOz, formatAmount,
   formatLineAmount, drinkAsText,
   shuffle, advanceQueue, swipeDirectionForKey, BASE_FILTERS, matchesFilters, canMake, filterDrinks,
-  missingIngredients, mergeState, searchHaystack, matchesSearch,
+  missingIngredients, mergeState, searchHaystack, matchesSearch, ingredientCounts, authErrorKey, AUTH_ERRORS,
   normalizeServingCount, MAX_SERVINGS,
   reconcileState,
   weightedSampleUnique, wheelCocktailWeight, buildSpinLineup, selectWheelIndex,
@@ -634,6 +673,7 @@ if (typeof document !== 'undefined') (function () {
   // Logged out = untouched, unchanged localStorage-only behavior. ----------
   let fb = null, fbUser = null, fbPromise = null, pushTimer = null, pushPromise = null;
   let syncUid = null, syncBase = null, syncEtag = null, deletingAccount = false;
+  let accountOpen = false, accountMode = 'login', accountEmail = ''; // transient UI: 'login' | 'register' | 'forgot'
   const API = 'https://sipdeck-api.sipdeck.workers.dev';
   const AUTH_KEY = KEY + '-auth';
 
@@ -838,6 +878,7 @@ if (typeof document !== 'undefined') (function () {
   let favHistoryEntry = false; // true only when this session opened detail from the favorite list
   let makeableOnly = false; // transient deck mode; pantry itself is the persisted source of truth
   let searchQuery = ''; // transient #/sok input; cleared whenever the route leaves search
+  let pantryQuery = ''; // transient pantry filter; cleared whenever the route leaves the pantry
   let servingDrinkId = null, recipeServings = 1;
 
   function servingsFor(id) {
@@ -1286,24 +1327,56 @@ if (typeof document !== 'undefined') (function () {
       const group = ingredient && groups[ingredient.group] ? ingredient.group : 'pantry';
       groups[group].push(id);
     });
+    const counts = ingredientCounts(db.drinks);
     const fieldsets = Object.keys(groups).map(group => {
       const items = groups[group]
-        .sort((a, b) => ingName(a).localeCompare(ingName(b), lang()))
+        .sort((a, b) => counts[b] - counts[a] || ingName(a).localeCompare(ingName(b), lang()))
         .map(id => `<label class="pantry-item"><input type="checkbox" data-pantry="${esc(id)}"${state.pantry.includes(id) ? ' checked' : ''}> <span>${esc(ingName(id))}</span></label>`)
         .join('');
       return items ? `<fieldset class="pantry-group"><legend>${esc(t(lang(), 'pantry_group_' + group))}</legend><div class="pantry-list">${items}</div></fieldset>` : '';
     }).join('');
-    const almost = db.drinks
+    return `${title}
+      <input type="search" id="pantrySearch" class="search-input" value="${esc(pantryQuery)}"
+        placeholder="${esc(t(lang(), 'pantry_search'))}" aria-label="${esc(t(lang(), 'pantry_search'))}">
+      <p class="pantry-count" id="pantryCount" role="status">${esc(pantryCountText())}</p>
+      <div id="pantryAlmost">${pantryAlmostMarkup()}</div>
+      <p class="pantry-intro">${esc(t(lang(), 'pantry_intro'))}</p>${fieldsets}<p class="empty" id="pantryNoHits" hidden>${esc(t(lang(), 'pantry_search_empty'))}</p>`;
+  }
+
+  function pantryCountText() {
+    const n = db.drinks.filter(drink => canMake(drink, state.pantry)).length;
+    return t(lang(), n === 1 ? 'pantry_count_one' : 'pantry_count_many').replace('{n}', n);
+  }
+
+  // drinks one ingredient away, first on the page but in a sideways row, so checking an item never
+  // pushes the checkboxes down. An empty pantry is "not using the pantry", so no section then.
+  function pantryAlmostMarkup() {
+    const almost = state.pantry.length ? db.drinks
       .map(drink => ({ drink, missing: missingIngredients(drink, state.pantry) }))
-      .filter(x => x.missing.length === 1);
-    const almostSection = almost.length ? `
+      .filter(x => x.missing.length === 1) : [];
+    return almost.length ? `
       <h2 class="pantry-almost-title">${esc(t(lang(), 'pantry_almost_title'))}</h2>
       <div class="pantry-almost-list">${almost.map(({ drink, missing }) => `
         <a class="list-card pantry-almost-row" href="#/drink/${esc(drink.id)}">
           <span class="name">${esc(drink.name)}</span>
           <span class="meta">${esc(t(lang(), 'missing_prefix') + ingName(missing[0].id))}</span>
         </a>`).join('')}</div>` : '';
-    return `${title}<p class="pantry-intro">${esc(t(lang(), 'pantry_intro'))}</p>${fieldsets}${almostSection}`;
+  }
+
+  // the search hides items in place; the list is never re-rendered, so checkboxes keep focus
+  function filterPantry() {
+    const q = pantryQuery.trim().toLowerCase();
+    let any = false;
+    $('#view').querySelectorAll('.pantry-group').forEach(group => {
+      let shown = 0;
+      group.querySelectorAll('.pantry-item').forEach(item => {
+        item.hidden = !item.textContent.toLowerCase().includes(q);
+        if (!item.hidden) shown++;
+      });
+      group.hidden = !shown;
+      any = any || shown > 0;
+    });
+    $('#pantryNoHits').hidden = any;
   }
 
   function wheelMood() { return wheelData && wheelData.moods.find(mood => mood.id === wheelMoodId) || null; }
@@ -1417,7 +1490,18 @@ if (typeof document !== 'undefined') (function () {
     stage.classList.add('wheel-landed');
   }
 
+  // Fas 4: the account folds into one row. Native <details> keeps it keyboard- and reader-friendly;
+  // accountOpen carries the open state across re-renders (sign-in, language).
   function accountSection() {
+    const who = fbUser ? `<span class="account-who">${esc(fbUser.email || fbUser.displayName || '')}</span>` : '';
+    return `<details class="account" id="account"${accountOpen ? ' open' : ''}>
+      <summary><span>${esc(t(lang(), 'settings_sync'))}${who}</span><span class="account-chevron" aria-hidden="true">›</span></summary>
+      <div id="accBody">${accountBody()}</div>
+    </details>`;
+  }
+
+  function accountBody() {
+    const error = '<p id="accError" class="warn" role="status" aria-live="polite" aria-atomic="true" hidden></p>';
     if (fbUser) {
       const providers = fbUser.providerData.map(p => p.providerId);
       const linkGoogle = providers.includes('google.com') ? '' : `<p><button data-acc="link-google">${esc(t(lang(), 'account_link_google'))}</button></p>`;
@@ -1426,34 +1510,57 @@ if (typeof document !== 'undefined') (function () {
         <p>${esc(t(lang(), 'account_share_hint'))}</p>
         <button type="submit">${esc(t(lang(), 'account_create_password'))}</button>
       </form>`;
-      return `<section class="account">
-      <h2>${esc(t(lang(), 'account_title'))}</h2>
-      <p>${esc(t(lang(), 'account_signed_in_as'))} ${esc(fbUser.email || fbUser.displayName || '')}</p>
+      return `<p>${esc(t(lang(), 'account_signed_in_as'))} ${esc(fbUser.email || fbUser.displayName || '')}</p>
       ${linkGoogle}${pwForm}
       <div class="account-actions">
         <button data-acc="signout">${esc(t(lang(), 'account_signout'))}</button>
         <button data-acc="delete">${esc(t(lang(), 'account_delete'))}</button>
       </div>
       <p><a href="info.html#${lang()}">${esc(t(lang(), 'account_legal'))}</a></p>
-      <p id="accError" class="warn" role="status" aria-live="polite" aria-atomic="true" hidden></p>
-    </section>`;
-    }
-    return `<section class="account">
-      <h2>${esc(t(lang(), 'account_title'))}</h2>
-      <p>${esc(t(lang(), 'account_hint'))}</p>
-      <button class="gsi" data-acc="google"><svg class="gsi-logo" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>${esc(t(lang(), 'account_google'))}</button>
-      <form id="emailForm" class="account-form">
-        <label>${esc(t(lang(), 'account_email'))} <input type="email" id="accEmail" autocomplete="username" aria-describedby="accError" required></label>
-        <label>${esc(t(lang(), 'account_password'))} <input type="password" id="accPw" minlength="6" maxlength="64" autocomplete="current-password" aria-describedby="accError" required></label>
+      ${error}
+      <dialog class="confirm-dialog" id="accDelete" aria-labelledby="accDeleteTitle">
+        <h2 id="accDeleteTitle">${esc(t(lang(), 'account_delete_title'))}</h2>
+        <p>${esc(t(lang(), 'account_delete_confirm'))}</p>
         <div class="account-actions">
-          <button type="submit" data-mode="login">${esc(t(lang(), 'account_login'))}</button>
-          <button type="submit" data-mode="register">${esc(t(lang(), 'account_register'))}</button>
-          <button type="button" data-acc="forgot">${esc(t(lang(), 'account_forgot'))}</button>
+          <button data-acc="delete-cancel" autofocus>${esc(t(lang(), 'account_cancel'))}</button>
+          <button class="danger" data-acc="delete-confirm">${esc(t(lang(), 'account_delete'))}</button>
+        </div>
+      </dialog>`;
+    }
+    const emailField = `<label>${esc(t(lang(), 'account_email'))} <input type="email" id="accEmail" value="${esc(accountEmail)}" autocomplete="username" aria-describedby="accError" required></label>`;
+    if (accountMode === 'forgot') return `<form id="forgotForm" class="account-form">
+        <h3>${esc(t(lang(), 'account_forgot_title'))}</h3>
+        <p>${esc(t(lang(), 'account_forgot_hint'))}</p>
+        ${emailField}
+        <div class="account-actions">
+          <button type="submit" class="account-primary">${esc(t(lang(), 'account_forgot_send'))}</button>
+          <button type="button" data-acc-mode="login">${esc(t(lang(), 'fav_back'))}</button>
+        </div>
+      </form>${error}`;
+    const register = accountMode === 'register';
+    const modeBtn = (mode, on) => `<button type="button" data-acc-mode="${mode}" aria-pressed="${on}">${esc(t(lang(), mode === 'login' ? 'account_login' : 'account_register'))}</button>`;
+    return `<p>${esc(t(lang(), 'account_hint'))}</p>
+      <button class="gsi" data-acc="google"><svg class="gsi-logo" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>${esc(t(lang(), 'account_google'))}</button>
+      <div class="account-modes" role="group" aria-label="${esc(t(lang(), 'account_title'))}">${modeBtn('login', !register)}${modeBtn('register', register)}</div>
+      <form id="emailForm" class="account-form">
+        ${emailField}
+        <label>${esc(t(lang(), 'account_password'))} <input type="password" id="accPw" minlength="6" maxlength="64" autocomplete="${register ? 'new' : 'current'}-password" aria-describedby="accError" required></label>
+        <div class="account-actions">
+          <button type="submit" class="account-primary">${esc(t(lang(), register ? 'account_register' : 'account_login'))}</button>
+          ${register ? '' : `<button type="button" class="account-link" data-acc-mode="forgot">${esc(t(lang(), 'account_forgot'))}</button>`}
         </div>
       </form>
       <p><a href="info.html#${lang()}">${esc(t(lang(), 'account_legal'))}</a></p>
-      <p id="accError" class="warn" role="status" aria-live="polite" aria-atomic="true" hidden></p>
-    </section>`;
+      ${error}`;
+  }
+
+  // Firebase codes in the app's own words; a closed Google popup is the user's choice, not an error
+  function showAccountError(err) {
+    const el = $('#accError');
+    if (!el || (err && err.code === 'auth/popup-closed-by-user')) return;
+    const key = authErrorKey(err);
+    el.textContent = key ? t(lang(), key) : err.message;
+    el.hidden = false;
   }
 
   function viewSearch() {
@@ -1513,8 +1620,10 @@ if (typeof document !== 'undefined') (function () {
         <dt>${esc(t(lang(), 'settings_lang'))}</dt><dd><div class="lang-toggle" role="group" aria-label="${esc(t(lang(), 'settings_lang'))}">
           ${['en', 'sv'].map(code => `<button data-lang="${code}"${code === s.lang ? ' class="active" aria-pressed="true"' : ' aria-pressed="false"'}>${esc(t(lang(), 'language_' + code))}</button>`).join('')}
         </div></dd>
+        <dt>${esc(t(lang(), 'settings_unit'))}</dt><dd><div class="lang-toggle" role="group" aria-label="${esc(t(lang(), 'settings_unit'))}">
+          ${recipeUnits().map(u => `<button data-unit-setting="${u}"${u === unit() ? ' class="active" aria-pressed="true"' : ' aria-pressed="false"'}>${u}</button>`).join('')}
+        </div></dd>
       </dl>
-      ${accountSection()}
       <dl class="settings">
         <dt>${esc(t(lang(), 'settings_wheel_title'))}</dt>
         <dd>
@@ -1523,7 +1632,8 @@ if (typeof document !== 'undefined') (function () {
           <label class="filter-toggle"><input type="checkbox" data-settings-act="wheel-labels"${s.wheelLabels ? ' checked' : ''}> <span>${esc(t(lang(), 'settings_wheel_labels'))}</span></label>
         </dd>
       </dl>
-      ${wheelOutcomeGroups(s)}`;
+      ${wheelOutcomeGroups(s)}
+      ${accountSection()}`;
   }
 
   function random01() {
@@ -1764,6 +1874,7 @@ if (typeof document !== 'undefined') (function () {
     document.body.classList.toggle('wheel-mode', isWheel);
     document.body.classList.toggle('search-mode', route.view === viewSearch);
     if (route.view !== viewSearch && detailId === null) searchQuery = ''; // survives fav detail peek
+    if (route.view !== viewPantry) pantryQuery = '';
     if (route.view === viewFavorites) {
       if (detailId !== favOpenId) favChecked = new Set();
       favOpenId = detailId;
@@ -1778,7 +1889,15 @@ if (typeof document !== 'undefined') (function () {
       if (base === viewDeck && db) mountDeck();
       if (base === viewFavorites || base === viewSearch) $('#view').querySelectorAll('.cocktail-art').forEach(wireArt);
       if (base === viewSearch && matchMedia('(pointer: fine)').matches) $('#searchInput').focus();
+      if ($('#pantrySearch')) filterPantry();
       renderedBase = base === viewDeck && !db ? null : base; // a loading deck is redrawn once the data lands
+      // page change: only when the route changes, never on a re-render within one. The wheel keeps the
+      // deck (keepBase), so opening and closing it never gets here. Search is a fixed overlay inside
+      // #view, and a transform would become its containing block, so it only fades.
+      if (lastRouteHash !== null && hash !== lastRouteHash && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        $('#view').animate(base === viewSearch ? [{ opacity: 0 }, { opacity: 1 }]
+          : [{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 160, easing: 'cubic-bezier(.2,0,0,1)' });
+      }
     }
     layer.hidden = !isWheel;
     layer.innerHTML = isWheel ? viewWheel() : '';
@@ -1836,25 +1955,29 @@ if (typeof document !== 'undefined') (function () {
   }
 
   $('#view').addEventListener('click', async e => {
+    const modeBtn = e.target.closest('[data-acc-mode]');
+    if (modeBtn) { // switch login / register / forgot in place; the typed email carries over
+      accountEmail = $('#accEmail').value;
+      accountMode = modeBtn.dataset.accMode;
+      $('#accBody').innerHTML = accountBody();
+      ($('#accBody [aria-pressed="true"]') || $('#accEmail')).focus();
+      return;
+    }
     const accBtn = e.target.closest('[data-acc]');
     if (accBtn) {
+      const action = accBtn.dataset.acc, dialog = $('#accDelete');
+      if (action === 'delete') return dialog.showModal();
+      if (action === 'delete-cancel' || action === 'delete-confirm') dialog.close();
+      if (action === 'delete-cancel') return;
       try {
-        const action = accBtn.dataset.acc;
-        const email = action === 'forgot' ? $('#accEmail').value.trim() : '';
         await ensureFirebase();
         if (action === 'google') {
           localStorage.setItem(AUTH_KEY, '1');
           await fb.signInWithPopup(fb.auth, new fb.GoogleAuthProvider());
         }
         else if (action === 'link-google') { await fb.linkWithPopup(fbUser, new fb.GoogleAuthProvider()); render(); }
-        else if (action === 'forgot') {
-          await fb.sendPasswordResetEmail(fb.auth, email);
-          const errEl = $('#accError');
-          errEl.textContent = t(lang(), 'account_forgot_sent');
-          errEl.hidden = false;
-        }
         else if (action === 'signout') await fb.signOut(fb.auth);
-        else if (action === 'delete' && confirm(t(lang(), 'account_delete_confirm'))) {
+        else if (action === 'delete-confirm') {
           deletingAccount = true;
           clearTimeout(pushTimer);
           if (pushPromise) await pushPromise;
@@ -1865,19 +1988,21 @@ if (typeof document !== 'undefined') (function () {
           localStorage.removeItem(syncKey(user.uid));
           await user.delete();
         }
-      } catch (err) { // ponytail: raw Firebase message, no i18n error map; add one if real users hit this often
-        const errEl = $('#accError');
-        if (errEl) { errEl.textContent = err.message; errEl.hidden = false; }
+      } catch (err) {
+        showAccountError(err);
       } finally {
         deletingAccount = false;
       }
       return;
     }
-    const langBtn = e.target.closest('[data-lang]');
+    const langBtn = e.target.closest('[data-lang], [data-unit-setting]');
     if (langBtn) {
-      state.settings.lang = langBtn.dataset.lang;
+      if (langBtn.dataset.lang) state.settings.lang = langBtn.dataset.lang;
+      else state.settings.unit = langBtn.dataset.unitSetting;
       save();
       render();
+      const again = $('#view').querySelector(langBtn.dataset.lang ? `[data-lang="${lang()}"]` : `[data-unit-setting="${unit()}"]`);
+      if (again) again.focus(); // the re-render replaced the pressed button
       return;
     }
     const deckBtn = e.target.closest('[data-deck]');
@@ -1946,26 +2071,29 @@ if (typeof document !== 'undefined') (function () {
   });
 
   $('#view').addEventListener('submit', async e => {
-    const form = e.target.closest('#emailForm, #pwForm');
+    const form = e.target.closest('#emailForm, #pwForm, #forgotForm');
     if (!form) return;
     e.preventDefault();
     const errEl = $('#accError');
     errEl.hidden = true;
-    const mode = e.submitter ? e.submitter.dataset.mode : 'login';
-    const email = form.id === 'emailForm' ? $('#accEmail').value.trim() : '';
-    const password = form.id === 'emailForm' ? $('#accPw').value : $('#accNewPw').value;
+    const email = form.id === 'pwForm' ? '' : $('#accEmail').value.trim();
     try {
       await ensureFirebase();
-      if (form.id === 'pwForm') { await fb.updatePassword(fbUser, password); render(); }
-      else {
-        if (mode === 'register') await fb.createUserWithEmailAndPassword(fb.auth, email, password);
-        else await fb.signInWithEmailAndPassword(fb.auth, email, password);
+      if (form.id === 'pwForm') { await fb.updatePassword(fbUser, $('#accNewPw').value); render(); }
+      else if (form.id === 'forgotForm') {
+        await fb.sendPasswordResetEmail(fb.auth, email);
+        errEl.textContent = t(lang(), 'account_forgot_sent');
+        errEl.hidden = false;
       }
+      else if (accountMode === 'register') await fb.createUserWithEmailAndPassword(fb.auth, email, $('#accPw').value);
+      else await fb.signInWithEmailAndPassword(fb.auth, email, $('#accPw').value);
     } catch (err) {
-      const currentError = $('#accError');
-      if (currentError) { currentError.textContent = err.message; currentError.hidden = false; }
-    } // ponytail: raw Firebase message, matches the data-acc catch above
+      showAccountError(err);
+    }
   });
+
+  // <details> toggle does not bubble, so listen in the capture phase
+  $('#view').addEventListener('toggle', e => { if (e.target.id === 'account') accountOpen = e.target.open; }, true);
 
   $('#view').addEventListener('change', e => {
     const control = e.target.closest('[data-servings]');
@@ -2009,6 +2137,8 @@ if (typeof document !== 'undefined') (function () {
     if (!control.checked) state.pantry = state.pantry.filter(item => item !== id);
     deckQueue = null;
     save();
+    $('#pantryCount').textContent = pantryCountText();
+    $('#pantryAlmost').innerHTML = pantryAlmostMarkup();
   });
 
   $('#view').addEventListener('change', e => {
@@ -2029,6 +2159,10 @@ if (typeof document !== 'undefined') (function () {
   });
 
   $('#view').addEventListener('input', e => {
+    if (e.target.id === 'pantrySearch') {
+      pantryQuery = e.target.value;
+      filterPantry();
+    }
     const control = e.target.closest('#searchInput');
     if (!control) return;
     searchQuery = control.value;
