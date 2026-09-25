@@ -301,10 +301,11 @@ const workerSource = fs.readFileSync(path.join(__dirname, 'worker', 'worker.js')
 // bumped 86kB -> 87kB 2026-07-23 for transient editable 1–100 recipe servings
 // bumped 87kB -> 89kB 2026-07-24 for keyboard-safe card faces and accessible status semantics
 // bumped 89kB -> 90kB 2026-09-25 for design review batch 1 (missing status only with a pantry, route announcements)
+// bumped 90kB -> 97kB 2026-09-25 for design review batch 2 (deck buttons, undo toast, filter chips, segmented recipe controls, in-place updates)
 // Mät LF-storleken, alltså det git lagrar och GitHub Pages levererar. En Windows-
 // arbetskopia checkas ut med CRLF och lägger på ~1,8 kB som aldrig deployas.
-check(Buffer.byteLength(appSource.split('\r').join('')) < 90000,
-  'bundle budget: app.js stays under 90 kB unminified');
+check(Buffer.byteLength(appSource.split('\r').join('')) < 97000,
+  'bundle budget: app.js stays under 97 kB unminified');
 check(!htmlSource.includes('fonts.googleapis.com') && htmlSource.includes("fonts/work-sans.woff2"),
   'privacy: fonts are self-hosted with no Google Fonts request');
 check(htmlSource.includes('rel="canonical" href="https://buildapp.se/sipdeck/"') &&

@@ -3,7 +3,6 @@
 // ---------- string table (EN + SV) — every UI string routes through t(), none hardcoded in markup ----------
 const STRINGS = {
   en: {
-    tagline: 'Swipe. Save. Shake.',
     nav_deck: 'Deck', nav_favorites: 'Favorites', nav_pantry: 'Pantry', nav_settings: 'Settings',
     nav_label: 'Main navigation',
     wheel_entry: 'Pick for me', wheel_title: 'Pick for me', wheel_back: 'Back',
@@ -17,12 +16,10 @@ const STRINGS = {
     deck_loading: 'Dealing the deck...',
     deck_error: "Couldn't load the deck. Reload to try again.",
     deck_title: 'Cocktail deck',
-    deck_count_label: 'drinks in the deck',
     deck_no_matches: 'No drinks match those filters. Try another combination.',
     filters_label: 'Filter drinks',
-    filter_makeable: 'Only what I can make',
     favorites_title: 'Favorites',
-    favorites_empty: 'Nothing saved yet. Swipe right on a drink to save it here.',
+    favorites_empty: 'Nothing saved yet. Swipe right on a drink to save it here.', favorites_to_deck: 'Go to the deck',
     search_entry: 'Search', search_title: 'Search',
     search_placeholder: 'Search name or ingredient',
     search_empty: 'No drinks match that search.',
@@ -42,9 +39,9 @@ const STRINGS = {
     pantry_group_fresh: 'Fresh & mixers', pantry_group_pantry: 'Pantry staples',
     pantry_almost_title: 'Almost there',
     settings_title: 'Settings',
-    settings_lang: 'Language', settings_unit: 'Unit', settings_servings: 'Servings',
+    settings_lang: 'Language', settings_unit: 'Unit',
     language_en: 'English', language_sv: 'Swedish',
-    settings_filter_bar: 'Bar-servable only', settings_filter_base: 'Base spirit',
+    settings_filter_base: 'Base spirit',
     settings_filter_base_none: 'Any',
     settings_wheel_title: 'Spinning wheel',
     settings_wheel_favorites_only: 'Only favorite drinks',
@@ -71,6 +68,15 @@ const STRINGS = {
     account_link_google: 'Link Google sign-in', account_create_password: 'Create password',
     account_share_hint: 'Your partner can then sign in with this email and password too.',
     account_legal: 'Privacy, storage & terms',
+    deck_skip: '‹ Skip', deck_save: 'Save ›', flip_hint: 'Tap for recipe',
+    swipe_save: 'Save', swipe_skip: 'Skip', toast_saved: 'Saved', toast_removed: 'Removed', undo: 'Undo',
+    chip_all: 'All', chip_matches: 'Matches', chip_bar: 'Bar-servable', chip_makeable: 'Can make', chip_base: 'Base',
+    serving_one: 'glass', serving_many: 'glasses',
+    glass_coupe: 'coupe', glass_highball: 'highball glass', glass_rocks: 'rocks glass', glass_martini: 'martini glass',
+    glass_goblet: 'goblet', glass_irish_coffee: 'Irish coffee glass', glass_margarita: 'margarita glass',
+    glass_julep: 'julep cup', glass_hurricane: 'hurricane glass', glass_collins: 'Collins glass',
+    glass_wine: 'wine glass', glass_flute: 'flute', glass_shot: 'shot glass',
+    method_stirred: 'stirred', method_frozen: 'frozen', method_layered: 'layered',
   },
   sv: {
     wheel_entry: 'Välj åt mig', wheel_title: 'Välj åt mig', wheel_back: 'Tillbaka',
@@ -80,19 +86,16 @@ const STRINGS = {
     wheel_new: 'Nytt hjul', wheel_result: 'Din beställning',
     wheel_loading: 'Förbereder hjulet...', wheel_error: 'Kunde inte ladda hjulet. Ladda om sidan för att försöka igen.',
     wheel_spinning: 'Hjulet snurrar', wheel_ready: 'Hjulet är redo att snurra',
-    tagline: 'Svep. Spara. Skaka.',
     nav_deck: 'Kortlek', nav_favorites: 'Favoriter', nav_pantry: 'Skafferi', nav_settings: 'Inställningar',
     nav_label: 'Huvudnavigering',
     deck_empty: 'Inga drinkar än. Kortleken delas ut när drinks.json finns.',
     deck_loading: 'Delar ut kortleken...',
     deck_error: 'Kunde inte ladda kortleken. Ladda om sidan för att försöka igen.',
     deck_title: 'Drinkkortlek',
-    deck_count_label: 'drinkar i kortleken',
     deck_no_matches: 'Inga drinkar matchar filtren. Prova en annan kombination.',
     filters_label: 'Filtrera drinkar',
-    filter_makeable: 'Bara det jag kan blanda',
     favorites_title: 'Favoriter',
-    favorites_empty: 'Inget sparat än. Svep höger på en drink för att spara den här.',
+    favorites_empty: 'Inget sparat än. Svep höger på en drink för att spara den här.', favorites_to_deck: 'Till kortleken',
     search_entry: 'Sök', search_title: 'Sök',
     search_placeholder: 'Sök namn eller ingrediens',
     search_empty: 'Inga drinkar matchar sökningen.',
@@ -112,9 +115,9 @@ const STRINGS = {
     pantry_group_fresh: 'Färskt och blanddryck', pantry_group_pantry: 'Skafferivaror',
     pantry_almost_title: 'Nästan klara',
     settings_title: 'Inställningar',
-    settings_lang: 'Språk', settings_unit: 'Enhet', settings_servings: 'Portioner',
+    settings_lang: 'Språk', settings_unit: 'Enhet',
     language_en: 'Engelska', language_sv: 'Svenska',
-    settings_filter_bar: 'Bara barserverbara', settings_filter_base: 'Bas-sprit',
+    settings_filter_base: 'Bas-sprit',
     settings_filter_base_none: 'Alla',
     settings_wheel_title: 'Snurrhjul',
     settings_wheel_favorites_only: 'Bara favoritdrinkar',
@@ -141,6 +144,15 @@ const STRINGS = {
     account_link_google: 'Koppla Google-inloggning', account_create_password: 'Skapa lösenord',
     account_share_hint: 'Din partner kan då också logga in med samma e-post och lösenord.',
     account_legal: 'Integritet, lokal lagring och villkor',
+    deck_skip: '‹ Hoppa över', deck_save: 'Spara ›', flip_hint: 'Tryck för recept',
+    swipe_save: 'Spara', swipe_skip: 'Hoppa över', toast_saved: 'Sparad', toast_removed: 'Borttagen', undo: 'Ångra',
+    chip_all: 'Alla', chip_matches: 'Träffar', chip_bar: 'Barserverbara', chip_makeable: 'Kan blanda', chip_base: 'Bas',
+    serving_one: 'glas', serving_many: 'glas',
+    glass_coupe: 'coupeglas', glass_highball: 'highballglas', glass_rocks: 'rocksglas', glass_martini: 'martiniglas',
+    glass_goblet: 'goblet', glass_irish_coffee: 'irish coffee-glas', glass_margarita: 'margaritaglas',
+    glass_julep: 'julepbägare', glass_hurricane: 'hurricaneglas', glass_collins: 'collinsglas',
+    glass_wine: 'vinglas', glass_flute: 'champagneglas', glass_shot: 'shotglas',
+    method_stirred: 'rörd', method_frozen: 'frusen', method_layered: 'skiktad',
   },
 };
 function t(lang, key) { return (STRINGS[lang] && STRINGS[lang][key]) || STRINGS.en[key] || key; }
@@ -164,6 +176,7 @@ function defaultState(lang) {
       filters: { bar: false, base: null },
       wheelFavoritesOnly: false,
       wheelOutcomesExcluded: [],
+      seenFlipHint: false,
     },
   };
 }
@@ -188,6 +201,7 @@ function normalizeState(raw, lang) {
       wheelFavoritesOnly: rs.wheelFavoritesOnly === true,
       wheelOutcomesExcluded: Array.isArray(rs.wheelOutcomesExcluded)
         ? rs.wheelOutcomesExcluded.filter(x => typeof x === 'string') : [],
+      seenFlipHint: rs.seenFlipHint === true,
     },
   };
 }
@@ -329,6 +343,7 @@ function reconcileState(base, local, remote) {
         local.settings.wheelFavoritesOnly, remote.settings.wheelFavoritesOnly),
       wheelOutcomesExcluded: set(base.settings.wheelOutcomesExcluded,
         local.settings.wheelOutcomesExcluded, remote.settings.wheelOutcomesExcluded),
+      seenFlipHint: local.settings.seenFlipHint || remote.settings.seenFlipHint,
     },
   };
 }
@@ -747,15 +762,22 @@ if (typeof document !== 'undefined') (function () {
     const baseOptions = [`<option value="">${esc(t(lang(), 'settings_filter_base_none'))}</option>`]
       .concat(BASE_FILTERS.map(base => `<option value="${base}"${f.base === base ? ' selected' : ''}>${esc(t(lang(), 'base_' + base))}</option>`))
       .join('');
-    const controls = `<section class="filters" aria-label="${esc(t(lang(), 'filters_label'))}">
-      <label class="filter-toggle"><input type="checkbox" data-filter="bar"${f.bar ? ' checked' : ''}> <span>${esc(t(lang(), 'settings_filter_bar'))}</span></label>
-      <label class="filter-toggle"><input type="checkbox" data-filter="makeable"${makeableOnly ? ' checked' : ''}> <span>${esc(t(lang(), 'filter_makeable'))}</span></label>
-      <label class="filter-select"><span>${esc(t(lang(), 'settings_filter_base'))}</span><select data-filter="base">${baseOptions}</select></label>
-    </section>`;
     const matches = filteredDrinks();
-    const count = `<p class="deck-count"><span class="amount">${matches.length}</span> ${esc(t(lang(), 'deck_count_label'))}</p>`;
-    const deck = matches.length ? '<div class="deck" id="deck"></div>' : `<p class="empty">${esc(t(lang(), 'deck_no_matches'))}</p>`;
-    return `<h1 class="sr-only">${esc(t(lang(), 'deck_title'))}</h1>${deck}${controls}${count}`;
+    const filtered = !!(f.bar || f.base || makeableOnly);
+    const chip = (name, on, label) => `<button class="fchip${on ? ' on' : ''}" data-chip="${name}" aria-pressed="${on}">${label}</button>`;
+    // T11: one scrollable chip row above the deck; the match count lives in the first chip
+    const chips = `<div class="fchips" role="group" aria-label="${esc(t(lang(), 'filters_label'))}">
+      ${chip('all', !filtered, `${esc(t(lang(), filtered ? 'chip_matches' : 'chip_all'))} <span class="amount">${matches.length}</span>`)}
+      ${chip('bar', f.bar, esc(t(lang(), 'chip_bar')))}
+      ${chip('makeable', makeableOnly, esc(t(lang(), 'chip_makeable')))}
+      <label class="fchip fchip-select${f.base ? ' on' : ''}"><span aria-hidden="true">${esc(f.base ? t(lang(), 'base_' + f.base) : t(lang(), 'chip_base'))} ▾</span><select data-filter="base" aria-label="${esc(t(lang(), 'settings_filter_base'))}">${baseOptions}</select></label>
+    </div>`;
+    const deck = matches.length ? `<div class="deck" id="deck"></div>
+      <div class="deck-actions">
+        <button class="deck-skip" data-deck="-1">${esc(t(lang(), 'deck_skip'))}</button>
+        <button class="deck-save" data-deck="1">${esc(t(lang(), 'deck_save'))}</button>
+      </div>` : `<p class="empty">${esc(t(lang(), 'deck_no_matches'))}</p>`;
+    return `<h1 class="sr-only">${esc(t(lang(), 'deck_title'))}</h1>${chips}${deck}`;
   }
 
   // ---------- deck: the one imperative-DOM zone (drag/flip animate outside re-renders) ----------
@@ -798,22 +820,77 @@ if (typeof document !== 'undefined') (function () {
     return t(lang(), kind + '_' + String(id).replace(/-/g, '_'));
   }
 
-  // an empty pantry means "not using the pantry", not "missing everything": no missing status then
-  function isMissing(have, id) { return state.pantry.length > 0 && !have.has(id); }
+  // an empty pantry means "not using the pantry", not "missing everything": no missing status then.
+  // Optional lines (garnish) never count as missing, same rule as canMake.
+  function isMissing(have, line) { return state.pantry.length > 0 && line.essential && !have.has(line.id); }
   function missingTag() { return `<span class="missing-tag" aria-hidden="true">${esc(t(lang(), 'missing_tag'))}</span>`; }
 
   function chipTags(ingredients, have) {
     return ingredients.filter(l => l.essential)
       .map(l => {
-        const missing = isMissing(have, l.id);
+        const missing = isMissing(have, l);
         return `<span class="chip${missing ? ' missing' : ''}">${missing ? `<span class="sr-only">${esc(t(lang(), 'missing_prefix'))}</span>` : ''}${esc(ingName(l.id))}</span>`;
       }).join('');
   }
 
-  function ingLine(line, have, servings) {
-    const amt = formatLineAmount(line, servings, unit(), lang());
-    const missing = isMissing(have, line.id);
-    return `<li${missing ? ' class="missing"' : ''}>${missing ? `<span class="sr-only">${esc(t(lang(), 'missing_prefix'))}</span>` : ''}<span class="amount">${esc(amt)}</span> ${esc(ingName(line.id))}${missing ? missingTag() : ''}</li>`;
+  // garnish rows show a bare count; the word "garnish" moves to a right-hand tag
+  function amountText(line, servings) {
+    return line.unit === 'garnish' ? formatNumber(line.qty * servings, lang()) : formatLineAmount(line, servings, unit(), lang());
+  }
+
+  function lineTag(line, missing) {
+    if (missing) return missingTag();
+    return line.unit === 'garnish' ? `<span class="garnish-tag">${esc(t(lang(), 'unit_garnish'))}</span>` : '';
+  }
+
+  function ingLine(line, have, servings, index) {
+    const missing = isMissing(have, line);
+    const cls = (missing ? 'missing' : '') + (line.unit === 'garnish' ? ' garnish' : '');
+    return `<li class="${cls.trim()}">${missing ? `<span class="sr-only">${esc(t(lang(), 'missing_prefix'))}</span>` : ''}<span class="amount" data-line="${index}">${esc(amountText(line, servings))}</span><span>${esc(ingName(line.id))}</span>${lineTag(line, missing)}</li>`;
+  }
+
+  const METHOD_TAGS = ['stirred', 'frozen', 'layered'];
+  function recipeMeta(drink, withMethod) {
+    const method = withMethod && (drink.tags || []).find(tag => METHOD_TAGS.includes(tag));
+    return [taxonomyName('type', drink.type), taxonomyName('glass', drink.glass), method && taxonomyName('method', method)]
+      .filter(Boolean).join(' · ');
+  }
+
+  function servingWord(servings) { return t(lang(), servings === 1 ? 'serving_one' : 'serving_many'); }
+
+  // shared by the card back (data-act) and the favorite detail (data-fav-act)
+  function recipeControls(id, servings, act) {
+    const selectedUnit = unit();
+    const unitBtns = recipeUnits().map(u =>
+      `<button data-${act}="unit" data-unit="${u}" aria-pressed="${u === selectedUnit}"${u === selectedUnit ? ' class="active"' : ''}>${u}</button>`).join('');
+    return `<div class="stepper" role="group" aria-label="${esc(t(lang(), 'servings'))}">
+        <button data-${act}="dec" aria-label="${esc(t(lang(), 'servings_decrease'))}">−</button>
+        <input class="servings-input amount" data-servings data-id="${esc(id)}" type="number"
+          min="1" max="${MAX_SERVINGS}" step="1" inputmode="numeric" value="${servings}"
+          aria-label="${esc(t(lang(), 'servings'))}"><span class="servings-unit" aria-hidden="true">${esc(servingWord(servings))}</span>
+        <button data-${act}="inc" aria-label="${esc(t(lang(), 'servings_increase'))}">+</button>
+      </div>
+      <div class="units" role="group" aria-label="${esc(t(lang(), 'settings_unit'))}">${unitBtns}</div>`;
+  }
+
+  // T13: steppers and units patch amounts, inputs and unit buttons in place instead of render()
+  function refreshRecipes() {
+    $('#view').querySelectorAll('.card, .fav-recipe').forEach(box => {
+      const input = box.querySelector('[data-servings]');
+      const drink = input && db.drinks.find(d => d.id === input.dataset.id);
+      if (!drink) return;
+      const servings = box.dataset.depth && box.dataset.depth !== '0' ? 1 : servingsFor(drink.id);
+      input.value = servings;
+      box.querySelector('.servings-unit').textContent = servingWord(servings);
+      box.querySelectorAll('.amount[data-line]').forEach(el => {
+        el.textContent = amountText(drink.ingredients[Number(el.dataset.line)], servings);
+      });
+      box.querySelectorAll('.units button').forEach(b => {
+        const on = b.dataset.unit === unit();
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-pressed', String(on));
+      });
+    });
   }
 
   function wireArt(img) {
@@ -841,38 +918,33 @@ if (typeof document !== 'undefined') (function () {
     el.setAttribute('aria-label', drink.name);
     const have = new Set(state.pantry);
     const tags = chipTags(drink.ingredients, have);
-    const selectedUnit = unit();
     const servings = depth === 0 ? servingsFor(drink.id) : 1;
-    const unitBtns = recipeUnits().map(u =>
-      `<button data-act="unit" data-unit="${u}" aria-pressed="${u === selectedUnit}"${u === selectedUnit ? ' class="active"' : ''}>${u}</button>`).join('');
+    const hint = state.settings.seenFlipHint ? '' : `<span class="flip-hint">${esc(t(lang(), 'flip_hint'))}</span>`;
+    const source = drink.source && drink.source.label
+      ? `<p class="card-source">${esc(t(lang(), 'source_label'))}: ${esc(drink.source.label)}</p>` : '';
     el.innerHTML = `
       <div class="card-inner">
         <div class="card-face card-front">
           <div class="card-art">${artMarkup(drink)}</div>
-          <h2 class="card-name">${esc(drink.name)}</h2>
-          <div class="card-meta">${esc(taxonomyName('type', drink.type))}</div>
+          <div class="card-title"><h2 class="card-name">${esc(drink.name)}</h2>${hint}</div>
+          <div class="card-meta">${esc(recipeMeta(drink, false))}</div>
           <div class="card-tags">${tags}</div>
         </div>
         <div class="card-face card-back">
           <h2 class="card-name">${esc(drink.name)}</h2>
+          <div class="card-meta">${esc(recipeMeta(drink, true))}</div>
           <div class="card-recipe">
-            <ul class="ing">${drink.ingredients.map(l => ingLine(l, have, servings)).join('')}</ul>
+            <ul class="ing">${drink.ingredients.map((l, i) => ingLine(l, have, servings, i)).join('')}</ul>
             <p class="card-method">${esc(drink.method[lang()] || drink.method.en)}</p>
           </div>
-          <div class="card-ctrl">
-            <div class="stepper" role="group" aria-label="${esc(t(lang(), 'servings'))}">
-              <button data-act="dec" aria-label="${esc(t(lang(), 'servings_decrease'))}">−</button>
-              <input class="servings-input amount" data-servings data-id="${esc(drink.id)}" type="number"
-                min="1" max="${MAX_SERVINGS}" step="1" inputmode="numeric" value="${servings}"
-                aria-label="${esc(t(lang(), 'servings'))}">
-              <button data-act="inc" aria-label="${esc(t(lang(), 'servings_increase'))}">+</button>
-            </div>
-            <div class="units" role="group" aria-label="${esc(t(lang(), 'settings_unit'))}">${unitBtns}</div>
-          </div>
+          <div class="card-ctrl">${recipeControls(drink.id, servings, 'act')}</div>
+          ${source}
         </div>
       </div>${tint ? `
       <div class="tint tint-save"></div>
-      <div class="tint tint-skip"></div>` : ''}`;
+      <div class="tint tint-skip"></div>
+      <span class="swipe-label swipe-label-save" aria-hidden="true">${esc(t(lang(), 'swipe_save'))}</span>
+      <span class="swipe-label swipe-label-skip" aria-hidden="true">${esc(t(lang(), 'swipe_skip'))}</span>` : ''}`;
     const art = el.querySelector('.cocktail-art');
     setCardFlipped(el, flipped);
     wireArt(art);
@@ -907,17 +979,21 @@ if (typeof document !== 'undefined') (function () {
       if (b.dataset.act === 'inc') setServings(card.dataset.id, Number(input.value) + 1);
       else if (b.dataset.act === 'dec') setServings(card.dataset.id, Number(input.value) - 1);
       else if (b.dataset.act === 'unit') { s.unit = b.dataset.unit; save(); }
-      render(); // coarse re-render; deckQueue + flippedId survive, so the same card stays up, flipped
+      refreshRecipes();
     });
     attachDrag(deckEl.querySelector('.card[data-depth="0"]'));
   }
 
+  // leavingCard is null when a card comes back (undo) instead of leaving
   function promoteDeck(leavingCard) {
     const deckEl = $('#deck');
     if (!deckEl) return;
-    const moveFocus = leavingCard === document.activeElement || leavingCard.contains(document.activeElement);
-    leavingCard.inert = true;
-    leavingCard.tabIndex = -1;
+    const moveFocus = leavingCard && (leavingCard === document.activeElement || leavingCard.contains(document.activeElement));
+    if (leavingCard) {
+      leavingCard.inert = true;
+      leavingCard.tabIndex = -1;
+      leavingCard.dataset.depth = 'out'; // never matches [data-depth="0"] while it flies away
+    }
     ensureQueue();
     const desired = deckQueue.slice(0, 4);
     Array.from(deckEl.querySelectorAll('.card')).forEach(card => {
@@ -928,7 +1004,8 @@ if (typeof document !== 'undefined') (function () {
       if (!card) {
         const drink = db.drinks.find(item => item.id === id);
         card = buildCard(drink, depth);
-        deckEl.insertBefore(card, deckEl.firstChild);
+        if (depth === 0) deckEl.appendChild(card); // a restored top card paints above the rest
+        else deckEl.insertBefore(card, deckEl.firstChild);
       }
       card.dataset.depth = depth;
       card.tabIndex = depth === 0 ? 0 : -1;
@@ -940,10 +1017,21 @@ if (typeof document !== 'undefined') (function () {
     if (moveFocus && nextCard) nextCard.focus();
   }
 
+  function flipTop(card) {
+    const id = deckQueue[0];
+    flippedId = flippedId === id ? null : id;
+    setCardFlipped(card, flippedId === id);
+    if (!state.settings.seenFlipHint) { // the hint has done its job after the first flip
+      state.settings.seenFlipHint = true;
+      save();
+      $('#view').querySelectorAll('.flip-hint').forEach(el => el.remove());
+    }
+  }
+
   function attachDrag(card) {
     if (!card) return;
-    const tintSave = card.querySelector('.tint-save');
-    const tintSkip = card.querySelector('.tint-skip');
+    const cues = ['.tint-save', '.tint-skip', '.swipe-label-save', '.swipe-label-skip'].map(sel => card.querySelector(sel));
+    const showCues = (save, skip) => cues.forEach((el, i) => { el.style.opacity = i % 2 ? skip : save; });
     const threshold = () => card.offsetWidth * 0.35;
     let dragging = false, moved = false, startX = 0, startY = 0, dx = 0, dy = 0;
     let lastX = 0, lastT = 0, vx = 0;
@@ -951,9 +1039,7 @@ if (typeof document !== 'undefined') (function () {
     card.addEventListener('keydown', e => {
       if (e.target !== card || (e.key !== 'Enter' && e.key !== ' ')) return;
       e.preventDefault();
-      const id = deckQueue[0];
-      flippedId = flippedId === id ? null : id;
-      setCardFlipped(card, flippedId === id);
+      flipTop(card);
     });
 
     card.addEventListener('pointerdown', e => {
@@ -975,8 +1061,7 @@ if (typeof document !== 'undefined') (function () {
       card.style.transform = `translate(${dx}px, ${dy * 0.4}px) rotate(${dx * 0.04}deg)`;
       const p = dx / threshold();
       const a = Math.abs(p) < 0.3 ? 0 : Math.min(1, (Math.abs(p) - 0.3) / 0.7);
-      tintSave.style.opacity = p > 0 ? a : 0;
-      tintSkip.style.opacity = p < 0 ? a : 0;
+      showCues(p > 0 ? a : 0, p < 0 ? a : 0);
     });
 
     function settle(e) {
@@ -985,17 +1070,12 @@ if (typeof document !== 'undefined') (function () {
       card.style.willChange = '';
       const flick = Math.abs(vx) > 0.6 && vx * dx > 0;
       if (Math.abs(dx) > threshold() || flick) {
-        flyOff(card, dx > 0 ? 1 : -1, dy);
+        flyOff(card, dx > 0 ? 1 : -1, dy, dx, vx);
       } else {
-        tintSave.style.opacity = 0;
-        tintSkip.style.opacity = 0;
+        showCues(0, 0);
         card.style.transition = 'transform var(--sd-t-spring) var(--sd-ease-spring)';
         card.style.transform = '';
-        if (!moved && !e.target.closest('.card-ctrl')) { // a tap, not a drag: flip
-          const id = deckQueue[0];
-          flippedId = flippedId === id ? null : id;
-          setCardFlipped(card, flippedId === id);
-        }
+        if (!moved && !e.target.closest('.card-ctrl')) flipTop(card); // a tap, not a drag
       }
     }
     card.addEventListener('pointerup', settle);
@@ -1003,22 +1083,34 @@ if (typeof document !== 'undefined') (function () {
       dragging = false;
       card.style.willChange = '';
       card.style.transform = '';
-      tintSave.style.opacity = tintSkip.style.opacity = 0;
+      showCues(0, 0);
     });
     card.addEventListener('dragstart', e => e.preventDefault());
   }
 
-  function flyOff(card, dir, dy) {
+  // dx/vx come from a drag: the exit keeps the finger's speed. Buttons and keys use the 320 ms token.
+  function flyOff(card, dir, dy, dx, vx) {
     if (card.dataset.leaving) return;
     card.dataset.leaving = 'true';
     const x = (window.innerWidth + card.offsetWidth) * dir;
-    card.style.transition = 'transform var(--sd-t-fly) var(--sd-ease-fly)'; // never fades — it leaves
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const ms = reduced ? 0 : vx ? Math.max(180, Math.min(360, Math.abs(x - dx) / Math.max(Math.abs(vx), 0.8))) : 320;
+    card.style.transition = `transform ${Math.round(ms)}ms var(--sd-ease-fly)`; // never fades, it leaves
     card.style.transform = `translate(${x}px, ${dy * 0.4}px) rotate(${dir * 18}deg)`;
     const id = deckQueue[0];
     if (dir > 0) { // save (A3): idempotent, out of this cycle; exhaustion reshuffles the full set
       if (!state.favorites.includes(id)) state.favorites.push(id);
       deckQueue = advanceQueue(deckQueue, true);
       save();
+      updateNav();
+      showToast(t(lang(), 'toast_saved'), () => {
+        state.favorites = state.favorites.filter(x => x !== id);
+        save();
+        updateNav();
+        deckQueue = [id].concat(deckQueue.filter(x => x !== id));
+        flippedId = null;
+        promoteDeck(null);
+      });
     } else { // skip (A2): to the back of the deck, nothing is ever dismissed
       deckQueue = advanceQueue(deckQueue, false);
     }
@@ -1035,6 +1127,20 @@ if (typeof document !== 'undefined') (function () {
     card.addEventListener('transitionend', onEnd);
     setTimeout(finish, 450); // reduced-motion sets 0ms durations, which never fire transitionend
   }
+
+  // ---------- toast with undo (T8): one at a time, 4 s ----------
+  let toastTimer = null, toastUndo = null;
+  function showToast(text, undo) {
+    const el = $('#toast');
+    el.querySelector('span').textContent = text;
+    el.querySelector('button').textContent = t(lang(), 'undo');
+    toastUndo = undo;
+    el.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(hideToast, 4000);
+  }
+  function hideToast() { $('#toast').hidden = true; toastUndo = null; }
+  $('#toast button').addEventListener('click', () => { const undo = toastUndo; hideToast(); if (undo) undo(); });
 
   // ---------- favorites: compact image list -> one continuous, swipe-free recipe detail ----------
   function favDrink() {
@@ -1060,20 +1166,18 @@ if (typeof document !== 'undefined') (function () {
     const open = favDrink();
     if (favOpenId && !open) favOpenId = null; // favorite id vanished from db: just close, no crash
     if (open) {
-      const selectedUnit = unit();
       const servings = servingsFor(open.id);
       const have = new Set(state.pantry);
       const tags = chipTags(open.ingredients, have);
-      const pantryMissing = new Set(open.ingredients.filter(line => isMissing(have, line.id)).map(line => line.id));
-      const ingredientRows = open.ingredients.map(line => {
+      const ingredientRows = open.ingredients.map((line, i) => {
         const checked = favChecked.has(line.id);
-        return `<label class="fav-ing-row${checked ? ' done' : ''}${pantryMissing.has(line.id) ? ' pantry-missing' : ''}">
+        const missing = isMissing(have, line);
+        return `<label class="fav-ing-row${checked ? ' done' : ''}${line.unit === 'garnish' ? ' garnish' : ''}">
           <input type="checkbox" data-fav-ing="${esc(line.id)}"${checked ? ' checked' : ''} aria-label="${esc(t(lang(), 'check_ingredient') + ' ' + ingName(line.id))}">
-          <span class="amount">${esc(formatLineAmount(line, servings, selectedUnit, lang()))}</span>
-          <span>${pantryMissing.has(line.id) ? `<span class="sr-only">${esc(t(lang(), 'missing_prefix'))}</span>` : ''}${esc(ingName(line.id))}</span>${pantryMissing.has(line.id) ? missingTag() : ''}
+          <span class="amount" data-line="${i}">${esc(amountText(line, servings))}</span>
+          <span>${missing ? `<span class="sr-only">${esc(t(lang(), 'missing_prefix'))}</span>` : ''}${esc(ingName(line.id))}</span>${lineTag(line, missing)}
         </label>`;
       }).join('');
-      const unitBtns = recipeUnits().map(u => `<button data-fav-act="unit" data-unit="${u}" aria-pressed="${u === selectedUnit}"${u === selectedUnit ? ' class="active"' : ''}>${u}</button>`).join('');
       const source = open.source && open.source.url && open.source.label
         ? `<p class="fav-source"><a href="${esc(open.source.url)}" target="_blank" rel="noopener noreferrer">${esc(t(lang(), 'source_label'))}: ${esc(open.source.label)}</a></p>`
         : '';
@@ -1086,21 +1190,12 @@ if (typeof document !== 'undefined') (function () {
           <section class="fav-hero">
             <div class="fav-detail-art">${artMarkup(open)}</div>
             <h2 class="card-name">${esc(open.name)}</h2>
-            <div class="card-meta">${esc(taxonomyName('type', open.type))}</div>
+            <div class="card-meta">${esc(recipeMeta(open, true))}</div>
             <div class="card-tags">${tags}</div>
           </section>
           <section class="fav-recipe">
             <h2>${esc(t(lang(), 'recipe_title'))}</h2>
-            <div class="fav-recipe-controls">
-              <div class="stepper" role="group" aria-label="${esc(t(lang(), 'servings'))}">
-                <button data-fav-act="dec" aria-label="${esc(t(lang(), 'servings_decrease'))}">−</button>
-                <input class="servings-input amount" data-servings data-id="${esc(open.id)}" type="number"
-                  min="1" max="${MAX_SERVINGS}" step="1" inputmode="numeric" value="${servings}"
-                  aria-label="${esc(t(lang(), 'servings'))}">
-                <button data-fav-act="inc" aria-label="${esc(t(lang(), 'servings_increase'))}">+</button>
-              </div>
-              <div class="units" role="group" aria-label="${esc(t(lang(), 'settings_unit'))}">${unitBtns}</div>
-            </div>
+            <div class="fav-recipe-controls">${recipeControls(open.id, servings, 'fav-act')}</div>
             <h3>${esc(t(lang(), 'ingredients_title'))}</h3>
             <p class="fav-hint">${esc(t(lang(), 'ingredient_check_hint'))}</p>
             <div class="fav-ing-list">${ingredientRows}</div>
@@ -1112,7 +1207,8 @@ if (typeof document !== 'undefined') (function () {
         </article>`;
     }
     const rows = state.favorites.map(id => db.drinks.find(d => d.id === id)).filter(Boolean); // skip ids not in db
-    if (!rows.length) return `${title}<p class="empty">${esc(t(lang(), 'favorites_empty'))}</p>`;
+    if (!rows.length) return `${title}<p class="empty">${esc(t(lang(), 'favorites_empty'))}</p>
+      <p class="empty-action"><a class="pill-btn" href="#/">${esc(t(lang(), 'favorites_to_deck'))}</a></p>`;
     const list = rows.map(d => `
       <div class="list-card fav-row">
         <button class="fav-open" data-id="${esc(d.id)}">
@@ -1300,6 +1396,21 @@ if (typeof document !== 'undefined') (function () {
   }
 
   function viewSearch() {
+    return `<section class="wheel-screen search-screen">
+      <header class="wheel-topbar">
+        <button class="wheel-back" data-search-act="back">‹ ${esc(t(lang(), 'wheel_back'))}</button>
+        <span class="wheel-top-wordmark"><img src="design/wordmark.svg" alt="Sipdeck"></span>
+      </header>
+      <div class="wheel-body search-body">
+        <h1 class="sr-only">${esc(t(lang(), 'search_title'))}</h1>
+        <input type="search" id="searchInput" class="search-input" value="${esc(searchQuery)}"
+          placeholder="${esc(t(lang(), 'search_placeholder'))}" aria-label="${esc(t(lang(), 'search_placeholder'))}">
+        <div id="searchResults">${searchResults()}</div>
+      </div>
+    </section>`;
+  }
+
+  function searchResults() {
     const q = searchQuery.trim();
     const results = db && q
       ? db.drinks.filter(d => matchesSearch(searchHaystack(d, d.ingredients.map(l => ingName(l.id))), q))
@@ -1314,22 +1425,10 @@ if (typeof document !== 'undefined') (function () {
           </span>
         </button>
       </div>`).join('');
-    const body = !db ? `<p class="empty">${esc(t(lang(), 'deck_loading'))}</p>`
+    return !db ? `<p class="empty">${esc(t(lang(), 'deck_loading'))}</p>`
       : !q ? `<p class="empty">${esc(t(lang(), 'search_intro'))}</p>`
       : results.length ? rows
       : `<p class="empty">${esc(t(lang(), 'search_empty'))}</p>`;
-    return `<section class="wheel-screen search-screen">
-      <header class="wheel-topbar">
-        <button class="wheel-back" data-search-act="back">‹ ${esc(t(lang(), 'wheel_back'))}</button>
-        <span class="wheel-top-wordmark"><img src="design/wordmark.svg" alt="Sipdeck"></span>
-      </header>
-      <div class="wheel-body search-body">
-        <h1 class="sr-only">${esc(t(lang(), 'search_title'))}</h1>
-        <input type="search" id="searchInput" class="search-input" value="${esc(searchQuery)}"
-          placeholder="${esc(t(lang(), 'search_placeholder'))}" aria-label="${esc(t(lang(), 'search_placeholder'))}">
-        ${body}
-      </div>
-    </section>`;
   }
 
   function wheelOutcomeGroups(s) {
@@ -1598,16 +1697,27 @@ if (typeof document !== 'undefined') (function () {
     if (route.view === viewFavorites || route.view === viewSearch) $('#view').querySelectorAll('.cocktail-art').forEach(wireArt);
     if (route.view === viewSearch && matchMedia('(pointer: fine)').matches) $('#searchInput').focus();
     document.documentElement.lang = lang();
-    $('#tagline').textContent = t(lang(), 'tagline');
     $('#wheelEntryLabel').textContent = t(lang(), 'wheel_entry');
     $('#wheelEntry').setAttribute('aria-label', t(lang(), 'wheel_entry'));
     $('#wheelEntry').hidden = route.view !== viewDeck;
     $('#searchEntry').setAttribute('aria-label', t(lang(), 'search_entry'));
     $('#nav').setAttribute('aria-label', t(lang(), 'nav_label'));
+    updateNav();
+    document.querySelectorAll('#nav a').forEach(a => {
+      a.classList.toggle('active', a.dataset.match === route.match);
+      if (a.dataset.match === route.match) a.setAttribute('aria-current', 'page');
+      else a.removeAttribute('aria-current');
+    });
+  }
+
+  // labels plus the favorites counter (T8); called on every favorites change without a render()
+  function updateNav() {
     const navLabels = { '#/': 'nav_deck', '#/favoriter': 'nav_favorites', '#/skafferi': 'nav_pantry', '#/installningar': 'nav_settings' };
     document.querySelectorAll('#nav a').forEach(a => {
       a.textContent = t(lang(), navLabels[a.dataset.match]);
-      a.classList.toggle('active', a.dataset.match === route.match);
+      if (a.dataset.match === '#/favoriter' && state.favorites.length) {
+        a.insertAdjacentHTML('beforeend', ` <span class="nav-count">${state.favorites.length}</span>`);
+      }
     });
   }
 
@@ -1698,6 +1808,24 @@ if (typeof document !== 'undefined') (function () {
       render();
       return;
     }
+    const deckBtn = e.target.closest('[data-deck]');
+    if (deckBtn) {
+      const card = $('#deck .card[data-depth="0"]');
+      if (card && !card.dataset.leaving) flyOff(card, Number(deckBtn.dataset.deck), 0);
+      return;
+    }
+    const chipBtn = e.target.closest('[data-chip]');
+    if (chipBtn) {
+      const f = state.settings.filters, name = chipBtn.dataset.chip;
+      if (name === 'all') { f.bar = false; f.base = null; makeableOnly = false; }
+      else if (name === 'bar') f.bar = !f.bar;
+      else if (name === 'makeable') makeableOnly = !makeableOnly;
+      deckQueue = null;
+      flippedId = null;
+      save();
+      render();
+      return;
+    }
     if (e.target.closest('#favClose')) { closeFavoriteDetail(); return; }
     if (e.target.closest('[data-search-act="back"]')) { history.back(); return; }
     const favAction = e.target.closest('[data-fav-act]');
@@ -1707,7 +1835,7 @@ if (typeof document !== 'undefined') (function () {
       if (favAction.dataset.favAct === 'inc') setServings(favOpenId, Number(input.value) + 1);
       else if (favAction.dataset.favAct === 'dec') setServings(favOpenId, Number(input.value) - 1);
       else if (favAction.dataset.favAct === 'unit') { s.unit = favAction.dataset.unit; save(); }
-      render();
+      refreshRecipes();
       return;
     }
     const copyBtn = e.target.closest('[data-copy-fav]');
@@ -1725,8 +1853,15 @@ if (typeof document !== 'undefined') (function () {
     const favBtn = e.target.closest('[data-act="fav"]');
     if (favBtn) {
       const id = favBtn.dataset.id;
-      if (state.favorites.includes(id)) state.favorites = state.favorites.filter(x => x !== id);
-      else state.favorites.push(id);
+      const index = state.favorites.indexOf(id);
+      if (index >= 0) {
+        state.favorites.splice(index, 1);
+        showToast(t(lang(), 'toast_removed'), () => {
+          if (!state.favorites.includes(id)) state.favorites.splice(index, 0, id);
+          save();
+          render();
+        });
+      } else state.favorites.push(id);
       save();
       render();
       return;
@@ -1764,7 +1899,7 @@ if (typeof document !== 'undefined') (function () {
     const control = e.target.closest('[data-servings]');
     if (!control) return;
     setServings(control.dataset.id, control.value);
-    render();
+    refreshRecipes();
   });
 
   $('#view').addEventListener('keydown', e => {
@@ -1830,10 +1965,9 @@ if (typeof document !== 'undefined') (function () {
     const control = e.target.closest('#searchInput');
     if (!control) return;
     searchQuery = control.value;
-    const pos = control.selectionStart;
-    render();
-    const next = $('#searchInput');
-    if (next) { next.focus(); next.setSelectionRange(pos, pos); }
+    const list = $('#searchResults'); // T13: the input is never replaced, so focus and caret stay put
+    list.innerHTML = searchResults();
+    list.querySelectorAll('.cocktail-art').forEach(wireArt);
   });
 
   $('#wheelEntry').addEventListener('click', () => { wheelOpenedFromHome = true; });

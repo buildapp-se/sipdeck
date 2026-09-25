@@ -93,25 +93,26 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
   clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .wrap{max-width:640px;margin:0 auto;padding:1.25rem 1.25rem calc(6rem + env(safe-area-inset-bottom))}
-header.brand{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:1rem;padding:.5rem 0 1rem}
-header.brand a{display:inline-flex;align-items:center;min-height:44px}
-.brand-copy{display:flex;flex-direction:column;gap:.35rem;min-width:0}
-header.brand .wordmark{color:var(--sd-ink);width:112px;height:auto;display:block}
-header.brand .tagline{font:500 .8rem/1.4 var(--sd-font-ui);color:var(--sd-ink-2);letter-spacing:.02em}
-.wheel-entry{display:flex;align-items:center;gap:.45rem;min-height:54px;padding:.3rem .75rem .3rem .3rem;
-  border:1px solid var(--sd-line);border-radius:999px;background:var(--sd-card);color:#211B12;
-  box-shadow:0 8px 24px -16px rgba(33,27,18,.45);font:600 .7rem/1.15 var(--sd-font-ui);
-  max-width:132px;transition:transform var(--sd-t-micro) var(--sd-ease-list),box-shadow var(--sd-t-micro) linear}
+/* T11: one header row, wordmark, search, "Pick for me" */
+header.brand{display:flex;align-items:center;gap:.5rem;padding:.25rem 0 .75rem}
+header.brand>a{display:inline-flex;align-items:center;min-height:44px;margin-right:auto}
+header.brand .wordmark{color:var(--sd-ink);width:84px;height:auto;display:block}
+.wheel-entry{position:relative;display:flex;align-items:center;gap:.45rem;height:40px;padding:0 .8rem 0 .4rem;
+  border-radius:999px;background:var(--sd-paper-accent);color:#FBF7EF;white-space:nowrap;
+  font:600 13px/1 var(--sd-font-ui);box-shadow:0 8px 24px -16px rgba(33,27,18,.45);
+  transition:transform var(--sd-t-micro) var(--sd-ease-list),box-shadow var(--sd-t-micro) linear}
 .wheel-entry:hover{transform:translateY(-1px);box-shadow:var(--sd-shadow)}
 .wheel-entry:active{transform:translateY(0) scale(.98)}
 .wheel-entry:focus-visible{outline:3px solid var(--sd-accent);outline-offset:3px}
 .wheel-entry[hidden]{display:none}
-.wheel-symbol{width:46px;height:46px;flex:0 0 46px;display:block;view-transition-name:wheel-shared}
+.wheel-symbol{width:28px;height:28px;flex:0 0 28px;display:block;border-radius:50%;box-shadow:0 0 0 2px #FBF7EF;view-transition-name:wheel-shared}
 .wheel-symbol .wheel-sector:nth-of-type(even){fill:#ece1cd}
 .header-icons{display:flex;align-items:center;gap:.5rem;flex-shrink:0}
-.search-entry{display:flex;align-items:center;justify-content:center;width:44px;height:44px;flex-shrink:0;
+/* 40 px visual, 44 px hit area through the ::after overhang */
+.search-entry{position:relative;display:flex;align-items:center;justify-content:center;width:40px;height:40px;flex-shrink:0;
   border:1px solid var(--sd-line);border-radius:999px;background:var(--sd-card);color:#211B12;
   box-shadow:0 8px 24px -16px rgba(33,27,18,.45);transition:transform var(--sd-t-micro) var(--sd-ease-list),box-shadow var(--sd-t-micro) linear}
+.search-entry::after,.wheel-entry::after,.fchip::after{content:"";position:absolute;inset:-5px -2px}
 .search-entry:hover{transform:translateY(-1px);box-shadow:var(--sd-shadow)}
 .search-entry:active{transform:translateY(0) scale(.98)}
 .search-entry:focus-visible{outline:3px solid var(--sd-accent);outline-offset:3px}
@@ -122,28 +123,38 @@ header.brand .tagline{font:500 .8rem/1.4 var(--sd-font-ui);color:var(--sd-ink-2)
   padding-bottom:env(safe-area-inset-bottom)}
 .bottom-nav a{flex:1;text-align:center;padding:.75rem .25rem;font:500 .68rem/1.2 var(--sd-font-ui);
   letter-spacing:.03em;color:var(--sd-ink-2);border-top:2px solid transparent;
-  min-height:44px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  min-height:44px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:.3rem}
 .bottom-nav a.active{color:var(--sd-accent);border-top-color:var(--sd-accent)}
+.nav-count{display:inline-grid;place-items:center;min-width:17px;height:17px;padding:0 4px;border-radius:999px;
+  background:var(--sd-paper-accent);color:#FBF7EF;font:600 10px/1 var(--sd-font-ui);font-variant-numeric:tabular-nums}
 
 .screen-title{font:400 2rem/1.1 var(--sd-font-display);margin-bottom:1rem}
 .empty{color:var(--sd-ink-2);text-align:center;padding:3rem 1rem}
+.empty-action{text-align:center;margin-top:-1.5rem}
+.pill-btn{display:inline-flex;align-items:center;min-height:44px;padding:0 1.2rem;border-radius:999px;
+  background:var(--sd-paper-accent);color:#FBF7EF;font:600 .85rem/1 var(--sd-font-ui)}
 .list-card{background:var(--sd-card);color:var(--sd-paper-ink);border-radius:12px;box-shadow:var(--sd-shadow);padding:1rem 1.1rem;
   margin-bottom:.75rem}
 .list-card .name{font:400 1.3rem/1.2 var(--sd-font-display)}
 .list-card .meta{font:500 .8rem/1.4 var(--sd-font-ui);color:var(--sd-paper-ink-2);margin-top:.15rem}
-.deck-count{color:var(--sd-ink-2);font:500 .85rem/1.4 var(--sd-font-ui);margin-bottom:.75rem}
-.deck-count .amount{font-size:.85rem}
-.filters{display:grid;gap:.65rem;margin-bottom:.75rem;padding:.8rem 1rem;border:1px solid var(--sd-line);
-  border-radius:12px}
-.filters label{font:500 .82rem/1.4 var(--sd-font-ui)}
 .filter-toggle{display:flex;align-items:center;gap:.45rem}
 .filter-toggle input{accent-color:var(--sd-accent);width:1rem;height:1rem}
-.filter-select{display:flex;align-items:center;justify-content:space-between;gap:1rem}
-.filter-select select{min-width:9rem;min-height:44px;padding:.35rem 1.8rem .35rem .55rem;border:1px solid var(--sd-line);
-  border-radius:8px;background:var(--sd-card);color:#211B12;font:500 .82rem/1.3 var(--sd-font-ui)}
+/* T11 filter chips: scroll sideways, never wrap */
+.fchips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -1.25rem .9rem;padding:5px 1.25rem}
+.fchips::-webkit-scrollbar{display:none}
+.fchip{position:relative;flex:none;display:flex;align-items:center;gap:.3rem;height:34px;padding:0 13px;border-radius:999px;
+  border:1px solid rgba(33,27,18,.16);background:#FBF7EF;color:#211B12;font:500 12px/1 var(--sd-font-ui);white-space:nowrap}
+.fchip.on{background:var(--sd-ink);border-color:var(--sd-ink);color:var(--sd-bg)}
+.fchip .amount{font:inherit;font-variant-numeric:tabular-nums}
+.fchip:focus-visible,.fchip:focus-within{outline:3px solid var(--sd-accent);outline-offset:2px}
+.fchip-select select{position:absolute;inset:0;width:100%;opacity:0;cursor:pointer}
 
 /* ---- deck & cards (BACKLOG item 4) ---- */
-.deck{position:relative;height:min(64vh,540px);max-width:340px;margin:0 auto 2rem;perspective:1200px}
+.deck{position:relative;height:clamp(340px,calc(100dvh - 300px),540px);max-width:340px;margin:0 auto 1.9rem;perspective:1200px}
+.deck-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:340px;margin:0 auto}
+.deck-actions button{height:48px;border-radius:999px;font:600 13.5px/1 var(--sd-font-ui)}
+.deck-skip{border:1px solid var(--sd-line);color:var(--sd-skip)}
+.deck-save{background:var(--sd-paper-accent);color:#FBF7EF}
 .card{position:absolute;inset:0;border-radius:16px;touch-action:none;cursor:grab;
   user-select:none;-webkit-user-select:none;
   transition:transform var(--sd-t-list) var(--sd-ease-list)}
@@ -155,12 +166,15 @@ header.brand .tagline{font:500 .8rem/1.4 var(--sd-font-ui);color:var(--sd-ink-2)
   transition:transform var(--sd-t-flip) var(--sd-ease-flip)}
 .card.flipped .card-inner{transform:rotateY(180deg)}
 .card.flipped{touch-action:pan-y}
-/* faces live on the illustrations' paper — fixed paper-ink palette, never dark-mode inverted */
+/* faces live on the illustrations' paper: fixed paper-ink palette, never dark-mode inverted */
 .card-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
   background:var(--sd-card);color:#211B12;border-radius:16px;box-shadow:var(--sd-shadow);
   padding:1.1rem;display:flex;flex-direction:column;overflow:hidden}
 .card-back{transform:rotateY(180deg)}
 .card-name{font:400 1.6rem/1.15 var(--sd-font-display);margin:.4rem 0 .1rem}
+.card-title{display:flex;justify-content:space-between;align-items:baseline;gap:.5rem;margin:.4rem 0 .1rem}
+.card-title .card-name{margin:0;min-width:0}
+.flip-hint{font:500 11px/1 var(--sd-font-ui);color:var(--sd-paper-ink-2);white-space:nowrap}
 .card-meta{font:500 .8rem/1.4 var(--sd-font-ui);color:#6E6455}
 .card-art{position:relative;flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
 .glass-ph{width:38%;max-height:100%;color:#6E6455;opacity:.55}
@@ -172,32 +186,49 @@ header.brand .tagline{font:500 .8rem/1.4 var(--sd-font-ui);color:var(--sd-ink-2)
 .chip{border:1px solid rgba(33,27,18,.18);border-radius:999px;padding:.12rem .6rem;
   font:500 .72rem/1.4 var(--sd-font-ui);color:var(--sd-paper-ink)}
 .chip.missing{color:var(--sd-paper-ink-2);border-style:dashed}
-.ing{list-style:none;margin:.5rem 0;flex-shrink:0}
-.ing li{display:flex;gap:.6rem;padding:.22rem 0;font:400 .92rem/1.4 var(--sd-font-ui)}
-.ing li .amount{min-width:4.2em;text-align:right}
-.missing-tag{margin-left:auto;align-self:center;font:600 10.5px/1 var(--sd-font-ui);letter-spacing:.04em;
+/* T12: ruled ingredient rows, garnish in ink-2 with its own tag */
+.ing{list-style:none;margin:.6rem 0 .7rem;border-top:1px solid rgba(33,27,18,.12)}
+.ing li{display:grid;grid-template-columns:2.9rem 1fr auto;gap:.6rem;padding:.42rem 0;
+  border-bottom:1px solid rgba(33,27,18,.12);font:400 .875rem/1.35 var(--sd-font-ui)}
+.ing li .amount{text-align:right;font-size:.875rem;line-height:1.35}
+.ing li.garnish,.fav-ing-row.garnish{color:#6E6455}
+.missing-tag{align-self:center;font:600 10.5px/1 var(--sd-font-ui);letter-spacing:.04em;
   text-transform:uppercase;color:#A03B2E}
-.card-back>.card-name{flex-shrink:0}
-.card-recipe{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y}
-.card-method{font:400 .85rem/1.5 var(--sd-font-ui);color:#211B12}
+.garnish-tag{align-self:center;font:500 11px/1 var(--sd-font-ui);color:#6E6455}
+.card-back>.card-name{flex-shrink:0;margin-top:0}
+.card-recipe{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;scrollbar-width:thin}
+.card-method{font:400 .82rem/1.5 var(--sd-font-ui);color:#211B12}
 .card-ctrl{margin-top:auto;padding-top:.7rem;display:flex;align-items:center;justify-content:space-between;
-  flex-wrap:wrap;gap:.6rem;flex-shrink:0}
-.stepper{display:flex;align-items:center;gap:.35rem;flex-shrink:0}
-/* 44 px tryckytor (Fitts, granskningen 2026-09-16). Korten i leken ritas skalade (ner till 0,93), så stegare, enheter och portioner får 48 px för att mäta 44 på skärmen. */
-.stepper button,.units button{border:1px solid rgba(33,27,18,.18);border-radius:8px;color:#211B12;
-  padding:.3rem .65rem;font:500 .85rem/1 var(--sd-font-ui);background:none;min-height:48px;min-width:48px}
-.servings-input{width:3rem;min-height:48px;padding:.3rem .25rem;border:1px solid rgba(33,27,18,.18);
-  border-radius:8px;background:#fbf7ef;color:#211b12;text-align:center;font:500 .85rem/1 var(--sd-font-ui);
-  appearance:textfield;-moz-appearance:textfield}
+  flex-wrap:wrap;gap:.5rem;flex-shrink:0}
+.card-source{margin-top:.5rem;text-align:right;font:500 10.5px/1 var(--sd-font-ui);color:#6E6455;flex-shrink:0}
+/* T12 segmented controls. The top card is unscaled, so 44 px segments measure 44 on screen. */
+.stepper,.units{display:flex;align-items:center;height:44px;flex-shrink:0;border:1px solid rgba(33,27,18,.18);
+  border-radius:999px;overflow:hidden;color:#211B12}
+.stepper button,.units button{min-width:44px;height:44px;padding:0;border:0;border-radius:0;background:none;color:#211B12;
+  font:500 12.5px/1 var(--sd-font-ui)}
+.stepper button{font-size:1rem}
+.servings-input{width:44px;height:44px;padding:0;border:0;background:transparent;color:#211b12;text-align:right;
+  font:500 12.5px/1 var(--sd-font-ui);appearance:textfield;-moz-appearance:textfield}
 .servings-input::-webkit-inner-spin-button,.servings-input::-webkit-outer-spin-button{appearance:none;margin:0}
-.units{display:flex;gap:.3rem;flex-shrink:0}
-.units button.active{background:#2F6B3F;border-color:#2F6B3F;color:#FBF7EF;text-decoration:underline;
-  text-decoration-thickness:2px;text-underline-offset:2px}
+.servings-unit{padding-left:.25rem;font:500 12.5px/1 var(--sd-font-ui);white-space:nowrap}
+.units button.active{background:#211B12;color:#FBF7EF}
 /* gesture tint: opacity-only per frame (composited), fixed paper-palette colors */
 .tint{position:absolute;inset:0;border-radius:16px;pointer-events:none;opacity:0;
   transition:opacity var(--sd-t-micro) linear}
 .tint-save{box-shadow:inset 0 0 0 3px #2F6B3F}
 .tint-skip{box-shadow:inset 0 0 0 3px #A03B2E}
+/* T10: the word follows the same opacity as the tint */
+.swipe-label{position:absolute;top:1.2rem;padding:.3rem .55rem;border:2px solid;border-radius:8px;opacity:0;pointer-events:none;
+  font:600 13px/1 var(--sd-font-ui);letter-spacing:.08em;text-transform:uppercase;background:rgba(251,247,239,.9);
+  transition:opacity var(--sd-t-micro) linear}
+.swipe-label-save{left:1.1rem;color:#2F6B3F;transform:rotate(-8deg)}
+.swipe-label-skip{right:1.1rem;color:#A03B2E;transform:rotate(8deg)}
+.toast{position:fixed;left:50%;bottom:calc(4.5rem + env(safe-area-inset-bottom));z-index:20;transform:translateX(-50%);
+  display:flex;align-items:center;gap:.4rem;padding:.2rem .3rem .2rem 1rem;border-radius:999px;background:#211B12;color:#FBF7EF;
+  box-shadow:var(--sd-shadow);font:500 .85rem/1 var(--sd-font-ui);white-space:nowrap}
+.toast[hidden]{display:none}
+.toast span::after{content:" ·"}
+.toast button{min-height:44px;padding:0 .8rem;color:#FBF7EF;font-weight:600;text-decoration:underline;text-underline-offset:3px}
 dl.settings{display:grid;grid-template-columns:auto 1fr;gap:.4rem 1rem;font-size:.95rem}
 dl.settings dt{color:var(--sd-ink-2)}
 dl.settings dd{min-width:0}
@@ -464,7 +495,7 @@ html.wheel-fallback-closing .wheel-stage{animation:wheel-fallback-disc-out 400ms
 }
 
 @media (max-width:370px){
-  .wheel-entry{max-width:116px;padding-right:.55rem}.wheel-symbol{width:42px;height:42px;flex-basis:42px}
+  .wheel-entry{font-size:12.5px;padding-right:.65rem}
   .wheel-stage{width:min(88vw,340px)}.wheel-controls{padding:.65rem .75rem .8rem}
 }
 @media (max-height:700px){
@@ -490,7 +521,6 @@ html.wheel-fallback-closing .wheel-stage{animation:wheel-fallback-disc-out 400ms
 <body>
 <div class="wrap">
   <header class="brand">
-    <div class="brand-copy">
       <a href="#/" aria-label="Sipdeck">
         <svg class="wordmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 254 84" role="img" aria-label="sipdeck">
           <!-- design/wordmark.svg, inlined verbatim: stroke="currentColor" needs a real <svg>, not <img>,
@@ -508,8 +538,6 @@ html.wheel-fallback-closing .wheel-stage{animation:wheel-fallback-disc-out 400ms
           <circle cx="42" cy="9" r="5.5" fill="var(--sd-accent, #2F6B3F)"/>
         </svg>
       </a>
-      <div class="tagline" id="tagline"></div>
-    </div>
     <div class="header-icons">
       <a class="search-entry" id="searchEntry" href="#/sok">
         <svg class="search-symbol" viewBox="0 0 24 24" aria-hidden="true">
@@ -532,6 +560,7 @@ html.wheel-fallback-closing .wheel-stage{animation:wheel-fallback-disc-out 400ms
   </header>
   <main id="view"></main>
   <p id="routeLive" class="sr-only" aria-live="polite"></p>
+  <div id="toast" class="toast" role="status" hidden><span></span><button type="button"></button></div>
 </div>
 <nav class="bottom-nav" id="nav">
   <a href="#/" data-match="#/"></a>
@@ -539,6 +568,6 @@ html.wheel-fallback-closing .wheel-stage{animation:wheel-fallback-disc-out 400ms
   <a href="#/skafferi" data-match="#/skafferi"></a>
   <a href="#/installningar" data-match="#/installningar"></a>
 </nav>
-<script src="app.js?v=1.13"></script>
+<script src="app.js?v=1.14"></script>
 </body>
 </html>
