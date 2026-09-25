@@ -133,3 +133,24 @@ test('page change animates #view on a route change only, never for the wheel', a
   await expect(page.locator('#wheelLayer')).toBeHidden();
   expect(await anims()).toBe(2);
 });
+
+for (const width of [390, 430]) {
+  test(`deck chips line up with the card and the base chip opens its list at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await seed(page, {});
+    await page.goto('/#/');
+    const deck = await page.locator('#deck').boundingBox();
+    const chips = page.locator('.fchips > .fchip');
+    const first = await chips.first().boundingBox(), last = await chips.last().boundingBox();
+    expect(Math.abs(first.x - deck.x)).toBeLessThanOrEqual(1);
+    expect(Math.abs(last.x + last.width - (deck.x + deck.width))).toBeLessThanOrEqual(1);
+    // the chip's enlarged tap area must not sit on top of the invisible <select>
+    const hit = await page.locator('select[data-filter="base"]').evaluate(el => {
+      const r = el.getBoundingClientRect();
+      return document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2) === el;
+    });
+    expect(hit).toBe(true);
+    await page.locator('select[data-filter="base"]').selectOption('gin');
+    await expect(page.locator('[data-chip="all"] .amount')).toHaveText('19');
+  });
+}

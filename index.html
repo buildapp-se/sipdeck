@@ -141,14 +141,15 @@ header.brand .wordmark{color:var(--sd-ink);width:84px;height:auto;display:block}
 .filter-toggle{display:flex;align-items:center;gap:.45rem}
 .filter-toggle input{accent-color:var(--sd-accent);width:1rem;height:1rem}
 /* T11 filter chips: scroll sideways, never wrap */
-.fchips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -1.25rem .9rem;padding:5px 1.25rem}
+.fchips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:5px;
+  margin:0 calc(max(0px, (100% - 340px) / 2) - 5px) .9rem} /* same edges as .deck; 5px leaves room for the focus ring */
 .fchips::-webkit-scrollbar{display:none}
-.fchip{position:relative;flex:none;display:flex;align-items:center;gap:.3rem;height:34px;padding:0 13px;border-radius:999px;
+.fchip{position:relative;flex:1 0 auto;display:flex;align-items:center;justify-content:center;gap:.3rem;height:34px;padding:0 10px;border-radius:999px;
   border:1px solid rgba(33,27,18,.16);background:#FBF7EF;color:#211B12;font:500 12px/1 var(--sd-font-ui);white-space:nowrap}
 .fchip.on{background:var(--sd-ink);border-color:var(--sd-ink);color:var(--sd-bg)}
 .fchip .amount{font:inherit;font-variant-numeric:tabular-nums}
 .fchip:focus-visible,.fchip:focus-within{outline:3px solid var(--sd-accent);outline-offset:2px}
-.fchip-select select{position:absolute;inset:0;width:100%;opacity:0;cursor:pointer}
+.fchip-select select{position:absolute;inset:0;z-index:1;width:100%;opacity:0;cursor:pointer} /* above the ::after tap area */
 
 /* ---- deck & cards (BACKLOG item 4) ---- */
 .deck{position:relative;height:clamp(340px,calc(100dvh - 300px),540px);max-width:340px;margin:0 auto 1.9rem;perspective:1200px}
@@ -526,6 +527,6 @@ body.search-mode .brand,body.search-mode .bottom-nav{display:none}
   <a href="#/installningar" data-match="#/installningar"></a>
 </nav>
 <div id="wheelLayer" hidden></div>
-<script src="app.js?v=1.19"></script>
+<script src="app.js?v=1.20"></script>
 </body>
 </html>
