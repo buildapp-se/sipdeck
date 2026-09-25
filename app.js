@@ -6,10 +6,11 @@ const STRINGS = {
     nav_deck: 'Deck', nav_favorites: 'Favorites', nav_pantry: 'Pantry', nav_settings: 'Settings',
     nav_label: 'Main navigation',
     wheel_entry: 'Pick for me', wheel_title: 'Pick for me', wheel_back: 'Back',
-    wheel_mute: 'Mute wheel sound', wheel_unmute: 'Turn wheel sound on',
+    wheel_sound_on: 'Sound on', wheel_sound_off: 'Sound off',
     wheel_intro: 'How are you feeling?', wheel_choose: 'Choose a mood to build your wheel.',
-    wheel_mood_label: 'Drunkenness level', wheel_spin: 'Spin', wheel_respin: 'Re-spin',
-    wheel_new: 'New wheel', wheel_result: 'Your order',
+    wheel_spin: 'Spin', wheel_respin: 'Re-spin', wheel_result: 'Your order',
+    wheel_first: 'First', wheel_under: 'Under the pointer', wheel_turning: 'Spinning', wheel_landed: 'It landed on',
+    wheel_pick_below: 'Choose a mood below', wheel_change: 'Change mood', wheel_recipe: 'Show recipe',
     wheel_loading: 'Preparing the wheel...', wheel_error: "Couldn't load the wheel. Reload to try again.",
     wheel_spinning: 'The wheel is spinning', wheel_ready: 'Wheel ready to spin',
     deck_empty: 'No drinks yet. Deal the deck once drinks.json ships.',
@@ -47,7 +48,9 @@ const STRINGS = {
     settings_wheel_favorites_only: 'Only favorite drinks',
     settings_wheel_favorites_only_hint: "Tops up from the full menu if you don't have enough favorites.",
     settings_wheel_outcomes_title: 'Beer, wine & shots in the wheel',
+    settings_wheel_labels: 'Show names in the wheel sectors',
     wheel_cat_beer_cider: 'Beer & cider', wheel_cat_wine: 'Wine', wheel_cat_shot: 'Shots',
+    wheel_cat_cocktail: 'Cocktail', wheel_cat_water: 'Water', wheel_cat_red_bull: 'Red Bull', wheel_cat_bottle: 'Bottle',
     base_gin: 'Gin', base_vodka: 'Vodka', base_rum: 'Rum', base_tequila: 'Tequila',
     base_whiskey: 'Whiskey', base_brandy: 'Brandy', base_other: 'Other / none',
     yes: 'Yes', no: 'No',
@@ -80,10 +83,11 @@ const STRINGS = {
   },
   sv: {
     wheel_entry: 'Välj åt mig', wheel_title: 'Välj åt mig', wheel_back: 'Tillbaka',
-    wheel_mute: 'Stäng av hjulljudet', wheel_unmute: 'Slå på hjulljudet',
-    wheel_intro: 'Hur känns det?', wheel_choose: 'Välj en känsla för att bygga ditt hjul.',
-    wheel_mood_label: 'Berusningsnivå', wheel_spin: 'Snurra', wheel_respin: 'Snurra igen',
-    wheel_new: 'Nytt hjul', wheel_result: 'Din beställning',
+    wheel_sound_on: 'Ljud på', wheel_sound_off: 'Ljud av',
+    wheel_intro: 'Hur känns det?', wheel_choose: 'Välj ett läge för att bygga hjulet.',
+    wheel_spin: 'Snurra', wheel_respin: 'Snurra igen', wheel_result: 'Din beställning',
+    wheel_first: 'Först', wheel_under: 'Under pekaren', wheel_turning: 'Snurrar', wheel_landed: 'Det blev',
+    wheel_pick_below: 'Välj läge nedan', wheel_change: 'Byt läge', wheel_recipe: 'Visa recept',
     wheel_loading: 'Förbereder hjulet...', wheel_error: 'Kunde inte ladda hjulet. Ladda om sidan för att försöka igen.',
     wheel_spinning: 'Hjulet snurrar', wheel_ready: 'Hjulet är redo att snurra',
     nav_deck: 'Kortlek', nav_favorites: 'Favoriter', nav_pantry: 'Skafferi', nav_settings: 'Inställningar',
@@ -123,7 +127,9 @@ const STRINGS = {
     settings_wheel_favorites_only: 'Bara favoritdrinkar',
     settings_wheel_favorites_only_hint: 'Fyller på med hela menyn om du inte har tillräckligt många favoriter.',
     settings_wheel_outcomes_title: 'Öl, vin och shots i hjulet',
+    settings_wheel_labels: 'Visa namn i hjulets sektorer',
     wheel_cat_beer_cider: 'Öl & cider', wheel_cat_wine: 'Vin', wheel_cat_shot: 'Shots',
+    wheel_cat_cocktail: 'Cocktail', wheel_cat_water: 'Vatten', wheel_cat_red_bull: 'Red Bull', wheel_cat_bottle: 'Flaska',
     base_gin: 'Gin', base_vodka: 'Vodka', base_rum: 'Rom', base_tequila: 'Tequila',
     base_whiskey: 'Whisky', base_brandy: 'Brandy', base_other: 'Annan / ingen',
     yes: 'Ja', no: 'Nej',
@@ -176,6 +182,7 @@ function defaultState(lang) {
       filters: { bar: false, base: null },
       wheelFavoritesOnly: false,
       wheelOutcomesExcluded: [],
+      wheelLabels: false,
       seenFlipHint: false,
     },
   };
@@ -201,6 +208,7 @@ function normalizeState(raw, lang) {
       wheelFavoritesOnly: rs.wheelFavoritesOnly === true,
       wheelOutcomesExcluded: Array.isArray(rs.wheelOutcomesExcluded)
         ? rs.wheelOutcomesExcluded.filter(x => typeof x === 'string') : [],
+      wheelLabels: rs.wheelLabels === true,
       seenFlipHint: rs.seenFlipHint === true,
     },
   };
@@ -343,6 +351,7 @@ function reconcileState(base, local, remote) {
         local.settings.wheelFavoritesOnly, remote.settings.wheelFavoritesOnly),
       wheelOutcomesExcluded: set(base.settings.wheelOutcomesExcluded,
         local.settings.wheelOutcomesExcluded, remote.settings.wheelOutcomesExcluded),
+      wheelLabels: changed(base.settings.wheelLabels, local.settings.wheelLabels, remote.settings.wheelLabels),
       seenFlipHint: local.settings.seenFlipHint || remote.settings.seenFlipHint,
     },
   };
@@ -758,7 +767,7 @@ if (typeof document !== 'undefined') (function () {
   let wheelData = null, wheelFailed = false, wheelPromise = null;
   let wheelMoodId = null, wheelLineup = null, wheelResult = null;
   let wheelRotation = 0, wheelSpinning = false, wheelMuted = false, wheelLevel5Spins = 0;
-  let wheelVisitActive = false, wheelOpenedFromHome = false, wheelAnimation = null;
+  let wheelVisitActive = false, wheelOpenedFromHome = false, wheelSpinId = 0, wheelResultIndex = -1, wheelPicker = false;
 
   function loadWheelData() {
     if (wheelPromise) return wheelPromise;
@@ -769,6 +778,7 @@ if (typeof document !== 'undefined') (function () {
     }).then(data => {
       wheelData = data;
       wheelFailed = false;
+      syncWheelEntry();
       if (rerenderRoutes.includes(location.hash || '#/')) render();
       return data;
     }).catch(() => {
@@ -780,8 +790,8 @@ if (typeof document !== 'undefined') (function () {
   loadWheelData();
 
   function resetWheelVisit() {
-    if (wheelAnimation) wheelAnimation.cancel();
-    wheelAnimation = null;
+    wheelSpinId++; // an unfinished spin never lands after the visit
+    wheelPicker = false;
     wheelMoodId = null;
     wheelLineup = null;
     wheelResult = null;
@@ -1298,30 +1308,38 @@ if (typeof document !== 'undefined') (function () {
 
   function wheelMood() { return wheelData && wheelData.moods.find(mood => mood.id === wheelMoodId) || null; }
   function localText(value) { return value && (value[lang()] || value.en) || ''; }
-  function neutralWheelSvg() {
-    const sectors = Array.from({ length: 12 }, (_, index) =>
-      `<path class="wheel-sector" d="${wheelSectorPath(index)}"/>`).join('');
-    return `<svg class="wheel-neutral" viewBox="0 0 100 100" aria-hidden="true">${sectors}<circle class="wheel-rim" cx="50" cy="50" r="49"/><circle class="wheel-hub" cx="50" cy="50" r="10"/><circle class="wheel-hub-dot" cx="50" cy="50" r="3"/></svg>`;
+
+  function wheelArtCentre(index) {
+    const rad = index * 30 * Math.PI / 180;
+    return [50 + 36 * Math.sin(rad), 50 - 36 * Math.cos(rad)].map(n => n.toFixed(3));
+  }
+  function wheelChoices() {
+    return wheelLineup ? wheelLineup.map(entry => localText(entry.sector)).join(', ') : t(lang(), 'wheel_pick_below');
   }
 
-  function wheelSvgMarkup(lineup) {
-    if (!Array.isArray(lineup) || lineup.length !== 12) return neutralWheelSvg();
-    const defs = lineup.map((entry, index) => {
-      const angle = (-90 + index * 30) * Math.PI / 180;
-      const cx = 50 + 24 * Math.cos(angle), cy = 50 + 24 * Math.sin(angle);
-      return `<clipPath id="wheel-art-${index}"><circle cx="${cx.toFixed(3)}" cy="${cy.toFixed(3)}" r="5.3"/></clipPath>`;
+  // T14: one colour per category, art in rings, sector names only with the wheelLabels setting.
+  // Without a lineup this draws the neutral wheel shown before a mood is chosen (T4).
+  function wheelSvgMarkup() {
+    const labels = state.settings.wheelLabels;
+    const defs = Array.from({ length: 12 }, (_, i) => {
+      const [cx, cy] = wheelArtCentre(i);
+      return `<clipPath id="wheel-art-${i}"><circle cx="${cx}" cy="${cy}" r="8.1"/></clipPath>`;
     }).join('');
-    const sectors = lineup.map((entry, index) => {
-      const degrees = -90 + index * 30, angle = degrees * Math.PI / 180;
-      const cx = 50 + 24 * Math.cos(angle), cy = 50 + 24 * Math.sin(angle);
-      const normalized = (degrees + 360) % 360, flip = normalized > 90 && normalized < 270;
-      const rotation = flip ? degrees + 180 : degrees;
-      const x = flip ? 6 : 94, anchor = flip ? 'start' : 'end';
-      const label = localText(entry.sector);
-      return `<path class="wheel-sector" data-sector="${index}" d="${wheelSectorPath(index)}"/><circle class="wheel-art-ring" cx="${cx.toFixed(3)}" cy="${cy.toFixed(3)}" r="5.7"/><image class="wheel-art" href="${esc(entry.art)}" x="${(cx - 5.3).toFixed(3)}" y="${(cy - 5.3).toFixed(3)}" width="10.6" height="10.6" preserveAspectRatio="xMidYMid slice" clip-path="url(#wheel-art-${index})"/><text class="wheel-sector-label" x="${x}" y="50.9" text-anchor="${anchor}" transform="rotate(${rotation} 50 50)">${esc(label)}</text>`;
+    const sectors = Array.from({ length: 12 }, (_, i) => {
+      const entry = wheelLineup && wheelLineup[i], [cx, cy] = wheelArtCentre(i);
+      const flip = i > 6; // labels start at the hub and read outward; the left half turns so they stay upright
+      const label = labels ? `<text class="wheel-sector-label" data-label="${i}" x="${flip ? 34.5 : 65.5}" y="50.9" text-anchor="${flip ? 'end' : 'start'}" transform="rotate(${i * 30 + (flip ? 90 : -90)} 50 50)">${entry ? esc(localText(entry.sector)) : ''}</text>` : '';
+      return `<path class="wheel-sector" data-sector="${i}" d="${wheelSectorPath(i)}" fill="${entry ? WHEEL_COLORS[entry.category] : '#F4EDE2'}"/>` +
+        `<circle class="wheel-art-ring" data-sector="${i}" cx="${cx}" cy="${cy}" r="8.5"/>` +
+        `<image class="wheel-art" data-sector="${i}"${entry ? ` href="${esc(entry.art)}"` : ''} x="${(cx - 8.1).toFixed(3)}" y="${(cy - 8.1).toFixed(3)}" width="16.2" height="16.2" preserveAspectRatio="xMidYMid slice" clip-path="url(#wheel-art-${i})" transform="rotate(${i * 30} ${cx} ${cy})"/>${label}`;
     }).join('');
-    const choices = lineup.map(entry => localText(entry.sector)).join(', ');
-    return `<svg viewBox="0 0 100 100" role="img" aria-label="${esc(choices)}"><defs>${defs}</defs>${sectors}<circle class="wheel-rim" cx="50" cy="50" r="49"/><circle class="wheel-hub" cx="50" cy="50" r="10"/><circle class="wheel-hub-dot" cx="50" cy="50" r="3"/></svg>`;
+    return `<svg${wheelLineup ? '' : ' class="wheel-unset"'} viewBox="0 0 100 100" role="img" aria-label="${esc(wheelChoices())}"><defs>${defs}</defs>${sectors}<path class="wheel-win-outline" id="wheelWin" d=""/><circle class="wheel-rim" cx="50" cy="50" r="49.5"/></svg>`;
+  }
+
+  function wheelLegendMarkup() {
+    if (!wheelLineup) return '';
+    return Array.from(new Set(wheelLineup.map(entry => entry.category))).map(cat =>
+      `<span class="wheel-key"><i style="background:${WHEEL_COLORS[cat]}"></i>${esc(t(lang(), 'wheel_cat_' + cat.replace(/-/g, '_')))}</span>`).join('');
   }
 
   function wheelSupportingCopy(mood) {
@@ -1332,68 +1350,71 @@ if (typeof document !== 'undefined') (function () {
     return localText(mood.copy);
   }
 
-  function wheelResultMarkup(entry, mood) {
-    if (!entry) return '';
-    const safety = mood && mood.forcedOutcome && mood.safety
-      ? `<p class="wheel-result-note">${esc(localText(mood.safety))}</p>` : '';
-    const name = entry.kind === 'cocktail'
-      ? `<button class="fav-open" data-id="${esc(entry.outcomeId)}">${esc(localText(entry.result))} ›</button>`
-      : esc(localText(entry.result));
-    return `<img class="wheel-result-art" src="${esc(entry.art)}" alt="">
-      <div><p class="wheel-result-label">${esc(t(lang(), 'wheel_result'))}</p>
-      <h2 class="wheel-result-name">${name}</h2>${safety}</div>`;
-  }
-
-  function wheelActionsMarkup(canSpin) {
-    return `<button class="wheel-action primary" data-wheel-act="spin"${canSpin ? '' : ' disabled'}>${esc(t(lang(), wheelResult ? 'wheel_respin' : 'wheel_spin'))}</button>${wheelResult ? `<button class="wheel-action" data-wheel-act="new">${esc(t(lang(), 'wheel_new'))}</button>` : ''}`;
+  // T14.7–8: the mood picker and the result card share one slot under the wheel
+  function wheelPanelMarkup() {
+    const mood = wheelMood(), entry = wheelResult;
+    if (!wheelData || !db) return `<p class="wheel-mood-copy">${esc(t(lang(), wheelFailed ? 'wheel_error' : 'wheel_loading'))}</p>`;
+    if (entry && !wheelPicker) {
+      const safety = mood && mood.forcedOutcome && mood.safety ? `<p class="wheel-safety">${esc(localText(mood.safety))}</p>` : '';
+      const recipe = entry.kind === 'cocktail'
+        ? `<button class="fav-open" data-id="${esc(entry.outcomeId)}">${esc(t(lang(), 'wheel_recipe'))}</button>` : '';
+      return `<div class="wheel-result" id="wheelResult">
+        <div class="wheel-result-head"><img class="wheel-result-art" src="${esc(entry.art)}" alt="">
+          <div class="wheel-result-text"><p class="wheel-result-label">${esc(t(lang(), 'wheel_result'))}</p>
+          <h2 class="wheel-result-name">${esc(localText(entry.result))}</h2></div></div>
+        ${safety}
+        <div class="wheel-result-btns">${recipe}<button data-wheel-act="change">${esc(t(lang(), 'wheel_change'))} · ${esc(localText(mood.name))}</button></div>
+      </div>`;
+    }
+    const moods = wheelData.moods.map((item, i) =>
+      `<button class="wheel-mood" data-wheel-mood="${i}" aria-pressed="${item.id === wheelMoodId}"${wheelSpinning ? ' disabled' : ''}>${esc(localText(item.name))}</button>`).join('');
+    return `<p class="wheel-q" id="wheelQ">${esc(t(lang(), 'wheel_intro'))}</p>
+      <div class="wheel-moods" role="group" aria-labelledby="wheelQ">${moods}</div>
+      <p class="wheel-mood-copy">${esc(wheelSupportingCopy(mood))}</p>`;
   }
 
   function viewWheel() {
     loadWheelData();
-    if (!wheelMoodId && wheelData && db) { // default to first mood
-      wheelMoodId = wheelData.moods[0].id;
-      wheelLineup = buildSpinLineup(wheelData, wheelMoodId, db.drinks, random01, wheelPrefs());
-    }
-    const mood = wheelMood();
-    const moods = wheelData && Array.isArray(wheelData.moods) ? wheelData.moods : [];
-    const moodIndex = mood ? moods.indexOf(mood) : -1;
-    const heading = mood
-      ? `<h1><span class="wheel-emoji" aria-hidden="true">${esc(mood.emoji)}</span>${esc(localText(mood.name))}</h1>
-         <p>${esc(wheelSupportingCopy(mood))}</p>`
-      : `<h1>${esc(t(lang(), 'wheel_intro'))}</h1><p>${esc(t(lang(), 'wheel_choose'))}</p>`;
-    const stops = moods.length === 5 ? moods.map(item => `<span aria-hidden="true">${esc(item.emoji)}</span>`).join('')
-      : '<span>•</span><span>•</span><span>•</span><span>•</span><span>•</span>';
-    const loading = !wheelData && !wheelFailed;
-    const status = wheelFailed ? t(lang(), 'wheel_error') : (loading ? t(lang(), 'wheel_loading') : '');
-    const canSpin = !!(mood && wheelLineup && !wheelSpinning);
-    const disc = wheelLineup ? wheelSvgMarkup(wheelLineup) : neutralWheelSvg();
-    const result = wheelResult ? wheelResultMarkup(wheelResult, mood) : '';
+    const canSpin = !!(wheelMood() && wheelLineup && !wheelSpinning);
     return `<section class="wheel-screen">
+      <div class="wheel-bg"></div>
       <header class="wheel-topbar">
-        <button class="wheel-back" data-wheel-act="back">‹ ${esc(t(lang(), 'wheel_back'))}</button>
-        <span class="wheel-top-wordmark"><img src="design/wordmark.svg" alt="Sipdeck"></span>
-        <button class="wheel-sound" data-wheel-act="sound" aria-label="${esc(t(lang(), wheelMuted ? 'wheel_unmute' : 'wheel_mute'))}"
-          aria-pressed="${wheelMuted ? 'true' : 'false'}">${wheelMuted ? '🔇' : '🔊'}</button>
+        <button class="wheel-back" data-wheel-act="back">‹ ${esc(t(lang(), 'nav_deck'))}</button>
+        <h1 class="wheel-title">${esc(t(lang(), 'wheel_title'))}</h1>
+        <button class="wheel-sound" data-wheel-act="sound" aria-pressed="${!wheelMuted}">${esc(t(lang(), wheelMuted ? 'wheel_sound_off' : 'wheel_sound_on'))}</button>
       </header>
       <div class="wheel-body">
-        <div class="wheel-stage" id="wheelStage">
-          <div class="wheel-pointer" id="wheelPointer" aria-hidden="true"></div>
-          <div class="wheel-disc" id="wheelDisc" style="transform:rotate(${wheelRotation}deg)">${disc}</div>
-          <button class="wheel-hub-button" data-wheel-act="spin"${canSpin ? '' : ' disabled'}>${esc(t(lang(), wheelResult ? 'wheel_respin' : 'wheel_spin'))}</button>
+        <div class="wheel-window" aria-hidden="true">
+          <p class="wheel-window-label" id="wheelWindowLabel"></p><p class="wheel-window-name" id="wheelWindowName"></p>
         </div>
-        <div class="wheel-heading">${heading}</div>
-        <section class="wheel-controls${mood ? '' : ' unset'}">
-          <p class="wheel-controls-title">${esc(status || t(lang(), 'wheel_mood_label'))}</p>
-          <input class="wheel-range" id="wheelMood" type="range" min="1" max="5" step="1" value="${moodIndex >= 0 ? moodIndex + 1 : 1}"
-            aria-label="${esc(t(lang(), 'wheel_mood_label'))}" aria-valuetext="${esc(mood ? localText(mood.name) : t(lang(), 'wheel_choose'))}"
-            ${wheelData && db && !wheelSpinning ? '' : 'disabled'}>
-          <div class="wheel-stops">${stops}</div>
-          <div class="wheel-actions">${wheelActionsMarkup(canSpin)}</div>
-        </section>
-        <section class="wheel-result" id="wheelResult" aria-live="polite"${wheelResult ? '' : ' hidden'}>${result}</section>
-        <p class="wheel-live" id="wheelLive" aria-live="polite">${esc(canSpin ? t(lang(), 'wheel_ready') : status)}</p>
+        <div class="wheel-stage" id="wheelStage">
+          <div class="wheel-disc" id="wheelDisc" style="transform:rotate(${wheelRotation}deg)">${wheelSvgMarkup()}</div>
+          <button class="wheel-hub-button" id="wheelHub" data-wheel-act="spin"${canSpin ? '' : ' disabled'}>${esc(t(lang(), wheelResult ? 'wheel_respin' : 'wheel_spin'))}</button>
+          <div class="wheel-pointer" id="wheelPointer" aria-hidden="true"></div>
+        </div>
+        <div class="wheel-lower">
+          <div class="wheel-legend" id="wheelLegend" aria-hidden="true">${wheelLegendMarkup()}</div>
+          <section class="wheel-panel" id="wheelPanel">${wheelPanelMarkup()}</section>
+        </div>
+        <p class="sr-only" id="wheelLive" aria-live="polite"></p>
       </div>
     </section>`;
+  }
+
+  // T14.2: the reading window names what sits under the pointer; after a landing it also marks the winner
+  function setWheelWindow(label, name) {
+    $('#wheelWindowLabel').textContent = t(lang(), label);
+    $('#wheelWindowName').textContent = name;
+  }
+  function syncWheelWindow() {
+    if (!wheelLineup) return setWheelWindow('wheel_first', t(lang(), 'wheel_pick_below'));
+    const index = wheelResult ? wheelResultIndex : sectorAtAngle(wheelRotation, 12);
+    setWheelWindow(wheelResult ? 'wheel_landed' : 'wheel_under', localText(wheelLineup[index].sector));
+    if (!wheelResult) return;
+    const stage = $('#wheelStage');
+    $('#wheelWin').setAttribute('d', wheelSectorPath(wheelResultIndex, 12, 48.4));
+    stage.querySelectorAll(`[data-sector="${wheelResultIndex}"],[data-label="${wheelResultIndex}"]`).forEach(el => el.classList.add('win'));
+    stage.classList.add('wheel-landed');
   }
 
   function accountSection() {
@@ -1499,6 +1520,7 @@ if (typeof document !== 'undefined') (function () {
         <dd>
           <label class="filter-toggle"><input type="checkbox" data-settings-act="wheel-favorites-only"${s.wheelFavoritesOnly ? ' checked' : ''}> <span>${esc(t(lang(), 'settings_wheel_favorites_only'))}</span></label>
           <p class="fav-hint">${esc(t(lang(), 'settings_wheel_favorites_only_hint'))}</p>
+          <label class="filter-toggle"><input type="checkbox" data-settings-act="wheel-labels"${s.wheelLabels ? ' checked' : ''}> <span>${esc(t(lang(), 'settings_wheel_labels'))}</span></label>
         </dd>
       </dl>
       ${wheelOutcomeGroups(s)}`;
@@ -1516,25 +1538,42 @@ if (typeof document !== 'undefined') (function () {
     };
   }
 
-  function selectWheelMood(value) {
-    if (!wheelData || !db || wheelSpinning) return;
-    const mood = wheelData.moods[Number(value) - 1];
+  // T17: choosing a mood (again) builds a new lineup and patches the drawn wheel in a wave from the
+  // pointer, 25 ms per sector. The rotation stays and nothing else is re-rendered.
+  function selectWheelMood(index) {
+    const mood = wheelData && db && !wheelSpinning && wheelData.moods[index];
     if (!mood) return;
     wheelMoodId = mood.id;
     wheelLineup = buildSpinLineup(wheelData, wheelMoodId, db.drinks, random01, wheelPrefs());
     wheelResult = null;
-    wheelRotation = 0;
-    render();
-    const spin = $('#view [data-wheel-act="spin"]');
-    if (spin) spin.focus();
-  }
-
-  function newWheel() {
-    if (!wheelData || !db || !wheelMoodId || wheelSpinning) return;
-    wheelLineup = buildSpinLineup(wheelData, wheelMoodId, db.drinks, random01, wheelPrefs());
-    wheelResult = null;
-    wheelRotation = 0;
-    render();
+    wheelPicker = false;
+    const stage = $('#wheelStage');
+    if (!stage) return;
+    const svg = stage.querySelector('svg'), top = sectorAtAngle(wheelRotation, 12);
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    stage.classList.remove('wheel-landed');
+    stage.querySelectorAll('.win').forEach(el => el.classList.remove('win'));
+    svg.classList.remove('wheel-unset');
+    svg.setAttribute('aria-label', wheelChoices());
+    for (let i = 0; i < 12; i++) {
+      const distance = Math.min((i - top + 12) % 12, (top - i + 12) % 12);
+      setTimeout(() => {
+        const entry = wheelLineup && wheelLineup[i]; // read at patch time, so a quicker second choice always wins
+        if (!entry) return;
+        stage.querySelector(`.wheel-sector[data-sector="${i}"]`).setAttribute('fill', WHEEL_COLORS[entry.category]);
+        stage.querySelector(`.wheel-art[data-sector="${i}"]`).setAttribute('href', entry.art);
+        const label = stage.querySelector(`[data-label="${i}"]`);
+        if (label) label.textContent = localText(entry.sector);
+      }, reduced ? 0 : distance * 25);
+    }
+    $('#wheelLegend').innerHTML = wheelLegendMarkup();
+    $('#wheelPanel').innerHTML = wheelPanelMarkup();
+    const hub = $('#wheelHub');
+    hub.disabled = false;
+    hub.textContent = t(lang(), 'wheel_spin');
+    syncWheelWindow();
+    $('#wheelLive').textContent = t(lang(), 'wheel_ready');
+    hub.focus();
   }
 
   function closeWheel() {
@@ -1578,112 +1617,111 @@ if (typeof document !== 'undefined') (function () {
     } catch (err) { /* sound is optional and must never block a spin */ }
   }
 
-  function tickWheel() {
-    wheelTone(920, .025, .018, 0);
-    const pointer = $('#wheelPointer');
-    if (!pointer) return;
-    pointer.classList.remove('tick');
-    void pointer.offsetWidth;
-    pointer.classList.add('tick');
-  }
-
   function landingSound() {
     wheelTone(390, .12, .035, 0);
     wheelTone(560, .18, .028, .07);
   }
 
-  function renderedRotation(element) {
-    const transform = getComputedStyle(element).transform;
-    if (!transform || transform === 'none') return 0;
-    const match = transform.match(/^matrix\(([^)]+)\)$/);
-    if (!match) return 0;
-    const values = match[1].split(',').map(Number);
-    return Math.atan2(values[1], values[0]) * 180 / Math.PI;
-  }
-
-  function finishWheelSpin(index, endRotation, reduced) {
-    const disc = $('#wheelDisc'), stage = $('#wheelStage'), mood = wheelMood();
-    if (!disc || !stage || !wheelLineup || !wheelLineup[index]) return;
-    if (!reduced) {
-      disc.style.transform = `rotate(${endRotation}deg)`;
-      wheelRotation = endRotation;
-    }
-    wheelAnimation = null;
+  // T16: land, pause 150 ms (CSS delay), dim the losers, outline the winner, raise the result card
+  function finishWheelSpin(index, end) {
+    const mood = wheelMood();
+    wheelRotation = end;
     wheelSpinning = false;
     wheelResult = wheelLineup[index];
+    wheelResultIndex = index;
+    wheelPicker = false;
     if (mood && mood.id === 'shitfaced') wheelLevel5Spins++;
-    stage.classList.add('wheel-win');
-    const winning = disc.querySelector(`[data-sector="${index}"]`);
-    if (winning) winning.dataset.winning = 'true';
-    const result = $('#wheelResult');
-    if (result) {
-      result.innerHTML = wheelResultMarkup(wheelResult, mood);
-      result.hidden = false;
+    const disc = $('#wheelDisc');
+    if (!disc) return;
+    disc.style.transform = `rotate(${end}deg)`;
+    syncWheelWindow();
+    const hub = $('#wheelHub');
+    hub.disabled = false;
+    hub.textContent = t(lang(), 'wheel_respin');
+    const panel = $('#wheelPanel');
+    panel.innerHTML = wheelPanelMarkup();
+    panel.querySelector('.wheel-result-art').addEventListener('error', e => { e.currentTarget.hidden = true; }, { once: true });
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const card = $('#wheelResult'), ease = springLinear(.85, 420);
+      card.animate([{ opacity: 0, transform: 'translateY(12px)' }, { opacity: 1, transform: 'none' }], { duration: 420, delay: 150, easing: ease, fill: 'backwards' });
+      card.querySelector('.wheel-result-text').animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: 210, fill: 'backwards' });
     }
-    const controlsActions = $('#view .wheel-controls .wheel-actions');
-    if (controlsActions) controlsActions.innerHTML = wheelActionsMarkup(true);
-    const hub = $('#view .wheel-hub-button');
-    if (hub) { hub.disabled = false; hub.textContent = t(lang(), 'wheel_respin'); }
-    const range = $('#wheelMood');
-    if (range) range.disabled = false;
-    const copy = $('#view .wheel-heading p');
-    if (copy && mood) copy.textContent = wheelSupportingCopy(mood);
-    const live = $('#wheelLive');
-    if (live) live.textContent = localText(wheelResult.result);
-    $('#view .wheel-result-art')?.addEventListener('error', e => { e.currentTarget.hidden = true; }, { once: true });
+    $('#wheelLive').textContent = localText(wheelResult.result);
     landingSound();
     if (navigator.vibrate) navigator.vibrate(18);
   }
 
+  // T16: runSpin from motion.js. Only transforms are written per frame; no class toggles, no layout reads.
   function spinWheel() {
-    if (wheelSpinning || !wheelLineup || wheelLineup.length !== 12) return;
-    const disc = $('#wheelDisc'), stage = $('#wheelStage');
-    if (!disc || !stage) return;
+    const disc = $('#wheelDisc'), pointer = $('#wheelPointer');
+    if (wheelSpinning || !wheelLineup || !disc) return;
     const index = selectWheelIndex(wheelLineup, random01);
     if (index < 0) return;
+    const spin = ++wheelSpinId, from = wheelRotation, travel = landingTravel(from, index, random01, 12);
     wheelSpinning = true;
     wheelResult = null;
-    stage.classList.remove('wheel-win');
-    disc.querySelectorAll('[data-winning]').forEach(item => item.removeAttribute('data-winning'));
-    const result = $('#wheelResult');
-    if (result) { result.hidden = true; result.innerHTML = ''; }
-    $('#view').querySelectorAll('[data-wheel-act="spin"],#wheelMood').forEach(control => { control.disabled = true; });
-    const live = $('#wheelLive');
-    if (live) live.textContent = t(lang(), 'wheel_spinning');
+    wheelPicker = false;
+    const stage = $('#wheelStage'), name = $('#wheelWindowName');
+    stage.classList.remove('wheel-landed');
+    stage.querySelectorAll('.win').forEach(el => el.classList.remove('win'));
+    $('#wheelPanel').innerHTML = wheelPanelMarkup();
+    $('#wheelHub').disabled = true;
+    $('#wheelLive').textContent = t(lang(), 'wheel_spinning');
+    $('#wheelWindowLabel').textContent = t(lang(), 'wheel_turning');
     audioContext(); // unlock Web Audio from the explicit user gesture
-    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduced || !disc.animate) {
-      disc.classList.add('wheel-pulse');
-      setTimeout(() => { disc.classList.remove('wheel-pulse'); finishWheelSpin(index, wheelRotation, true); }, 180);
-      return;
-    }
-    const end = wheelRotation + landingTravel(wheelRotation, index, random01, 12); // interim until T16 runSpin
-    const travel = end - wheelRotation, duration = 6200 + Math.round(random01() * 1200);
-    try {
-      wheelAnimation = disc.animate([
-        { transform: `rotate(${wheelRotation}deg)`, offset: 0, easing: 'cubic-bezier(.45,0,1,1)' },
-        { transform: `rotate(${wheelRotation + travel * .08}deg)`, offset: .12, easing: 'cubic-bezier(.08,.58,.12,1)' },
-        { transform: `rotate(${end}deg)`, offset: 1 },
-      ], { duration, fill: 'forwards' });
-    } catch (err) {
-      setTimeout(() => finishWheelSpin(index, end, false), 180);
-      return;
-    }
-    let lastSector = null, raf = 0;
-    const watchTicks = () => {
-      if (!wheelSpinning || !disc.isConnected) return;
-      const angle = ((-renderedRotation(disc) % 360) + 360) % 360;
-      const sector = Math.floor((angle + 15) / 30) % 12;
-      if (lastSector !== null && sector !== lastSector) tickWheel();
-      lastSector = sector;
-      raf = requestAnimationFrame(watchTicks);
+    let last = sectorAtAngle(from, 12), lastTick = -1e9, kick = 0;
+    const finish = () => {
+      if (spin !== wheelSpinId) return; // already finished, or the visit ended
+      wheelSpinId++;
+      pointer.style.transform = '';
+      finishWheelSpin(index, from + travel);
     };
-    raf = requestAnimationFrame(watchTicks);
-    wheelAnimation.onfinish = () => {
-      cancelAnimationFrame(raf);
-      finishWheelSpin(index, end, false);
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return void setTimeout(finish, 150);
+    const t0 = performance.now();
+    const frame = now => {
+      if (spin !== wheelSpinId) return;
+      const elapsed = now - t0, angle = from + spinAngle(elapsed, travel), sector = sectorAtAngle(angle, 12);
+      disc.style.transform = `rotate(${angle}deg)`;
+      if (sector !== last) {
+        last = sector;
+        name.textContent = localText(wheelLineup[sector].sector);
+        const speed = Math.abs(spinAngle(elapsed + 8, travel) - spinAngle(elapsed - 8, travel)) / 16 * 1000;
+        kick = Math.min(20, 7 + speed * .012);
+        if (now - lastTick > 50) { // tick pitch and volume follow the speed, at most ~20 a second
+          lastTick = now;
+          const k = Math.min(1, speed / 900);
+          wheelTone(520 + k * 480, .03, .012 + k * .01, 0);
+        }
+      }
+      kick *= .8;
+      pointer.style.transform = `rotate(${kick}deg)`;
+      if (elapsed < SPIN_MS) requestAnimationFrame(frame); else finish();
     };
-    wheelAnimation.oncancel = () => cancelAnimationFrame(raf);
+    requestAnimationFrame(frame);
+    setTimeout(finish, SPIN_MS + 400); // a background tab pauses rAF, the result still arrives
+  }
+
+  // T15: FLIP between the header's mini wheel and the big disc, the same in every browser.
+  // Only #wheelDisc flies (its rotation is part of every keyframe); it is measured on #wheelStage.
+  function wheelFlip(open) {
+    const layer = $('#wheelLayer'), mini = $('#wheelEntry .wheel-symbol'), home = $('.wrap'), disc = $('#wheelDisc');
+    const a = mini.getBoundingClientRect(), b = $('#wheelStage').getBoundingClientRect();
+    const rot = `rotate(${wheelRotation}deg)`, ez = 'cubic-bezier(.2,0,0,1)';
+    const fly = `translate(${a.left + a.width / 2 - b.left - b.width / 2}px,${a.top + a.height / 2 - b.top - b.height / 2}px) scale(${a.width / b.width}) ${rot}`;
+    const bg = layer.querySelector('.wheel-bg'), groups = ['.wheel-topbar', '.wheel-window,.wheel-hub-button,.wheel-pointer', '.wheel-lower'];
+    const scaled = [{ transform: 'scale(.96)', opacity: .4 }], rest = [{ transform: 'none', opacity: 1 }];
+    if (open) {
+      mini.style.opacity = '0';
+      home.animate(rest.concat(scaled), { duration: 420, easing: ez, fill: 'both' });
+      bg.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 280 });
+      groups.forEach((sel, i) => layer.querySelectorAll(sel).forEach(el => el.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 320, delay: 220 + i * 40, easing: ez, fill: 'backwards' })));
+      return disc.animate([{ transform: fly }, { transform: rot }], { duration: 600, easing: springLinear(.8, 600) }).finished
+        .then(() => home.getAnimations().forEach(anim => anim.cancel()));
+    }
+    groups.forEach(sel => layer.querySelectorAll(sel).forEach(el => el.animate([{ opacity: 1 }, { opacity: 0, transform: 'translateY(4px)' }], { duration: 140, fill: 'forwards' })));
+    bg.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, delay: 140, fill: 'forwards' });
+    home.animate(scaled.concat(rest), { duration: 420, delay: 100, easing: ez, fill: 'backwards' });
+    return disc.animate([{ transform: rot }, { transform: fly }], { duration: 480, delay: 60, easing: springLinear(.92, 480), fill: 'forwards' }).finished;
   }
 
   // ---------- router: hashchange -> coarse re-render per view ----------
@@ -1708,12 +1746,19 @@ if (typeof document !== 'undefined') (function () {
     }
   }
 
-  let lastRouteHash = null;
+  // T18: the entry shows at once and stays inactive until both catalogs have loaded
+  function syncWheelEntry() {
+    $('#wheelEntry').setAttribute('aria-disabled', String(!(db && wheelData)));
+  }
+
+  let lastRouteHash = null, renderedBase = null;
   function render() {
     const hash = location.hash || '#/';
     const detailId = favoriteIdFromHash(hash) || drinkIdFromHash(hash);
     const route = detailId !== null ? ROUTES['#/favoriter'] : (ROUTES[hash] || ROUTES['#/']);
-    const isWheel = route.view === viewWheel;
+    const isWheel = route.view === viewWheel, layer = $('#wheelLayer');
+    const base = isWheel ? viewDeck : route.view; // the wheel is a layer over the deck, which stays in #view
+    const keepBase = base === viewDeck && renderedBase === viewDeck && (isWheel || !layer.hidden);
     if (isWheel && !wheelVisitActive) wheelVisitActive = true;
     else if (!isWheel && wheelVisitActive && detailId === null) resetWheelVisit(); // survives fav detail peek
     document.body.classList.toggle('wheel-mode', isWheel);
@@ -1728,18 +1773,30 @@ if (typeof document !== 'undefined') (function () {
       favChecked = new Set();
       favHistoryEntry = false;
     }
-    $('#view').innerHTML = route.view();
+    if (!keepBase) {
+      $('#view').innerHTML = base();
+      if (base === viewDeck && db) mountDeck();
+      if (base === viewFavorites || base === viewSearch) $('#view').querySelectorAll('.cocktail-art').forEach(wireArt);
+      if (base === viewSearch && matchMedia('(pointer: fine)').matches) $('#searchInput').focus();
+      renderedBase = base === viewDeck && !db ? null : base; // a loading deck is redrawn once the data lands
+    }
+    layer.hidden = !isWheel;
+    layer.innerHTML = isWheel ? viewWheel() : '';
+    if (isWheel) syncWheelWindow();
+    else {
+      $('#wheelEntry .wheel-symbol').style.opacity = '';
+      $('.wrap').getAnimations().forEach(anim => anim.cancel());
+    }
+    $('#view').inert = $('header.brand').inert = $('#nav').inert = isWheel;
     if (hash !== lastRouteHash) { // announce the new screen once per route change, never per re-render
-      if (lastRouteHash !== null) $('#routeLive').textContent = ($('#view h1') || {}).textContent || '';
+      if (lastRouteHash !== null) $('#routeLive').textContent = ((isWheel ? layer : $('#view')).querySelector('h1') || {}).textContent || '';
       lastRouteHash = hash;
     }
-    if (route.view === viewDeck && db) mountDeck();
-    if (route.view === viewFavorites || route.view === viewSearch) $('#view').querySelectorAll('.cocktail-art').forEach(wireArt);
-    if (route.view === viewSearch && matchMedia('(pointer: fine)').matches) $('#searchInput').focus();
     document.documentElement.lang = lang();
     $('#wheelEntryLabel').textContent = t(lang(), 'wheel_entry');
     $('#wheelEntry').setAttribute('aria-label', t(lang(), 'wheel_entry'));
-    $('#wheelEntry').hidden = route.view !== viewDeck;
+    $('#wheelEntry').hidden = base !== viewDeck;
+    syncWheelEntry();
     $('#searchEntry').setAttribute('aria-label', t(lang(), 'search_entry'));
     $('#nav').setAttribute('aria-label', t(lang(), 'nav_label'));
     updateNav();
@@ -1761,32 +1818,21 @@ if (typeof document !== 'undefined') (function () {
     });
   }
 
+  // T15: opening and closing the wheel FLIP from and to the mini wheel; reduced motion gets a 150 ms fade
   function renderRoute() {
-    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const root = document.documentElement;
-    const wasWheel = document.body.classList.contains('wheel-mode');
-    const enteringWheel = !wasWheel && location.hash === '#/hjul';
-    const leavingWheel = wasWheel && location.hash !== '#/hjul';
-    const nativeWebKit = /AppleWebKit/.test(navigator.userAgent) &&
-      !/(Chrome|Chromium|Edg|OPR)/.test(navigator.userAgent);
-    if (!reduced && document.startViewTransition && !nativeWebKit) {
-      root.classList.toggle('wheel-opening', enteringWheel);
-      root.classList.toggle('wheel-closing', leavingWheel);
-      root.classList.toggle('wheel-firefox', /Firefox\//.test(navigator.userAgent));
-      const transition = document.startViewTransition(() => render());
-      const settle = () => root.classList.remove('wheel-opening', 'wheel-closing', 'wheel-firefox');
-      transition.finished.then(settle, settle);
-    } else if (!reduced && enteringWheel) {
-      root.classList.add('wheel-fallback-opening');
-      render();
-      setTimeout(() => root.classList.remove('wheel-fallback-opening'), 900);
-    } else if (!reduced && leavingWheel) {
-      root.classList.add('wheel-fallback-closing');
-      setTimeout(() => {
-        root.classList.remove('wheel-fallback-closing');
-        render();
-      }, 420);
-    } else render();
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches, layer = $('#wheelLayer');
+    const opening = layer.hidden && location.hash === '#/hjul';
+    if (!layer.hidden && location.hash !== '#/hjul') {
+      layer.inert = true;
+      const home = (location.hash || '#/') === '#/' && !reduced;
+      const done = () => { layer.inert = false; render(); };
+      (home ? wheelFlip(false) : layer.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 150, fill: 'forwards' }).finished).then(done, done);
+      return;
+    }
+    render();
+    if (!opening || layer.hidden) return;
+    if (reduced || renderedBase !== viewDeck) layer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 150 });
+    else wheelFlip(true);
   }
 
   $('#view').addEventListener('click', async e => {
@@ -1824,20 +1870,6 @@ if (typeof document !== 'undefined') (function () {
         if (errEl) { errEl.textContent = err.message; errEl.hidden = false; }
       } finally {
         deletingAccount = false;
-      }
-      return;
-    }
-    const wheelAction = e.target.closest('[data-wheel-act]');
-    if (wheelAction) {
-      const action = wheelAction.dataset.wheelAct;
-      if (action === 'spin') spinWheel();
-      else if (action === 'new') newWheel();
-      else if (action === 'back') closeWheel();
-      else if (action === 'sound') {
-        wheelMuted = !wheelMuted;
-        wheelAction.textContent = wheelMuted ? '🔇' : '🔊';
-        wheelAction.setAttribute('aria-pressed', wheelMuted ? 'true' : 'false');
-        wheelAction.setAttribute('aria-label', t(lang(), wheelMuted ? 'wheel_unmute' : 'wheel_mute'));
       }
       return;
     }
@@ -1950,11 +1982,6 @@ if (typeof document !== 'undefined') (function () {
   });
 
   $('#view').addEventListener('change', e => {
-    const control = e.target.closest('#wheelMood');
-    if (control) selectWheelMood(control.value);
-  });
-
-  $('#view').addEventListener('change', e => {
     const control = e.target.closest('[data-fav-ing]');
     if (!control) return;
     if (control.checked) favChecked.add(control.dataset.favIng);
@@ -1985,9 +2012,9 @@ if (typeof document !== 'undefined') (function () {
   });
 
   $('#view').addEventListener('change', e => {
-    const control = e.target.closest('[data-settings-act="wheel-favorites-only"]');
+    const control = e.target.closest('[data-settings-act^="wheel-"]');
     if (!control) return;
-    state.settings.wheelFavoritesOnly = control.checked;
+    state.settings[control.dataset.settingsAct === 'wheel-labels' ? 'wheelLabels' : 'wheelFavoritesOnly'] = control.checked;
     save();
   });
 
@@ -2010,7 +2037,33 @@ if (typeof document !== 'undefined') (function () {
     list.querySelectorAll('.cocktail-art').forEach(wireArt);
   });
 
-  $('#wheelEntry').addEventListener('click', () => { wheelOpenedFromHome = true; });
+  $('#wheelLayer').addEventListener('click', e => {
+    const mood = e.target.closest('[data-wheel-mood]');
+    if (mood) return selectWheelMood(Number(mood.dataset.wheelMood));
+    const recipe = e.target.closest('.fav-open');
+    if (recipe) {
+      favHistoryEntry = true;
+      location.hash = '#/favoriter/' + encodeURIComponent(recipe.dataset.id);
+      return;
+    }
+    const action = e.target.closest('[data-wheel-act]');
+    const act = action && action.dataset.wheelAct;
+    if (act === 'spin') spinWheel();
+    else if (act === 'back') closeWheel();
+    else if (act === 'change') { // show the picker again in the result card's place
+      wheelPicker = true;
+      $('#wheelPanel').innerHTML = wheelPanelMarkup();
+      $('#wheelPanel [aria-pressed="true"]').focus();
+    } else if (act === 'sound') {
+      wheelMuted = !wheelMuted;
+      action.textContent = t(lang(), wheelMuted ? 'wheel_sound_off' : 'wheel_sound_on');
+      action.setAttribute('aria-pressed', String(!wheelMuted));
+    }
+  });
+  $('#wheelEntry').addEventListener('click', e => {
+    if (e.currentTarget.getAttribute('aria-disabled') === 'true') e.preventDefault();
+    else wheelOpenedFromHome = true;
+  });
   if (localStorage.getItem(AUTH_KEY) === '1') ensureFirebase().catch(() => {});
   window.addEventListener('hashchange', renderRoute);
   window.addEventListener('keydown', e => {
@@ -2018,6 +2071,7 @@ if (typeof document !== 'undefined') (function () {
     if (!dir || e.defaultPrevented || e.repeat || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
     const target = e.target instanceof Element ? e.target : null;
     if (target && target.closest('button, input, select, textarea, a, [contenteditable="true"]')) return;
+    if (!$('#wheelLayer').hidden) return; // the deck under the wheel layer never swipes
     const card = $('#deck .card[data-depth="0"]');
     if (!card || card.dataset.leaving) return;
     e.preventDefault();

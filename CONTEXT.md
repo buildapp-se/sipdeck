@@ -121,7 +121,7 @@ _Avoid_: Result history, drinking history
 Another spin using the current spin lineup.
 
 **New wheel**:
-An explicit request to replace the current spin lineup while keeping the selected mood.
+An explicit request to replace the current spin lineup while keeping the selected mood, made by choosing the already selected mood again.
 
 **Spin / Snurra**:
 The canonical English and Swedish names of the action that starts the spinning wheel.

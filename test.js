@@ -49,6 +49,10 @@ const rtWheelPrefs = normalizeState(validWithWheelPrefs, 'sv');
 check(rtWheelPrefs.settings.wheelFavoritesOnly === true, 'normalizeState: wheel favorites-only survives');
 check(rtWheelPrefs.settings.wheelOutcomesExcluded.join() === 'fernet-shot,red-wine',
   'normalizeState: wheel outcomes excluded survives, non-string entries dropped');
+check(normalizeState({ settings: { wheelLabels: true } }, 'en').settings.wheelLabels === true &&
+  normalizeState({ settings: { wheelLabels: 'yes' } }, 'en').settings.wheelLabels === false &&
+  defaultState('en').settings.wheelLabels === false,
+  'normalizeState: wheel sector labels are off by default and only true survives');
 check(normalizeState({ settings: { wheelOutcomesExcluded: 'not-an-array' } }, 'en')
   .settings.wheelOutcomesExcluded.length === 0,
   'normalizeState: garbage wheelOutcomesExcluded falls back to empty');
@@ -325,10 +329,11 @@ const workerSource = fs.readFileSync(path.join(__dirname, 'worker', 'worker.js')
 // bumped 89kB -> 90kB 2026-09-25 for design review batch 1 (missing status only with a pantry, route announcements)
 // bumped 90kB -> 97kB 2026-09-25 for design review batch 2 (deck buttons, undo toast, filter chips, segmented recipe controls, in-place updates)
 // bumped 97kB -> 99kB 2026-09-25 for design review batch 3 part 1 (wheel motion: spinAngle, landingTravel, springLinear)
+// bumped 99kB -> 104kB 2026-09-25 for design review batch 3 (wheel layer, FLIP, runSpin, mood buttons, result card, wave patch)
 // Mät LF-storleken, alltså det git lagrar och GitHub Pages levererar. En Windows-
 // arbetskopia checkas ut med CRLF och lägger på ~1,8 kB som aldrig deployas.
-check(Buffer.byteLength(appSource.split('\r').join('')) < 99000,
-  'bundle budget: app.js stays under 99 kB unminified');
+check(Buffer.byteLength(appSource.split('\r').join('')) < 104000,
+  'bundle budget: app.js stays under 104 kB unminified');
 check(!htmlSource.includes('fonts.googleapis.com') && htmlSource.includes("fonts/work-sans.woff2"),
   'privacy: fonts are self-hosted with no Google Fonts request');
 check(htmlSource.includes('rel="canonical" href="https://buildapp.se/sipdeck/"') &&
@@ -374,36 +379,43 @@ check(infoSource.includes('inga annonserings- eller analyscookies') &&
 });
 check(htmlSource.includes('href="#/hjul"') && appSource.includes("'#/hjul'"),
   'wheel route: starting-page entry and router target are wired');
-check(htmlSource.includes('view-transition-name:wheel-shared') && appSource.includes('document.startViewTransition'),
-  'wheel transition: mini-wheel expands through progressive View Transitions');
-check(htmlSource.includes('html.wheel-opening::view-transition-new(wheel-shared)') &&
-  htmlSource.includes('html.wheel-closing::view-transition-old(wheel-shared)') &&
-  appSource.includes("root.classList.toggle('wheel-opening'") &&
-  appSource.includes("root.classList.toggle('wheel-closing'"),
-  'wheel transition: opening and closing use composed, directional shared-element scenes');
-check(htmlSource.includes('wheel-fallback-screen-in') && htmlSource.includes('wheel-fallback-screen-out') &&
-  appSource.includes("root.classList.add('wheel-fallback-opening')") &&
-  appSource.includes("root.classList.add('wheel-fallback-closing')") &&
-  appSource.includes('const nativeWebKit = /AppleWebKit/'),
-  'wheel transition: unsupported and native WebKit engines retain a deliberate fallback');
-check(appSource.includes("matchMedia('(prefers-reduced-motion: reduce)')"),
-  'wheel accessibility: reduced motion is honored');
-check(appSource.includes('aria-live="polite"') && appSource.includes('aria-valuetext='),
-  'wheel accessibility: result and slider meaning are announced');
+check(!appSource.includes('startViewTransition') && !htmlSource.includes('view-transition') &&
+  !htmlSource.includes('wheel-fallback') && !appSource.includes('nativeWebKit'),
+  'wheel transition (T15): no View Transitions branch, engine sniffing or fallback keyframes');
+check(appSource.includes('springLinear(.8, 600)') && appSource.includes('springLinear(.92, 480)') &&
+  appSource.includes("$('#wheelStage').getBoundingClientRect()"),
+  'wheel transition (T15): FLIP opens and closes on springs, measured on the unrotated stage');
+check(appSource.includes('const keepBase = base === viewDeck') && htmlSource.includes('<div id="wheelLayer" hidden></div>'),
+  'wheel transition (T15): the wheel is a layer over the deck, so closing never cuts to a blank page');
+check(appSource.includes("matchMedia('(prefers-reduced-motion: reduce)')") &&
+  appSource.includes("layer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 150 })"),
+  'wheel accessibility: reduced motion opens with a 150 ms fade and no transform');
+check(appSource.includes('aria-live="polite"') && appSource.includes('aria-pressed="${item.id === wheelMoodId}"'),
+  'wheel accessibility: result is announced and mood buttons expose their state');
 check(appSource.includes('navigator.vibrate(18)') && appSource.includes('wheelMuted = false'),
   'wheel feedback: one landing haptic and visit-local sound default');
 check(appSource.includes('sound is optional and must never block a spin') &&
   appSource.includes('wheelAudio = null;'),
   'wheel resilience: unavailable Web Audio cannot block a spin');
-check(appSource.includes('wheelAnimation.onfinish =') &&
-  appSource.includes('setTimeout(() => finishWheelSpin(index, end, false), 180)'),
-  'wheel resilience: animation API differences cannot leave controls locked');
-check(appSource.includes('!wheelMoodId && wheelData && db'),
-  'wheel start: opens live on the first mood, no empty intro wheel');
-check(appSource.split("wheelResult ? 'wheel_respin' : 'wheel_spin'").length === 3,
-  'wheel respin: hub and controls button relabel in place of a result-box button row');
-check(!appSource.includes('wheel-result-actions'),
-  'wheel result: compact box carries no action buttons');
+check(appSource.includes('setTimeout(finish, SPIN_MS + 400)') && appSource.includes('if (spin !== wheelSpinId) return;'),
+  'wheel resilience: a paused rAF still lands, and a finished or abandoned spin never lands twice');
+const spinSource = appSource.slice(appSource.indexOf('  function spinWheel()'), appSource.indexOf('  function wheelFlip('));
+const frameSource = spinSource.slice(spinSource.indexOf('const frame'), spinSource.indexOf('setTimeout(finish, SPIN_MS'));
+check(frameSource.length > 200 && !/classList|getBoundingClientRect|offset(Width|Height)|getComputedStyle/.test(frameSource),
+  'wheel spin (T16): the animation frame writes transforms only, no class toggles or layout reads');
+check(reconcileState(defaultState('en'), defaultState('en'), Object.assign(defaultState('en'), { settings: Object.assign(defaultState('en').settings, { wheelLabels: true }) })).settings.wheelLabels === true,
+  'reconcileState: a remote wheel-labels change wins over an unchanged local one');
+check(!appSource.includes('offsetWidth;') && !appSource.includes('getComputedStyle(element).transform'),
+  'wheel spin (T16): no forced layout or computed-style reads while spinning');
+check(!appSource.includes('default to first mood') && appSource.includes(' class="wheel-unset"'),
+  'wheel start (T4): no preselected mood, the wheel starts neutral');
+check(!htmlSource.includes('.wheel-action.primary') && appSource.split('data-wheel-act="spin"').length === 2,
+  'wheel spin (T14): the hub is the only spin button');
+const moodSource = appSource.slice(appSource.indexOf('  function selectWheelMood('), appSource.indexOf('  function closeWheel('));
+check(!moodSource.includes('render()') && moodSource.includes('distance * 25'),
+  'wheel mood (T17): choosing a mood patches sectors in a 25 ms wave without re-rendering');
+check(appSource.includes("act === 'change'") && !appSource.includes("action === 'new'"),
+  'wheel mood (T14): "Change mood" brings the picker back; choosing the active mood again is the new wheel');
 check(appSource.includes('detailId === null) resetWheelVisit()'),
   'wheel result: spin state survives opening the landed recipe');
 check(appSource.includes('`<button class="fav-open" data-id="${esc(entry.outcomeId)}"'),

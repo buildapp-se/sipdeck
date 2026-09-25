@@ -1,58 +1,87 @@
 const { test, expect } = require('@playwright/test');
 
-test('wheel completes a spin and unlocks its controls', async ({ page }) => {
-  const pageErrors = [];
-  page.on('pageerror', error => pageErrors.push(error.message));
-
+async function openWheel(page) {
   await page.goto('/');
   const entry = page.locator('#wheelEntry');
   await expect(entry).toBeVisible();
+  await expect(entry).not.toHaveAttribute('aria-disabled', 'true'); // T18: inactive until the data has loaded
   await entry.click();
   await expect(page).toHaveURL(/\/#\/hjul$/);
+  await expect(page.locator('#wheelLayer .wheel-screen')).toBeVisible();
+}
 
-  const spin = page.locator('.wheel-hub-button');
+test('wheel starts neutral, spins, lands and closes back onto the deck', async ({ page }) => {
+  const pageErrors = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
+  await openWheel(page);
+
+  const hub = page.locator('#wheelHub');
+  await expect(hub).toBeDisabled(); // T4: no preselected mood
+  await expect(page.locator('#wheelStage svg')).toHaveClass(/wheel-unset/);
+  await expect(page.locator('[data-wheel-mood][aria-pressed="true"]')).toHaveCount(0);
+
+  await page.locator('[data-wheel-mood="1"]').click();
+  await expect(page.locator('[data-wheel-mood="1"]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(hub).toBeEnabled();
+  await expect(page.locator('#wheelWindowName')).not.toBeEmpty();
+
+  await hub.click();
+  await expect(hub).toBeDisabled();
   const result = page.locator('#wheelResult');
-  await expect(spin).toBeEnabled();
-
-  await spin.click();
-  await expect(spin).toBeDisabled();
   await expect(result).toBeVisible({ timeout: 10000 });
   await expect(result.locator('.wheel-result-name')).not.toBeEmpty();
-  await expect(spin).toBeEnabled();
+  await expect(page.locator('#wheelStage')).toHaveClass(/wheel-landed/);
+  await expect(page.locator('#wheelStage .wheel-sector.win')).toHaveCount(1);
+  await expect(hub).toBeEnabled();
+
+  await page.locator('[data-wheel-act="change"]').click(); // the picker returns in the result card's place
+  await expect(result).toHaveCount(0);
+  await expect(page.locator('[data-wheel-mood="1"]')).toBeFocused();
 
   await page.locator('[data-wheel-act="back"]').click();
   await expect(page).toHaveURL(/\/(?:#\/)?$/);
-  await expect(entry).toBeVisible();
-  await expect(page.locator('html')).not.toHaveClass(/wheel-closing/);
+  await expect(page.locator('#wheelLayer')).toBeHidden();
+  await expect(page.locator('#deck .card')).not.toHaveCount(0);
+  await expect(page.locator('#wheelEntry .wheel-symbol')).toHaveCSS('opacity', '1');
   expect(pageErrors).toEqual([]);
 });
 
-test('reduced motion keeps wheel navigation immediate', async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.goto('/');
+test('changing mood patches the drawn wheel in place and keeps its rotation', async ({ page }) => {
+  await openWheel(page);
+  await page.locator('[data-wheel-mood="0"]').click();
+  await page.locator('#wheelHub').click();
+  await expect(page.locator('#wheelResult')).toBeVisible({ timeout: 10000 });
+  const rotation = await page.locator('#wheelDisc').getAttribute('style');
+  await page.locator('#wheelDisc').evaluate(el => { el.dataset.probe = '1'; });
 
-  await page.locator('#wheelEntry').click();
-  await expect(page.locator('.wheel-hub-button')).toBeEnabled();
-  await expect(page.locator('html')).not.toHaveClass(/wheel-(?:opening|fallback)/);
-
-  await page.locator('[data-wheel-act="back"]').click();
-  await expect(page.locator('#wheelEntry')).toBeVisible();
-  await expect(page.locator('html')).not.toHaveClass(/wheel-(?:closing|fallback)/);
+  await page.locator('[data-wheel-act="change"]').click();
+  await page.locator('[data-wheel-mood="3"]').click();
+  await expect(page.locator('#wheelDisc[data-probe="1"]')).toHaveCount(1); // T17: no re-render
+  await expect(page.locator('#wheelDisc')).toHaveAttribute('style', rotation);
+  await expect(page.locator('#wheelStage')).not.toHaveClass(/wheel-landed/);
+  await expect(page.locator('#wheelHub')).toBeEnabled();
+  await expect(page.locator('#wheelStage .wheel-art[href]')).toHaveCount(12);
 });
 
-test('firefox keeps the shared wheel transition compositor-safe', async ({ page, browserName }) => {
-  test.skip(browserName !== 'firefox');
+test('picker and result fit above Safari\'s toolbar line at 390 × 844', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openWheel(page);
+  await page.locator('[data-wheel-mood="4"]').click(); // level 5 has the tallest card: safety line included
+  const bottom = () => page.locator('#wheelPanel').evaluate(el => el.getBoundingClientRect().bottom);
+  expect(await bottom()).toBeLessThanOrEqual(664);
+  await page.locator('#wheelHub').click();
+  await expect(page.locator('#wheelResult .wheel-safety')).toBeVisible({ timeout: 10000 });
+  expect(await bottom()).toBeLessThanOrEqual(664);
+});
 
-  await page.goto('/');
-  await page.locator('#wheelEntry').click();
-
-  await expect(page.locator('html')).toHaveClass(/wheel-opening/);
-  await expect(page.locator('html')).toHaveClass(/wheel-firefox/);
-  await expect(page.locator('html')).not.toHaveClass(/wheel-fallback-opening/);
-  await expect(page.locator('html')).not.toHaveClass(/wheel-(?:opening|firefox)/, { timeout: 2000 });
+test('reduced motion opens and closes the wheel with a fade only', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await openWheel(page);
+  await page.locator('[data-wheel-mood="0"]').click();
+  await page.locator('#wheelHub').click();
+  await expect(page.locator('#wheelResult')).toBeVisible({ timeout: 2000 });
 
   await page.locator('[data-wheel-act="back"]').click();
-  await expect(page.locator('html')).toHaveClass(/wheel-closing/);
-  await expect(page.locator('html')).toHaveClass(/wheel-firefox/);
-  await expect(page.locator('html')).not.toHaveClass(/wheel-(?:closing|firefox)/, { timeout: 2000 });
+  await expect(page.locator('#wheelLayer')).toBeHidden();
+  await expect(page.locator('#wheelEntry')).toBeVisible();
 });
