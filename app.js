@@ -483,17 +483,57 @@ function selectWheelIndex(lineup, rng) {
   return eligible[Math.floor(wheelRng(rng) * eligible.length)].index;
 }
 
-function wheelLandingRotation(current, index, rng, count) {
-  const sectors = count || 12;
-  const step = 360 / sectors;
-  const halfSafe = step * 0.34;
-  const offset = (wheelRng(rng) * 2 - 1) * halfSafe;
-  const desired = ((-index * step - offset) % 360 + 360) % 360;
-  const currentMod = ((current % 360) + 360) % 360;
-  const travel = ((desired - currentMod) % 360 + 360) % 360;
-  const turns = 6 + Math.floor(wheelRng(rng) * 4);
-  return current + turns * 360 + travel;
+// ---------- wheel motion (design review T15–T16, from design_handoff_sipdeck/motion.js) ----------
+// Damped spring as a CSS linear() easing; zeta < 1 overshoots, dur is the time to rest in ms.
+function springLinear(zeta, dur, n) {
+  const steps = n || 48, w = 6.9 / (zeta * dur / 1000), wd = w * Math.sqrt(1 - zeta * zeta), pts = [];
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps * dur / 1000;
+    pts.push((1 - Math.exp(-zeta * w * t) * (Math.cos(wd * t) + zeta * w / wd * Math.sin(wd * t))).toFixed(4));
+  }
+  pts[steps] = '1';
+  return `linear(${pts.join(',')})`;
 }
+
+// 200 ms wind-up of −10°, one 3600 ms main curve whose speed is zero at both ends
+// (derivative 20u(1−u)^3), a 4° overshoot and a 350 ms settle back. 4150 ms in total.
+const SPIN = { windup: 200, main: 3600, settle: 350, windupDeg: 10, overshootDeg: 4, turns: 4 };
+function spinAngle(t, travel) {
+  const s = SPIN;
+  if (t <= 0) return 0;
+  if (t < s.windup) return -s.windupDeg * (1 - Math.cos(Math.PI * t / s.windup)) / 2;
+  const t2 = t - s.windup;
+  if (t2 < s.main) {
+    const u = t2 / s.main;
+    return -s.windupDeg + (travel + s.windupDeg + s.overshootDeg) * (1 - Math.pow(1 - u, 4) * (1 + 4 * u));
+  }
+  const t3 = t2 - s.main;
+  if (t3 < s.settle) {
+    const x = t3 / s.settle, e = x < .5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+    return travel + s.overshootDeg - s.overshootDeg * e;
+  }
+  return travel;
+}
+const SPIN_MS = SPIN.windup + SPIN.main + SPIN.settle;
+
+// Degrees from the current angle to a random safe spot inside sector `index`, after four full turns.
+function landingTravel(current, index, rng, count) {
+  const sectors = count || 12, step = 360 / sectors, jitter = (wheelRng(rng) * 2 - 1) * step * 0.34;
+  const desired = ((-index * step - jitter) % 360 + 360) % 360;
+  const cur = ((current % 360) + 360) % 360;
+  return SPIN.turns * 360 + ((desired - cur) % 360 + 360) % 360;
+}
+
+// Sector under the top pointer for a disc rotated `angle` degrees.
+function sectorAtAngle(angle, count) {
+  const sectors = count || 12;
+  return Math.floor((((-angle % 360) + 360) % 360 + 180 / sectors) / (360 / sectors)) % sectors;
+}
+
+const WHEEL_COLORS = {
+  cocktail: 'oklch(0.9 0.045 150)', 'beer-cider': 'oklch(0.9 0.05 85)', wine: 'oklch(0.9 0.045 20)',
+  shot: 'oklch(0.88 0.045 300)', water: 'oklch(0.91 0.045 230)', 'red-bull': '#E3DACA', bottle: 'oklch(0.9 0.05 60)',
+};
 
 function wheelSectorPath(index, count, radius) {
   const sectors = count || 12, r = radius || 49;
@@ -566,7 +606,7 @@ if (typeof module !== 'undefined') module.exports = {
   normalizeServingCount, MAX_SERVINGS,
   reconcileState,
   weightedSampleUnique, wheelCocktailWeight, buildSpinLineup, selectWheelIndex,
-  wheelLandingRotation, wheelSectorPath,
+  wheelSectorPath, springLinear, SPIN, SPIN_MS, spinAngle, landingTravel, sectorAtAngle, WHEEL_COLORS,
   GLASS_SILHOUETTES, glassPlaceholder,
 };
 
@@ -1617,7 +1657,7 @@ if (typeof document !== 'undefined') (function () {
       setTimeout(() => { disc.classList.remove('wheel-pulse'); finishWheelSpin(index, wheelRotation, true); }, 180);
       return;
     }
-    const end = wheelLandingRotation(wheelRotation, index, random01, 12);
+    const end = wheelRotation + landingTravel(wheelRotation, index, random01, 12); // interim until T16 runSpin
     const travel = end - wheelRotation, duration = 6200 + Math.round(random01() * 1200);
     try {
       wheelAnimation = disc.animate([

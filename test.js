@@ -9,7 +9,7 @@ const { STRINGS, t, detectLang, defaultState, normalizeState, favoriteIdFromHash
   BASE_FILTERS, matchesFilters, canMake, filterDrinks, missingIngredients, mergeState, reconcileState,
   searchHaystack, matchesSearch,
   weightedSampleUnique, wheelCocktailWeight, buildSpinLineup, selectWheelIndex,
-  wheelLandingRotation, wheelSectorPath,
+  wheelSectorPath, springLinear, SPIN_MS, spinAngle, landingTravel, sectorAtAngle, WHEEL_COLORS,
   GLASS_SILHOUETTES, glassPlaceholder } = require('./app.js');
 
 let pass = 0, fail = 0;
@@ -278,12 +278,34 @@ check(lineupNoShots.every(item => item.category !== 'shot'),
 check(lineupNoShots.filter(item => item.kind === 'cocktail').length === 9,
   'wheel prefs: slots freed by an excluded category fall back to extra cocktails');
 
-const landing = wheelLandingRotation(17, 4, (() => { const values = [0.5, 0]; return () => values.shift(); })(), 12);
-const landedCenter = ((-landing % 360) + 360) % 360;
-const expectedCenter = 4 * 30;
-const landingError = Math.abs((((landedCenter - expectedCenter) + 540) % 360) - 180);
-check(landing >= 17 + 6 * 360, 'wheel landing: travels at least six full rotations');
-check(landingError <= 10.2, 'wheel landing: finishes safely inside selected sector');
+for (const [from, index, r] of [[17, 4, 0.5], [0, 0, 0], [123.4, 11, 0.999], [-40, 7, 0.2]]) {
+  const end = from + landingTravel(from, index, () => r, 12);
+  check(end - from >= 4 * 360 && end - from < 5 * 360, `wheel landing ${index}: four full turns plus under one`);
+  check(sectorAtAngle(end, 12) === index, `wheel landing ${index}: finishes inside the selected sector`);
+  const centre = ((-end % 360) + 360) % 360, off = Math.abs((((centre - index * 30) + 540) % 360) - 180);
+  check(off <= 10.2 + 1e-9, `wheel landing ${index}: keeps a safe margin from the sector edges`);
+}
+{
+  // T16: one continuous curve, no velocity jumps, lands exactly on the travel
+  let peak = 0, maxJump = 0, prev = null;
+  for (const travel of [1440, 1620, 1799]) {
+    for (let t = 0; t <= SPIN_MS; t += 1) {
+      const v = (spinAngle(t + 0.5, travel) - spinAngle(t - 0.5, travel)) * 1000;
+      if (t > 0 && prev !== null) maxJump = Math.max(maxJump, Math.abs(v - prev));
+      prev = v;
+      if (travel === 1620) peak = Math.max(peak, Math.abs(v));
+    }
+    check(Math.abs(spinAngle(SPIN_MS, travel) - travel) < 1e-9 && spinAngle(SPIN_MS + 500, travel) === travel,
+      `wheel spin ${travel}°: rests exactly on the travel`);
+    prev = null;
+  }
+  check(maxJump < 5, `wheel spin: speed is continuous (largest change per ms ${maxJump.toFixed(2)}°/s)`);
+  check(peak <= 1000, `wheel spin: peak speed at a typical travel is ≤ 1000°/s (${Math.round(peak)})`);
+  check(SPIN_MS === 4150, 'wheel spin: about 4 s, 4150 ms including the settle');
+  check(springLinear(0.8, 600).startsWith('linear(0.0000,') && springLinear(0.8, 600).endsWith(',1)'),
+    'wheel spring: CSS linear() easing starts at 0 and rests at 1');
+  check(Object.keys(WHEEL_COLORS).length === 7, 'wheel colours: one per outcome category');
+}
 check(wheelSectorPath(0, 12).startsWith('M50 50L'), 'wheel SVG: sector path starts at hub');
 check(wheelSectorPath(0, 12) !== wheelSectorPath(1, 12), 'wheel SVG: adjacent sector paths differ');
 
@@ -302,10 +324,11 @@ const workerSource = fs.readFileSync(path.join(__dirname, 'worker', 'worker.js')
 // bumped 87kB -> 89kB 2026-07-24 for keyboard-safe card faces and accessible status semantics
 // bumped 89kB -> 90kB 2026-09-25 for design review batch 1 (missing status only with a pantry, route announcements)
 // bumped 90kB -> 97kB 2026-09-25 for design review batch 2 (deck buttons, undo toast, filter chips, segmented recipe controls, in-place updates)
+// bumped 97kB -> 99kB 2026-09-25 for design review batch 3 part 1 (wheel motion: spinAngle, landingTravel, springLinear)
 // Mät LF-storleken, alltså det git lagrar och GitHub Pages levererar. En Windows-
 // arbetskopia checkas ut med CRLF och lägger på ~1,8 kB som aldrig deployas.
-check(Buffer.byteLength(appSource.split('\r').join('')) < 97000,
-  'bundle budget: app.js stays under 97 kB unminified');
+check(Buffer.byteLength(appSource.split('\r').join('')) < 99000,
+  'bundle budget: app.js stays under 99 kB unminified');
 check(!htmlSource.includes('fonts.googleapis.com') && htmlSource.includes("fonts/work-sans.woff2"),
   'privacy: fonts are self-hosted with no Google Fonts request');
 check(htmlSource.includes('rel="canonical" href="https://buildapp.se/sipdeck/"') &&
