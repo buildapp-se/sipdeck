@@ -22,6 +22,7 @@ async function signIn(page, api) {
   await page.route('https://www.gstatic.com/firebasejs/**/firebase-auth.js', r => r.fulfill(js(`
     const user = { uid: 'u1', email: 'test@example.com', providerData: [{ providerId: 'password' }], getIdToken: async () => 'a.b.c' };
     export const getAuth = () => ({});
+    export const getRedirectResult = async () => null;
     export const onAuthStateChanged = (auth, cb) => setTimeout(() => cb(user), 0);`)));
   await page.route('https://sipdeck-api.sipdeck.workers.dev/**', async route => {
     const req = route.request(), path = new URL(req.url()).pathname;
