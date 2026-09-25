@@ -18,3 +18,8 @@ graft/
 # egna instruktioner, och halls darfor lokalt. Skriver du riktiga instruktioner:
 # ta bort raden nedan forst, annars hamnar de aldrig i git.
 AGENTS.md
+
+# F3: kuratorns lokala förslagskopior (scripts/suggestions.js pull)
+suggestions/
+# lokala Worker-hemligheter för wrangler dev
+worker/.dev.vars

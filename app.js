@@ -3,26 +3,24 @@
 // ---------- string table (EN + SV) — every UI string routes through t(), none hardcoded in markup ----------
 const STRINGS = {
   en: {
-    tagline: 'Swipe. Save. Shake.',
     nav_deck: 'Deck', nav_favorites: 'Favorites', nav_pantry: 'Pantry', nav_settings: 'Settings',
     nav_label: 'Main navigation',
     wheel_entry: 'Pick for me', wheel_title: 'Pick for me', wheel_back: 'Back',
-    wheel_mute: 'Mute wheel sound', wheel_unmute: 'Turn wheel sound on',
+    wheel_sound_on: 'Sound on', wheel_sound_off: 'Sound off',
     wheel_intro: 'How are you feeling?', wheel_choose: 'Choose a mood to build your wheel.',
-    wheel_mood_label: 'Drunkenness level', wheel_spin: 'Spin', wheel_respin: 'Re-spin',
-    wheel_new: 'New wheel', wheel_result: 'Your order',
+    wheel_spin: 'Spin', wheel_respin: 'Re-spin', wheel_result: 'Your order',
+    wheel_first: 'First', wheel_under: 'Under the pointer', wheel_turning: 'Spinning', wheel_landed: 'It landed on',
+    wheel_pick_below: 'Choose a mood', wheel_change: 'Change mood', wheel_recipe: 'Show recipe',
     wheel_loading: 'Preparing the wheel...', wheel_error: "Couldn't load the wheel. Reload to try again.",
     wheel_spinning: 'The wheel is spinning', wheel_ready: 'Wheel ready to spin',
     deck_empty: 'No drinks yet. Deal the deck once drinks.json ships.',
     deck_loading: 'Dealing the deck...',
     deck_error: "Couldn't load the deck. Reload to try again.",
     deck_title: 'Cocktail deck',
-    deck_count_label: 'drinks in the deck',
     deck_no_matches: 'No drinks match those filters. Try another combination.',
     filters_label: 'Filter drinks',
-    filter_makeable: 'Only what I can make',
     favorites_title: 'Favorites',
-    favorites_empty: 'Nothing saved yet. Swipe right on a drink to save it here.',
+    favorites_empty: 'Nothing saved yet. Swipe right on a drink to save it here.', favorites_to_deck: 'Go to the deck',
     search_entry: 'Search', search_title: 'Search',
     search_placeholder: 'Search name or ingredient',
     search_empty: 'No drinks match that search.',
@@ -30,7 +28,7 @@ const STRINGS = {
     fav_back: 'Back',
     fav_unfavorite: 'Remove favorite',
     fav_add: 'Save',
-    missing_prefix: 'Missing: ', missing_many: 'Missing 3+',
+    missing_prefix: 'Missing: ', missing_many: 'Missing 3+', missing_tag: 'Missing',
     recipe_title: 'Recipe', ingredients_title: 'Ingredients', method_title: 'Method',
     ingredient_check_hint: 'Check off ingredients as you mix.',
     check_ingredient: 'Check off', copy_recipe: 'Copy recipe',
@@ -40,17 +38,22 @@ const STRINGS = {
     pantry_intro: 'Check off what you have. Optional garnishes never block a match.',
     pantry_group_spirits: 'Spirits', pantry_group_liqueurs: 'Liqueurs',
     pantry_group_fresh: 'Fresh & mixers', pantry_group_pantry: 'Pantry staples',
-    pantry_almost_title: 'Almost there',
+    pantry_almost_title: 'Almost there', pantry_almost_all: 'Show all', pantry_almost_fewer: 'Show fewer',
+    pantry_search: 'Search ingredients', pantry_search_empty: 'No ingredient matches that search.',
+    pantry_count_one: 'You can mix 1 drink', pantry_count_many: 'You can mix {n} drinks',
+    settings_sync: 'Sync between devices',
     settings_title: 'Settings',
-    settings_lang: 'Language', settings_unit: 'Unit', settings_servings: 'Servings',
+    settings_lang: 'Language', settings_unit: 'Unit',
     language_en: 'English', language_sv: 'Swedish',
-    settings_filter_bar: 'Bar-servable only', settings_filter_base: 'Base spirit',
+    settings_filter_base: 'Base spirit',
     settings_filter_base_none: 'Any',
     settings_wheel_title: 'Spinning wheel',
     settings_wheel_favorites_only: 'Only favorite drinks',
-    settings_wheel_favorites_only_hint: "Tops up from the full menu if you don't have enough favorites.",
-    settings_wheel_outcomes_title: 'Beer, wine & shots in the wheel',
+    settings_wheel_extras: 'Also in the wheel',
+    wheel_extra_wine: 'Wine & bubbly',
+    settings_wheel_labels: 'Show names in the wheel sectors',
     wheel_cat_beer_cider: 'Beer & cider', wheel_cat_wine: 'Wine', wheel_cat_shot: 'Shots',
+    wheel_cat_cocktail: 'Cocktail', wheel_cat_water: 'Water', wheel_cat_red_bull: 'Red Bull', wheel_cat_bottle: 'Bottle',
     base_gin: 'Gin', base_vodka: 'Vodka', base_rum: 'Rum', base_tequila: 'Tequila',
     base_whiskey: 'Whiskey', base_brandy: 'Brandy', base_other: 'Other / none',
     yes: 'Yes', no: 'No',
@@ -71,28 +74,65 @@ const STRINGS = {
     account_link_google: 'Link Google sign-in', account_create_password: 'Create password',
     account_share_hint: 'Your partner can then sign in with this email and password too.',
     account_legal: 'Privacy, storage & terms',
+    account_delete_title: 'Delete account?', account_cancel: 'Cancel',
+    account_forgot_title: 'Reset password', account_forgot_send: 'Send reset link',
+    account_forgot_hint: "Enter your email and we'll send a link for choosing a new password.",
+    auth_wrong_password: 'Wrong email or password.', auth_invalid_credential: 'Wrong email or password.',
+    auth_user_not_found: 'No account uses that email. Create one instead.',
+    auth_email_already_in_use: 'That email already has an account. Log in instead.',
+    auth_invalid_email: "That doesn't look like an email address.",
+    auth_too_many_requests: 'Too many attempts. Wait a moment and try again.',
+    auth_generic: 'Something went wrong. Try again.',
+    deck_skip: '‹ Skip', deck_save: 'Save ›', flip_hint: 'Tap for recipe',
+    swipe_save: 'Save', swipe_skip: 'Skip', toast_saved: 'Saved', toast_removed: 'Removed', undo: 'Undo',
+    chip_all: 'All', chip_matches: 'Matches', chip_bar: 'Bar-servable', chip_makeable: 'Can make', chip_base: 'Base',
+    serving_one: 'glass', serving_many: 'glasses',
+    glass_coupe: 'coupe', glass_highball: 'highball glass', glass_rocks: 'rocks glass', glass_martini: 'martini glass',
+    glass_goblet: 'goblet', glass_irish_coffee: 'Irish coffee glass', glass_margarita: 'margarita glass',
+    glass_julep: 'julep cup', glass_hurricane: 'hurricane glass', glass_collins: 'Collins glass',
+    glass_wine: 'wine glass', glass_flute: 'flute', glass_shot: 'shot glass',
+    method_stirred: 'stirred', method_frozen: 'frozen', method_layered: 'layered',
+    variants_one: '+1 variant', variants_many: '+{n} variants', variants_label: 'Variants',
+    variant_new: 'new', variant_was: 'was {a}', variant_without: 'Without: ',
+    variant_of: 'Variant of {name} · {n} in the family', search_tagged: 'Tagged: {tags}',
+    custom_tag: 'Own', custom_title: 'My drinks', custom_new: '+ New drink', custom_new_title: 'New drink',
+    custom_edit_title: 'Edit drink', custom_empty: 'Drinks you create end up here, in the deck and in search.',
+    custom_name: 'Name', custom_glass: 'Glass and colour', custom_amount: 'Amount', custom_ingredient: 'Ingredient',
+    custom_add_line: '+ Add ingredient', custom_remove_line: 'Remove ingredient',
+    custom_source: 'Source or origin (optional)', custom_source_ph: 'Link or "My own creation"',
+    custom_save: 'Save to My drinks', custom_edit: 'Edit', custom_delete: 'Delete',
+    custom_need_line: 'Add at least one ingredient with an amount.', toast_deleted: 'Deleted',
+    color_clear: 'Clear', color_citrus: 'Citrus yellow', color_red: 'Red', color_green: 'Green', color_amber: 'Amber', color_pink: 'Pink',
+    suggest_title: 'Suggest to Sipdeck', suggest_login: 'Suggestions need an account, so you can follow what happens to yours.',
+    suggest_login_link: 'Sign in under Settings', suggest_similar: 'Similar to something already here',
+    suggest_shared: '{n} of {m} ingredients in common', suggest_kind: 'Suggest it',
+    suggest_as_variant: 'As a variant', suggest_as_new: 'As a new drink',
+    suggest_name: 'Display name if it is published (optional)',
+    suggest_consent: 'I agree that Sipdeck may publish, edit and illustrate the recipe.',
+    suggest_send: 'Send suggestion', suggest_hint: 'The status shows in My drinks: Sent → In review → Published',
+    suggest_status_new: 'Sent', suggest_status_accepted: 'In review', suggest_status_published: 'Published',
+    suggest_status_declined: 'Declined', suggest_in_deck: 'Now in the deck',
+    suggest_limit: 'Five suggestions a day is the limit. Try again tomorrow.', suggest_failed: "Couldn't send the suggestion. Try again.",
   },
   sv: {
     wheel_entry: 'Välj åt mig', wheel_title: 'Välj åt mig', wheel_back: 'Tillbaka',
-    wheel_mute: 'Stäng av hjulljudet', wheel_unmute: 'Slå på hjulljudet',
-    wheel_intro: 'Hur känns det?', wheel_choose: 'Välj en känsla för att bygga ditt hjul.',
-    wheel_mood_label: 'Berusningsnivå', wheel_spin: 'Snurra', wheel_respin: 'Snurra igen',
-    wheel_new: 'Nytt hjul', wheel_result: 'Din beställning',
+    wheel_sound_on: 'Ljud på', wheel_sound_off: 'Ljud av',
+    wheel_intro: 'Hur känns det?', wheel_choose: 'Välj ett läge för att bygga hjulet.',
+    wheel_spin: 'Snurra', wheel_respin: 'Snurra igen', wheel_result: 'Din beställning',
+    wheel_first: 'Först', wheel_under: 'Under pekaren', wheel_turning: 'Snurrar', wheel_landed: 'Det blev',
+    wheel_pick_below: 'Välj ett läge', wheel_change: 'Byt läge', wheel_recipe: 'Visa recept',
     wheel_loading: 'Förbereder hjulet...', wheel_error: 'Kunde inte ladda hjulet. Ladda om sidan för att försöka igen.',
     wheel_spinning: 'Hjulet snurrar', wheel_ready: 'Hjulet är redo att snurra',
-    tagline: 'Svep. Spara. Skaka.',
     nav_deck: 'Kortlek', nav_favorites: 'Favoriter', nav_pantry: 'Skafferi', nav_settings: 'Inställningar',
     nav_label: 'Huvudnavigering',
     deck_empty: 'Inga drinkar än. Kortleken delas ut när drinks.json finns.',
     deck_loading: 'Delar ut kortleken...',
     deck_error: 'Kunde inte ladda kortleken. Ladda om sidan för att försöka igen.',
     deck_title: 'Drinkkortlek',
-    deck_count_label: 'drinkar i kortleken',
     deck_no_matches: 'Inga drinkar matchar filtren. Prova en annan kombination.',
     filters_label: 'Filtrera drinkar',
-    filter_makeable: 'Bara det jag kan blanda',
     favorites_title: 'Favoriter',
-    favorites_empty: 'Inget sparat än. Svep höger på en drink för att spara den här.',
+    favorites_empty: 'Inget sparat än. Svep höger på en drink för att spara den här.', favorites_to_deck: 'Till kortleken',
     search_entry: 'Sök', search_title: 'Sök',
     search_placeholder: 'Sök namn eller ingrediens',
     search_empty: 'Inga drinkar matchar sökningen.',
@@ -100,7 +140,7 @@ const STRINGS = {
     fav_back: 'Tillbaka',
     fav_unfavorite: 'Ta bort favorit',
     fav_add: 'Spara',
-    missing_prefix: 'Saknar: ', missing_many: 'Saknar 3+',
+    missing_prefix: 'Saknar: ', missing_many: 'Saknar 3+', missing_tag: 'Saknas',
     recipe_title: 'Recept', ingredients_title: 'Ingredienser', method_title: 'Gör så här',
     ingredient_check_hint: 'Bocka av ingredienserna medan du blandar.',
     check_ingredient: 'Bocka av', copy_recipe: 'Kopiera receptet',
@@ -110,17 +150,22 @@ const STRINGS = {
     pantry_intro: 'Bocka av vad du har. Valfri garnering stoppar aldrig en träff.',
     pantry_group_spirits: 'Sprit', pantry_group_liqueurs: 'Likörer',
     pantry_group_fresh: 'Färskt och blanddryck', pantry_group_pantry: 'Skafferivaror',
-    pantry_almost_title: 'Nästan klara',
+    pantry_almost_title: 'Nästan klart', pantry_almost_all: 'Visa alla', pantry_almost_fewer: 'Visa färre',
+    pantry_search: 'Sök ingrediens', pantry_search_empty: 'Ingen ingrediens matchar sökningen.',
+    pantry_count_one: 'Du kan blanda 1 drink', pantry_count_many: 'Du kan blanda {n} drinkar',
+    settings_sync: 'Synka mellan enheter',
     settings_title: 'Inställningar',
-    settings_lang: 'Språk', settings_unit: 'Enhet', settings_servings: 'Portioner',
+    settings_lang: 'Språk', settings_unit: 'Enhet',
     language_en: 'Engelska', language_sv: 'Svenska',
-    settings_filter_bar: 'Bara barserverbara', settings_filter_base: 'Bas-sprit',
+    settings_filter_base: 'Bas-sprit',
     settings_filter_base_none: 'Alla',
     settings_wheel_title: 'Snurrhjul',
     settings_wheel_favorites_only: 'Bara favoritdrinkar',
-    settings_wheel_favorites_only_hint: 'Fyller på med hela menyn om du inte har tillräckligt många favoriter.',
-    settings_wheel_outcomes_title: 'Öl, vin och shots i hjulet',
+    settings_wheel_extras: 'Även i hjulet',
+    wheel_extra_wine: 'Vin & bubbel',
+    settings_wheel_labels: 'Visa namn i hjulets sektorer',
     wheel_cat_beer_cider: 'Öl & cider', wheel_cat_wine: 'Vin', wheel_cat_shot: 'Shots',
+    wheel_cat_cocktail: 'Cocktail', wheel_cat_water: 'Vatten', wheel_cat_red_bull: 'Red Bull', wheel_cat_bottle: 'Flaska',
     base_gin: 'Gin', base_vodka: 'Vodka', base_rum: 'Rom', base_tequila: 'Tequila',
     base_whiskey: 'Whisky', base_brandy: 'Brandy', base_other: 'Annan / ingen',
     yes: 'Ja', no: 'Nej',
@@ -141,6 +186,45 @@ const STRINGS = {
     account_link_google: 'Koppla Google-inloggning', account_create_password: 'Skapa lösenord',
     account_share_hint: 'Din partner kan då också logga in med samma e-post och lösenord.',
     account_legal: 'Integritet, lokal lagring och villkor',
+    account_delete_title: 'Radera kontot?', account_cancel: 'Avbryt',
+    account_forgot_title: 'Återställ lösenord', account_forgot_send: 'Skicka återställningslänk',
+    account_forgot_hint: 'Skriv din e-post så skickar vi en länk där du väljer ett nytt lösenord.',
+    auth_wrong_password: 'Fel e-post eller lösenord.', auth_invalid_credential: 'Fel e-post eller lösenord.',
+    auth_user_not_found: 'Inget konto använder den e-posten. Skapa ett i stället.',
+    auth_email_already_in_use: 'E-posten har redan ett konto. Logga in i stället.',
+    auth_invalid_email: 'Det ser inte ut som en e-postadress.',
+    auth_too_many_requests: 'För många försök. Vänta en stund och försök igen.',
+    auth_generic: 'Något gick fel. Försök igen.',
+    deck_skip: '‹ Hoppa över', deck_save: 'Spara ›', flip_hint: 'Tryck för recept',
+    swipe_save: 'Spara', swipe_skip: 'Hoppa över', toast_saved: 'Sparad', toast_removed: 'Borttagen', undo: 'Ångra',
+    chip_all: 'Alla', chip_matches: 'Träffar', chip_bar: 'Barserverbara', chip_makeable: 'Kan blanda', chip_base: 'Bas',
+    serving_one: 'glas', serving_many: 'glas',
+    glass_coupe: 'coupeglas', glass_highball: 'highballglas', glass_rocks: 'rocksglas', glass_martini: 'martiniglas',
+    glass_goblet: 'goblet', glass_irish_coffee: 'irish coffee-glas', glass_margarita: 'margaritaglas',
+    glass_julep: 'julepbägare', glass_hurricane: 'hurricaneglas', glass_collins: 'collinsglas',
+    glass_wine: 'vinglas', glass_flute: 'champagneglas', glass_shot: 'shotglas',
+    method_stirred: 'rörd', method_frozen: 'frusen', method_layered: 'skiktad',
+    variants_one: '+1 variant', variants_many: '+{n} varianter', variants_label: 'Varianter',
+    variant_new: 'ny', variant_was: 'var {a}', variant_without: 'Utan: ',
+    variant_of: 'Variant av {name} · {n} i familjen', search_tagged: 'Taggad: {tags}',
+    custom_tag: 'Egen', custom_title: 'Mina drinkar', custom_new: '+ Ny drink', custom_new_title: 'Ny drink',
+    custom_edit_title: 'Redigera drink', custom_empty: 'Drinkar du skapar hamnar här, i kortleken och i sökningen.',
+    custom_name: 'Namn', custom_glass: 'Glas och färg', custom_amount: 'Mängd', custom_ingredient: 'Ingrediens',
+    custom_add_line: '+ Lägg till ingrediens', custom_remove_line: 'Ta bort ingrediens',
+    custom_source: 'Källa eller ursprung (valfritt)', custom_source_ph: 'Länk eller "Egen skapelse"',
+    custom_save: 'Spara i Mina drinkar', custom_edit: 'Redigera', custom_delete: 'Radera',
+    custom_need_line: 'Lägg till minst en ingrediens med mängd.', toast_deleted: 'Raderad',
+    color_clear: 'Klar', color_citrus: 'Citrusgul', color_red: 'Röd', color_green: 'Grön', color_amber: 'Bärnsten', color_pink: 'Rosa',
+    suggest_title: 'Föreslå till Sipdeck', suggest_login: 'Förslag kräver ett konto, så att du kan följa vad som händer med ditt.',
+    suggest_login_link: 'Logga in under Inställningar', suggest_similar: 'Liknar något som redan finns',
+    suggest_shared: '{n} av {m} ingredienser gemensamma', suggest_kind: 'Föreslå den',
+    suggest_as_variant: 'Som variant', suggest_as_new: 'Som ny drink',
+    suggest_name: 'Visningsnamn om den publiceras (valfritt)',
+    suggest_consent: 'Jag godkänner att Sipdeck får publicera, redigera och illustrera receptet.',
+    suggest_send: 'Skicka förslag', suggest_hint: 'Status syns i Mina drinkar: Skickad → Granskas → Publicerad',
+    suggest_status_new: 'Skickad', suggest_status_accepted: 'Granskas', suggest_status_published: 'Publicerad',
+    suggest_status_declined: 'Avböjd', suggest_in_deck: 'Nu i kortleken',
+    suggest_limit: 'Max fem förslag per dygn. Försök igen i morgon.', suggest_failed: 'Kunde inte skicka förslaget. Försök igen.',
   },
 };
 function t(lang, key) { return (STRINGS[lang] && STRINGS[lang][key]) || STRINGS.en[key] || key; }
@@ -163,10 +247,15 @@ function defaultState(lang) {
       servings: 1,
       filters: { bar: false, base: null },
       wheelFavoritesOnly: false,
-      wheelOutcomesExcluded: [],
+      wheelExtras: ['shot'],
+      wheelLabels: false,
+      seenFlipHint: false,
     },
   };
 }
+
+// Beer and wine (with the bottle) are opt-in in the wheel, shots start on (owner 2026-09-25). Water and Red Bull stay.
+const WHEEL_EXTRAS = ['beer-cider', 'wine', 'shot'];
 
 function normalizeState(raw, lang) {
   const d = defaultState(lang);
@@ -186,8 +275,9 @@ function normalizeState(raw, lang) {
         base: typeof rf.base === 'string' && rf.base ? rf.base : null,
       },
       wheelFavoritesOnly: rs.wheelFavoritesOnly === true,
-      wheelOutcomesExcluded: Array.isArray(rs.wheelOutcomesExcluded)
-        ? rs.wheelOutcomesExcluded.filter(x => typeof x === 'string') : [],
+      wheelExtras: Array.isArray(rs.wheelExtras) ? rs.wheelExtras.filter(x => WHEEL_EXTRAS.includes(x)) : d.settings.wheelExtras,
+      wheelLabels: rs.wheelLabels === true,
+      seenFlipHint: rs.seenFlipHint === true,
     },
   };
 }
@@ -282,8 +372,44 @@ function filterDrinks(drinks, filters, pantry) {
     .filter(drink => matchesFilters(drink, filters) && (!have || canMake(drink, have)));
 }
 
+// F1: a family (drinks.json `families`) is one card in the deck and one outcome on the wheel
+const familyKey = drink => drink.family || drink.id;
+function groupFamilies(drinks) {
+  const groups = new Map();
+  drinks.forEach(drink => groups.set(familyKey(drink), (groups.get(familyKey(drink)) || []).concat(drink)));
+  return Array.from(groups.values());
+}
+
+// one id per family: the only member that passes the filters, else a saved member, else the primary
+function deckCards(drinks, families, filters, pantry, favorites) {
+  const saved = new Set(favorites || []);
+  return groupFamilies(filterDrinks(drinks, filters, pantry)).map(group => {
+    const family = families && families[group[0].family];
+    const pick = group.length > 1 && (group.find(d => saved.has(d.id)) || group.find(d => family && d.id === family.primary));
+    return (pick || group[0]).id;
+  });
+}
+
+// a variant against its family's primary: new ingredient ids, changed lines (primary's line), removed lines
+function variantDiff(drink, primary) {
+  if (!primary || primary.id === drink.id) return { added: [], changed: {}, removed: [] };
+  const base = new Map(primary.ingredients.map(line => [line.id, line]));
+  const own = new Set(drink.ingredients.map(line => line.id));
+  const changed = {};
+  drink.ingredients.forEach(line => {
+    const was = base.get(line.id);
+    if (was && (was.ml !== line.ml || was.qty !== line.qty || was.unit !== line.unit)) changed[line.id] = was;
+  });
+  return {
+    added: drink.ingredients.filter(line => !base.has(line.id)).map(line => line.id),
+    changed,
+    removed: primary.ingredients.filter(line => !own.has(line.id)),
+  };
+}
+
 function searchHaystack(drink, ingredientNames) {
-  return [drink.name].concat(ingredientNames || []).join(' ').toLowerCase();
+  const label = drink.variantLabel ? [drink.variantLabel.en, drink.variantLabel.sv] : [];
+  return [drink.name].concat(drink.aliases || [], label, ingredientNames || []).join(' ').toLowerCase();
 }
 
 function matchesSearch(haystack, query) {
@@ -296,6 +422,21 @@ function missingIngredients(drink, pantry) {
   return Array.isArray(drink.ingredients)
     ? drink.ingredients.filter(line => line.essential && !have.has(line.id))
     : [];
+}
+
+// how many drinks use each ingredient; the pantry lists the most used first in every group
+function ingredientCounts(drinks) {
+  const counts = {};
+  drinks.forEach(drink => new Set(drink.ingredients.map(line => line.id)).forEach(id => { counts[id] = (counts[id] || 0) + 1; }));
+  return counts;
+}
+
+// Firebase auth codes the account UI names in its own words. Other Firebase codes get the generic
+// line; errors without a code are the app's own (already worded) messages, so null keeps them.
+const AUTH_ERRORS = ['wrong-password', 'invalid-credential', 'user-not-found', 'email-already-in-use', 'invalid-email', 'too-many-requests'];
+function authErrorKey(err) {
+  const code = err && typeof err.code === 'string' ? err.code.replace(/^auth\//, '') : '';
+  return AUTH_ERRORS.includes(code) ? 'auth_' + code.replace(/-/g, '_') : code ? 'auth_generic' : null;
 }
 
 function mergeState(local, server) { // union pantry/favorites (never lose a logged-out edit); settings stay server-wins
@@ -327,8 +468,9 @@ function reconcileState(base, local, remote) {
       },
       wheelFavoritesOnly: changed(base.settings.wheelFavoritesOnly,
         local.settings.wheelFavoritesOnly, remote.settings.wheelFavoritesOnly),
-      wheelOutcomesExcluded: set(base.settings.wheelOutcomesExcluded,
-        local.settings.wheelOutcomesExcluded, remote.settings.wheelOutcomesExcluded),
+      wheelExtras: set(base.settings.wheelExtras, local.settings.wheelExtras, remote.settings.wheelExtras),
+      wheelLabels: changed(base.settings.wheelLabels, local.settings.wheelLabels, remote.settings.wheelLabels),
+      seenFlipHint: local.settings.seenFlipHint || remote.settings.seenFlipHint,
     },
   };
 }
@@ -369,13 +511,19 @@ function wheelDrinkName(drink) {
   return { en: drink.name.en || drink.name.sv || drink.id, sv: drink.name.sv || drink.name.en || drink.id };
 }
 
+function wheelExcludedOutcomes(wheel, extras) {
+  const on = new Set((extras || []).concat((extras || []).includes('wine') ? ['bottle'] : []));
+  return Object.keys((wheel && wheel.outcomes) || {}).filter(id =>
+    ['beer-cider', 'wine', 'bottle', 'shot'].includes(wheel.outcomes[id].category) && !on.has(wheel.outcomes[id].category));
+}
+
 function buildSpinLineup(wheel, moodId, drinks, rng, prefs) {
   if (!wheel || !Array.isArray(wheel.moods) || !wheel.outcomes) return [];
   const mood = wheel.moods.find(item => item.id === moodId);
   if (!mood || !Array.isArray(mood.slots) || mood.slots.length !== 12) return [];
   const options = prefs || {};
   const excluded = new Set(Array.isArray(options.excludedOutcomes) ? options.excludedOutcomes : []);
-  const useBottle = moodId === 'fresh' && mood.slots.includes('flex') && wheelRng(rng) < 1 / 3;
+  const wantBottle = moodId === 'fresh' && mood.slots.includes('flex') && wheelRng(rng) < 1 / 3;
 
   const categoryPools = {};
   const categoryIndexes = {};
@@ -389,6 +537,7 @@ function buildSpinLineup(wheel, moodId, drinks, rng, prefs) {
     categoryPools[category] = shuffle(categoryPools[category], rng);
     categoryIndexes[category] = 0;
   });
+  const useBottle = wantBottle && !!(categoryPools.bottle && categoryPools.bottle.length);
   // a slot whose whole category got excluded falls back to a cocktail instead of breaking the lineup
   const deadCategorySlots = mood.slots
     .filter(slot => slot !== 'cocktail' && slot !== 'flex' && !(categoryPools[slot] && categoryPools[slot].length))
@@ -396,11 +545,15 @@ function buildSpinLineup(wheel, moodId, drinks, rng, prefs) {
 
   const cocktailCount = mood.slots.filter(slot => slot === 'cocktail').length +
     (mood.slots.includes('flex') && !useBottle ? 1 : 0) + deadCategorySlots;
-  const cocktailPool = (Array.isArray(drinks) ? drinks : [])
-    .filter(drink => wheelCocktailWeight(drink, mood) > 0);
+  const favSet = new Set(options.favoritesOnly && Array.isArray(options.favorites) ? options.favorites : []);
+  // F1: one entry per family, a saved member first, so variants never crowd the wheel
+  const cocktailPool = groupFamilies((Array.isArray(drinks) ? drinks : [])
+    .filter(drink => wheelCocktailWeight(drink, mood) > 0)).map(group => {
+    const saved = group.filter(drink => favSet.has(drink.id)), from = saved.length ? saved : group;
+    return from.length > 1 ? from[Math.floor(wheelRng(rng) * from.length)] : from[0];
+  });
   let primaryPool = cocktailPool;
   if (options.favoritesOnly) {
-    const favSet = new Set(Array.isArray(options.favorites) ? options.favorites : []);
     const favPool = cocktailPool.filter(drink => favSet.has(drink.id));
     if (favPool.length) primaryPool = favPool;
   }
@@ -445,7 +598,7 @@ function buildSpinLineup(wheel, moodId, drinks, rng, prefs) {
     const name = wheelDrinkName(drink);
     return {
       kind: 'cocktail', outcomeId: drink.id, category: 'cocktail',
-      sector: name, result: name, art: `img/${drink.id}.webp`,
+      sector: name, result: name, art: `img/${drink.art || drink.id}.webp`,
       eligible: !mood.forcedOutcome,
     };
   }
@@ -468,17 +621,61 @@ function selectWheelIndex(lineup, rng) {
   return eligible[Math.floor(wheelRng(rng) * eligible.length)].index;
 }
 
-function wheelLandingRotation(current, index, rng, count) {
-  const sectors = count || 12;
-  const step = 360 / sectors;
-  const halfSafe = step * 0.34;
-  const offset = (wheelRng(rng) * 2 - 1) * halfSafe;
-  const desired = ((-index * step - offset) % 360 + 360) % 360;
-  const currentMod = ((current % 360) + 360) % 360;
-  const travel = ((desired - currentMod) % 360 + 360) % 360;
-  const turns = 6 + Math.floor(wheelRng(rng) * 4);
-  return current + turns * 360 + travel;
+// ---------- wheel motion (design review T15–T16, from design_handoff_sipdeck/motion.js) ----------
+// Damped spring as a CSS linear() easing; zeta < 1 overshoots, dur is the time to rest in ms.
+function springLinear(zeta, dur, n) {
+  const steps = n || 48, w = 6.9 / (zeta * dur / 1000), wd = w * Math.sqrt(1 - zeta * zeta), pts = [];
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps * dur / 1000;
+    pts.push((1 - Math.exp(-zeta * w * t) * (Math.cos(wd * t) + zeta * w / wd * Math.sin(wd * t))).toFixed(4));
+  }
+  pts[steps] = '1';
+  return `linear(${pts.join(',')})`;
 }
+
+// 200 ms wind-up of −10°, one main curve whose speed is zero at both ends (derivative
+// n(n+1)u(1−u)^(n−1), n = tail), a 4° overshoot and a 350 ms settle back.
+// Owner 2026-09-25: the first three spins of a visit are slow with a long crawl before the stop,
+// for suspense; after that the wheel spins quickly for whoever is spinning until they like the result.
+const SPIN_BASE = { windup: 200, settle: 350, windupDeg: 10, overshootDeg: 4 };
+const SPIN_SLOW = Object.assign({ main: 5600, turns: 4, tail: 3 }, SPIN_BASE);
+const SPIN_FAST = Object.assign({ main: 2000, turns: 3, tail: 4 }, SPIN_BASE);
+const SLOW_SPINS = 3;
+const spinMs = s => s.windup + s.main + s.settle;
+function spinAngle(t, travel, s = SPIN_SLOW) {
+  if (t <= 0) return 0;
+  if (t < s.windup) return -s.windupDeg * (1 - Math.cos(Math.PI * t / s.windup)) / 2;
+  const t2 = t - s.windup;
+  if (t2 < s.main) {
+    const u = t2 / s.main;
+    return -s.windupDeg + (travel + s.windupDeg + s.overshootDeg) * (1 - Math.pow(1 - u, s.tail) * (1 + s.tail * u));
+  }
+  const t3 = t2 - s.main;
+  if (t3 < s.settle) {
+    const x = t3 / s.settle, e = x < .5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+    return travel + s.overshootDeg - s.overshootDeg * e;
+  }
+  return travel;
+}
+
+// Degrees from the current angle to a random safe spot inside sector `index`, after the profile's full turns.
+function landingTravel(current, index, rng, count, s = SPIN_SLOW) {
+  const sectors = count || 12, step = 360 / sectors, jitter = (wheelRng(rng) * 2 - 1) * step * 0.34;
+  const desired = ((-index * step - jitter) % 360 + 360) % 360;
+  const cur = ((current % 360) + 360) % 360;
+  return s.turns * 360 + ((desired - cur) % 360 + 360) % 360;
+}
+
+// Sector under the top pointer for a disc rotated `angle` degrees.
+function sectorAtAngle(angle, count) {
+  const sectors = count || 12;
+  return Math.floor((((-angle % 360) + 360) % 360 + 180 / sectors) / (360 / sectors)) % sectors;
+}
+
+const WHEEL_COLORS = {
+  cocktail: 'oklch(0.9 0.045 150)', 'beer-cider': 'oklch(0.9 0.05 85)', wine: 'oklch(0.9 0.045 20)',
+  shot: 'oklch(0.88 0.045 300)', water: 'oklch(0.91 0.045 230)', 'red-bull': '#E3DACA', bottle: 'oklch(0.9 0.05 60)',
+};
 
 function wheelSectorPath(index, count, radius) {
   const sectors = count || 12, r = radius || 49;
@@ -542,17 +739,73 @@ function drinkAsText(drink, ingredients, servings, unit, lang) {
   return lines.join('\n');
 }
 
+// ---------- F2 own drinks + F3 suggestions ----------
+// the form's 8 glasses and 6 liquid colours are the F4 generic-image grid (img-generic/<glass>-<color>.webp)
+const CUSTOM_GLASSES = ['coupe', 'rocks', 'highball', 'martini', 'flute', 'wine', 'shot', 'collins'];
+const CUSTOM_COLORS = { clear: '#E9E4D6', citrus: '#E6D36A', red: '#CF6A5C', green: '#93C27F', amber: '#C4863F', pink: '#E39AB8' };
+const QTY_UNITS = ['dash', 'barspoon', 'teaspoon', 'drop', 'piece', 'leaf', 'slice', 'garnish', 'splash', 'top'];
+const ML_PER = { cl: 10, ml: 1, oz: 30 };
+
+function slugify(text) {
+  return String(text).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 64);
+}
+
+// form fields -> a drink in the catalog's own shape. A typed name that matches a catalog ingredient
+// (either language) uses its id, so the pantry and the similarity check see it; anything else keeps its text as label.
+function buildCustomDrink(f, ingredients) {
+  const byName = {};
+  Object.keys(ingredients).filter(id => !ingredients[id].custom)
+    .forEach(id => [ingredients[id].en, ingredients[id].sv].forEach(n => { if (n) byName[n.toLowerCase()] = id; }));
+  const lines = f.lines.filter(l => l.name.trim()).map(l => {
+    const name = l.name.trim(), known = byName[name.toLowerCase()], amount = Number(l.amount);
+    const line = { id: known || slugify(name) || 'ingrediens', essential: l.unit !== 'garnish' };
+    if (ML_PER[l.unit]) line.ml = Math.round(amount * ML_PER[l.unit] * 10) / 10;
+    else Object.assign(line, { qty: l.unit === 'top' || !(amount > 0) ? 1 : amount, unit: l.unit });
+    if (!known) line.label = name.slice(0, 60);
+    return line;
+  });
+  const drink = { id: f.id, custom: true, name: f.name.trim().slice(0, 80), glass: f.glass, color: f.color,
+    bar: false, tags: [], ingredients: lines, method: { en: f.method.trim() } };
+  if (f.source.trim()) drink.source = /^https:\/\/\S+$/.test(f.source.trim()) ? { label: f.source.trim(), url: f.source.trim() } : { label: f.source.trim() };
+  return drink;
+}
+
+function essentialIds(drink) { return new Set(drink.ingredients.filter(l => l.essential).map(l => l.id)); }
+
+// F3: the closest catalog drink when the essential ingredients overlap by Jaccard ≥ 0,6, else null
+function similarDrink(drink, catalog) {
+  const own = essentialIds(drink);
+  let best = null;
+  catalog.forEach(other => {
+    if (other.custom || other.id === drink.id) return;
+    const theirs = essentialIds(other), shared = Array.from(own).filter(id => theirs.has(id)).length;
+    const all = own.size + theirs.size - shared, score = all ? shared / all : 0;
+    if (score >= 0.6 && (!best || score > best.score)) best = { drink: other, score, shared, all };
+  });
+  return best;
+}
+
+// F2 sync: entries {id, drink, updatedAt}; per drink the newer edit wins, and a deletion (drink null) is an edit too
+function mergeCustom(local, remote) {
+  const out = {};
+  local.concat(remote).forEach(e => { if (!out[e.id] || e.updatedAt > out[e.id].updatedAt) out[e.id] = e; });
+  return Object.values(out);
+}
+
 if (typeof module !== 'undefined') module.exports = {
   STRINGS, t, UNITS, detectLang, defaultState, normalizeState, favoriteIdFromHash, drinkIdFromHash,
   scaleMl, convert, roundForUnit, formatNumber, formatOz, formatAmount,
   formatLineAmount, drinkAsText,
   shuffle, advanceQueue, swipeDirectionForKey, BASE_FILTERS, matchesFilters, canMake, filterDrinks,
-  missingIngredients, mergeState, searchHaystack, matchesSearch,
+  groupFamilies, deckCards, variantDiff,
+  missingIngredients, mergeState, searchHaystack, matchesSearch, ingredientCounts, authErrorKey, AUTH_ERRORS,
   normalizeServingCount, MAX_SERVINGS,
   reconcileState,
   weightedSampleUnique, wheelCocktailWeight, buildSpinLineup, selectWheelIndex,
-  wheelLandingRotation, wheelSectorPath,
+  wheelSectorPath, springLinear, SPIN_SLOW, SPIN_FAST, SLOW_SPINS, spinMs, spinAngle, landingTravel, sectorAtAngle, WHEEL_COLORS,
   GLASS_SILHOUETTES, glassPlaceholder,
+  WHEEL_EXTRAS, wheelExcludedOutcomes, CUSTOM_GLASSES, CUSTOM_COLORS, QTY_UNITS, slugify, buildCustomDrink, similarDrink, mergeCustom,
 };
 
 // ---------- app (browser only) ----------
@@ -570,6 +823,7 @@ if (typeof document !== 'undefined') (function () {
   // Logged out = untouched, unchanged localStorage-only behavior. ----------
   let fb = null, fbUser = null, fbPromise = null, pushTimer = null, pushPromise = null;
   let syncUid = null, syncBase = null, syncEtag = null, deletingAccount = false;
+  let accountOpen = false, accountMode = 'login', accountEmail = ''; // transient UI: 'login' | 'register' | 'forgot'
   const API = 'https://sipdeck-api.sipdeck.workers.dev';
   const AUTH_KEY = KEY + '-auth';
 
@@ -683,27 +937,74 @@ if (typeof document !== 'undefined') (function () {
       if (user) {
         localStorage.setItem(AUTH_KEY, '1');
         await pullState();
+        await Promise.all([pullCustom().catch(() => {}), loadMine().catch(() => {})]);
       }
       else {
         localStorage.removeItem(AUTH_KEY);
         clearTimeout(pushTimer);
         syncUid = syncBase = syncEtag = null;
+        mySuggestions = {};
       }
       render();
     });
   }
 
-  let db = null;       // null = loading; {ingredients, drinks} once fetch resolves
+  let db = null;       // null = loading; {ingredients, catalog, drinks = catalog + own drinks, families} once fetch resolves
   let drinksFailed = false;
   fetch('drinks.json').then(r => r.json()).then(data => {
-    db = { ingredients: data.ingredients || {}, drinks: Array.isArray(data.drinks) ? data.drinks : [] };
+    db = { ingredients: data.ingredients || {}, catalog: Array.isArray(data.drinks) ? data.drinks : [], drinks: [], families: data.families || {} };
+    applyCustom();
     render();
   }).catch(() => { drinksFailed = true; render(); });
+
+  // F2: own drinks live outside the state blob (64 kB cap, three-way merge) as {id, drink, updatedAt}
+  // entries, one per drink; drink null is a deletion that must win over a stale device too
+  const CUSTOM_KEY = 'sipdeck.custom';
+  let custom = [], mySuggestions = {};
+  try { custom = JSON.parse(localStorage.getItem(CUSTOM_KEY) || '[]'); } catch (e) { /* unreadable = none */ }
+  custom = Array.isArray(custom) ? custom.filter(e => e && typeof e.id === 'string' && Number.isFinite(e.updatedAt) &&
+    (e.drink === null || (e.drink && Array.isArray(e.drink.ingredients)))) : [];
+  function customDrinks() { return custom.filter(e => e.drink).map(e => e.drink); }
+  function applyCustom() {
+    db.drinks = db.catalog.concat(customDrinks());
+    customDrinks().forEach(d => d.ingredients.forEach(l => { // free-text ingredients get a name for pantry and lists
+      if (!db.ingredients[l.id]) db.ingredients[l.id] = { en: l.label || l.id, sv: l.label || l.id, group: 'pantry', custom: true };
+    }));
+    deckQueue = null;
+  }
+  function putCustom(id, drink) {
+    const old = custom.find(e => e.id === id);
+    const entry = { id, drink, updatedAt: Math.max(Date.now(), old ? old.updatedAt + 1 : 0) };
+    custom = mergeCustom(custom, [entry]);
+    localStorage.setItem(CUSTOM_KEY, JSON.stringify(custom));
+    applyCustom();
+    if (fbUser) pushCustom(entry).catch(() => {}); // offline: the next sign-in's pull uploads it
+  }
+  function pushCustom(e) {
+    return authedFetch('/drinks/' + e.id + (e.drink ? '' : '?updatedAt=' + e.updatedAt),
+      e.drink ? { method: 'PUT', body: JSON.stringify({ drink: e.drink, updatedAt: e.updatedAt }) } : { method: 'DELETE' });
+  }
+  async function pullCustom() {
+    const res = await authedFetch('/drinks');
+    if (!res.ok) return; // an API without /drinks keeps own drinks local
+    const remote = (await res.json()).drinks;
+    const newer = custom.filter(e => !remote.some(r => r.id === e.id && r.updatedAt >= e.updatedAt));
+    custom = mergeCustom(custom, remote);
+    localStorage.setItem(CUSTOM_KEY, JSON.stringify(custom));
+    if (db) applyCustom();
+    await Promise.all(newer.map(pushCustom));
+  }
+  async function loadMine() {
+    const res = await authedFetch('/suggestions/mine');
+    if (!res.ok) return;
+    mySuggestions = {};
+    (await res.json()).suggestions.forEach(s => { mySuggestions[s.custom_id] = s; });
+  }
 
   let wheelData = null, wheelFailed = false, wheelPromise = null;
   let wheelMoodId = null, wheelLineup = null, wheelResult = null;
   let wheelRotation = 0, wheelSpinning = false, wheelMuted = false, wheelLevel5Spins = 0;
-  let wheelVisitActive = false, wheelOpenedFromHome = false, wheelAnimation = null;
+  let wheelVisitActive = false, wheelOpenedFromHome = false, wheelSpinId = 0, wheelSpins = 0, wheelResultIndex = -1, wheelPicker = false;
 
   function loadWheelData() {
     if (wheelPromise) return wheelPromise;
@@ -714,6 +1015,7 @@ if (typeof document !== 'undefined') (function () {
     }).then(data => {
       wheelData = data;
       wheelFailed = false;
+      syncWheelEntry();
       if (rerenderRoutes.includes(location.hash || '#/')) render();
       return data;
     }).catch(() => {
@@ -725,8 +1027,9 @@ if (typeof document !== 'undefined') (function () {
   loadWheelData();
 
   function resetWheelVisit() {
-    if (wheelAnimation) wheelAnimation.cancel();
-    wheelAnimation = null;
+    wheelSpinId++; // an unfinished spin never lands after the visit
+    wheelSpins = 0;
+    wheelPicker = false;
     wheelMoodId = null;
     wheelLineup = null;
     wheelResult = null;
@@ -747,15 +1050,22 @@ if (typeof document !== 'undefined') (function () {
     const baseOptions = [`<option value="">${esc(t(lang(), 'settings_filter_base_none'))}</option>`]
       .concat(BASE_FILTERS.map(base => `<option value="${base}"${f.base === base ? ' selected' : ''}>${esc(t(lang(), 'base_' + base))}</option>`))
       .join('');
-    const controls = `<section class="filters" aria-label="${esc(t(lang(), 'filters_label'))}">
-      <label class="filter-toggle"><input type="checkbox" data-filter="bar"${f.bar ? ' checked' : ''}> <span>${esc(t(lang(), 'settings_filter_bar'))}</span></label>
-      <label class="filter-toggle"><input type="checkbox" data-filter="makeable"${makeableOnly ? ' checked' : ''}> <span>${esc(t(lang(), 'filter_makeable'))}</span></label>
-      <label class="filter-select"><span>${esc(t(lang(), 'settings_filter_base'))}</span><select data-filter="base">${baseOptions}</select></label>
-    </section>`;
-    const matches = filteredDrinks();
-    const count = `<p class="deck-count"><span class="amount">${matches.length}</span> ${esc(t(lang(), 'deck_count_label'))}</p>`;
-    const deck = matches.length ? '<div class="deck" id="deck"></div>' : `<p class="empty">${esc(t(lang(), 'deck_no_matches'))}</p>`;
-    return `<h1 class="sr-only">${esc(t(lang(), 'deck_title'))}</h1>${deck}${controls}${count}`;
+    const matches = deckIds();
+    const filtered = !!(f.bar || f.base || makeableOnly);
+    const chip = (name, on, label) => `<button class="fchip${on ? ' on' : ''}" data-chip="${name}" aria-pressed="${on}">${label}</button>`;
+    // T11: one scrollable chip row above the deck; the match count lives in the first chip
+    const chips = `<div class="fchips" role="group" aria-label="${esc(t(lang(), 'filters_label'))}">
+      ${chip('all', !filtered, `${esc(t(lang(), filtered ? 'chip_matches' : 'chip_all'))} <span class="amount">${matches.length}</span>`)}
+      ${chip('bar', f.bar, esc(t(lang(), 'chip_bar')))}
+      ${chip('makeable', makeableOnly, esc(t(lang(), 'chip_makeable')))}
+      <label class="fchip fchip-select${f.base ? ' on' : ''}"><span aria-hidden="true">${esc(f.base ? t(lang(), 'base_' + f.base) : t(lang(), 'chip_base'))} ▾</span><select data-filter="base" aria-label="${esc(t(lang(), 'settings_filter_base'))}">${baseOptions}</select></label>
+    </div>`;
+    const deck = matches.length ? `<div class="deck" id="deck"></div>
+      <div class="deck-actions">
+        <button class="deck-skip" data-deck="-1">${esc(t(lang(), 'deck_skip'))}</button>
+        <button class="deck-save" data-deck="1">${esc(t(lang(), 'deck_save'))}</button>
+      </div>` : `<p class="empty">${esc(t(lang(), 'deck_no_matches'))}</p>`;
+    return `<h1 class="sr-only">${esc(t(lang(), 'deck_title'))}</h1>${chips}${deck}`;
   }
 
   // ---------- deck: the one imperative-DOM zone (drag/flip animate outside re-renders) ----------
@@ -766,6 +1076,8 @@ if (typeof document !== 'undefined') (function () {
   let favHistoryEntry = false; // true only when this session opened detail from the favorite list
   let makeableOnly = false; // transient deck mode; pantry itself is the persisted source of truth
   let searchQuery = ''; // transient #/sok input; cleared whenever the route leaves search
+  let pantryQuery = ''; // transient pantry filter; cleared whenever the route leaves the pantry
+  let almostAll = false; // "Nästan klart" expanded; kept while the pantry is open
   let servingDrinkId = null, recipeServings = 1;
 
   function servingsFor(id) {
@@ -781,12 +1093,30 @@ if (typeof document !== 'undefined') (function () {
     recipeServings = normalizeServingCount(value);
   }
 
-  function filteredDrinks() {
-    return filterDrinks(db.drinks, state.settings.filters, makeableOnly ? state.pantry : null);
+  function deckIds() {
+    return deckCards(db.drinks, db.families, state.settings.filters, makeableOnly ? state.pantry : null, state.favorites);
   }
 
   function ensureQueue() {
-    if (!deckQueue || !deckQueue.length) deckQueue = shuffle(filteredDrinks().map(d => d.id));
+    if (!deckQueue || !deckQueue.length) deckQueue = shuffle(deckIds());
+  }
+
+  // F1: the family around a drink; familyPrimary is null for the primary itself and for standalone drinks
+  function familyOf(drink) { return drink.family && db.families[drink.family] || null; }
+  function familyPrimary(drink) {
+    const family = familyOf(drink);
+    return family && family.primary !== drink.id ? db.drinks.find(d => d.id === family.primary) || null : null;
+  }
+  function variantSeg(drink, act) {
+    const family = familyOf(drink);
+    if (!family) return '';
+    const buttons = family.order.map(id => db.drinks.find(d => d.id === id)).filter(Boolean).map(v =>
+      `<button data-${act}="variant" data-variant="${esc(v.id)}" aria-pressed="${v.id === drink.id}">${esc(localText(v.variantLabel) || v.name)}</button>`).join('');
+    return `<div class="variant-seg" role="group" aria-label="${esc(t(lang(), 'variants_label'))}">${buttons}</div>`;
+  }
+  function wasText(line, servings) { return t(lang(), 'variant_was').replace('{a}', amountText(line, servings)); }
+  function variantWithout(diff) {
+    return diff.removed.length ? `<p class="variant-without">${esc(t(lang(), 'variant_without') + diff.removed.map(line => ingName(line.id)).join(', '))}</p>` : '';
   }
 
   function ingName(id) {
@@ -798,18 +1128,87 @@ if (typeof document !== 'undefined') (function () {
     return t(lang(), kind + '_' + String(id).replace(/-/g, '_'));
   }
 
+  // an empty pantry means "not using the pantry", not "missing everything": no missing status then.
+  // Optional lines (garnish) never count as missing, same rule as canMake.
+  function isMissing(have, line) { return state.pantry.length > 0 && line.essential && !have.has(line.id); }
+  function missingTag() { return `<span class="missing-tag" aria-hidden="true">${esc(t(lang(), 'missing_tag'))}</span>`; }
+
   function chipTags(ingredients, have) {
     return ingredients.filter(l => l.essential)
       .map(l => {
-        const missing = !have.has(l.id);
+        const missing = isMissing(have, l);
         return `<span class="chip${missing ? ' missing' : ''}">${missing ? `<span class="sr-only">${esc(t(lang(), 'missing_prefix'))}</span>` : ''}${esc(ingName(l.id))}</span>`;
       }).join('');
   }
 
-  function ingLine(line, have, servings) {
-    const amt = formatLineAmount(line, servings, unit(), lang());
-    const missing = !have.has(line.id);
-    return `<li${missing ? ' class="missing"' : ''}>${missing ? `<span class="sr-only">${esc(t(lang(), 'missing_prefix'))}</span>` : ''}<span class="amount">${esc(amt)}</span> ${esc(ingName(line.id))}</li>`;
+  // garnish rows show a bare count; the word "garnish" moves to a right-hand tag
+  function amountText(line, servings) {
+    return line.unit === 'garnish' ? formatNumber(line.qty * servings, lang()) : formatLineAmount(line, servings, unit(), lang());
+  }
+
+  // right-hand column: missing, then the F1 diff against the primary; garnish only when nothing else shows
+  function lineTag(line, missing, diff, servings) {
+    const tags = missing ? [missingTag()] : [];
+    if (diff && diff.added.includes(line.id)) tags.push(`<span class="diff-tag diff-new">${esc(t(lang(), 'variant_new'))}</span>`);
+    const was = diff && diff.changed[line.id];
+    if (was) tags.push(`<span class="diff-tag" data-was="${esc(line.id)}">${esc(wasText(was, servings))}</span>`);
+    if (!tags.length && line.unit === 'garnish') tags.push(`<span class="garnish-tag">${esc(t(lang(), 'unit_garnish'))}</span>`);
+    return tags.length > 1 ? `<span class="line-tags">${tags.join('')}</span>` : tags.join('');
+  }
+
+  function ingLine(line, have, servings, index, diff) {
+    const missing = isMissing(have, line);
+    const cls = (missing ? 'missing' : '') + (line.unit === 'garnish' ? ' garnish' : '');
+    return `<li class="${cls.trim()}">${missing ? `<span class="sr-only">${esc(t(lang(), 'missing_prefix'))}</span>` : ''}<span class="amount" data-line="${index}">${esc(amountText(line, servings))}</span><span>${esc(ingName(line.id))}</span>${lineTag(line, missing, diff, servings)}</li>`;
+  }
+
+  const METHOD_TAGS = ['stirred', 'frozen', 'layered'];
+  function kindName(drink) { return drink.custom ? t(lang(), 'custom_tag') : taxonomyName('type', drink.type); }
+  function recipeMeta(drink, withMethod) {
+    const method = withMethod && (drink.tags || []).find(tag => METHOD_TAGS.includes(tag));
+    return [!drink.custom && taxonomyName('type', drink.type), taxonomyName('glass', drink.glass), method && taxonomyName('method', method)]
+      .filter(Boolean).join(' · ');
+  }
+
+  function servingWord(servings) { return t(lang(), servings === 1 ? 'serving_one' : 'serving_many'); }
+
+  // shared by the card back (data-act) and the favorite detail (data-fav-act)
+  function recipeControls(id, servings, act) {
+    const selectedUnit = unit();
+    const unitBtns = recipeUnits().map(u =>
+      `<button data-${act}="unit" data-unit="${u}" aria-pressed="${u === selectedUnit}"${u === selectedUnit ? ' class="active"' : ''}>${u}</button>`).join('');
+    return `<div class="stepper" role="group" aria-label="${esc(t(lang(), 'servings'))}">
+        <button data-${act}="dec" aria-label="${esc(t(lang(), 'servings_decrease'))}">−</button>
+        <input class="servings-input amount" data-servings data-id="${esc(id)}" type="number"
+          min="1" max="${MAX_SERVINGS}" step="1" inputmode="numeric" value="${servings}"
+          aria-label="${esc(t(lang(), 'servings'))}"><span class="servings-unit" aria-hidden="true">${esc(servingWord(servings))}</span>
+        <button data-${act}="inc" aria-label="${esc(t(lang(), 'servings_increase'))}">+</button>
+      </div>
+      <div class="units" role="group" aria-label="${esc(t(lang(), 'settings_unit'))}">${unitBtns}</div>`;
+  }
+
+  // T13: steppers and units patch amounts, inputs and unit buttons in place instead of render()
+  function refreshRecipes() {
+    $('#view').querySelectorAll('.card, .fav-recipe').forEach(box => {
+      const input = box.querySelector('[data-servings]');
+      const drink = input && db.drinks.find(d => d.id === input.dataset.id);
+      if (!drink) return;
+      const servings = box.dataset.depth && box.dataset.depth !== '0' ? 1 : servingsFor(drink.id);
+      input.value = servings;
+      box.querySelector('.servings-unit').textContent = servingWord(servings);
+      box.querySelectorAll('.amount[data-line]').forEach(el => {
+        el.textContent = amountText(drink.ingredients[Number(el.dataset.line)], servings);
+      });
+      const primary = familyPrimary(drink);
+      box.querySelectorAll('[data-was]').forEach(el => {
+        el.textContent = wasText(primary.ingredients.find(line => line.id === el.dataset.was), servings);
+      });
+      box.querySelectorAll('.units button').forEach(b => {
+        const on = b.dataset.unit === unit();
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-pressed', String(on));
+      });
+    });
   }
 
   function wireArt(img) {
@@ -820,7 +1219,8 @@ if (typeof document !== 'undefined') (function () {
   }
 
   function artMarkup(drink) {
-    return `${glassPlaceholder(drink.glass)}<img class="cocktail-art" src="img/${esc(drink.id)}.webp" alt="" loading="lazy" decoding="async" draggable="false">`;
+    if (drink.custom) return glassPlaceholder(drink.glass); // ponytail: silhouette until F4's img-generic/<glass>-<color>.webp
+    return `${glassPlaceholder(drink.glass)}<img class="cocktail-art" src="img/${esc(drink.art || drink.id)}.webp" alt="" loading="lazy" decoding="async" draggable="false">`;
   }
 
   function buildCard(drink, depth, opts) {
@@ -837,41 +1237,41 @@ if (typeof document !== 'undefined') (function () {
     el.setAttribute('aria-label', drink.name);
     const have = new Set(state.pantry);
     const tags = chipTags(drink.ingredients, have);
-    const selectedUnit = unit();
     const servings = depth === 0 ? servingsFor(drink.id) : 1;
-    const unitBtns = recipeUnits().map(u =>
-      `<button data-act="unit" data-unit="${u}" aria-pressed="${u === selectedUnit}"${u === selectedUnit ? ' class="active"' : ''}>${u}</button>`).join('');
+    const hint = state.settings.seenFlipHint ? '' : `<span class="flip-hint">${esc(t(lang(), 'flip_hint'))}</span>`;
+    const source = drink.source && drink.source.label
+      ? `<p class="card-source">${esc(t(lang(), 'source_label'))}: ${esc(drink.source.label)}</p>` : '';
+    const family = familyOf(drink), others = family ? family.order.length - 1 : 0;
+    const variants = others ? `<span class="chip variant-chip">${esc(t(lang(), others === 1 ? 'variants_one' : 'variants_many').replace('{n}', others))}</span>` : '';
+    const diff = variantDiff(drink, familyPrimary(drink));
     el.innerHTML = `
       <div class="card-inner">
         <div class="card-face card-front">
           <div class="card-art">${artMarkup(drink)}</div>
-          <h2 class="card-name">${esc(drink.name)}</h2>
-          <div class="card-meta">${esc(taxonomyName('type', drink.type))}</div>
-          <div class="card-tags">${tags}</div>
+          <div class="card-title"><h2 class="card-name">${esc(drink.name)}</h2>${hint}</div>
+          <div class="card-meta">${esc(recipeMeta(drink, false))}</div>
+          <div class="card-tags">${tags}${variants}${drink.custom ? `<span class="chip custom-chip">${esc(t(lang(), 'custom_tag'))}</span>` : ''}</div>
         </div>
         <div class="card-face card-back">
+          ${variantSeg(drink, 'act')}
           <h2 class="card-name">${esc(drink.name)}</h2>
+          <div class="card-meta">${esc(recipeMeta(drink, true))}</div>
           <div class="card-recipe">
-            <ul class="ing">${drink.ingredients.map(l => ingLine(l, have, servings)).join('')}</ul>
+            <ul class="ing">${drink.ingredients.map((l, i) => ingLine(l, have, servings, i, diff)).join('')}</ul>
+            ${variantWithout(diff)}
             <p class="card-method">${esc(drink.method[lang()] || drink.method.en)}</p>
           </div>
-          <div class="card-ctrl">
-            <div class="stepper" role="group" aria-label="${esc(t(lang(), 'servings'))}">
-              <button data-act="dec" aria-label="${esc(t(lang(), 'servings_decrease'))}">−</button>
-              <input class="servings-input amount" data-servings data-id="${esc(drink.id)}" type="number"
-                min="1" max="${MAX_SERVINGS}" step="1" inputmode="numeric" value="${servings}"
-                aria-label="${esc(t(lang(), 'servings'))}">
-              <button data-act="inc" aria-label="${esc(t(lang(), 'servings_increase'))}">+</button>
-            </div>
-            <div class="units" role="group" aria-label="${esc(t(lang(), 'settings_unit'))}">${unitBtns}</div>
-          </div>
+          <div class="card-ctrl">${recipeControls(drink.id, servings, 'act')}</div>
+          ${source}
         </div>
       </div>${tint ? `
       <div class="tint tint-save"></div>
-      <div class="tint tint-skip"></div>` : ''}`;
+      <div class="tint tint-skip"></div>
+      <span class="swipe-label swipe-label-save" aria-hidden="true">${esc(t(lang(), 'swipe_save'))}</span>
+      <span class="swipe-label swipe-label-skip" aria-hidden="true">${esc(t(lang(), 'swipe_skip'))}</span>` : ''}`;
     const art = el.querySelector('.cocktail-art');
     setCardFlipped(el, flipped);
-    wireArt(art);
+    if (art) wireArt(art); // own drinks draw only the silhouette
     return el;
   }
 
@@ -900,20 +1300,37 @@ if (typeof document !== 'undefined') (function () {
       const s = state.settings;
       const card = b.closest('.card');
       const input = card && card.querySelector('[data-servings]');
+      if (b.dataset.act === 'variant') return switchVariant(card, b.dataset.variant);
       if (b.dataset.act === 'inc') setServings(card.dataset.id, Number(input.value) + 1);
       else if (b.dataset.act === 'dec') setServings(card.dataset.id, Number(input.value) - 1);
       else if (b.dataset.act === 'unit') { s.unit = b.dataset.unit; save(); }
-      render(); // coarse re-render; deckQueue + flippedId survive, so the same card stays up, flipped
+      refreshRecipes();
     });
     attachDrag(deckEl.querySelector('.card[data-depth="0"]'));
   }
 
+  // F1: the top card swaps to another variant in place, still flipped; Save then saves the one shown
+  function switchVariant(card, id) {
+    const drink = db.drinks.find(d => d.id === id);
+    if (!drink || card.dataset.leaving || id === card.dataset.id) return;
+    setServings(id, servingsFor(card.dataset.id));
+    deckQueue[0] = flippedId = id;
+    const next = buildCard(drink, 0);
+    card.replaceWith(next);
+    attachDrag(next);
+    next.querySelector('.variant-seg [aria-pressed="true"]').focus();
+  }
+
+  // leavingCard is null when a card comes back (undo) instead of leaving
   function promoteDeck(leavingCard) {
     const deckEl = $('#deck');
     if (!deckEl) return;
-    const moveFocus = leavingCard === document.activeElement || leavingCard.contains(document.activeElement);
-    leavingCard.inert = true;
-    leavingCard.tabIndex = -1;
+    const moveFocus = leavingCard && (leavingCard === document.activeElement || leavingCard.contains(document.activeElement));
+    if (leavingCard) {
+      leavingCard.inert = true;
+      leavingCard.tabIndex = -1;
+      leavingCard.dataset.depth = 'out'; // never matches [data-depth="0"] while it flies away
+    }
     ensureQueue();
     const desired = deckQueue.slice(0, 4);
     Array.from(deckEl.querySelectorAll('.card')).forEach(card => {
@@ -924,7 +1341,8 @@ if (typeof document !== 'undefined') (function () {
       if (!card) {
         const drink = db.drinks.find(item => item.id === id);
         card = buildCard(drink, depth);
-        deckEl.insertBefore(card, deckEl.firstChild);
+        if (depth === 0) deckEl.appendChild(card); // a restored top card paints above the rest
+        else deckEl.insertBefore(card, deckEl.firstChild);
       }
       card.dataset.depth = depth;
       card.tabIndex = depth === 0 ? 0 : -1;
@@ -936,10 +1354,21 @@ if (typeof document !== 'undefined') (function () {
     if (moveFocus && nextCard) nextCard.focus();
   }
 
+  function flipTop(card) {
+    const id = deckQueue[0];
+    flippedId = flippedId === id ? null : id;
+    setCardFlipped(card, flippedId === id);
+    if (!state.settings.seenFlipHint) { // the hint has done its job after the first flip
+      state.settings.seenFlipHint = true;
+      save();
+      $('#view').querySelectorAll('.flip-hint').forEach(el => el.remove());
+    }
+  }
+
   function attachDrag(card) {
     if (!card) return;
-    const tintSave = card.querySelector('.tint-save');
-    const tintSkip = card.querySelector('.tint-skip');
+    const cues = ['.tint-save', '.tint-skip', '.swipe-label-save', '.swipe-label-skip'].map(sel => card.querySelector(sel));
+    const showCues = (save, skip) => cues.forEach((el, i) => { el.style.opacity = i % 2 ? skip : save; });
     const threshold = () => card.offsetWidth * 0.35;
     let dragging = false, moved = false, startX = 0, startY = 0, dx = 0, dy = 0;
     let lastX = 0, lastT = 0, vx = 0;
@@ -947,13 +1376,11 @@ if (typeof document !== 'undefined') (function () {
     card.addEventListener('keydown', e => {
       if (e.target !== card || (e.key !== 'Enter' && e.key !== ' ')) return;
       e.preventDefault();
-      const id = deckQueue[0];
-      flippedId = flippedId === id ? null : id;
-      setCardFlipped(card, flippedId === id);
+      flipTop(card);
     });
 
     card.addEventListener('pointerdown', e => {
-      if (e.target.closest('.card-ctrl')) return; // controls are dead zones
+      if (e.target.closest('.card-ctrl, .variant-seg')) return; // controls are dead zones
       if (!e.target.closest('.card-recipe')) e.preventDefault(); // let recipe text scroll vertically
       dragging = true; moved = false;
       startX = lastX = e.clientX; startY = e.clientY; dx = dy = vx = 0; lastT = e.timeStamp;
@@ -971,8 +1398,7 @@ if (typeof document !== 'undefined') (function () {
       card.style.transform = `translate(${dx}px, ${dy * 0.4}px) rotate(${dx * 0.04}deg)`;
       const p = dx / threshold();
       const a = Math.abs(p) < 0.3 ? 0 : Math.min(1, (Math.abs(p) - 0.3) / 0.7);
-      tintSave.style.opacity = p > 0 ? a : 0;
-      tintSkip.style.opacity = p < 0 ? a : 0;
+      showCues(p > 0 ? a : 0, p < 0 ? a : 0);
     });
 
     function settle(e) {
@@ -981,17 +1407,12 @@ if (typeof document !== 'undefined') (function () {
       card.style.willChange = '';
       const flick = Math.abs(vx) > 0.6 && vx * dx > 0;
       if (Math.abs(dx) > threshold() || flick) {
-        flyOff(card, dx > 0 ? 1 : -1, dy);
+        flyOff(card, dx > 0 ? 1 : -1, dy, dx, vx);
       } else {
-        tintSave.style.opacity = 0;
-        tintSkip.style.opacity = 0;
+        showCues(0, 0);
         card.style.transition = 'transform var(--sd-t-spring) var(--sd-ease-spring)';
         card.style.transform = '';
-        if (!moved && !e.target.closest('.card-ctrl')) { // a tap, not a drag: flip
-          const id = deckQueue[0];
-          flippedId = flippedId === id ? null : id;
-          setCardFlipped(card, flippedId === id);
-        }
+        if (!moved && !e.target.closest('.card-ctrl')) flipTop(card); // a tap, not a drag
       }
     }
     card.addEventListener('pointerup', settle);
@@ -999,22 +1420,34 @@ if (typeof document !== 'undefined') (function () {
       dragging = false;
       card.style.willChange = '';
       card.style.transform = '';
-      tintSave.style.opacity = tintSkip.style.opacity = 0;
+      showCues(0, 0);
     });
     card.addEventListener('dragstart', e => e.preventDefault());
   }
 
-  function flyOff(card, dir, dy) {
+  // dx/vx come from a drag: the exit keeps the finger's speed. Buttons and keys use the 320 ms token.
+  function flyOff(card, dir, dy, dx, vx) {
     if (card.dataset.leaving) return;
     card.dataset.leaving = 'true';
     const x = (window.innerWidth + card.offsetWidth) * dir;
-    card.style.transition = 'transform var(--sd-t-fly) var(--sd-ease-fly)'; // never fades — it leaves
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const ms = reduced ? 0 : vx ? Math.max(180, Math.min(360, Math.abs(x - dx) / Math.max(Math.abs(vx), 0.8))) : 320;
+    card.style.transition = `transform ${Math.round(ms)}ms var(--sd-ease-fly)`; // never fades, it leaves
     card.style.transform = `translate(${x}px, ${dy * 0.4}px) rotate(${dir * 18}deg)`;
     const id = deckQueue[0];
     if (dir > 0) { // save (A3): idempotent, out of this cycle; exhaustion reshuffles the full set
       if (!state.favorites.includes(id)) state.favorites.push(id);
       deckQueue = advanceQueue(deckQueue, true);
       save();
+      updateNav();
+      showToast(t(lang(), 'toast_saved'), () => {
+        state.favorites = state.favorites.filter(x => x !== id);
+        save();
+        updateNav();
+        deckQueue = [id].concat(deckQueue.filter(x => x !== id));
+        flippedId = null;
+        promoteDeck(null);
+      });
     } else { // skip (A2): to the back of the deck, nothing is ever dismissed
       deckQueue = advanceQueue(deckQueue, false);
     }
@@ -1032,13 +1465,27 @@ if (typeof document !== 'undefined') (function () {
     setTimeout(finish, 450); // reduced-motion sets 0ms durations, which never fire transitionend
   }
 
+  // ---------- toast with undo (T8): one at a time, 4 s ----------
+  let toastTimer = null, toastUndo = null;
+  function showToast(text, undo) {
+    const el = $('#toast');
+    el.querySelector('span').textContent = text;
+    el.querySelector('button').textContent = t(lang(), 'undo');
+    toastUndo = undo;
+    el.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(hideToast, 4000);
+  }
+  function hideToast() { $('#toast').hidden = true; toastUndo = null; }
+  $('#toast button').addEventListener('click', () => { const undo = toastUndo; hideToast(); if (undo) undo(); });
+
   // ---------- favorites: compact image list -> one continuous, swipe-free recipe detail ----------
   function favDrink() {
     return favOpenId && db ? db.drinks.find(d => d.id === favOpenId) || null : null;
   }
 
   function missingBadge(drink) {
-    const missing = missingIngredients(drink, state.pantry);
+    const missing = state.pantry.length ? missingIngredients(drink, state.pantry) : [];
     if (!missing.length) return '';
     const text = missing.length > 2
       ? t(lang(), 'missing_many')
@@ -1056,72 +1503,143 @@ if (typeof document !== 'undefined') (function () {
     const open = favDrink();
     if (favOpenId && !open) favOpenId = null; // favorite id vanished from db: just close, no crash
     if (open) {
-      const selectedUnit = unit();
       const servings = servingsFor(open.id);
       const have = new Set(state.pantry);
       const tags = chipTags(open.ingredients, have);
-      const pantryMissing = new Set(open.ingredients.filter(line => !have.has(line.id)).map(line => line.id));
-      const ingredientRows = open.ingredients.map(line => {
+      const diff = variantDiff(open, familyPrimary(open));
+      const ingredientRows = open.ingredients.map((line, i) => {
         const checked = favChecked.has(line.id);
-        return `<label class="fav-ing-row${checked ? ' done' : ''}${pantryMissing.has(line.id) ? ' pantry-missing' : ''}">
+        const missing = isMissing(have, line);
+        return `<label class="fav-ing-row${checked ? ' done' : ''}${line.unit === 'garnish' ? ' garnish' : ''}">
           <input type="checkbox" data-fav-ing="${esc(line.id)}"${checked ? ' checked' : ''} aria-label="${esc(t(lang(), 'check_ingredient') + ' ' + ingName(line.id))}">
-          <span class="amount">${esc(formatLineAmount(line, servings, selectedUnit, lang()))}</span>
-          <span>${esc(ingName(line.id))}</span>
+          <span class="amount" data-line="${i}">${esc(amountText(line, servings))}</span>
+          <span>${missing ? `<span class="sr-only">${esc(t(lang(), 'missing_prefix'))}</span>` : ''}${esc(ingName(line.id))}</span>${lineTag(line, missing, diff, servings)}
         </label>`;
       }).join('');
-      const unitBtns = recipeUnits().map(u => `<button data-fav-act="unit" data-unit="${u}" aria-pressed="${u === selectedUnit}"${u === selectedUnit ? ' class="active"' : ''}>${u}</button>`).join('');
-      const source = open.source && open.source.url && open.source.label
-        ? `<p class="fav-source"><a href="${esc(open.source.url)}" target="_blank" rel="noopener noreferrer">${esc(t(lang(), 'source_label'))}: ${esc(open.source.label)}</a></p>`
-        : '';
+      const sourceText = open.source && open.source.label ? `${esc(t(lang(), 'source_label'))}: ${esc(open.source.label)}` : '';
+      const source = !sourceText ? '' : open.source.url
+        ? `<p class="fav-source"><a href="${esc(open.source.url)}" target="_blank" rel="noopener noreferrer">${sourceText}</a></p>`
+        : `<p class="fav-source">${sourceText}</p>`;
+      const tools = open.custom
+        ? `<span class="fav-tools"><a class="fav-remove" href="#/egen/${esc(open.id)}">${esc(t(lang(), 'custom_edit'))}</a>
+          <button class="fav-remove" data-custom-act="delete" data-id="${esc(open.id)}">${esc(t(lang(), 'custom_delete'))}</button></span>`
+        : `<button class="fav-remove" data-act="fav" data-id="${esc(open.id)}">${esc(t(lang(), state.favorites.includes(open.id) ? 'fav_unfavorite' : 'fav_add'))}</button>`;
+      const suggest = !open.custom ? '' : mySuggestions[open.id] ? suggestStatus(mySuggestions[open.id])
+        : `<p><a class="pill-btn suggest-open" href="#/foresla/${esc(open.id)}">${esc(t(lang(), 'suggest_title'))}</a></p>`;
       return `${title}
         <div class="fav-toolbar">
           <button id="favClose" class="fav-back">${esc(t(lang(), 'fav_back'))}</button>
-          <button class="fav-remove" data-act="fav" data-id="${esc(open.id)}">${esc(t(lang(), state.favorites.includes(open.id) ? 'fav_unfavorite' : 'fav_add'))}</button>
+          ${tools}
         </div>
         <article class="fav-detail">
           <section class="fav-hero">
+            ${variantSeg(open, 'fav-act')}
             <div class="fav-detail-art">${artMarkup(open)}</div>
             <h2 class="card-name">${esc(open.name)}</h2>
-            <div class="card-meta">${esc(taxonomyName('type', open.type))}</div>
+            <div class="card-meta">${esc(recipeMeta(open, true))}</div>
             <div class="card-tags">${tags}</div>
           </section>
           <section class="fav-recipe">
             <h2>${esc(t(lang(), 'recipe_title'))}</h2>
-            <div class="fav-recipe-controls">
-              <div class="stepper" role="group" aria-label="${esc(t(lang(), 'servings'))}">
-                <button data-fav-act="dec" aria-label="${esc(t(lang(), 'servings_decrease'))}">−</button>
-                <input class="servings-input amount" data-servings data-id="${esc(open.id)}" type="number"
-                  min="1" max="${MAX_SERVINGS}" step="1" inputmode="numeric" value="${servings}"
-                  aria-label="${esc(t(lang(), 'servings'))}">
-                <button data-fav-act="inc" aria-label="${esc(t(lang(), 'servings_increase'))}">+</button>
-              </div>
-              <div class="units" role="group" aria-label="${esc(t(lang(), 'settings_unit'))}">${unitBtns}</div>
-            </div>
+            <div class="fav-recipe-controls">${recipeControls(open.id, servings, 'fav-act')}</div>
             <h3>${esc(t(lang(), 'ingredients_title'))}</h3>
             <p class="fav-hint">${esc(t(lang(), 'ingredient_check_hint'))}</p>
             <div class="fav-ing-list">${ingredientRows}</div>
+            ${variantWithout(diff)}
             <h3>${esc(t(lang(), 'method_title'))}</h3>
             <p class="fav-method">${esc(open.method[lang()] || open.method.en)}</p>
             ${source}
             <button class="fav-copy" data-copy-fav>${esc(t(lang(), 'copy_recipe'))}</button>
+            ${suggest}
           </section>
         </article>`;
     }
-    const rows = state.favorites.map(id => db.drinks.find(d => d.id === id)).filter(Boolean); // skip ids not in db
-    if (!rows.length) return `${title}<p class="empty">${esc(t(lang(), 'favorites_empty'))}</p>`;
-    const list = rows.map(d => `
+    // own drinks get their own section below, so they are not listed twice when also saved
+    const rows = state.favorites.map(id => db.drinks.find(d => d.id === id)).filter(d => d && !d.custom); // skip ids not in db
+    const row = d => `
       <div class="list-card fav-row">
         <button class="fav-open" data-id="${esc(d.id)}">
           <span class="fav-thumb">${artMarkup(d)}</span>
           <span class="fav-info">
             <span class="name">${esc(d.name)}</span>
-            <span class="meta">${esc(taxonomyName('type', d.type))}</span>
+            <span class="meta">${esc(kindName(d))}${d.custom && mySuggestions[d.id] ? ' · ' + esc(t(lang(), 'suggest_status_' + mySuggestions[d.id].status)) : ''}</span>
             ${missingBadge(d)}
           </span>
         </button>
-        <button class="fav-remove" data-act="fav" data-id="${esc(d.id)}" aria-label="${esc(t(lang(), 'fav_unfavorite'))}">&times;</button>
-      </div>`).join('');
-    return `${title}${list}`;
+        ${d.custom ? '' : `<button class="fav-remove" data-act="fav" data-id="${esc(d.id)}" aria-label="${esc(t(lang(), 'fav_unfavorite'))}">&times;</button>`}
+      </div>`;
+    const mine = customDrinks();
+    const own = `<div class="section-head"><h2 class="pantry-almost-title">${esc(t(lang(), 'custom_title'))}</h2>
+      <a class="pill-btn" href="#/egen">${esc(t(lang(), 'custom_new'))}</a></div>
+      ${mine.length ? mine.map(row).join('') : `<p class="fav-hint">${esc(t(lang(), 'custom_empty'))}</p>`}`;
+    if (!rows.length) return `${title}<p class="empty">${esc(t(lang(), 'favorites_empty'))}</p>
+      <p class="empty-action"><a class="pill-btn" href="#/">${esc(t(lang(), 'favorites_to_deck'))}</a></p>${own}`;
+    return `${title}${rows.map(row).join('')}${own}`;
+  }
+
+  // F3: Sent → In review → Published (with a link to the catalog drink) or Declined with the curator's note
+  function suggestStatus(s) {
+    const note = s.status === 'declined' && s.note ? ': ' + esc(s.note) : '';
+    const link = s.status === 'published' && s.drink_id ? ` · <a href="#/drink/${esc(s.drink_id)}">${esc(t(lang(), 'suggest_in_deck'))}</a>` : '';
+    return `<p class="suggest-status">${esc(t(lang(), 'suggest_title'))}: <strong>${esc(t(lang(), 'suggest_status_' + s.status))}</strong>${note}${link}</p>`;
+  }
+
+  const pick = (name, value, on, label, extra) => `<label class="pick"${extra || ''}><input type="radio" name="${name}" value="${esc(value)}"${on ? ' checked' : ''}${extra ? ` aria-label="${esc(label)}"` : ''}><span>${extra ? '' : esc(label)}</span></label>`;
+  function customLine(l) {
+    const u = !l || typeof l.ml === 'number' ? unit() : l.unit;
+    const amount = !l ? '' : typeof l.ml === 'number' ? Math.round(convert(l.ml, u) * 100) / 100 : l.qty;
+    const units = recipeUnits().concat(QTY_UNITS).map(x =>
+      `<option value="${x}"${x === u ? ' selected' : ''}>${esc(UNITS.includes(x) ? x : t(lang(), 'unit_' + x))}</option>`).join('');
+    return `<div class="custom-line"><input name="amount" type="number" min="0" step="any" inputmode="decimal" aria-label="${esc(t(lang(), 'custom_amount'))}" value="${amount}"><select name="unit" aria-label="${esc(t(lang(), 'settings_unit'))}">${units}</select><input name="ing" list="ingredientList" maxlength="60" aria-label="${esc(t(lang(), 'custom_ingredient'))}" value="${l ? esc(ingName(l.id)) : ''}"><button type="button" data-custom-act="remove-line" aria-label="${esc(t(lang(), 'custom_remove_line'))}">&times;</button></div>`;
+  }
+
+  function viewCustomForm() {
+    const id = hid(location.hash, '#/egen/'), d = id && db ? db.drinks.find(x => x.id === id && x.custom) : null;
+    const title = `<h1 class="screen-title">${esc(t(lang(), d ? 'custom_edit_title' : 'custom_new_title'))}</h1>`;
+    if (!db) return `${title}<p class="empty">${esc(t(lang(), 'deck_loading'))}</p>`;
+    const glass = d ? d.glass : CUSTOM_GLASSES[0], color = d && d.color ? d.color : 'clear';
+    return `${title}<form id="customForm" class="account-form custom-form" data-id="${d ? esc(d.id) : ''}">
+      <label>${esc(t(lang(), 'custom_name'))} <input name="name" required maxlength="80" value="${d ? esc(d.name) : ''}"></label>
+      <fieldset><legend>${esc(t(lang(), 'custom_glass'))}</legend>
+        <div class="picks">${CUSTOM_GLASSES.map(g => pick('glass', g, g === glass, taxonomyName('glass', g))).join('')}</div>
+        <div class="picks">${Object.keys(CUSTOM_COLORS).map(c => pick('color', c, c === color, t(lang(), 'color_' + c), ` style="--swatch:${CUSTOM_COLORS[c]}"`)).join('')}</div>
+      </fieldset>
+      <fieldset><legend>${esc(t(lang(), 'ingredients_title'))}</legend>
+        <div id="customLines">${(d ? d.ingredients : [null, null]).map(customLine).join('')}</div>
+        <button type="button" class="account-link" data-custom-act="add-line">${esc(t(lang(), 'custom_add_line'))}</button>
+      </fieldset>
+      <label>${esc(t(lang(), 'method_title'))} <textarea name="method" required maxlength="2000" rows="4">${d ? esc(d.method.en) : ''}</textarea></label>
+      <label>${esc(t(lang(), 'custom_source'))} <input name="source" maxlength="200" placeholder="${esc(t(lang(), 'custom_source_ph'))}" value="${d && d.source ? esc(d.source.label) : ''}"></label>
+      <p id="customError" class="warn" role="status" hidden></p>
+      <button type="submit" class="deck-save custom-save">${esc(t(lang(), 'custom_save'))}</button>
+      <datalist id="ingredientList">${Object.keys(db.ingredients).filter(i => !db.ingredients[i].custom).map(i => `<option value="${esc(ingName(i))}">`).join('')}</datalist>
+    </form>`;
+  }
+
+  function viewSuggest() {
+    const id = hid(location.hash, '#/foresla/'), d = id && db ? db.drinks.find(x => x.id === id && x.custom) : null;
+    const title = `<h1 class="screen-title">${esc(t(lang(), 'suggest_title'))}</h1>`;
+    if (!d) return `${title}<p class="empty">${esc(t(lang(), db ? 'search_empty' : 'deck_loading'))}</p>`;
+    const head = `${title}<div class="fav-toolbar"><a class="fav-back" href="#/favoriter/${esc(d.id)}">${esc(t(lang(), 'fav_back'))}</a></div>
+      <p class="suggest-drink">${esc(d.name)}</p>`;
+    if (!fbUser) return `${head}<p class="fav-hint">${esc(t(lang(), 'suggest_login'))}</p>
+      <p><a class="pill-btn" href="#/installningar">${esc(t(lang(), 'suggest_login_link'))}</a></p>`;
+    if (mySuggestions[d.id]) return head + suggestStatus(mySuggestions[d.id]);
+    const similar = similarDrink(d, db.catalog);
+    const box = similar ? `<fieldset class="suggest-similar"><legend>${esc(t(lang(), 'suggest_similar'))}</legend>
+        <div class="fav-row"><span class="fav-thumb">${artMarkup(similar.drink)}</span><span class="fav-info"><span class="name">${esc(similar.drink.name)}</span>
+        <span class="meta">${esc(t(lang(), 'suggest_shared').replace('{n}', similar.shared).replace('{m}', similar.all))}</span></span></div>
+        <div class="picks" role="group" aria-label="${esc(t(lang(), 'suggest_kind'))}">${pick('kind', 'variant', false, t(lang(), 'suggest_as_variant')).replace('<input', '<input required')}${pick('kind', 'new', false, t(lang(), 'suggest_as_new'))}</div>
+      </fieldset>` : '';
+    return `${head}<form id="suggestForm" class="account-form custom-form" data-id="${esc(d.id)}" data-similar="${similar ? esc(similar.drink.id) : ''}">
+      ${box}
+      <label>${esc(t(lang(), 'custom_source'))} <input name="source" maxlength="200" placeholder="${esc(t(lang(), 'custom_source_ph'))}" value="${d.source ? esc(d.source.label) : ''}"></label>
+      <label>${esc(t(lang(), 'suggest_name'))} <input name="displayName" maxlength="60" autocomplete="nickname"></label>
+      <label class="filter-toggle suggest-consent"><input type="checkbox" name="consent" required> <span>${esc(t(lang(), 'suggest_consent'))}</span></label>
+      <p id="suggestError" class="warn" role="status" hidden></p>
+      <button type="submit" class="deck-save custom-save">${esc(t(lang(), 'suggest_send'))}</button>
+      <p class="fav-hint">${esc(t(lang(), 'suggest_hint'))}</p>
+    </form>`;
   }
 
   function viewPantry() {
@@ -1136,127 +1654,202 @@ if (typeof document !== 'undefined') (function () {
       const group = ingredient && groups[ingredient.group] ? ingredient.group : 'pantry';
       groups[group].push(id);
     });
+    const counts = ingredientCounts(db.drinks);
     const fieldsets = Object.keys(groups).map(group => {
       const items = groups[group]
-        .sort((a, b) => ingName(a).localeCompare(ingName(b), lang()))
+        .sort((a, b) => counts[b] - counts[a] || ingName(a).localeCompare(ingName(b), lang()))
         .map(id => `<label class="pantry-item"><input type="checkbox" data-pantry="${esc(id)}"${state.pantry.includes(id) ? ' checked' : ''}> <span>${esc(ingName(id))}</span></label>`)
         .join('');
       return items ? `<fieldset class="pantry-group"><legend>${esc(t(lang(), 'pantry_group_' + group))}</legend><div class="pantry-list">${items}</div></fieldset>` : '';
     }).join('');
-    const almost = db.drinks
+    return `${title}
+      <input type="search" id="pantrySearch" class="search-input" value="${esc(pantryQuery)}"
+        placeholder="${esc(t(lang(), 'pantry_search'))}" aria-label="${esc(t(lang(), 'pantry_search'))}">
+      <p class="pantry-count" id="pantryCount" role="status">${esc(pantryCountText())}</p>
+      <div id="pantryAlmost">${pantryAlmostMarkup()}</div>
+      <p class="pantry-intro">${esc(t(lang(), 'pantry_intro'))}</p>${fieldsets}<p class="empty" id="pantryNoHits" hidden>${esc(t(lang(), 'pantry_search_empty'))}</p>`;
+  }
+
+  function pantryCountText() {
+    const n = db.drinks.filter(drink => canMake(drink, state.pantry)).length;
+    return t(lang(), n === 1 ? 'pantry_count_one' : 'pantry_count_many').replace('{n}', n);
+  }
+
+  // drinks one ingredient away, first on the page but in a sideways row, so checking an item never
+  // pushes the checkboxes down. An empty pantry is "not using the pantry", so no section then.
+  function pantryAlmostMarkup() {
+    const almost = state.pantry.length ? db.drinks
       .map(drink => ({ drink, missing: missingIngredients(drink, state.pantry) }))
-      .filter(x => x.missing.length === 1);
-    const almostSection = almost.length ? `
-      <h2 class="pantry-almost-title">${esc(t(lang(), 'pantry_almost_title'))}</h2>
-      <div class="pantry-almost-list">${almost.map(({ drink, missing }) => `
+      .filter(x => x.missing.length === 1) : [];
+    // owner 2026-09-25: the count says there are more; "show all" wraps the same cards downwards on request
+    const all = almostAll && almost.length > 2, more = almost.length > 2
+      ? `<button class="pill-btn" data-almost-all aria-expanded="${all}">${esc(t(lang(), all ? 'pantry_almost_fewer' : 'pantry_almost_all'))}</button>` : '';
+    return almost.length ? `
+      <div class="section-head almost-head"><h2 class="pantry-almost-title">${esc(t(lang(), 'pantry_almost_title'))} · ${almost.length}</h2>${more}</div>
+      <div class="pantry-almost-list${all ? ' all' : ''}">${almost.map(({ drink, missing }) => `
         <a class="list-card pantry-almost-row" href="#/drink/${esc(drink.id)}">
           <span class="name">${esc(drink.name)}</span>
           <span class="meta">${esc(t(lang(), 'missing_prefix') + ingName(missing[0].id))}</span>
         </a>`).join('')}</div>` : '';
-    return `${title}<p class="pantry-intro">${esc(t(lang(), 'pantry_intro'))}</p>${fieldsets}${almostSection}`;
+  }
+
+  // the search hides items in place; the list is never re-rendered, so checkboxes keep focus
+  function filterPantry() {
+    const q = pantryQuery.trim().toLowerCase();
+    let any = false;
+    $('#view').querySelectorAll('.pantry-group').forEach(group => {
+      let shown = 0;
+      group.querySelectorAll('.pantry-item').forEach(item => {
+        item.hidden = !item.textContent.toLowerCase().includes(q);
+        if (!item.hidden) shown++;
+      });
+      group.hidden = !shown;
+      any = any || shown > 0;
+    });
+    $('#pantryNoHits').hidden = any;
   }
 
   function wheelMood() { return wheelData && wheelData.moods.find(mood => mood.id === wheelMoodId) || null; }
   function localText(value) { return value && (value[lang()] || value.en) || ''; }
-  function neutralWheelSvg() {
-    const sectors = Array.from({ length: 12 }, (_, index) =>
-      `<path class="wheel-sector" d="${wheelSectorPath(index)}"/>`).join('');
-    return `<svg class="wheel-neutral" viewBox="0 0 100 100" aria-hidden="true">${sectors}<circle class="wheel-rim" cx="50" cy="50" r="49"/><circle class="wheel-hub" cx="50" cy="50" r="10"/><circle class="wheel-hub-dot" cx="50" cy="50" r="3"/></svg>`;
+
+  function wheelArtCentre(index) {
+    const rad = index * 30 * Math.PI / 180;
+    return [50 + 36 * Math.sin(rad), 50 - 36 * Math.cos(rad)].map(n => n.toFixed(3));
+  }
+  function wheelChoices() {
+    return wheelLineup ? wheelLineup.map(entry => localText(entry.sector)).join(', ') : t(lang(), 'wheel_pick_below');
   }
 
-  function wheelSvgMarkup(lineup) {
-    if (!Array.isArray(lineup) || lineup.length !== 12) return neutralWheelSvg();
-    const defs = lineup.map((entry, index) => {
-      const angle = (-90 + index * 30) * Math.PI / 180;
-      const cx = 50 + 24 * Math.cos(angle), cy = 50 + 24 * Math.sin(angle);
-      return `<clipPath id="wheel-art-${index}"><circle cx="${cx.toFixed(3)}" cy="${cy.toFixed(3)}" r="5.3"/></clipPath>`;
+  // T14: one colour per category, art in rings, sector names only with the wheelLabels setting.
+  // Without a lineup this draws the neutral wheel shown before a mood is chosen (T4).
+  function wheelSvgMarkup() {
+    const labels = state.settings.wheelLabels;
+    const defs = Array.from({ length: 12 }, (_, i) => {
+      const [cx, cy] = wheelArtCentre(i);
+      return `<clipPath id="wheel-art-${i}"><circle cx="${cx}" cy="${cy}" r="8.1"/></clipPath>`;
     }).join('');
-    const sectors = lineup.map((entry, index) => {
-      const degrees = -90 + index * 30, angle = degrees * Math.PI / 180;
-      const cx = 50 + 24 * Math.cos(angle), cy = 50 + 24 * Math.sin(angle);
-      const normalized = (degrees + 360) % 360, flip = normalized > 90 && normalized < 270;
-      const rotation = flip ? degrees + 180 : degrees;
-      const x = flip ? 6 : 94, anchor = flip ? 'start' : 'end';
-      const label = localText(entry.sector);
-      return `<path class="wheel-sector" data-sector="${index}" d="${wheelSectorPath(index)}"/><circle class="wheel-art-ring" cx="${cx.toFixed(3)}" cy="${cy.toFixed(3)}" r="5.7"/><image class="wheel-art" href="${esc(entry.art)}" x="${(cx - 5.3).toFixed(3)}" y="${(cy - 5.3).toFixed(3)}" width="10.6" height="10.6" preserveAspectRatio="xMidYMid slice" clip-path="url(#wheel-art-${index})"/><text class="wheel-sector-label" x="${x}" y="50.9" text-anchor="${anchor}" transform="rotate(${rotation} 50 50)">${esc(label)}</text>`;
+    const sectors = Array.from({ length: 12 }, (_, i) => {
+      const entry = wheelLineup && wheelLineup[i], [cx, cy] = wheelArtCentre(i);
+      const flip = i > 6; // labels start at the hub and read outward; the left half turns so they stay upright
+      const label = labels ? `<text class="wheel-sector-label" data-label="${i}" x="${flip ? 34.5 : 65.5}" y="50.9" text-anchor="${flip ? 'end' : 'start'}" transform="rotate(${i * 30 + (flip ? 90 : -90)} 50 50)">${entry ? esc(localText(entry.sector)) : ''}</text>` : '';
+      return `<path class="wheel-sector" data-sector="${i}" d="${wheelSectorPath(i)}" fill="${entry ? WHEEL_COLORS[entry.category] : '#F4EDE2'}"/>` +
+        `<circle class="wheel-art-ring" data-sector="${i}" cx="${cx}" cy="${cy}" r="8.5"/>` +
+        `<image class="wheel-art" data-sector="${i}"${entry ? ` href="${esc(entry.art)}"` : ''} x="${(cx - 8.1).toFixed(3)}" y="${(cy - 8.1).toFixed(3)}" width="16.2" height="16.2" preserveAspectRatio="xMidYMid slice" clip-path="url(#wheel-art-${i})" transform="rotate(${i * 30} ${cx} ${cy})"/>${label}`;
     }).join('');
-    const choices = lineup.map(entry => localText(entry.sector)).join(', ');
-    return `<svg viewBox="0 0 100 100" role="img" aria-label="${esc(choices)}"><defs>${defs}</defs>${sectors}<circle class="wheel-rim" cx="50" cy="50" r="49"/><circle class="wheel-hub" cx="50" cy="50" r="10"/><circle class="wheel-hub-dot" cx="50" cy="50" r="3"/></svg>`;
+    return `<svg${wheelLineup ? '' : ' class="wheel-unset"'} viewBox="0 0 100 100" role="img" aria-label="${esc(wheelChoices())}"><defs>${defs}</defs>${sectors}<path class="wheel-win-outline" id="wheelWin" d=""/><circle class="wheel-rim" cx="50" cy="50" r="49.5"/></svg>`;
+  }
+
+  function wheelLegendMarkup() {
+    if (!wheelLineup) return '';
+    return Array.from(new Set(wheelLineup.map(entry => entry.category))).map(cat =>
+      `<span class="wheel-key"><i style="background:${WHEEL_COLORS[cat]}"></i>${esc(t(lang(), 'wheel_cat_' + cat.replace(/-/g, '_')))}</span>`).join('');
   }
 
   function wheelSupportingCopy(mood) {
-    if (!mood) return t(lang(), 'wheel_choose');
-    if (mood.id === 'shitfaced' && wheelLevel5Spins > 0 && Array.isArray(mood.repeatCopy)) {
-      return localText(mood.repeatCopy[Math.min(wheelLevel5Spins - 1, mood.repeatCopy.length - 1)]);
+    return mood ? localText(mood.copy) : t(lang(), 'wheel_choose');
+  }
+
+  // Level 5 always lands on water; the line in the result card gets sharper with every landing.
+  function forcedResultLine(mood) {
+    const lines = [mood.copy].concat(Array.isArray(mood.repeatCopy) ? mood.repeatCopy : []);
+    return localText(lines[Math.max(0, Math.min(wheelLevel5Spins, lines.length) - 1)]);
+  }
+
+  // T14.7–8: the mood picker and the result card share one slot under the wheel
+  function wheelPanelMarkup() {
+    const mood = wheelMood(), entry = wheelResult;
+    if (!wheelData || !db) return `<p class="wheel-mood-copy">${esc(t(lang(), wheelFailed ? 'wheel_error' : 'wheel_loading'))}</p>`;
+    if (!mood) return ''; // the moods sit in #wheelIntro over the wheel until the first choice
+    if (entry && !wheelPicker) {
+      const forced = !!(mood && mood.forcedOutcome);
+      const safety = forced ? `<p class="wheel-safety">${esc(forcedResultLine(mood))}</p>` : '';
+      // "Don't drink and drive" is an English idiom with no Swedish counterpart, so wheel.json has it in English
+      // only; it takes the label's place so the tallest card stays one line short of Safari's toolbar.
+      const label = forced && mood.safety && mood.safety[lang()] || t(lang(), 'wheel_result');
+      const recipe = entry.kind === 'cocktail'
+        ? `<button class="fav-open" data-id="${esc(entry.outcomeId)}">${esc(t(lang(), 'wheel_recipe'))}</button>` : '';
+      return `<div class="wheel-result" id="wheelResult">
+        <div class="wheel-result-head"><img class="wheel-result-art" src="${esc(entry.art)}" alt="">
+          <div class="wheel-result-text"><p class="wheel-result-label">${esc(label)}</p>
+          <h2 class="wheel-result-name">${esc(localText(entry.result))}</h2></div></div>
+        ${safety}
+        <div class="wheel-result-btns">${recipe}<button data-wheel-act="change">${esc(t(lang(), 'wheel_change'))} · ${esc(localText(mood.name))}</button></div>
+      </div>`;
     }
-    return localText(mood.copy);
+    const moods = wheelData.moods.map((item, i) =>
+      `<button class="wheel-mood" data-wheel-mood="${i}" aria-pressed="${item.id === wheelMoodId}"${wheelSpinning ? ' disabled' : ''}>${esc(localText(item.name))}</button>`).join('');
+    return `<p class="wheel-q" id="wheelQ">${esc(t(lang(), 'wheel_intro'))}</p>
+      <div class="wheel-moods" role="group" aria-labelledby="wheelQ">${moods}</div>
+      <p class="wheel-mood-copy">${esc(wheelSupportingCopy(mood))}</p>`;
   }
 
-  function wheelResultMarkup(entry, mood) {
-    if (!entry) return '';
-    const safety = mood && mood.forcedOutcome && mood.safety
-      ? `<p class="wheel-result-note">${esc(localText(mood.safety))}</p>` : '';
-    const name = entry.kind === 'cocktail'
-      ? `<button class="fav-open" data-id="${esc(entry.outcomeId)}">${esc(localText(entry.result))} ›</button>`
-      : esc(localText(entry.result));
-    return `<img class="wheel-result-art" src="${esc(entry.art)}" alt="">
-      <div><p class="wheel-result-label">${esc(t(lang(), 'wheel_result'))}</p>
-      <h2 class="wheel-result-name">${name}</h2>${safety}</div>`;
-  }
-
-  function wheelActionsMarkup(canSpin) {
-    return `<button class="wheel-action primary" data-wheel-act="spin"${canSpin ? '' : ' disabled'}>${esc(t(lang(), wheelResult ? 'wheel_respin' : 'wheel_spin'))}</button>${wheelResult ? `<button class="wheel-action" data-wheel-act="new">${esc(t(lang(), 'wheel_new'))}</button>` : ''}`;
+  // Owner 2026-09-25: before the first choice of a visit the moods sit on a card over a shrunken, faded
+  // wheel, so it is obvious what to do first. Choosing one sends the card down and grows the wheel.
+  function wheelIntroMarkup() {
+    if (wheelMood() || !wheelData || !db) return '';
+    const moods = wheelData.moods.map((item, i) =>
+      `<button class="wheel-intro-mood" data-wheel-mood="${i}"><span aria-hidden="true">${esc(item.emoji)}</span>${esc(localText(item.name))}</button>`).join('');
+    return `<div class="wheel-intro-card" id="wheelIntro" role="group" aria-labelledby="wheelIntroQ">
+      <h2 id="wheelIntroQ">${esc(t(lang(), 'wheel_intro'))}</h2>${moods}</div>`;
   }
 
   function viewWheel() {
     loadWheelData();
-    if (!wheelMoodId && wheelData && db) { // default to first mood
-      wheelMoodId = wheelData.moods[0].id;
-      wheelLineup = buildSpinLineup(wheelData, wheelMoodId, db.drinks, random01, wheelPrefs());
-    }
-    const mood = wheelMood();
-    const moods = wheelData && Array.isArray(wheelData.moods) ? wheelData.moods : [];
-    const moodIndex = mood ? moods.indexOf(mood) : -1;
-    const heading = mood
-      ? `<h1><span class="wheel-emoji" aria-hidden="true">${esc(mood.emoji)}</span>${esc(localText(mood.name))}</h1>
-         <p>${esc(wheelSupportingCopy(mood))}</p>`
-      : `<h1>${esc(t(lang(), 'wheel_intro'))}</h1><p>${esc(t(lang(), 'wheel_choose'))}</p>`;
-    const stops = moods.length === 5 ? moods.map(item => `<span aria-hidden="true">${esc(item.emoji)}</span>`).join('')
-      : '<span>•</span><span>•</span><span>•</span><span>•</span><span>•</span>';
-    const loading = !wheelData && !wheelFailed;
-    const status = wheelFailed ? t(lang(), 'wheel_error') : (loading ? t(lang(), 'wheel_loading') : '');
-    const canSpin = !!(mood && wheelLineup && !wheelSpinning);
-    const disc = wheelLineup ? wheelSvgMarkup(wheelLineup) : neutralWheelSvg();
-    const result = wheelResult ? wheelResultMarkup(wheelResult, mood) : '';
+    const canSpin = !!(wheelMood() && wheelLineup && !wheelSpinning);
     return `<section class="wheel-screen">
+      <div class="wheel-bg"></div>
       <header class="wheel-topbar">
-        <button class="wheel-back" data-wheel-act="back">‹ ${esc(t(lang(), 'wheel_back'))}</button>
-        <span class="wheel-top-wordmark"><img src="design/wordmark.svg" alt="Sipdeck"></span>
-        <button class="wheel-sound" data-wheel-act="sound" aria-label="${esc(t(lang(), wheelMuted ? 'wheel_unmute' : 'wheel_mute'))}"
-          aria-pressed="${wheelMuted ? 'true' : 'false'}">${wheelMuted ? '🔇' : '🔊'}</button>
+        <button class="wheel-back" data-wheel-act="back">‹ ${esc(t(lang(), 'nav_deck'))}</button>
+        <h1 class="wheel-title">${esc(t(lang(), 'wheel_title'))}</h1>
+        <button class="wheel-sound" data-wheel-act="sound" aria-pressed="${!wheelMuted}">${esc(t(lang(), wheelMuted ? 'wheel_sound_off' : 'wheel_sound_on'))}</button>
       </header>
-      <div class="wheel-body">
-        <div class="wheel-stage" id="wheelStage">
-          <div class="wheel-pointer" id="wheelPointer" aria-hidden="true"></div>
-          <div class="wheel-disc" id="wheelDisc" style="transform:rotate(${wheelRotation}deg)">${disc}</div>
-          <button class="wheel-hub-button" data-wheel-act="spin"${canSpin ? '' : ' disabled'}>${esc(t(lang(), wheelResult ? 'wheel_respin' : 'wheel_spin'))}</button>
+      <div class="wheel-body${wheelMood() ? '' : ' wheel-intro'}" id="wheelBody">
+        <div class="wheel-window" aria-hidden="true">
+          <p class="wheel-window-label" id="wheelWindowLabel"></p><p class="wheel-window-name" id="wheelWindowName"></p>
         </div>
-        <div class="wheel-heading">${heading}</div>
-        <section class="wheel-controls${mood ? '' : ' unset'}">
-          <p class="wheel-controls-title">${esc(status || t(lang(), 'wheel_mood_label'))}</p>
-          <input class="wheel-range" id="wheelMood" type="range" min="1" max="5" step="1" value="${moodIndex >= 0 ? moodIndex + 1 : 1}"
-            aria-label="${esc(t(lang(), 'wheel_mood_label'))}" aria-valuetext="${esc(mood ? localText(mood.name) : t(lang(), 'wheel_choose'))}"
-            ${wheelData && db && !wheelSpinning ? '' : 'disabled'}>
-          <div class="wheel-stops">${stops}</div>
-          <div class="wheel-actions">${wheelActionsMarkup(canSpin)}</div>
-        </section>
-        <section class="wheel-result" id="wheelResult" aria-live="polite"${wheelResult ? '' : ' hidden'}>${result}</section>
-        <p class="wheel-live" id="wheelLive" aria-live="polite">${esc(canSpin ? t(lang(), 'wheel_ready') : status)}</p>
+        <div class="wheel-stage" id="wheelStage">
+          <div class="wheel-disc" id="wheelDisc" style="transform:rotate(${wheelRotation}deg)">${wheelSvgMarkup()}</div>
+          <button class="wheel-hub-button" id="wheelHub" data-wheel-act="spin"${canSpin ? '' : ' disabled'}>${esc(t(lang(), wheelResult ? 'wheel_respin' : 'wheel_spin'))}</button>
+          <div class="wheel-pointer" id="wheelPointer" aria-hidden="true"></div>
+          ${wheelIntroMarkup()}
+        </div>
+        <div class="wheel-lower">
+          <div class="wheel-legend" id="wheelLegend" aria-hidden="true">${wheelLegendMarkup()}</div>
+          <section class="wheel-panel" id="wheelPanel">${wheelPanelMarkup()}</section>
+        </div>
+        <p class="sr-only" id="wheelLive" aria-live="polite"></p>
       </div>
     </section>`;
   }
 
+  // T14.2: the reading window names what sits under the pointer; after a landing it also marks the winner
+  function setWheelWindow(label, name) {
+    $('#wheelWindowLabel').textContent = t(lang(), label);
+    $('#wheelWindowName').textContent = name;
+  }
+  function syncWheelWindow() {
+    if (!wheelLineup) return setWheelWindow('wheel_first', t(lang(), 'wheel_pick_below'));
+    const index = wheelResult ? wheelResultIndex : sectorAtAngle(wheelRotation, 12);
+    setWheelWindow(wheelResult ? 'wheel_landed' : 'wheel_under', localText(wheelLineup[index].sector));
+    if (!wheelResult) return;
+    const stage = $('#wheelStage');
+    $('#wheelWin').setAttribute('d', wheelSectorPath(wheelResultIndex, 12, 48.4));
+    stage.querySelectorAll(`[data-sector="${wheelResultIndex}"],[data-label="${wheelResultIndex}"]`).forEach(el => el.classList.add('win'));
+    stage.classList.add('wheel-landed');
+  }
+
+  // Fas 4: the account folds into one row. Native <details> keeps it keyboard- and reader-friendly;
+  // accountOpen carries the open state across re-renders (sign-in, language).
   function accountSection() {
+    const who = fbUser ? `<span class="account-who">${esc(fbUser.email || fbUser.displayName || '')}</span>` : '';
+    return `<details class="account" id="account"${accountOpen ? ' open' : ''}>
+      <summary><span>${esc(t(lang(), 'settings_sync'))}${who}</span><span class="account-chevron" aria-hidden="true">›</span></summary>
+      <div id="accBody">${accountBody()}</div>
+    </details>`;
+  }
+
+  function accountBody() {
+    const error = '<p id="accError" class="warn" role="status" aria-live="polite" aria-atomic="true" hidden></p>';
     if (fbUser) {
       const providers = fbUser.providerData.map(p => p.providerId);
       const linkGoogle = providers.includes('google.com') ? '' : `<p><button data-acc="link-google">${esc(t(lang(), 'account_link_google'))}</button></p>`;
@@ -1265,55 +1858,60 @@ if (typeof document !== 'undefined') (function () {
         <p>${esc(t(lang(), 'account_share_hint'))}</p>
         <button type="submit">${esc(t(lang(), 'account_create_password'))}</button>
       </form>`;
-      return `<section class="account">
-      <h2>${esc(t(lang(), 'account_title'))}</h2>
-      <p>${esc(t(lang(), 'account_signed_in_as'))} ${esc(fbUser.email || fbUser.displayName || '')}</p>
+      return `<p>${esc(t(lang(), 'account_signed_in_as'))} ${esc(fbUser.email || fbUser.displayName || '')}</p>
       ${linkGoogle}${pwForm}
       <div class="account-actions">
         <button data-acc="signout">${esc(t(lang(), 'account_signout'))}</button>
         <button data-acc="delete">${esc(t(lang(), 'account_delete'))}</button>
       </div>
-      <p><a href="info.html">${esc(t(lang(), 'account_legal'))}</a></p>
-      <p id="accError" class="warn" role="status" aria-live="polite" aria-atomic="true" hidden></p>
-    </section>`;
-    }
-    return `<section class="account">
-      <h2>${esc(t(lang(), 'account_title'))}</h2>
-      <p>${esc(t(lang(), 'account_hint'))}</p>
-      <button class="gsi" data-acc="google"><svg class="gsi-logo" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>${esc(t(lang(), 'account_google'))}</button>
-      <form id="emailForm" class="account-form">
-        <label>${esc(t(lang(), 'account_email'))} <input type="email" id="accEmail" autocomplete="username" aria-describedby="accError" required></label>
-        <label>${esc(t(lang(), 'account_password'))} <input type="password" id="accPw" minlength="6" maxlength="64" autocomplete="current-password" aria-describedby="accError" required></label>
+      <p><a href="info.html#${lang()}">${esc(t(lang(), 'account_legal'))}</a></p>
+      ${error}
+      <dialog class="confirm-dialog" id="accDelete" aria-labelledby="accDeleteTitle">
+        <h2 id="accDeleteTitle">${esc(t(lang(), 'account_delete_title'))}</h2>
+        <p>${esc(t(lang(), 'account_delete_confirm'))}</p>
         <div class="account-actions">
-          <button type="submit" data-mode="login">${esc(t(lang(), 'account_login'))}</button>
-          <button type="submit" data-mode="register">${esc(t(lang(), 'account_register'))}</button>
-          <button type="button" data-acc="forgot">${esc(t(lang(), 'account_forgot'))}</button>
+          <button data-acc="delete-cancel" autofocus>${esc(t(lang(), 'account_cancel'))}</button>
+          <button class="danger" data-acc="delete-confirm">${esc(t(lang(), 'account_delete'))}</button>
+        </div>
+      </dialog>`;
+    }
+    const emailField = `<label>${esc(t(lang(), 'account_email'))} <input type="email" id="accEmail" value="${esc(accountEmail)}" autocomplete="username" aria-describedby="accError" required></label>`;
+    if (accountMode === 'forgot') return `<form id="forgotForm" class="account-form">
+        <h3>${esc(t(lang(), 'account_forgot_title'))}</h3>
+        <p>${esc(t(lang(), 'account_forgot_hint'))}</p>
+        ${emailField}
+        <div class="account-actions">
+          <button type="submit" class="account-primary">${esc(t(lang(), 'account_forgot_send'))}</button>
+          <button type="button" data-acc-mode="login">${esc(t(lang(), 'fav_back'))}</button>
+        </div>
+      </form>${error}`;
+    const register = accountMode === 'register';
+    const modeBtn = (mode, on) => `<button type="button" data-acc-mode="${mode}" aria-pressed="${on}">${esc(t(lang(), mode === 'login' ? 'account_login' : 'account_register'))}</button>`;
+    return `<p>${esc(t(lang(), 'account_hint'))}</p>
+      <button class="gsi" data-acc="google"><svg class="gsi-logo" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>${esc(t(lang(), 'account_google'))}</button>
+      <div class="account-modes" role="group" aria-label="${esc(t(lang(), 'account_title'))}">${modeBtn('login', !register)}${modeBtn('register', register)}</div>
+      <form id="emailForm" class="account-form">
+        ${emailField}
+        <label>${esc(t(lang(), 'account_password'))} <input type="password" id="accPw" minlength="6" maxlength="64" autocomplete="${register ? 'new' : 'current'}-password" aria-describedby="accError" required></label>
+        <div class="account-actions">
+          <button type="submit" class="account-primary">${esc(t(lang(), register ? 'account_register' : 'account_login'))}</button>
+          ${register ? '' : `<button type="button" class="account-link" data-acc-mode="forgot">${esc(t(lang(), 'account_forgot'))}</button>`}
         </div>
       </form>
-      <p><a href="info.html">${esc(t(lang(), 'account_legal'))}</a></p>
-      <p id="accError" class="warn" role="status" aria-live="polite" aria-atomic="true" hidden></p>
-    </section>`;
+      <p><a href="info.html#${lang()}">${esc(t(lang(), 'account_legal'))}</a></p>
+      ${error}`;
+  }
+
+  // Firebase codes in the app's own words; a closed Google popup is the user's choice, not an error
+  function showAccountError(err) {
+    const el = $('#accError');
+    if (!el || (err && err.code === 'auth/popup-closed-by-user')) return;
+    const key = authErrorKey(err);
+    el.textContent = key ? t(lang(), key) : err.message;
+    el.hidden = false;
   }
 
   function viewSearch() {
-    const q = searchQuery.trim();
-    const results = db && q
-      ? db.drinks.filter(d => matchesSearch(searchHaystack(d, d.ingredients.map(l => ingName(l.id))), q))
-      : [];
-    const rows = results.map(d => `
-      <div class="list-card fav-row">
-        <button class="fav-open" data-id="${esc(d.id)}">
-          <span class="fav-thumb">${artMarkup(d)}</span>
-          <span class="fav-info">
-            <span class="name">${esc(d.name)}</span>
-            <span class="meta">${esc(taxonomyName('type', d.type))}</span>
-          </span>
-        </button>
-      </div>`).join('');
-    const body = !db ? `<p class="empty">${esc(t(lang(), 'deck_loading'))}</p>`
-      : !q ? `<p class="empty">${esc(t(lang(), 'search_intro'))}</p>`
-      : results.length ? rows
-      : `<p class="empty">${esc(t(lang(), 'search_empty'))}</p>`;
     return `<section class="wheel-screen search-screen">
       <header class="wheel-topbar">
         <button class="wheel-back" data-search-act="back">‹ ${esc(t(lang(), 'wheel_back'))}</button>
@@ -1323,42 +1921,66 @@ if (typeof document !== 'undefined') (function () {
         <h1 class="sr-only">${esc(t(lang(), 'search_title'))}</h1>
         <input type="search" id="searchInput" class="search-input" value="${esc(searchQuery)}"
           placeholder="${esc(t(lang(), 'search_placeholder'))}" aria-label="${esc(t(lang(), 'search_placeholder'))}">
-        ${body}
+        <div id="searchResults">${searchResults()}</div>
       </div>
     </section>`;
   }
 
-  function wheelOutcomeGroups(s) {
-    if (!wheelData || !wheelData.outcomes) return '';
-    const excluded = new Set(s.wheelOutcomesExcluded);
-    const groups = ['beer-cider', 'wine', 'shot'].map(category => {
-      const items = Object.keys(wheelData.outcomes)
-        .filter(id => wheelData.outcomes[id].category === category)
-        .map(id => `<label class="filter-toggle"><input type="checkbox" data-wheel-outcome="${esc(id)}"${excluded.has(id) ? '' : ' checked'}> <span>${esc(localText(wheelData.outcomes[id].sector))}</span></label>`)
-        .join('');
-      return items ? `<fieldset class="pantry-group"><legend>${esc(t(lang(), 'wheel_cat_' + category.replace(/-/g, '_')))}</legend><div class="pantry-list">${items}</div></fieldset>` : '';
-    }).join('');
-    return groups ? `<h2 class="pantry-almost-title">${esc(t(lang(), 'settings_wheel_outcomes_title'))}</h2>${groups}` : '';
+  // F1: direct hits, then variants (a hit opens that variant), then drinks found only through a tag
+  function searchResults() {
+    const q = searchQuery.trim().toLowerCase();
+    if (!db) return `<p class="empty">${esc(t(lang(), 'deck_loading'))}</p>`;
+    if (!q) return `<p class="empty">${esc(t(lang(), 'search_intro'))}</p>`;
+    const direct = [], variants = [], tagged = [], tags = new Set();
+    db.drinks.forEach(d => {
+      if (matchesSearch(searchHaystack(d, d.ingredients.map(l => ingName(l.id))), q)) (familyPrimary(d) ? variants : direct).push(d);
+      else {
+        const hits = (d.tags || []).filter(tag => tag.includes(q));
+        if (hits.length) { tagged.push(d); hits.forEach(tag => tags.add(tag)); }
+      }
+    });
+    const meta = d => familyPrimary(d)
+      ? t(lang(), 'variant_of').replace('{name}', familyOf(d).name).replace('{n}', familyOf(d).order.length)
+      : kindName(d);
+    const group = (title, list) => list.length ? (title ? `<h2 class="search-group">${esc(title)}</h2>` : '') + list.map(d => `
+      <div class="list-card fav-row">
+        <button class="fav-open" data-id="${esc(d.id)}">
+          <span class="fav-thumb">${artMarkup(d)}</span>
+          <span class="fav-info">
+            <span class="name">${esc(d.name)}</span>
+            <span class="meta">${esc(meta(d))}</span>
+          </span>
+        </button>
+      </div>`).join('') : '';
+    return group('', direct) + group(t(lang(), 'variants_label'), variants)
+      + group(t(lang(), 'search_tagged').replace('{tags}', Array.from(tags).join(', ')), tagged)
+      || `<p class="empty">${esc(t(lang(), 'search_empty'))}</p>`;
   }
 
   function viewSettings() {
     const s = state.settings;
     loadWheelData();
+    const extraName = c => t(lang(), c === 'wine' ? 'wheel_extra_wine' : 'wheel_cat_' + c.replace(/-/g, '_'));
     return `<h1 class="screen-title">${esc(t(lang(), 'settings_title'))}</h1>
+      ${accountSection()}
       <dl class="settings">
         <dt>${esc(t(lang(), 'settings_lang'))}</dt><dd><div class="lang-toggle" role="group" aria-label="${esc(t(lang(), 'settings_lang'))}">
           ${['en', 'sv'].map(code => `<button data-lang="${code}"${code === s.lang ? ' class="active" aria-pressed="true"' : ' aria-pressed="false"'}>${esc(t(lang(), 'language_' + code))}</button>`).join('')}
         </div></dd>
+        <dt>${esc(t(lang(), 'settings_unit'))}</dt><dd><div class="lang-toggle" role="group" aria-label="${esc(t(lang(), 'settings_unit'))}">
+          ${recipeUnits().map(u => `<button data-unit-setting="${u}"${u === unit() ? ' class="active" aria-pressed="true"' : ' aria-pressed="false"'}>${u}</button>`).join('')}
+        </div></dd>
       </dl>
-      ${accountSection()}
       <dl class="settings">
         <dt>${esc(t(lang(), 'settings_wheel_title'))}</dt>
         <dd>
           <label class="filter-toggle"><input type="checkbox" data-settings-act="wheel-favorites-only"${s.wheelFavoritesOnly ? ' checked' : ''}> <span>${esc(t(lang(), 'settings_wheel_favorites_only'))}</span></label>
-          <p class="fav-hint">${esc(t(lang(), 'settings_wheel_favorites_only_hint'))}</p>
+          <label class="filter-toggle"><input type="checkbox" data-settings-act="wheel-labels"${s.wheelLabels ? ' checked' : ''}> <span>${esc(t(lang(), 'settings_wheel_labels'))}</span></label>
         </dd>
-      </dl>
-      ${wheelOutcomeGroups(s)}`;
+        <dt>${esc(t(lang(), 'settings_wheel_extras'))}</dt><dd><div class="lang-toggle" role="group" aria-label="${esc(t(lang(), 'settings_wheel_extras'))}">
+          ${WHEEL_EXTRAS.map(c => `<button data-wheel-extra="${c}"${s.wheelExtras.includes(c) ? ' class="active" aria-pressed="true"' : ' aria-pressed="false"'}>${esc(extraName(c))}</button>`).join('')}
+        </div></dd>
+      </dl>`;
   }
 
   function random01() {
@@ -1369,29 +1991,60 @@ if (typeof document !== 'undefined') (function () {
     return {
       favoritesOnly: state.settings.wheelFavoritesOnly,
       favorites: state.favorites,
-      excludedOutcomes: state.settings.wheelOutcomesExcluded,
+      excludedOutcomes: wheelExcludedOutcomes(wheelData, state.settings.wheelExtras),
     };
   }
 
-  function selectWheelMood(value) {
-    if (!wheelData || !db || wheelSpinning) return;
-    const mood = wheelData.moods[Number(value) - 1];
+  // T17: choosing a mood (again) builds a new lineup and patches the drawn wheel in a wave from the
+  // pointer, 25 ms per sector. The rotation stays and nothing else is re-rendered.
+  function selectWheelMood(index) {
+    const mood = wheelData && db && !wheelSpinning && wheelData.moods[index];
     if (!mood) return;
     wheelMoodId = mood.id;
     wheelLineup = buildSpinLineup(wheelData, wheelMoodId, db.drinks, random01, wheelPrefs());
     wheelResult = null;
-    wheelRotation = 0;
-    render();
-    const spin = $('#view [data-wheel-act="spin"]');
-    if (spin) spin.focus();
-  }
-
-  function newWheel() {
-    if (!wheelData || !db || !wheelMoodId || wheelSpinning) return;
-    wheelLineup = buildSpinLineup(wheelData, wheelMoodId, db.drinks, random01, wheelPrefs());
-    wheelResult = null;
-    wheelRotation = 0;
-    render();
+    wheelPicker = false;
+    const stage = $('#wheelStage');
+    if (!stage) return;
+    const svg = stage.querySelector('svg'), top = sectorAtAngle(wheelRotation, 12);
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    stage.classList.remove('wheel-landed');
+    stage.querySelectorAll('.win').forEach(el => el.classList.remove('win'));
+    svg.classList.remove('wheel-unset');
+    svg.setAttribute('aria-label', wheelChoices());
+    for (let i = 0; i < 12; i++) {
+      const distance = Math.min((i - top + 12) % 12, (top - i + 12) % 12);
+      setTimeout(() => {
+        const entry = wheelLineup && wheelLineup[i]; // read at patch time, so a quicker second choice always wins
+        if (!entry) return;
+        stage.querySelector(`.wheel-sector[data-sector="${i}"]`).setAttribute('fill', WHEEL_COLORS[entry.category]);
+        stage.querySelector(`.wheel-art[data-sector="${i}"]`).setAttribute('href', entry.art);
+        const label = stage.querySelector(`[data-label="${i}"]`);
+        if (label) label.textContent = localText(entry.sector);
+      }, reduced ? 0 : distance * 25);
+    }
+    $('#wheelLegend').innerHTML = wheelLegendMarkup();
+    $('#wheelPanel').innerHTML = wheelPanelMarkup();
+    const intro = $('#wheelIntro');
+    if (intro) {
+      // the card drops toward the picker's new place while the wheel grows back (CSS transition on .wheel-intro)
+      const from = intro.querySelector('button').getBoundingClientRect(), to = ($('#wheelPanel .wheel-moods') || $('#wheelPanel')).getBoundingClientRect();
+      $('#wheelBody').classList.remove('wheel-intro');
+      intro.inert = true; // leaving: no second choice, and the picker below is now the only one
+      intro.querySelectorAll('[data-wheel-mood]').forEach(el => el.removeAttribute('data-wheel-mood'));
+      const drop = reduced ? [{ opacity: 1 }, { opacity: 0 }]
+        : [{ opacity: 1 }, { opacity: 0, transform: `translateY(${Math.max(0, to.top - from.top)}px) scale(.9)` }];
+      intro.animate(drop, { duration: reduced ? 150 : 380, easing: 'cubic-bezier(.3,0,.2,1)', fill: 'forwards' }).finished
+        .then(() => intro.remove(), () => intro.remove());
+      if (!reduced) $('#wheelPanel').animate([{ opacity: 0, transform: 'translateY(-12px)' }, { opacity: 1, transform: 'none' }],
+        { duration: 320, delay: 220, easing: 'cubic-bezier(.2,0,0,1)', fill: 'backwards' });
+    }
+    const hub = $('#wheelHub');
+    hub.disabled = false;
+    hub.textContent = t(lang(), 'wheel_spin');
+    syncWheelWindow();
+    $('#wheelLive').textContent = t(lang(), 'wheel_ready');
+    hub.focus();
   }
 
   function closeWheel() {
@@ -1435,112 +2088,115 @@ if (typeof document !== 'undefined') (function () {
     } catch (err) { /* sound is optional and must never block a spin */ }
   }
 
-  function tickWheel() {
-    wheelTone(920, .025, .018, 0);
-    const pointer = $('#wheelPointer');
-    if (!pointer) return;
-    pointer.classList.remove('tick');
-    void pointer.offsetWidth;
-    pointer.classList.add('tick');
-  }
-
   function landingSound() {
     wheelTone(390, .12, .035, 0);
     wheelTone(560, .18, .028, .07);
   }
 
-  function renderedRotation(element) {
-    const transform = getComputedStyle(element).transform;
-    if (!transform || transform === 'none') return 0;
-    const match = transform.match(/^matrix\(([^)]+)\)$/);
-    if (!match) return 0;
-    const values = match[1].split(',').map(Number);
-    return Math.atan2(values[1], values[0]) * 180 / Math.PI;
-  }
-
-  function finishWheelSpin(index, endRotation, reduced) {
-    const disc = $('#wheelDisc'), stage = $('#wheelStage'), mood = wheelMood();
-    if (!disc || !stage || !wheelLineup || !wheelLineup[index]) return;
-    if (!reduced) {
-      disc.style.transform = `rotate(${endRotation}deg)`;
-      wheelRotation = endRotation;
-    }
-    wheelAnimation = null;
+  // T16: land, pause 150 ms (CSS delay), dim the losers, outline the winner, raise the result card
+  function finishWheelSpin(index, end) {
+    const mood = wheelMood();
+    wheelRotation = end;
     wheelSpinning = false;
     wheelResult = wheelLineup[index];
+    wheelResultIndex = index;
+    wheelPicker = false;
     if (mood && mood.id === 'shitfaced') wheelLevel5Spins++;
-    stage.classList.add('wheel-win');
-    const winning = disc.querySelector(`[data-sector="${index}"]`);
-    if (winning) winning.dataset.winning = 'true';
-    const result = $('#wheelResult');
-    if (result) {
-      result.innerHTML = wheelResultMarkup(wheelResult, mood);
-      result.hidden = false;
+    const disc = $('#wheelDisc');
+    if (!disc) return;
+    disc.style.transform = `rotate(${end}deg)`;
+    syncWheelWindow();
+    const hub = $('#wheelHub');
+    hub.disabled = false;
+    hub.textContent = t(lang(), 'wheel_respin');
+    const panel = $('#wheelPanel');
+    panel.innerHTML = wheelPanelMarkup();
+    panel.querySelector('.wheel-result-art').addEventListener('error', e => { e.currentTarget.hidden = true; }, { once: true });
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const card = $('#wheelResult'), ease = springLinear(.85, 420);
+      card.animate([{ opacity: 0, transform: 'translateY(12px)' }, { opacity: 1, transform: 'none' }], { duration: 420, delay: 150, easing: ease, fill: 'backwards' });
+      card.querySelector('.wheel-result-text').animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: 210, fill: 'backwards' });
     }
-    const controlsActions = $('#view .wheel-controls .wheel-actions');
-    if (controlsActions) controlsActions.innerHTML = wheelActionsMarkup(true);
-    const hub = $('#view .wheel-hub-button');
-    if (hub) { hub.disabled = false; hub.textContent = t(lang(), 'wheel_respin'); }
-    const range = $('#wheelMood');
-    if (range) range.disabled = false;
-    const copy = $('#view .wheel-heading p');
-    if (copy && mood) copy.textContent = wheelSupportingCopy(mood);
-    const live = $('#wheelLive');
-    if (live) live.textContent = localText(wheelResult.result);
-    $('#view .wheel-result-art')?.addEventListener('error', e => { e.currentTarget.hidden = true; }, { once: true });
+    $('#wheelLive').textContent = localText(wheelResult.result);
     landingSound();
     if (navigator.vibrate) navigator.vibrate(18);
   }
 
+  // T16: runSpin from motion.js. Only transforms are written per frame; no class toggles, no layout reads.
   function spinWheel() {
-    if (wheelSpinning || !wheelLineup || wheelLineup.length !== 12) return;
-    const disc = $('#wheelDisc'), stage = $('#wheelStage');
-    if (!disc || !stage) return;
+    const disc = $('#wheelDisc'), pointer = $('#wheelPointer');
+    if (wheelSpinning || !wheelLineup || !disc) return;
     const index = selectWheelIndex(wheelLineup, random01);
     if (index < 0) return;
+    const profile = ++wheelSpins > SLOW_SPINS ? SPIN_FAST : SPIN_SLOW, total = spinMs(profile);
+    const spin = ++wheelSpinId, from = wheelRotation, travel = landingTravel(from, index, random01, 12, profile);
     wheelSpinning = true;
     wheelResult = null;
-    stage.classList.remove('wheel-win');
-    disc.querySelectorAll('[data-winning]').forEach(item => item.removeAttribute('data-winning'));
-    const result = $('#wheelResult');
-    if (result) { result.hidden = true; result.innerHTML = ''; }
-    $('#view').querySelectorAll('[data-wheel-act="spin"],#wheelMood').forEach(control => { control.disabled = true; });
-    const live = $('#wheelLive');
-    if (live) live.textContent = t(lang(), 'wheel_spinning');
+    wheelPicker = false;
+    const stage = $('#wheelStage'), name = $('#wheelWindowName');
+    stage.classList.remove('wheel-landed');
+    stage.querySelectorAll('.win').forEach(el => el.classList.remove('win'));
+    $('#wheelPanel').innerHTML = wheelPanelMarkup();
+    $('#wheelHub').disabled = true;
+    $('#wheelLive').textContent = t(lang(), 'wheel_spinning');
+    $('#wheelWindowLabel').textContent = t(lang(), 'wheel_turning');
     audioContext(); // unlock Web Audio from the explicit user gesture
-    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduced || !disc.animate) {
-      disc.classList.add('wheel-pulse');
-      setTimeout(() => { disc.classList.remove('wheel-pulse'); finishWheelSpin(index, wheelRotation, true); }, 180);
-      return;
-    }
-    const end = wheelLandingRotation(wheelRotation, index, random01, 12);
-    const travel = end - wheelRotation, duration = 6200 + Math.round(random01() * 1200);
-    try {
-      wheelAnimation = disc.animate([
-        { transform: `rotate(${wheelRotation}deg)`, offset: 0, easing: 'cubic-bezier(.45,0,1,1)' },
-        { transform: `rotate(${wheelRotation + travel * .08}deg)`, offset: .12, easing: 'cubic-bezier(.08,.58,.12,1)' },
-        { transform: `rotate(${end}deg)`, offset: 1 },
-      ], { duration, fill: 'forwards' });
-    } catch (err) {
-      setTimeout(() => finishWheelSpin(index, end, false), 180);
-      return;
-    }
-    let lastSector = null, raf = 0;
-    const watchTicks = () => {
-      if (!wheelSpinning || !disc.isConnected) return;
-      const angle = ((-renderedRotation(disc) % 360) + 360) % 360;
-      const sector = Math.floor((angle + 15) / 30) % 12;
-      if (lastSector !== null && sector !== lastSector) tickWheel();
-      lastSector = sector;
-      raf = requestAnimationFrame(watchTicks);
+    let last = sectorAtAngle(from, 12), lastTick = -1e9, kick = 0;
+    const finish = () => {
+      if (spin !== wheelSpinId) return; // already finished, or the visit ended
+      wheelSpinId++;
+      pointer.style.transform = '';
+      finishWheelSpin(index, from + travel);
     };
-    raf = requestAnimationFrame(watchTicks);
-    wheelAnimation.onfinish = () => {
-      cancelAnimationFrame(raf);
-      finishWheelSpin(index, end, false);
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return void setTimeout(finish, 150);
+    const t0 = performance.now();
+    const frame = now => {
+      if (spin !== wheelSpinId) return;
+      const elapsed = now - t0, angle = from + spinAngle(elapsed, travel, profile), sector = sectorAtAngle(angle, 12);
+      disc.style.transform = `rotate(${angle}deg)`;
+      if (sector !== last) {
+        last = sector;
+        name.textContent = localText(wheelLineup[sector].sector);
+        const speed = Math.abs(spinAngle(elapsed + 8, travel, profile) - spinAngle(elapsed - 8, travel, profile)) / 16 * 1000;
+        kick = Math.min(20, 7 + speed * .012);
+        if (now - lastTick > 50) { // tick pitch and volume follow the speed, at most ~20 a second
+          lastTick = now;
+          const k = Math.min(1, speed / 900);
+          wheelTone(520 + k * 480, .03, .012 + k * .01, 0);
+        }
+      }
+      kick *= .8;
+      pointer.style.transform = `rotate(${kick}deg)`;
+      if (elapsed < total) requestAnimationFrame(frame); else finish();
     };
-    wheelAnimation.oncancel = () => cancelAnimationFrame(raf);
+    requestAnimationFrame(frame);
+    setTimeout(finish, total + 400); // a background tab pauses rAF, the result still arrives
+  }
+
+  // T15: FLIP between the header's mini wheel and the big disc, the same in every browser.
+  // Only #wheelDisc flies (its rotation is part of every keyframe); it is measured on #wheelStage.
+  function wheelFlip(open) {
+    const layer = $('#wheelLayer'), mini = $('#wheelEntry .wheel-symbol'), home = $('.wrap'), disc = $('#wheelDisc');
+    const a = mini.getBoundingClientRect(), b = $('#wheelStage').getBoundingClientRect();
+    const rot = `rotate(${wheelRotation}deg)`, ez = 'cubic-bezier(.2,0,0,1)';
+    // the CSS `scale` of the intro state applies outside this transform, so divide it back out
+    const s = Number(getComputedStyle(disc).scale) || 1;
+    const fly = `translate(${(a.left + a.width / 2 - b.left - b.width / 2) / s}px,${(a.top + a.height / 2 - b.top - b.height / 2) / s}px) scale(${a.width / b.width / s}) ${rot}`;
+    const bg = layer.querySelector('.wheel-bg'), groups = ['.wheel-topbar', '.wheel-window,.wheel-hub-button,.wheel-pointer', '.wheel-lower'];
+    const scaled = [{ transform: 'scale(.96)', opacity: .4 }], rest = [{ transform: 'none', opacity: 1 }];
+    if (open) {
+      mini.style.opacity = '0';
+      home.animate(rest.concat(scaled), { duration: 420, easing: ez, fill: 'both' });
+      bg.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 280 });
+      groups.forEach((sel, i) => layer.querySelectorAll(sel).forEach(el => el.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 320, delay: 220 + i * 40, easing: ez, fill: 'backwards' })));
+      $('#wheelIntro')?.animate([{ opacity: 0, transform: 'translateY(12px) scale(.96)' }, { opacity: 1, transform: 'none' }], { duration: 340, delay: 420, easing: ez, fill: 'backwards' });
+      return disc.animate([{ transform: fly }, { transform: rot }], { duration: 600, easing: springLinear(.8, 600) }).finished
+        .then(() => home.getAnimations().forEach(anim => anim.cancel()));
+    }
+    groups.forEach(sel => layer.querySelectorAll(sel).forEach(el => el.animate([{ opacity: 1 }, { opacity: 0, transform: 'translateY(4px)' }], { duration: 140, fill: 'forwards' })));
+    bg.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, delay: 140, fill: 'forwards' });
+    home.animate(scaled.concat(rest), { duration: 420, delay: 100, easing: ez, fill: 'backwards' });
+    return disc.animate([{ transform: rot }, { transform: fly }], { duration: 480, delay: 60, easing: springLinear(.92, 480), fill: 'forwards' }).finished;
   }
 
   // ---------- router: hashchange -> coarse re-render per view ----------
@@ -1551,6 +2207,8 @@ if (typeof document !== 'undefined') (function () {
     '#/favoriter': { view: viewFavorites, match: '#/favoriter' },
     '#/skafferi': { view: viewPantry, match: '#/skafferi' },
     '#/installningar': { view: viewSettings, match: '#/installningar' },
+    '#/egen': { view: viewCustomForm, match: '#/favoriter' },
+    '#/foresla': { view: viewSuggest, match: '#/favoriter' },
   };
 
   function closeFavoriteDetail() {
@@ -1565,16 +2223,25 @@ if (typeof document !== 'undefined') (function () {
     }
   }
 
+  // T18: the entry shows at once and stays inactive until both catalogs have loaded
+  function syncWheelEntry() {
+    $('#wheelEntry').setAttribute('aria-disabled', String(!(db && wheelData)));
+  }
+
+  let lastRouteHash = null, renderedBase = null;
   function render() {
     const hash = location.hash || '#/';
     const detailId = favoriteIdFromHash(hash) || drinkIdFromHash(hash);
-    const route = detailId !== null ? ROUTES['#/favoriter'] : (ROUTES[hash] || ROUTES['#/']);
-    const isWheel = route.view === viewWheel;
+    const route = detailId !== null ? ROUTES['#/favoriter'] : (ROUTES[hash.replace(/^(#\/(?:egen|foresla))\/.+$/, '$1')] || ROUTES['#/']);
+    const isWheel = route.view === viewWheel, layer = $('#wheelLayer');
+    const base = isWheel ? viewDeck : route.view; // the wheel is a layer over the deck, which stays in #view
+    const keepBase = base === viewDeck && renderedBase === viewDeck && (isWheel || !layer.hidden);
     if (isWheel && !wheelVisitActive) wheelVisitActive = true;
     else if (!isWheel && wheelVisitActive && detailId === null) resetWheelVisit(); // survives fav detail peek
     document.body.classList.toggle('wheel-mode', isWheel);
     document.body.classList.toggle('search-mode', route.view === viewSearch);
     if (route.view !== viewSearch && detailId === null) searchQuery = ''; // survives fav detail peek
+    if (route.view !== viewPantry) { pantryQuery = ''; almostAll = false; }
     if (route.view === viewFavorites) {
       if (detailId !== favOpenId) favChecked = new Set();
       favOpenId = detailId;
@@ -1584,72 +2251,107 @@ if (typeof document !== 'undefined') (function () {
       favChecked = new Set();
       favHistoryEntry = false;
     }
-    $('#view').innerHTML = route.view();
-    if (route.view === viewDeck && db) mountDeck();
-    if (route.view === viewFavorites || route.view === viewSearch) $('#view').querySelectorAll('.cocktail-art').forEach(wireArt);
-    if (route.view === viewSearch && matchMedia('(pointer: fine)').matches) $('#searchInput').focus();
+    if (!keepBase) {
+      // a background render (sign-in sync) must not wipe a form being filled in: same form, same fields -> same values
+      const form = $('#view form[data-id]'), kept = form && { id: form.id, key: form.dataset.id,
+        values: Array.from(form.elements, el => /radio|checkbox/.test(el.type) ? el.checked : el.value) };
+      $('#view').innerHTML = base();
+      const again = kept && $('#' + kept.id);
+      if (again && again.dataset.id === kept.key && again.elements.length === kept.values.length) {
+        Array.from(again.elements).forEach((el, i) => { if (/radio|checkbox/.test(el.type)) el.checked = kept.values[i]; else if (el.type !== 'submit') el.value = kept.values[i]; });
+      }
+      if (base === viewDeck && db) mountDeck();
+      if (base !== viewDeck) $('#view').querySelectorAll('.cocktail-art').forEach(wireArt);
+      if (base === viewSearch && matchMedia('(pointer: fine)').matches) $('#searchInput').focus();
+      if ($('#pantrySearch')) filterPantry();
+      renderedBase = base === viewDeck && !db ? null : base; // a loading deck is redrawn once the data lands
+      // page change: only when the route changes, never on a re-render within one. The wheel keeps the
+      // deck (keepBase), so opening and closing it never gets here. Search is a fixed overlay inside
+      // #view, and a transform would become its containing block, so it only fades.
+      if (lastRouteHash !== null && hash !== lastRouteHash && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        $('#view').animate(base === viewSearch ? [{ opacity: 0 }, { opacity: 1 }]
+          : [{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 160, easing: 'cubic-bezier(.2,0,0,1)' });
+      }
+    }
+    layer.hidden = !isWheel;
+    layer.innerHTML = isWheel ? viewWheel() : '';
+    if (isWheel) syncWheelWindow();
+    else {
+      $('#wheelEntry .wheel-symbol').style.opacity = '';
+      $('.wrap').getAnimations().forEach(anim => anim.cancel());
+    }
+    $('#view').inert = $('header.brand').inert = $('#nav').inert = isWheel;
+    if (hash !== lastRouteHash) { // announce the new screen once per route change, never per re-render
+      if (lastRouteHash !== null) $('#routeLive').textContent = ((isWheel ? layer : $('#view')).querySelector('h1') || {}).textContent || '';
+      lastRouteHash = hash;
+    }
     document.documentElement.lang = lang();
-    $('#tagline').textContent = t(lang(), 'tagline');
     $('#wheelEntryLabel').textContent = t(lang(), 'wheel_entry');
     $('#wheelEntry').setAttribute('aria-label', t(lang(), 'wheel_entry'));
-    $('#wheelEntry').hidden = route.view !== viewDeck;
+    $('#wheelEntry').hidden = base !== viewDeck;
+    syncWheelEntry();
     $('#searchEntry').setAttribute('aria-label', t(lang(), 'search_entry'));
     $('#nav').setAttribute('aria-label', t(lang(), 'nav_label'));
-    const navLabels = { '#/': 'nav_deck', '#/favoriter': 'nav_favorites', '#/skafferi': 'nav_pantry', '#/installningar': 'nav_settings' };
+    updateNav();
     document.querySelectorAll('#nav a').forEach(a => {
-      a.textContent = t(lang(), navLabels[a.dataset.match]);
       a.classList.toggle('active', a.dataset.match === route.match);
+      if (a.dataset.match === route.match) a.setAttribute('aria-current', 'page');
+      else a.removeAttribute('aria-current');
     });
   }
 
+  // labels plus the favorites counter (T8); called on every favorites change without a render()
+  function updateNav() {
+    const navLabels = { '#/': 'nav_deck', '#/favoriter': 'nav_favorites', '#/skafferi': 'nav_pantry', '#/installningar': 'nav_settings' };
+    document.querySelectorAll('#nav a').forEach(a => {
+      a.textContent = t(lang(), navLabels[a.dataset.match]);
+      if (a.dataset.match === '#/favoriter' && state.favorites.length) {
+        a.insertAdjacentHTML('beforeend', ` <span class="nav-count">${state.favorites.length}</span>`);
+      }
+    });
+  }
+
+  // T15: opening and closing the wheel FLIP from and to the mini wheel; reduced motion gets a 150 ms fade
   function renderRoute() {
-    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const root = document.documentElement;
-    const wasWheel = document.body.classList.contains('wheel-mode');
-    const enteringWheel = !wasWheel && location.hash === '#/hjul';
-    const leavingWheel = wasWheel && location.hash !== '#/hjul';
-    const nativeWebKit = /AppleWebKit/.test(navigator.userAgent) &&
-      !/(Chrome|Chromium|Edg|OPR)/.test(navigator.userAgent);
-    if (!reduced && document.startViewTransition && !nativeWebKit) {
-      root.classList.toggle('wheel-opening', enteringWheel);
-      root.classList.toggle('wheel-closing', leavingWheel);
-      root.classList.toggle('wheel-firefox', /Firefox\//.test(navigator.userAgent));
-      const transition = document.startViewTransition(() => render());
-      const settle = () => root.classList.remove('wheel-opening', 'wheel-closing', 'wheel-firefox');
-      transition.finished.then(settle, settle);
-    } else if (!reduced && enteringWheel) {
-      root.classList.add('wheel-fallback-opening');
-      render();
-      setTimeout(() => root.classList.remove('wheel-fallback-opening'), 900);
-    } else if (!reduced && leavingWheel) {
-      root.classList.add('wheel-fallback-closing');
-      setTimeout(() => {
-        root.classList.remove('wheel-fallback-closing');
-        render();
-      }, 420);
-    } else render();
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches, layer = $('#wheelLayer');
+    const opening = layer.hidden && location.hash === '#/hjul';
+    if (!layer.hidden && location.hash !== '#/hjul') {
+      layer.inert = true;
+      const home = (location.hash || '#/') === '#/' && !reduced;
+      const done = () => { layer.inert = false; render(); };
+      (home ? wheelFlip(false) : layer.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 150, fill: 'forwards' }).finished).then(done, done);
+      return;
+    }
+    render();
+    if (!opening || layer.hidden) return;
+    if (reduced || renderedBase !== viewDeck) layer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 150 });
+    else wheelFlip(true);
   }
 
   $('#view').addEventListener('click', async e => {
+    const modeBtn = e.target.closest('[data-acc-mode]');
+    if (modeBtn) { // switch login / register / forgot in place; the typed email carries over
+      accountEmail = $('#accEmail').value;
+      accountMode = modeBtn.dataset.accMode;
+      $('#accBody').innerHTML = accountBody();
+      ($('#accBody [aria-pressed="true"]') || $('#accEmail')).focus();
+      return;
+    }
     const accBtn = e.target.closest('[data-acc]');
     if (accBtn) {
+      const action = accBtn.dataset.acc, dialog = $('#accDelete');
+      if (action === 'delete') return dialog.showModal();
+      if (action === 'delete-cancel' || action === 'delete-confirm') dialog.close();
+      if (action === 'delete-cancel') return;
       try {
-        const action = accBtn.dataset.acc;
-        const email = action === 'forgot' ? $('#accEmail').value.trim() : '';
         await ensureFirebase();
         if (action === 'google') {
           localStorage.setItem(AUTH_KEY, '1');
           await fb.signInWithPopup(fb.auth, new fb.GoogleAuthProvider());
         }
         else if (action === 'link-google') { await fb.linkWithPopup(fbUser, new fb.GoogleAuthProvider()); render(); }
-        else if (action === 'forgot') {
-          await fb.sendPasswordResetEmail(fb.auth, email);
-          const errEl = $('#accError');
-          errEl.textContent = t(lang(), 'account_forgot_sent');
-          errEl.hidden = false;
-        }
         else if (action === 'signout') await fb.signOut(fb.auth);
-        else if (action === 'delete' && confirm(t(lang(), 'account_delete_confirm'))) {
+        else if (action === 'delete-confirm') {
           deletingAccount = true;
           clearTimeout(pushTimer);
           if (pushPromise) await pushPromise;
@@ -1660,31 +2362,54 @@ if (typeof document !== 'undefined') (function () {
           localStorage.removeItem(syncKey(user.uid));
           await user.delete();
         }
-      } catch (err) { // ponytail: raw Firebase message, no i18n error map; add one if real users hit this often
-        const errEl = $('#accError');
-        if (errEl) { errEl.textContent = err.message; errEl.hidden = false; }
+      } catch (err) {
+        showAccountError(err);
       } finally {
         deletingAccount = false;
       }
       return;
     }
-    const wheelAction = e.target.closest('[data-wheel-act]');
-    if (wheelAction) {
-      const action = wheelAction.dataset.wheelAct;
-      if (action === 'spin') spinWheel();
-      else if (action === 'new') newWheel();
-      else if (action === 'back') closeWheel();
-      else if (action === 'sound') {
-        wheelMuted = !wheelMuted;
-        wheelAction.textContent = wheelMuted ? '🔇' : '🔊';
-        wheelAction.setAttribute('aria-pressed', wheelMuted ? 'true' : 'false');
-        wheelAction.setAttribute('aria-label', t(lang(), wheelMuted ? 'wheel_unmute' : 'wheel_mute'));
+    const langBtn = e.target.closest('[data-lang], [data-unit-setting]');
+    if (langBtn) {
+      if (langBtn.dataset.lang) state.settings.lang = langBtn.dataset.lang;
+      else state.settings.unit = langBtn.dataset.unitSetting;
+      save();
+      render();
+      const again = $('#view').querySelector(langBtn.dataset.lang ? `[data-lang="${lang()}"]` : `[data-unit-setting="${unit()}"]`);
+      if (again) again.focus(); // the re-render replaced the pressed button
+      return;
+    }
+    const customAct = e.target.closest('[data-custom-act]');
+    if (customAct) {
+      const act = customAct.dataset.customAct, lines = $('#customLines');
+      if (act === 'add-line') {
+        lines.insertAdjacentHTML('beforeend', customLine());
+        lines.lastElementChild.querySelector('input').focus();
+      } else if (act === 'remove-line') {
+        customAct.closest('.custom-line').remove();
+        $('[data-custom-act="add-line"]').focus();
+      } else if (act === 'delete') { // no dialog: the toast's undo brings it back
+        const id = customAct.dataset.id, drink = customDrinks().find(d => d.id === id);
+        putCustom(id, null);
+        closeFavoriteDetail();
+        showToast(t(lang(), 'toast_deleted'), () => { putCustom(id, drink); render(); });
       }
       return;
     }
-    const langBtn = e.target.closest('[data-lang]');
-    if (langBtn) {
-      state.settings.lang = langBtn.dataset.lang;
+    const deckBtn = e.target.closest('[data-deck]');
+    if (deckBtn) {
+      const card = $('#deck .card[data-depth="0"]');
+      if (card && !card.dataset.leaving) flyOff(card, Number(deckBtn.dataset.deck), 0);
+      return;
+    }
+    const chipBtn = e.target.closest('[data-chip]');
+    if (chipBtn) {
+      const f = state.settings.filters, name = chipBtn.dataset.chip;
+      if (name === 'all') { f.bar = false; f.base = null; makeableOnly = false; }
+      else if (name === 'bar') f.bar = !f.bar;
+      else if (name === 'makeable') makeableOnly = !makeableOnly;
+      deckQueue = null;
+      flippedId = null;
       save();
       render();
       return;
@@ -1695,10 +2420,19 @@ if (typeof document !== 'undefined') (function () {
     if (favAction) {
       const s = state.settings;
       const input = $('#view [data-servings]');
+      if (favAction.dataset.favAct === 'variant') { // same screen, another variant: no page change or announcement
+        const id = favAction.dataset.variant;
+        setServings(id, servingsFor(favOpenId));
+        lastRouteHash = (drinkIdFromHash(location.hash) !== null ? '#/drink/' : '#/favoriter/') + encodeURIComponent(id);
+        history.replaceState(null, '', lastRouteHash);
+        render();
+        $('#view .variant-seg [aria-pressed="true"]').focus();
+        return;
+      }
       if (favAction.dataset.favAct === 'inc') setServings(favOpenId, Number(input.value) + 1);
       else if (favAction.dataset.favAct === 'dec') setServings(favOpenId, Number(input.value) - 1);
       else if (favAction.dataset.favAct === 'unit') { s.unit = favAction.dataset.unit; save(); }
-      render();
+      refreshRecipes();
       return;
     }
     const copyBtn = e.target.closest('[data-copy-fav]');
@@ -1716,8 +2450,15 @@ if (typeof document !== 'undefined') (function () {
     const favBtn = e.target.closest('[data-act="fav"]');
     if (favBtn) {
       const id = favBtn.dataset.id;
-      if (state.favorites.includes(id)) state.favorites = state.favorites.filter(x => x !== id);
-      else state.favorites.push(id);
+      const index = state.favorites.indexOf(id);
+      if (index >= 0) {
+        state.favorites.splice(index, 1);
+        showToast(t(lang(), 'toast_removed'), () => {
+          if (!state.favorites.includes(id)) state.favorites.splice(index, 0, id);
+          save();
+          render();
+        });
+      } else state.favorites.push(id);
       save();
       render();
       return;
@@ -1730,32 +2471,65 @@ if (typeof document !== 'undefined') (function () {
   });
 
   $('#view').addEventListener('submit', async e => {
-    const form = e.target.closest('#emailForm, #pwForm');
+    const form = e.target.closest('#emailForm, #pwForm, #forgotForm');
     if (!form) return;
     e.preventDefault();
     const errEl = $('#accError');
     errEl.hidden = true;
-    const mode = e.submitter ? e.submitter.dataset.mode : 'login';
-    const email = form.id === 'emailForm' ? $('#accEmail').value.trim() : '';
-    const password = form.id === 'emailForm' ? $('#accPw').value : $('#accNewPw').value;
+    const email = form.id === 'pwForm' ? '' : $('#accEmail').value.trim();
     try {
       await ensureFirebase();
-      if (form.id === 'pwForm') { await fb.updatePassword(fbUser, password); render(); }
-      else {
-        if (mode === 'register') await fb.createUserWithEmailAndPassword(fb.auth, email, password);
-        else await fb.signInWithEmailAndPassword(fb.auth, email, password);
+      if (form.id === 'pwForm') { await fb.updatePassword(fbUser, $('#accNewPw').value); render(); }
+      else if (form.id === 'forgotForm') {
+        await fb.sendPasswordResetEmail(fb.auth, email);
+        errEl.textContent = t(lang(), 'account_forgot_sent');
+        errEl.hidden = false;
       }
+      else if (accountMode === 'register') await fb.createUserWithEmailAndPassword(fb.auth, email, $('#accPw').value);
+      else await fb.signInWithEmailAndPassword(fb.auth, email, $('#accPw').value);
     } catch (err) {
-      const currentError = $('#accError');
-      if (currentError) { currentError.textContent = err.message; currentError.hidden = false; }
-    } // ponytail: raw Firebase message, matches the data-acc catch above
+      showAccountError(err);
+    }
   });
+
+  // F2 save and F3 send
+  $('#view').addEventListener('submit', async e => {
+    const form = e.target.closest('#customForm, #suggestForm');
+    if (!form) return;
+    e.preventDefault();
+    const f = new FormData(form), err = form.querySelector('.warn');
+    const fail = key => { err.textContent = t(lang(), key); err.hidden = false; };
+    if (form.id === 'customForm') {
+      const id = form.dataset.id || 'egen-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+      const lines = Array.from(form.querySelectorAll('.custom-line')).map(row =>
+        ({ amount: row.children[0].value, unit: row.children[1].value, name: row.children[2].value }));
+      const drink = buildCustomDrink({ id, name: f.get('name'), glass: f.get('glass'), color: f.get('color'),
+        method: f.get('method'), source: f.get('source'), lines }, db.ingredients);
+      if (!drink.ingredients.length || drink.ingredients.some(l => 'ml' in l && !(l.ml > 0))) return fail('custom_need_line');
+      putCustom(id, drink);
+      location.replace('#/favoriter/' + id);
+      return;
+    }
+    const drink = customDrinks().find(d => d.id === form.dataset.id), button = form.querySelector('[type="submit"]');
+    button.disabled = true;
+    const res = await authedFetch('/suggestions', { method: 'POST', body: JSON.stringify({
+      drink, kind: f.get('kind') || 'new', similarTo: form.dataset.similar || null,
+      source: f.get('source').trim() || null, displayName: f.get('displayName').trim() || null, consent: f.get('consent') === 'on',
+    }) }).catch(() => null);
+    button.disabled = false;
+    if (!res || !res.ok) return fail(res && res.status === 429 ? 'suggest_limit' : 'suggest_failed');
+    await loadMine().catch(() => {});
+    render();
+  });
+
+  // <details> toggle does not bubble, so listen in the capture phase
+  $('#view').addEventListener('toggle', e => { if (e.target.id === 'account') accountOpen = e.target.open; }, true);
 
   $('#view').addEventListener('change', e => {
     const control = e.target.closest('[data-servings]');
     if (!control) return;
     setServings(control.dataset.id, control.value);
-    render();
+    refreshRecipes();
   });
 
   $('#view').addEventListener('keydown', e => {
@@ -1763,11 +2537,6 @@ if (typeof document !== 'undefined') (function () {
       e.preventDefault();
       e.target.blur();
     }
-  });
-
-  $('#view').addEventListener('change', e => {
-    const control = e.target.closest('#wheelMood');
-    if (control) selectWheelMood(control.value);
   });
 
   $('#view').addEventListener('change', e => {
@@ -1798,36 +2567,74 @@ if (typeof document !== 'undefined') (function () {
     if (!control.checked) state.pantry = state.pantry.filter(item => item !== id);
     deckQueue = null;
     save();
+    $('#pantryCount').textContent = pantryCountText();
+    $('#pantryAlmost').innerHTML = pantryAlmostMarkup();
+  });
+
+  $('#view').addEventListener('click', e => {
+    if (!e.target.closest('[data-almost-all]')) return;
+    almostAll = !almostAll;
+    $('#pantryAlmost').innerHTML = pantryAlmostMarkup();
+    $('#pantryAlmost [data-almost-all]').focus();
   });
 
   $('#view').addEventListener('change', e => {
-    const control = e.target.closest('[data-settings-act="wheel-favorites-only"]');
+    const control = e.target.closest('[data-settings-act^="wheel-"]');
     if (!control) return;
-    state.settings.wheelFavoritesOnly = control.checked;
+    state.settings[control.dataset.settingsAct === 'wheel-labels' ? 'wheelLabels' : 'wheelFavoritesOnly'] = control.checked;
     save();
   });
 
-  $('#view').addEventListener('change', e => {
-    const control = e.target.closest('[data-wheel-outcome]');
-    if (!control) return;
-    const id = control.dataset.wheelOutcome;
-    const excluded = state.settings.wheelOutcomesExcluded;
-    if (!control.checked && !excluded.includes(id)) excluded.push(id);
-    if (control.checked) state.settings.wheelOutcomesExcluded = excluded.filter(item => item !== id);
+  $('#view').addEventListener('click', e => {
+    const button = e.target.closest('[data-wheel-extra]');
+    if (!button) return;
+    const id = button.dataset.wheelExtra, on = !state.settings.wheelExtras.includes(id);
+    state.settings.wheelExtras = on ? state.settings.wheelExtras.concat(id) : state.settings.wheelExtras.filter(x => x !== id);
+    button.classList.toggle('active', on);
+    button.setAttribute('aria-pressed', String(on));
     save();
   });
 
   $('#view').addEventListener('input', e => {
+    if (e.target.id === 'pantrySearch') {
+      pantryQuery = e.target.value;
+      filterPantry();
+    }
     const control = e.target.closest('#searchInput');
     if (!control) return;
     searchQuery = control.value;
-    const pos = control.selectionStart;
-    render();
-    const next = $('#searchInput');
-    if (next) { next.focus(); next.setSelectionRange(pos, pos); }
+    const list = $('#searchResults'); // T13: the input is never replaced, so focus and caret stay put
+    list.innerHTML = searchResults();
+    list.querySelectorAll('.cocktail-art').forEach(wireArt);
   });
 
-  $('#wheelEntry').addEventListener('click', () => { wheelOpenedFromHome = true; });
+  $('#wheelLayer').addEventListener('click', e => {
+    const mood = e.target.closest('[data-wheel-mood]');
+    if (mood) return selectWheelMood(Number(mood.dataset.wheelMood));
+    const recipe = e.target.closest('.fav-open');
+    if (recipe) {
+      favHistoryEntry = true;
+      location.hash = '#/favoriter/' + encodeURIComponent(recipe.dataset.id);
+      return;
+    }
+    const action = e.target.closest('[data-wheel-act]');
+    const act = action && action.dataset.wheelAct;
+    if (act === 'spin') spinWheel();
+    else if (act === 'back') closeWheel();
+    else if (act === 'change') { // show the picker again in the result card's place
+      wheelPicker = true;
+      $('#wheelPanel').innerHTML = wheelPanelMarkup();
+      $('#wheelPanel [aria-pressed="true"]').focus();
+    } else if (act === 'sound') {
+      wheelMuted = !wheelMuted;
+      action.textContent = t(lang(), wheelMuted ? 'wheel_sound_off' : 'wheel_sound_on');
+      action.setAttribute('aria-pressed', String(!wheelMuted));
+    }
+  });
+  $('#wheelEntry').addEventListener('click', e => {
+    if (e.currentTarget.getAttribute('aria-disabled') === 'true') e.preventDefault();
+    else wheelOpenedFromHome = true;
+  });
   if (localStorage.getItem(AUTH_KEY) === '1') ensureFirebase().catch(() => {});
   window.addEventListener('hashchange', renderRoute);
   window.addEventListener('keydown', e => {
@@ -1835,6 +2642,7 @@ if (typeof document !== 'undefined') (function () {
     if (!dir || e.defaultPrevented || e.repeat || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
     const target = e.target instanceof Element ? e.target : null;
     if (target && target.closest('button, input, select, textarea, a, [contenteditable="true"]')) return;
+    if (!$('#wheelLayer').hidden) return; // the deck under the wheel layer never swipes
     const card = $('#deck .card[data-depth="0"]');
     if (!card || card.dataset.leaving) return;
     e.preventDefault();

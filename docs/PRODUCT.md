@@ -67,7 +67,7 @@ lists). Personal + friends first, but every decision assumes it goes public late
   images as style-only references; production filename = `img/<drink-id>.webp`.
   Lazy-load only the top 3–4 cards. SVG placeholder until an image exists.
 - **Spinning wheel**: a starting-page "Pick for me" / "Välj åt mig" entry opens the
-  full-screen `#/hjul` individual order chooser. Its five-step drunkenness slider is
+  full-screen `#/hjul` individual order chooser. Its five mood buttons (none preselected) are
   visit-local, never persisted. The wheel always shows exactly 12 honest sectors;
   lower levels favor stronger choices, level 4 removes shots and adds water/Red Bull,
   and level 5 visibly has seven water sectors and is hard-coded to land on water.
@@ -130,7 +130,7 @@ transient and never synced. Never store derived data in the blob.
 ## drinks.json schema
 
 ```json
-{ "schema": 1,
+{ "schema": 2,
   "ingredients": { "lime-juice": { "en": "Lime juice", "sv": "Limejuice",
                                       "group": "fresh" } },
   "drinks": [ {
@@ -165,6 +165,10 @@ transient and never synced. Never store derived data in the blob.
   HTTPS link to the specific published recipe; favorite detail renders it as a small link
   after the method.
 - `essential` is explicit on every line (validator enforces).
+- `type` is one of `sour`, `highball`, `aromatic`, `spirit-forward`, `contemporary` (kebab, validator enforces).
+- Schema 2 (K1): top-level `families` maps a key to `{ name, primary, order }`. A member drink carries
+  `family`, `variantLabel` (`en` + `sv`) and optional lowercase `aliases`; any drink may set `art` to
+  borrow another drink's image. Every member is a complete recipe, nothing is inherited.
 
 ## User stories & acceptance criteria
 
@@ -289,24 +293,53 @@ mixable drinks.**
 ### Epic J — Spinning wheel
 
 **J1. As an individual orderer, I want a polished wheel to choose my next normal bar order.**
-- The starting-page mini-wheel expands into a full-screen route with a graceful fallback
-  when View Transitions are unavailable or deliberately avoided for compositor safety.
-  The pointer joins the composed transition, Firefox uses a native fade-only snapshot path
-  instead of nested transforms, and reduced motion removes the scene animations. A required
-  five-step EN/SV mood slider builds a 12-sector lineup from current `bar: true` cocktails
-  and the wheel-only catalog.
+- The wheel is a full-screen layer over the deck. It opens and closes with the same FLIP
+  in every browser: the disc flies from and back into the starting-page mini-wheel on
+  springs while the deck scales behind it; reduced motion gets a 150 ms fade. A required
+  choice among five EN/SV mood buttons builds a 12-sector lineup from current `bar: true`
+  cocktails and the wheel-only catalog. Sectors are coloured per category with a legend,
+  and a reading window above the wheel names the sector under the pointer.
 - Every normal spin preselects one eligible visible sector and animates that exact sector
-  to the pointer in 5–6 seconds. The highest level may show non-water decoys but only its
-  seven visible water sectors are eligible. Re-spin keeps the lineup; New wheel rebuilds it.
+  to the pointer in about 4 seconds (4.15 s including the spring-back, `spinAngle` in `app.js`). The highest level may show non-water decoys but only its
+  seven visible water sectors are eligible. Re-spin keeps the lineup; choosing the active
+  mood again rebuilds it (New wheel). The result card takes the mood picker's place until
+  "Change mood".
 - Sound starts on for each wheel visit and has a visible mute control. Ticks, one landing
   haptic and the result card progressively enhance the tactile feel. Reduced motion skips
-  rotation and reveals the result quickly. Results/history do not persist or change the
+  the rotation animation: the disc jumps to the landing and the result shows quickly. Results/history do not persist or change the
   exact `sipdeck` localStorage blob.
 - Wheel-only art is committed as 512×512 WebP under `img-wheel/`; reusable portrait PNG
   masters and 640×800 card-ready variants remain local under gitignored `img-src/`.
 
+### Epic K — Variants, own drinks and suggestions (decided 2026-09-25)
+
+Source: design review `design_handoff_sipdeck/README.md`, phase 5. Catalog content stays
+curated: user input reaches `drinks.json` only through the suggestion review below.
+
+- **K1 Variants.** `drinks.json` schema 2 groups drinks in `families`
+  (`name`, `primary`, `order`). Each variant is a complete, source-audited recipe with its
+  own `bar`; nothing is inherited. The deck queues families, the wheel counts a family as
+  one outcome, the card back switches variant in place and shows the diff against
+  `primary`. Search matches name, aliases, variant label, tags and ingredient names.
+- **K2 My drinks.** Without an account a person can create drinks (name, glass, liquid
+  colour, ingredients, amounts, method, optional source). Stored locally under
+  `sipdeck.custom`, outside the state blob; synced per drink through `user_drinks` when
+  signed in (`GET /drinks`, `GET/PUT/DELETE /drinks/:id`, newest edit wins, a deletion is
+  kept as a tombstone). Shown in the deck and search marked "Own" and in their own "My
+  drinks" section of Favorites; never on the wheel (not bar-audited). Glass silhouette
+  until the generic art (K4) exists. Shape rules shared with the catalog validator in
+  `worker/drink-rules.js`.
+- **K3 Suggestions.** Signed-in users can suggest a drink to the catalog after a Jaccard
+  similarity check (≥ 0.6 offers "as variant" or "as new drink") and explicit consent to
+  publication, editing and illustration. Worker `POST /suggestions` (max 5 per day and
+  UID), `GET /suggestions/mine`, admin routes behind a Worker secret (`ADMIN_TOKEN`),
+  curator CLI `scripts/suggestions.js`. Account deletion removes new and declined
+  suggestions and all user drinks; accepted and published ones stay, unlinked from the UID.
+- **K4 Generic art.** 8 glasses × 6 liquid colours = 48 generic illustrations in
+  `img-generic/<glass>-<colour>.webp`, made with the frozen image pipeline, none
+  confusable with a catalog drink.
+
 ## Non-goals (v1)
 
-No UGC/moderation (all content is curated JSON), no search box, no richer tag filter UI,
-no service worker, no custom domain, no accounts, no drink editor. (Deep links shipped in
-v1.1, BACKLOG 16.)
+No service worker, no custom domain. (Deep links shipped in v1.1, BACKLOG 16. Search,
+accounts, user drinks and curated suggestions were later decided in, see Epic K.)
