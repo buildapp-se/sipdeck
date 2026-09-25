@@ -2,7 +2,7 @@
 schemaVersion: 1
 status: active
 currentGoal: Keep Sipdeck live and pick up v2 items as they become worth doing
-nextAction: Suggestion email notification, then F4 generic images, on branch design/granskning; see top section
+nextAction: Deploy sipdeck-api for suggestion email (owner yes pending); F4 paused; branch design/granskning, see top section
 blockers: []
 reviewedAt: 2026-09-25
 ---
@@ -26,7 +26,8 @@ Spec: `design_handoff_sipdeck/README.md` (lokal, ospårad mapp). Förhandsvisnin
 - **Batch 6 fjärrsteg gjorda 2026-09-25 (ägarens ja):** `schema.sql` körd mot fjärr-D1 `sipdeck` (6 skrivna rader, `users` orörd med 8 rader), Worker `sipdeck-api` deployad (version `6bf0985e`, nya rutterna svarade efter ca en minuts spridning; första anropen gav blandat gammalt och nytt), secret `ADMIN_TOKEN` satt. Nyckeln ligger i `~/.config/sipdeck/admin-token` (utanför repot); CLI: `SIPDECK_ADMIN_TOKEN=$(cat ~/.config/sipdeck/admin-token) node scripts/suggestions.js pull`, verifierad mot live (0 förslag, fel nyckel ger 401). Förbrukning före: kontots D1 ca 2 500 skrivna och 88 000 lästa rader senaste dygnet. **Ej verifierat live:** inloggat flöde för egna drinkar och förslag med riktig Firebase-token (täcks av `worker.test.mjs` och e2e med stubbar). Frontenden på buildapp.se är oförändrad tills grenen mergas och Pages deployas.
 - **Fynd batch 6:** `deck.spec.js` "save button ... undone back onto the top" föll en gång av fyra körningar mot förhandsvisningen (undo lade inte tillbaka kortet överst i tid), grönt i tre omkörningar och lokalt. Koden där är orörd i batch 6; bevaka. Verktyg: `img-src/customshot.cjs <url> <dir>` (F2/F3-skärmar 390×844 ljust/mörkt, inloggat via stubbar). Port 8787 upptas av Vendlas dev-server: kör `wrangler dev --local --port 8799 --ip 127.0.0.1`. `worker/.dev.vars` (gitignorerad) har en lokal ADMIN_TOKEN.
 - **Mejlavisering klar lokalt, ej deployad:** `POST /suggestions` mejlar `patz.lofgren@gmail.com` från `forslag@buildapp.se` via bindningen `MAIL` (`[[send_email]]` låst med `destination_address`), i `ctx.waitUntil` med `.catch`, så ett kastande mejl aldrig stoppar förslaget. Objektformen `send({from,to,subject,text})` i stället för egen MIME: inbyggd, inget beroende, testbar i node; bekräftad i workerd lokalt (probe gav `messageId`). `worker.test.mjs` 30/30 (mejl vid 201, inget vid 400/429, sparas när mejlet kastar). Email Routing påslaget på `buildapp.se` 2026-09-25 (Strato-MX på apex borttagen efter ägarens ja, `kontakt@buildapp.se` vidarebefordras till Gmail; se vaultnoten "Email Sending (Resend)"). **Ej verifierat:** riktigt mejl, kräver deploy av `sipdeck-api`. Port 8799 upptas av en kvarglömd workerd (PID 61012 sedan 15:26): kör `wrangler dev` på annan port eller stäng den.
-- Kvar: (1) deploy av Workern för mejlaviseringen, efter ägarens ja. (2) F4 (48 bilder via Codex CLI `codex`, finns installerad), sedan byter `artMarkup` silhuetten mot `img-generic/<glas>-<färg>.webp` för egna drinkar.
+- **F4 pausad (ägarbeslut 2026-09-25):** inga nya bilder förrän "Mina drinkar" är live och används. Ägarens idé: återanvänd befintliga, generiska bilder (`img/`, `img-src/*-card.webp`) per glas och färg i stället; ej utrett.
+- Kvar: (1) deploy av Workern för mejlaviseringen, efter ägarens ja. (2) F4 (pausad, se ovan) (48 bilder via Codex CLI `codex`, finns installerad), sedan byter `artMarkup` silhuetten mot `img-generic/<glas>-<färg>.webp` för egna drinkar.
 
 ## 2026-09-23: Rosa pantern, lokalt verifierad
 
