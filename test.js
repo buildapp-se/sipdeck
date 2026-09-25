@@ -457,6 +457,13 @@ const workerSource = fs.readFileSync(path.join(__dirname, 'worker', 'worker.js')
 // arbetskopia checkas ut med CRLF och lägger på ~1,8 kB som aldrig deployas.
 check(Buffer.byteLength(appSource.split('\r').join('')) < 150000,
   'bundle budget: app.js stays under 150 kB unminified');
+// T6: own authDomain on buildapp.se (same site, so a redirect survives blocked third-party storage),
+// and only an installed app redirects; a normal tab keeps the popup
+check(appSource.includes("authDomain: 'sipdeck.buildapp.se'"), 'auth: authDomain is sipdeck.buildapp.se');
+check(/if \(matchMedia\('\(display-mode: standalone\)'\)\.matches \|\| navigator\.standalone\) await fb\.signInWithRedirect\(fb\.auth, provider\);\s*else await fb\.signInWithPopup\(fb\.auth, provider\);/.test(appSource),
+  'auth: Google redirects in standalone display mode, popup otherwise');
+check(appSource.includes('fb.getRedirectResult(fb.auth).catch(') && appSource.includes("'auth/redirect-cancelled-by-user'"),
+  'auth: redirect result is read at start and a cancelled redirect is not an error');
 check(!htmlSource.includes('fonts.googleapis.com') && htmlSource.includes("fonts/work-sans.woff2"),
   'privacy: fonts are self-hosted with no Google Fonts request');
 check(htmlSource.includes('rel="canonical" href="https://buildapp.se/sipdeck/"') &&
@@ -473,8 +480,9 @@ check(appSource.includes('el.inert = depth !== 0') &&
   'accessibility: hidden cards leave the tab order, keyboard flips work and account errors are associated');
 check(!htmlSource.includes('gstatic.com/firebase') && appSource.includes("async function ensureFirebase()"),
   'privacy: Firebase is lazy-loaded only by account use or remembered sign-in');
+// a redirect is only safe with a same-site authDomain (T6), never with <project>.firebaseapp.com
 check(appSource.includes("const AUTH_KEY = KEY + '-auth'") && appSource.includes("signInWithPopup") &&
-  !appSource.includes("signInWithRedirect"),
+  (!appSource.includes("signInWithRedirect") || appSource.includes("authDomain: 'sipdeck.buildapp.se'")),
   'privacy: requested account persistence resumes lazy auth with cross-origin-safe sign-in');
 check(appSource.split('href="info.html#${lang()}"').length === 3,
   'privacy: legal information is linked for signed-in and signed-out account views');
