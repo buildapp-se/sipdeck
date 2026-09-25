@@ -677,6 +677,9 @@ check(wheelData.moods.find(mood => mood.id === 'shitfaced').forcedOutcome === 'w
   'wheel.json: highest mood forces water');
 check(wheelData.moods.find(mood => mood.id === 'shitfaced').repeatCopy.length === 2,
   'wheel.json: highest mood has second and third-spin copy');
+check(wheelData.moods.find(mood => mood.id === 'shitfaced').safety.en === "Don't drink and drive." &&
+  !('sv' in wheelData.moods.find(mood => mood.id === 'shitfaced').safety),
+  'wheel.json: the drink-and-drive line is English only (owner 2026-09-25)');
 const wheelArt = new Set();
 Object.entries(wheelData.outcomes).forEach(([id, outcome]) => {
   check(outcome.sector && outcome.sector.en && outcome.sector.sv,

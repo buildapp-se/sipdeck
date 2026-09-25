@@ -85,3 +85,21 @@ test('reduced motion opens and closes the wheel with a fade only', async ({ page
   await expect(page.locator('#wheelLayer')).toBeHidden();
   await expect(page.locator('#wheelEntry')).toBeVisible();
 });
+
+for (const [lang, lines] of [
+  ['sv', ['Det är en dag imorgon också.', 'Du vet var den kommer att landa.', 'Du borde verkligen dricka vatten.']],
+  ['en', ["There's a day tomorrow, too.", 'You know where this will land.', 'You should really drink water.']],
+]) {
+  test(`level 5 result line gets sharper with every landing (${lang})`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.addInitScript(l => localStorage.setItem('sipdeck', JSON.stringify({ v: 1, favorites: [], pantry: [], settings: { lang: l } })), lang);
+    await openWheel(page);
+    await page.locator('[data-wheel-mood="4"]').click();
+    for (const line of lines.concat(lines[2])) {
+      await page.locator('#wheelHub').click();
+      await expect(page.locator('#wheelResult .wheel-safety')).toHaveText(line, { timeout: 3000 });
+      await expect(page.locator('#wheelResult .wheel-result-label')).toHaveText(lang === 'en' ? "Don't drink and drive." : 'Din beställning');
+      await expect(page.locator('#wheelHub')).toBeEnabled();
+    }
+  });
+}

@@ -148,8 +148,7 @@
         }
       ],
       "safety": {
-        "en": "Water won't sober you up. Don't drive.",
-        "sv": "Vatten gör dig inte nykter. Kör inte."
+        "en": "Don't drink and drive."
       },
       "strongWeight": 1,
       "forcedOutcome": "water",

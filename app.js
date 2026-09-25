@@ -1742,11 +1742,13 @@ if (typeof document !== 'undefined') (function () {
   }
 
   function wheelSupportingCopy(mood) {
-    if (!mood) return t(lang(), 'wheel_choose');
-    if (mood.id === 'shitfaced' && wheelLevel5Spins > 0 && Array.isArray(mood.repeatCopy)) {
-      return localText(mood.repeatCopy[Math.min(wheelLevel5Spins - 1, mood.repeatCopy.length - 1)]);
-    }
-    return localText(mood.copy);
+    return mood ? localText(mood.copy) : t(lang(), 'wheel_choose');
+  }
+
+  // Level 5 always lands on water; the line in the result card gets sharper with every landing.
+  function forcedResultLine(mood) {
+    const lines = [mood.copy].concat(Array.isArray(mood.repeatCopy) ? mood.repeatCopy : []);
+    return localText(lines[Math.max(0, Math.min(wheelLevel5Spins, lines.length) - 1)]);
   }
 
   // T14.7–8: the mood picker and the result card share one slot under the wheel
@@ -1754,12 +1756,16 @@ if (typeof document !== 'undefined') (function () {
     const mood = wheelMood(), entry = wheelResult;
     if (!wheelData || !db) return `<p class="wheel-mood-copy">${esc(t(lang(), wheelFailed ? 'wheel_error' : 'wheel_loading'))}</p>`;
     if (entry && !wheelPicker) {
-      const safety = mood && mood.forcedOutcome && mood.safety ? `<p class="wheel-safety">${esc(localText(mood.safety))}</p>` : '';
+      const forced = !!(mood && mood.forcedOutcome);
+      const safety = forced ? `<p class="wheel-safety">${esc(forcedResultLine(mood))}</p>` : '';
+      // "Don't drink and drive" is an English idiom with no Swedish counterpart, so wheel.json has it in English
+      // only; it takes the label's place so the tallest card stays one line short of Safari's toolbar.
+      const label = forced && mood.safety && mood.safety[lang()] || t(lang(), 'wheel_result');
       const recipe = entry.kind === 'cocktail'
         ? `<button class="fav-open" data-id="${esc(entry.outcomeId)}">${esc(t(lang(), 'wheel_recipe'))}</button>` : '';
       return `<div class="wheel-result" id="wheelResult">
         <div class="wheel-result-head"><img class="wheel-result-art" src="${esc(entry.art)}" alt="">
-          <div class="wheel-result-text"><p class="wheel-result-label">${esc(t(lang(), 'wheel_result'))}</p>
+          <div class="wheel-result-text"><p class="wheel-result-label">${esc(label)}</p>
           <h2 class="wheel-result-name">${esc(localText(entry.result))}</h2></div></div>
         ${safety}
         <div class="wheel-result-btns">${recipe}<button data-wheel-act="change">${esc(t(lang(), 'wheel_change'))} · ${esc(localText(mood.name))}</button></div>
