@@ -454,7 +454,7 @@ const workerSource = fs.readFileSync(path.join(__dirname, 'worker', 'worker.js')
 // bumped 140kB -> 150kB 2026-09-25, owner's call: wheel extras, spin profiles, level 5 lines, mood card over the wheel
 // Mät LF-storleken, alltså det git lagrar och GitHub Pages levererar. En Windows-
 // arbetskopia checkas ut med CRLF och lägger på ~1,8 kB som aldrig deployas.
-check(Buffer.byteLength(appSource.split('\r').join('')) < 140000,
+check(Buffer.byteLength(appSource.split('\r').join('')) < 150000,
   'bundle budget: app.js stays under 150 kB unminified');
 check(!htmlSource.includes('fonts.googleapis.com') && htmlSource.includes("fonts/work-sans.woff2"),
   'privacy: fonts are self-hosted with no Google Fonts request');
