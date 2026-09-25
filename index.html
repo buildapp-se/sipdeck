@@ -389,6 +389,10 @@ details.account[open] .account-chevron{transform:rotate(90deg)}
 /* a sideways row: checking an item changes this row, never the height above the checkboxes */
 .pantry-almost-list{display:flex;gap:.5rem;overflow-x:auto;scrollbar-width:none;margin:0 -1.25rem .2rem;padding:4px 1.25rem 24px}
 .pantry-almost-list::-webkit-scrollbar{display:none}
+.pantry-almost-list:not(.all){mask-image:linear-gradient(90deg,#000 calc(100% - 3rem),transparent)} /* says the row goes on */
+.pantry-almost-list.all{display:grid;grid-template-columns:repeat(auto-fill,minmax(10rem,1fr));overflow:visible;margin:0 0 .2rem;padding:4px 0 24px}
+.section-head.almost-head{margin:0 0 .55rem}
+.almost-head .pill-btn{background:none;border:1px solid var(--sd-line);color:var(--sd-ink);padding:0 1rem;font-weight:500}
 .pantry-almost-row{display:flex;flex-direction:column;flex:0 0 11.5rem;text-align:left;color:#211B12}
 .pantry-almost-row:focus-visible{outline:3px solid var(--sd-accent);outline-offset:2px}
 
@@ -539,6 +543,6 @@ body.search-mode .brand,body.search-mode .bottom-nav{display:none}
   <a href="#/installningar" data-match="#/installningar"></a>
 </nav>
 <div id="wheelLayer" hidden></div>
-<script src="app.js?v=1.22"></script>
+<script src="app.js?v=1.23"></script>
 </body>
 </html>

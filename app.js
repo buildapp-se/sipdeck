@@ -38,7 +38,7 @@ const STRINGS = {
     pantry_intro: 'Check off what you have. Optional garnishes never block a match.',
     pantry_group_spirits: 'Spirits', pantry_group_liqueurs: 'Liqueurs',
     pantry_group_fresh: 'Fresh & mixers', pantry_group_pantry: 'Pantry staples',
-    pantry_almost_title: 'Almost there',
+    pantry_almost_title: 'Almost there', pantry_almost_all: 'Show all', pantry_almost_fewer: 'Show fewer',
     pantry_search: 'Search ingredients', pantry_search_empty: 'No ingredient matches that search.',
     pantry_count_one: 'You can mix 1 drink', pantry_count_many: 'You can mix {n} drinks',
     settings_sync: 'Sync between devices',
@@ -150,7 +150,7 @@ const STRINGS = {
     pantry_intro: 'Bocka av vad du har. Valfri garnering stoppar aldrig en träff.',
     pantry_group_spirits: 'Sprit', pantry_group_liqueurs: 'Likörer',
     pantry_group_fresh: 'Färskt och blanddryck', pantry_group_pantry: 'Skafferivaror',
-    pantry_almost_title: 'Nästan klart',
+    pantry_almost_title: 'Nästan klart', pantry_almost_all: 'Visa alla', pantry_almost_fewer: 'Visa färre',
     pantry_search: 'Sök ingrediens', pantry_search_empty: 'Ingen ingrediens matchar sökningen.',
     pantry_count_one: 'Du kan blanda 1 drink', pantry_count_many: 'Du kan blanda {n} drinkar',
     settings_sync: 'Synka mellan enheter',
@@ -1077,6 +1077,7 @@ if (typeof document !== 'undefined') (function () {
   let makeableOnly = false; // transient deck mode; pantry itself is the persisted source of truth
   let searchQuery = ''; // transient #/sok input; cleared whenever the route leaves search
   let pantryQuery = ''; // transient pantry filter; cleared whenever the route leaves the pantry
+  let almostAll = false; // "Nästan klart" expanded; kept while the pantry is open
   let servingDrinkId = null, recipeServings = 1;
 
   function servingsFor(id) {
@@ -1680,9 +1681,12 @@ if (typeof document !== 'undefined') (function () {
     const almost = state.pantry.length ? db.drinks
       .map(drink => ({ drink, missing: missingIngredients(drink, state.pantry) }))
       .filter(x => x.missing.length === 1) : [];
+    // owner 2026-09-25: the count says there are more; "show all" wraps the same cards downwards on request
+    const all = almostAll && almost.length > 2, more = almost.length > 2
+      ? `<button class="pill-btn" data-almost-all aria-expanded="${all}">${esc(t(lang(), all ? 'pantry_almost_fewer' : 'pantry_almost_all'))}</button>` : '';
     return almost.length ? `
-      <h2 class="pantry-almost-title">${esc(t(lang(), 'pantry_almost_title'))}</h2>
-      <div class="pantry-almost-list">${almost.map(({ drink, missing }) => `
+      <div class="section-head almost-head"><h2 class="pantry-almost-title">${esc(t(lang(), 'pantry_almost_title'))} · ${almost.length}</h2>${more}</div>
+      <div class="pantry-almost-list${all ? ' all' : ''}">${almost.map(({ drink, missing }) => `
         <a class="list-card pantry-almost-row" href="#/drink/${esc(drink.id)}">
           <span class="name">${esc(drink.name)}</span>
           <span class="meta">${esc(t(lang(), 'missing_prefix') + ingName(missing[0].id))}</span>
@@ -2237,7 +2241,7 @@ if (typeof document !== 'undefined') (function () {
     document.body.classList.toggle('wheel-mode', isWheel);
     document.body.classList.toggle('search-mode', route.view === viewSearch);
     if (route.view !== viewSearch && detailId === null) searchQuery = ''; // survives fav detail peek
-    if (route.view !== viewPantry) pantryQuery = '';
+    if (route.view !== viewPantry) { pantryQuery = ''; almostAll = false; }
     if (route.view === viewFavorites) {
       if (detailId !== favOpenId) favChecked = new Set();
       favOpenId = detailId;
@@ -2558,6 +2562,13 @@ if (typeof document !== 'undefined') (function () {
     save();
     $('#pantryCount').textContent = pantryCountText();
     $('#pantryAlmost').innerHTML = pantryAlmostMarkup();
+  });
+
+  $('#view').addEventListener('click', e => {
+    if (!e.target.closest('[data-almost-all]')) return;
+    almostAll = !almostAll;
+    $('#pantryAlmost').innerHTML = pantryAlmostMarkup();
+    $('#pantryAlmost [data-almost-all]').focus();
   });
 
   $('#view').addEventListener('change', e => {

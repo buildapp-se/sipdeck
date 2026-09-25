@@ -46,6 +46,33 @@ test('pantry: search filters in place, count is live, almost-there comes first',
   await expect(page.locator('.pantry-group:visible')).toHaveCount(0);
 });
 
+test('pantry: almost-there shows its count and "show all" wraps the cards downwards', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await seed(page, { pantry: ['gin', 'lime-juice', 'triple-sec', 'campari', 'white-rum', 'lemon-juice', 'soda-water'] });
+  await page.goto('/#/skafferi');
+  const title = page.locator('#pantryAlmost .pantry-almost-title'), more = page.locator('[data-almost-all]');
+  await expect(title).toHaveText(/^Nästan klart · \d+$/);
+  const n = Number((await title.textContent()).split('· ')[1]);
+  expect(n).toBeGreaterThan(2);
+  await expect(more).toHaveText('Visa alla');
+  const rows = page.locator('.pantry-almost-row');
+  expect((await rows.nth(1).boundingBox()).y).toBe((await rows.nth(0).boundingBox()).y); // one sideways row
+
+  await more.click();
+  await expect(more).toHaveText('Visa färre');
+  await expect(more).toHaveAttribute('aria-expanded', 'true');
+  await expect(more).toBeFocused();
+  const [a, b, c] = [await rows.nth(0).boundingBox(), await rows.nth(1).boundingBox(), await rows.nth(2).boundingBox()];
+  expect(b.y).toBe(a.y); // two side by side at 390 px ...
+  expect(c.y).toBeGreaterThan(a.y + a.height - 1); // ... then the next row down
+  expect(c.x).toBe(a.x);
+  const last = await rows.nth(n - 1).boundingBox();
+  expect(last.x + last.width).toBeLessThanOrEqual(390); // nothing runs off to the right any more
+
+  await page.locator('[data-pantry="gin"]').click(); // checking an item keeps the expanded list
+  await expect(page.locator('.pantry-almost-list.all')).toHaveCount(1);
+});
+
 test('settings: folded account first, unit, wheel extras; login, register and forgot modes', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await seed(page, { settings: { lang: 'en', unit: 'cl' } });
