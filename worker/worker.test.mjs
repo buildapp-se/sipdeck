@@ -53,6 +53,11 @@ const drink = (id, name = 'Kvällens sour') => ({ id, custom: true, name, glass:
 // F2 /drinks
 check((await call('GET', '/drinks')).status === 401, 'drinks: no token is 401');
 check((await call('PUT', '/drinks/egen-1', { who: 'alice', body: { drink: drink('egen-1'), updatedAt: 100 } })).status === 200, 'drinks: put');
+check(mails.length === 1 && mails[0].subject === 'Sipdeck: Mina drinkar används' && /med egna drinkar: 1\./.test(mails[0].text) &&
+  !/Kvällens/.test(mails[0].text), 'drinks: the first drink mails the curator, without its content');
+check((await call('PUT', '/drinks/egen-5', { who: 'alice', body: { drink: drink('egen-5'), updatedAt: 100 } })).status === 200 &&
+  (await call('PUT', '/drinks/egen-5', { who: 'alice', body: { drink: drink('egen-5', 'Ny'), updatedAt: 101 } })).status === 200 &&
+  mails.length === 1, 'drinks: a second drink or an edit sends no mail');
 check((await call('PUT', '/drinks/egen-1', { who: 'alice', body: { drink: drink('egen-1', 'Gammal'), updatedAt: 50 } })).status === 409,
   'drinks: an older write is refused');
 check((await call('GET', '/drinks/egen-1', { who: 'alice' })).data.drink.name === 'Kvällens sour', 'drinks: the newer version stays');
@@ -61,13 +66,19 @@ check((await call('PUT', '/drinks/egen-2', { who: 'alice', body: { drink: drink(
 check((await call('PUT', '/drinks/egen-2', { who: 'alice', body: { drink: Object.assign(drink('egen-2'), { glass: 'bucket' }), updatedAt: 1 } })).status === 400,
   'drinks: shared rules reject an unknown glass');
 check((await call('GET', '/drinks', { who: 'bob' })).data.drinks.length === 0, 'drinks: another user sees nothing');
+mailFails = true;
+check((await call('PUT', '/drinks/egen-1', { who: 'bob', body: { drink: drink('egen-1'), updatedAt: 1 } })).status === 200 &&
+  (await call('GET', '/drinks/egen-1', { who: 'bob' })).status === 200, 'drinks: a throwing mail still saves the first drink');
+mailFails = false;
 check((await call('DELETE', '/drinks/egen-1?updatedAt=200', { who: 'alice' })).status === 200, 'drinks: delete');
 const listed = (await call('GET', '/drinks', { who: 'alice' })).data.drinks;
-check(listed.length === 1 && listed[0].drink === null && listed[0].updatedAt === 200, 'drinks: a deletion stays as a tombstone');
+const tomb = listed.find(r => r.id === 'egen-1');
+check(listed.length === 2 && tomb.drink === null && tomb.updatedAt === 200, 'drinks: a deletion stays as a tombstone');
 check((await call('PUT', '/drinks/egen-1', { who: 'alice', body: { drink: drink('egen-1'), updatedAt: 150 } })).status === 409,
   'drinks: a stale device cannot bring a deleted drink back');
 
 // F3 /suggestions
+mails.length = 0;
 const suggestion = { drink: drink('egen-9'), kind: 'variant', similarTo: 'whiskey-sour', source: 'Egen skapelse', displayName: 'Patrik', consent: true };
 check((await call('POST', '/suggestions', { who: 'alice', body: Object.assign({}, suggestion, { consent: false }) })).status === 400,
   'suggestions: consent is required');

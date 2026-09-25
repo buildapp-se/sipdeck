@@ -2,7 +2,7 @@
 // GET    /state    (Bearer) -> {state}
 // PUT    /state    (Bearer) <- hela state-bloben {v,favorites,pantry,settings}
 // GET    /drinks   (Bearer) -> {drinks:[{id,drink,updatedAt}]}  F2, drink null = raderad
-// GET|PUT|DELETE /drinks/:id (Bearer)  PUT <- {drink,updatedAt}, DELETE ?updatedAt=; nyaste ändringen vinner
+// GET|PUT|DELETE /drinks/:id (Bearer)  PUT <- {drink,updatedAt}, DELETE ?updatedAt=; nyaste ändringen vinner; första drinken mejlar kuratorn
 // POST   /suggestions      (Bearer) <- {drink,kind,similarTo,source,displayName,consent}  F3, max 5 per dygn, mejlar kuratorn
 // GET    /suggestions/mine (Bearer) -> {suggestions:[...]}
 // GET    /admin/suggestions?status=new, POST /admin/suggestions/:id <- {status,note,drink_id}  (Bearer ADMIN_TOKEN)
@@ -54,6 +54,14 @@ function suggestionMail(id, p) {
       'SIPDECK_ADMIN_TOKEN=$(cat ~/.config/sipdeck/admin-token) node scripts/suggestions.js pull',
     ].join('\n'),
   };
+}
+async function firstDrinkMail(env) {
+  const users = await env.DB.prepare('SELECT COUNT(DISTINCT firebase_uid) AS n FROM user_drinks').first();
+  await env.MAIL.send({
+    from: { email: NOTIFY_FROM, name: 'Sipdeck' }, to: NOTIFY_TO,
+    subject: 'Sipdeck: Mina drinkar används',
+    text: 'En användare har sparat sin första egna drink.\nAnvändare med egna drinkar: ' + users.n + '.',
+  });
 }
 const drinkRow = r => ({ id: r.id, drink: r.drink_json ? JSON.parse(r.drink_json) : null, updatedAt: r.updated_at });
 const suggestionRow = r => Object.assign(r, { payload: JSON.parse(r.payload) });
@@ -199,15 +207,16 @@ export default {
           return row ? json(drinkRow(row)) : json({ error: 'Hittades inte.' }, 404);
         }
         if (req.method === 'PUT' || req.method === 'DELETE') {
-          let drink = null, at = Number(url.searchParams.get('updatedAt'));
+          let drink = null, at = Number(url.searchParams.get('updatedAt')), first = false;
           if (req.method === 'PUT') {
             const body = await readJson(req, 16384);
             drink = body && body.drink;
             at = body && body.updatedAt;
             if (drinkErrors(drink).length || drink.id !== id) throw new HttpError(400, 'Ogiltig drink.');
-            const count = await env.DB.prepare('SELECT COUNT(*) AS n FROM user_drinks WHERE firebase_uid = ? AND drink_json IS NOT NULL AND id != ?')
-              .bind(u.firebase_uid, id).first();
+            const count = await env.DB.prepare('SELECT TOTAL(drink_json IS NOT NULL AND id != ?) AS n, COUNT(*) AS rows FROM user_drinks WHERE firebase_uid = ?')
+              .bind(id, u.firebase_uid).first();
             if (count.n >= MAX_DRINKS) throw new HttpError(413, 'Max 100 egna drinkar.');
+            first = count.rows === 0;
           }
           if (!Number.isSafeInteger(at) || at <= 0) throw new HttpError(400, 'Ogiltig tidsstämpel.');
           const result = await env.DB.prepare(`INSERT INTO user_drinks (id, firebase_uid, drink_json, updated_at) VALUES (?, ?, ?, ?)
@@ -215,6 +224,8 @@ export default {
             WHERE excluded.updated_at > user_drinks.updated_at`)
             .bind(id, u.firebase_uid, drink ? JSON.stringify(drink) : null, at).run();
           if (!result.meta || result.meta.changes !== 1) return json(Object.assign({ error: 'Nyare version finns.' }, drinkRow(await current())), 409);
+          // ett mejl per person när Mina drinkar börjar användas (F4 väntar på det); inget av drinkens innehåll
+          if (first && env.MAIL) ctx.waitUntil(firstDrinkMail(env).catch(e => console.error('mejl egen drink', e)));
           return json({ ok: true, updatedAt: at });
         }
       }
