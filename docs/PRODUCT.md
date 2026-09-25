@@ -130,7 +130,7 @@ transient and never synced. Never store derived data in the blob.
 ## drinks.json schema
 
 ```json
-{ "schema": 1,
+{ "schema": 2,
   "ingredients": { "lime-juice": { "en": "Lime juice", "sv": "Limejuice",
                                       "group": "fresh" } },
   "drinks": [ {
@@ -165,6 +165,10 @@ transient and never synced. Never store derived data in the blob.
   HTTPS link to the specific published recipe; favorite detail renders it as a small link
   after the method.
 - `essential` is explicit on every line (validator enforces).
+- `type` is one of `sour`, `highball`, `aromatic`, `spirit-forward`, `contemporary` (kebab, validator enforces).
+- Schema 2 (K1): top-level `families` maps a key to `{ name, primary, order }`. A member drink carries
+  `family`, `variantLabel` (`en` + `sv`) and optional lowercase `aliases`; any drink may set `art` to
+  borrow another drink's image. Every member is a complete recipe, nothing is inherited.
 
 ## User stories & acceptance criteria
 

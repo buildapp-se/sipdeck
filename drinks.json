@@ -1,5 +1,5 @@
 {
-  "schema": 1,
+  "schema": 2,
   "ingredients": {
     "tequila-blanco": {
       "en": "Blanco tequila",
@@ -762,10 +762,107 @@
       "group": "fresh"
     }
   },
+  "families": {
+    "margarita": {
+      "name": "Margarita",
+      "primary": "margarita",
+      "order": [
+        "margarita",
+        "tommys-margarita"
+      ]
+    },
+    "daiquiri": {
+      "name": "Daiquiri",
+      "primary": "daiquiri",
+      "order": [
+        "daiquiri",
+        "hemingway-daiquiri",
+        "frozen-strawberry-daiquiri"
+      ]
+    },
+    "martini": {
+      "name": "Martini",
+      "primary": "dry-martini",
+      "order": [
+        "dry-martini",
+        "dirty-martini"
+      ]
+    },
+    "caipirinha": {
+      "name": "Caipirinha",
+      "primary": "caipirinha",
+      "order": [
+        "caipirinha",
+        "caipiroska"
+      ]
+    },
+    "negroni": {
+      "name": "Negroni",
+      "primary": "negroni",
+      "order": [
+        "negroni",
+        "mezcal-negroni",
+        "boulevardier"
+      ]
+    },
+    "whiskey-sour": {
+      "name": "Whiskey Sour",
+      "primary": "whiskey-sour",
+      "order": [
+        "whiskey-sour",
+        "new-york-sour"
+      ]
+    },
+    "gin-fizz": {
+      "name": "Gin Fizz",
+      "primary": "gin-fizz",
+      "order": [
+        "gin-fizz",
+        "ramos-gin-fizz"
+      ]
+    },
+    "manhattan": {
+      "name": "Manhattan",
+      "primary": "manhattan",
+      "order": [
+        "manhattan",
+        "rob-roy"
+      ]
+    },
+    "russian": {
+      "name": "Black Russian",
+      "primary": "black-russian",
+      "order": [
+        "black-russian",
+        "white-russian"
+      ]
+    },
+    "spritz": {
+      "name": "Spritz",
+      "primary": "aperol-spritz",
+      "order": [
+        "aperol-spritz",
+        "hugo-spritz"
+      ]
+    },
+    "mimosa": {
+      "name": "Mimosa",
+      "primary": "mimosa",
+      "order": [
+        "mimosa",
+        "bellini"
+      ]
+    }
+  },
   "drinks": [
     {
       "id": "margarita",
       "name": "Margarita",
+      "family": "margarita",
+      "variantLabel": {
+        "en": "Classic",
+        "sv": "Klassisk"
+      },
       "type": "sour",
       "base": "tequila",
       "iba": true,
@@ -810,6 +907,11 @@
     {
       "id": "daiquiri",
       "name": "Daiquiri",
+      "family": "daiquiri",
+      "variantLabel": {
+        "en": "Classic",
+        "sv": "Klassisk"
+      },
       "type": "sour",
       "base": "rum",
       "iba": true,
@@ -912,6 +1014,11 @@
     {
       "id": "negroni",
       "name": "Negroni",
+      "family": "negroni",
+      "variantLabel": {
+        "en": "Classic",
+        "sv": "Klassisk"
+      },
       "type": "aromatic",
       "base": "gin",
       "iba": true,
@@ -1016,6 +1123,11 @@
     {
       "id": "whiskey-sour",
       "name": "Whiskey Sour",
+      "family": "whiskey-sour",
+      "variantLabel": {
+        "en": "Classic",
+        "sv": "Klassisk"
+      },
       "type": "sour",
       "base": "whiskey",
       "iba": true,
@@ -1072,6 +1184,11 @@
     {
       "id": "dry-martini",
       "name": "Dry Martini",
+      "family": "martini",
+      "variantLabel": {
+        "en": "Dry",
+        "sv": "Dry"
+      },
       "type": "spirit-forward",
       "base": "gin",
       "iba": true,
@@ -1345,6 +1462,11 @@
     {
       "id": "caipirinha",
       "name": "Caipirinha",
+      "family": "caipirinha",
+      "variantLabel": {
+        "en": "Caipirinha",
+        "sv": "Caipirinha"
+      },
       "type": "sour",
       "base": "rum",
       "iba": true,
@@ -1478,6 +1600,11 @@
     {
       "id": "gin-fizz",
       "name": "Gin Fizz",
+      "family": "gin-fizz",
+      "variantLabel": {
+        "en": "Classic",
+        "sv": "Klassisk"
+      },
       "type": "highball",
       "base": "gin",
       "iba": true,
@@ -1782,6 +1909,11 @@
     {
       "id": "white-russian",
       "name": "White Russian",
+      "family": "russian",
+      "variantLabel": {
+        "en": "White",
+        "sv": "White"
+      },
       "type": "contemporary",
       "base": "vodka",
       "iba": true,
@@ -2021,6 +2153,11 @@
     {
       "id": "frozen-strawberry-daiquiri",
       "name": "Frozen Strawberry Daiquiri",
+      "family": "daiquiri",
+      "variantLabel": {
+        "en": "Frozen strawberry",
+        "sv": "Frusen jordgubb"
+      },
       "type": "sour",
       "base": "rum",
       "iba": false,
@@ -2078,6 +2215,11 @@
     {
       "id": "manhattan",
       "name": "Manhattan",
+      "family": "manhattan",
+      "variantLabel": {
+        "en": "Manhattan",
+        "sv": "Manhattan"
+      },
       "type": "aromatic",
       "base": "whiskey",
       "iba": true,
@@ -2124,7 +2266,12 @@
     {
       "id": "boulevardier",
       "name": "Boulevardier",
-      "type": "spirit_forward",
+      "family": "negroni",
+      "variantLabel": {
+        "en": "Boulevardier",
+        "sv": "Boulevardier"
+      },
+      "type": "spirit-forward",
       "base": "whiskey",
       "iba": true,
       "bar": true,
@@ -2169,7 +2316,7 @@
     {
       "id": "sazerac",
       "name": "Sazerac",
-      "type": "spirit_forward",
+      "type": "spirit-forward",
       "base": "brandy",
       "iba": true,
       "bar": false,
@@ -2221,7 +2368,7 @@
     {
       "id": "vieux-carre",
       "name": "Vieux Carré",
-      "type": "spirit_forward",
+      "type": "spirit-forward",
       "base": "whiskey",
       "iba": true,
       "bar": false,
@@ -2284,7 +2431,7 @@
     {
       "id": "rusty-nail",
       "name": "Rusty Nail",
-      "type": "spirit_forward",
+      "type": "spirit-forward",
       "base": "whiskey",
       "iba": true,
       "bar": false,
@@ -2324,6 +2471,11 @@
     {
       "id": "rob-roy",
       "name": "Rob Roy",
+      "family": "manhattan",
+      "variantLabel": {
+        "en": "Rob Roy",
+        "sv": "Rob Roy"
+      },
       "type": "aromatic",
       "base": "whiskey",
       "iba": false,
@@ -2528,6 +2680,11 @@
     {
       "id": "new-york-sour",
       "name": "New York Sour",
+      "family": "whiskey-sour",
+      "variantLabel": {
+        "en": "New York",
+        "sv": "New York"
+      },
       "type": "sour",
       "base": "whiskey",
       "iba": true,
@@ -2641,7 +2798,7 @@
     {
       "id": "godfather",
       "name": "Godfather",
-      "type": "spirit_forward",
+      "type": "spirit-forward",
       "base": "whiskey",
       "iba": false,
       "bar": true,
@@ -3267,6 +3424,11 @@
     {
       "id": "ramos-gin-fizz",
       "name": "Ramos Gin Fizz",
+      "family": "gin-fizz",
+      "variantLabel": {
+        "en": "Ramos",
+        "sv": "Ramos"
+      },
       "type": "highball",
       "base": "gin",
       "iba": true,
@@ -3456,7 +3618,12 @@
     {
       "id": "dirty-martini",
       "name": "Dirty Martini",
-      "type": "spirit_forward",
+      "family": "martini",
+      "variantLabel": {
+        "en": "Dirty",
+        "sv": "Dirty"
+      },
+      "type": "spirit-forward",
       "base": "gin",
       "iba": false,
       "bar": false,
@@ -4081,6 +4248,11 @@
     {
       "id": "hemingway-daiquiri",
       "name": "Hemingway Daiquiri",
+      "family": "daiquiri",
+      "variantLabel": {
+        "en": "Hemingway",
+        "sv": "Hemingway"
+      },
       "type": "sour",
       "base": "rum",
       "iba": true,
@@ -4186,6 +4358,15 @@
     {
       "id": "tommys-margarita",
       "name": "Tommy's Margarita",
+      "family": "margarita",
+      "variantLabel": {
+        "en": "Tommy's",
+        "sv": "Tommy's"
+      },
+      "aliases": [
+        "tommys",
+        "tommy"
+      ],
       "type": "sour",
       "base": "tequila",
       "iba": true,
@@ -4370,7 +4551,12 @@
     {
       "id": "mezcal-negroni",
       "name": "Mezcal Negroni",
-      "type": "spirit_forward",
+      "family": "negroni",
+      "variantLabel": {
+        "en": "Mezcal",
+        "sv": "Mezcal"
+      },
+      "type": "spirit-forward",
       "base": "tequila",
       "iba": false,
       "bar": false,
@@ -4415,7 +4601,12 @@
     {
       "id": "black-russian",
       "name": "Black Russian",
-      "type": "spirit_forward",
+      "family": "russian",
+      "variantLabel": {
+        "en": "Black",
+        "sv": "Black"
+      },
+      "type": "spirit-forward",
       "base": "vodka",
       "iba": true,
       "bar": true,
@@ -4705,6 +4896,11 @@
     {
       "id": "caipiroska",
       "name": "Caipiroska",
+      "family": "caipirinha",
+      "variantLabel": {
+        "en": "Caipiroska",
+        "sv": "Caipiroska"
+      },
       "type": "sour",
       "base": "vodka",
       "iba": false,
@@ -4902,6 +5098,11 @@
     {
       "id": "aperol-spritz",
       "name": "Aperol Spritz",
+      "family": "spritz",
+      "variantLabel": {
+        "en": "Aperol",
+        "sv": "Aperol"
+      },
       "type": "highball",
       "base": "other",
       "iba": true,
@@ -4948,6 +5149,11 @@
     {
       "id": "hugo-spritz",
       "name": "Hugo Spritz",
+      "family": "spritz",
+      "variantLabel": {
+        "en": "Hugo",
+        "sv": "Hugo"
+      },
       "type": "highball",
       "base": "other",
       "iba": false,
@@ -5005,6 +5211,11 @@
     {
       "id": "bellini",
       "name": "Bellini",
+      "family": "mimosa",
+      "variantLabel": {
+        "en": "Bellini",
+        "sv": "Bellini"
+      },
       "type": "contemporary",
       "base": "other",
       "iba": true,
@@ -5039,6 +5250,11 @@
     {
       "id": "mimosa",
       "name": "Mimosa",
+      "family": "mimosa",
+      "variantLabel": {
+        "en": "Mimosa",
+        "sv": "Mimosa"
+      },
       "type": "contemporary",
       "base": "other",
       "iba": true,
@@ -5307,7 +5523,7 @@
     {
       "id": "french-connection",
       "name": "French Connection",
-      "type": "spirit_forward",
+      "type": "spirit-forward",
       "base": "brandy",
       "iba": true,
       "bar": true,

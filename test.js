@@ -6,7 +6,7 @@ const { STRINGS, t, detectLang, defaultState, normalizeState, favoriteIdFromHash
   scaleMl, normalizeServingCount, MAX_SERVINGS, convert, roundForUnit, formatNumber, formatOz, formatAmount, shuffle, advanceQueue,
   swipeDirectionForKey,
   formatLineAmount, drinkAsText,
-  BASE_FILTERS, matchesFilters, canMake, filterDrinks, missingIngredients, mergeState, reconcileState,
+  BASE_FILTERS, matchesFilters, canMake, filterDrinks, groupFamilies, deckCards, variantDiff, missingIngredients, mergeState, reconcileState,
   searchHaystack, matchesSearch, ingredientCounts, authErrorKey, AUTH_ERRORS,
   weightedSampleUnique, wheelCocktailWeight, buildSpinLineup, selectWheelIndex,
   wheelSectorPath, springLinear, SPIN_MS, spinAngle, landingTravel, sectorAtAngle, WHEEL_COLORS,
@@ -199,6 +199,27 @@ check(matchesSearch(searchHay, '  '), 'matchesSearch: blank query matches everyt
 check(matchesSearch(searchHay, ''), 'matchesSearch: empty query matches everything');
 check(!matchesSearch(searchHay, 'vodka'), 'matchesSearch: no match rejects');
 
+// ---------- F1 variants ----------
+check(searchHaystack({ name: "Tommy's Margarita", aliases: ['tommys'], variantLabel: { en: "Tommy's", sv: "Tommy's" } }, [])
+  .includes('tommys'), 'searchHaystack: aliases and variant label are searchable');
+const famDrinks = [
+  { id: 'm', family: 'f', bar: true, base: 'tequila', ingredients: [{ id: 'teq', ml: 50 }, { id: 'sec', ml: 20 }, { id: 'lime', ml: 15 }] },
+  { id: 't', family: 'f', bar: false, base: 'tequila', ingredients: [{ id: 'teq', ml: 60 }, { id: 'agave', ml: 30 }, { id: 'lime', ml: 15 }] },
+  { id: 'solo', bar: true, base: 'gin', ingredients: [{ id: 'gin', ml: 50 }] },
+];
+const famMap = { f: { name: 'F', primary: 'm', order: ['m', 't'] } };
+check(groupFamilies(famDrinks).length === 2, 'groupFamilies: a family is one group, a standalone drink its own');
+check(deckCards(famDrinks, famMap, {}, null, []).join() === 'm,solo', 'deckCards: one card per family, the primary by default');
+check(deckCards(famDrinks, famMap, {}, null, ['t']).join() === 't,solo', 'deckCards: a saved variant represents its family');
+check(deckCards(famDrinks, famMap, { bar: true }, null, ['t']).join() === 'm,solo',
+  'deckCards: the only member that passes the filters wins over a saved one');
+check(deckCards(famDrinks, famMap, { base: 'gin' }, null, []).join() === 'solo', 'deckCards: a family with no passing member drops out');
+const famDiff = variantDiff(famDrinks[1], famDrinks[0]);
+check(famDiff.added.join() === 'agave' && Object.keys(famDiff.changed).join() === 'teq' && famDiff.changed.teq.ml === 50 &&
+  famDiff.removed.map(line => line.id).join() === 'sec', 'variantDiff: new, changed (with the primary amount) and removed lines');
+check(variantDiff(famDrinks[0], famDrinks[0]).added.length === 0 && variantDiff(famDrinks[0], null).removed.length === 0,
+  'variantDiff: the primary itself has no diff');
+
 check(swipeDirectionForKey('ArrowLeft') === -1, 'keyboard swipe: left skips');
 check(swipeDirectionForKey('ArrowRight') === 1, 'keyboard swipe: right saves');
 check(swipeDirectionForKey('Enter') === 0, 'keyboard swipe: unrelated keys are ignored');
@@ -281,6 +302,19 @@ check(lineupNoShots.every(item => item.category !== 'shot'),
   'wheel prefs: excluding every shot outcome removes the category entirely');
 check(lineupNoShots.filter(item => item.kind === 'cocktail').length === 9,
   'wheel prefs: slots freed by an excluded category fall back to extra cocktails');
+{
+  // 8 of 16 drinks are one family; without the family rule about half the cocktail sectors would be members
+  const wheelFam = Array.from({ length: 16 }, (_, i) => Object.assign({ id: `drink-${i}`, name: `Drink ${i}`, bar: true, tags: [] },
+    i < 8 ? { family: 'fam' } : {}));
+  const members = seed => {
+    let x = seed;
+    const rng = () => (x = (x * 16807) % 2147483647) / 2147483647;
+    return buildSpinLineup(wheelData, 'groove', wheelFam, rng).filter(item => /^drink-[0-7]$/.test(item.outcomeId)).length;
+  };
+  check([1, 2, 3, 4, 5, 6, 7, 8].every(seed => members(seed) <= 1), 'wheel lineup: a family counts as one outcome');
+  const favLineup = buildSpinLineup(wheelData, 'groove', wheelFam, () => 0.5, { favoritesOnly: true, favorites: ['drink-3'] });
+  check(favLineup.some(item => item.outcomeId === 'drink-3'), 'wheel lineup: a saved variant represents its family');
+}
 
 for (const [from, index, r] of [[17, 4, 0.5], [0, 0, 0], [123.4, 11, 0.999], [-40, 7, 0.2]]) {
   const end = from + landingTravel(from, index, () => r, 12);
@@ -331,10 +365,11 @@ const workerSource = fs.readFileSync(path.join(__dirname, 'worker', 'worker.js')
 // bumped 97kB -> 99kB 2026-09-25 for design review batch 3 part 1 (wheel motion: spinAngle, landingTravel, springLinear)
 // bumped 99kB -> 104kB 2026-09-25 for design review batch 3 (wheel layer, FLIP, runSpin, mood buttons, result card, wave patch)
 // bumped 104kB -> 113kB 2026-09-25 for design review batch 4 (pantry search/count, account modes, forgot step, delete dialog, auth error copy)
+// bumped 113kB -> 120kB 2026-09-25 for design review batch 5 (F1 variants: family deck/wheel units, variant switch, diff, grouped search)
 // Mät LF-storleken, alltså det git lagrar och GitHub Pages levererar. En Windows-
 // arbetskopia checkas ut med CRLF och lägger på ~1,8 kB som aldrig deployas.
-check(Buffer.byteLength(appSource.split('\r').join('')) < 113000,
-  'bundle budget: app.js stays under 113 kB unminified');
+check(Buffer.byteLength(appSource.split('\r').join('')) < 120000,
+  'bundle budget: app.js stays under 120 kB unminified');
 check(!htmlSource.includes('fonts.googleapis.com') && htmlSource.includes("fonts/work-sans.woff2"),
   'privacy: fonts are self-hosted with no Google Fonts request');
 check(htmlSource.includes('rel="canonical" href="https://buildapp.se/sipdeck/"') &&
@@ -527,7 +562,7 @@ const data = JSON.parse(fs.readFileSync(path.join(__dirname, 'drinks.json'), 'ut
 UNITS.forEach(unit => ['en', 'sv'].forEach(lang =>
   check(t(lang, `unit_${unit}`) !== `unit_${unit}`, `unit ${unit}: ${lang} translation present`)));
 
-check(data.schema === 1, 'drinks.json: schema === 1');
+check(data.schema === 2, 'drinks.json: schema === 2');
 check(data.ingredients && typeof data.ingredients === 'object', 'drinks.json: ingredients is a map');
 check(Array.isArray(data.drinks), 'drinks.json: drinks is an array');
 check(wheelData.schema === 1, 'wheel.json: schema === 1');
@@ -683,6 +718,30 @@ data.drinks.forEach(drink => {
     check(hasMl !== hasQtyUnit, `${drink.id}[${i}]: ml xor qty+unit (${line.id})`);
     if (hasQtyUnit) check(UNITS.includes(line.unit), `${drink.id}[${i}]: unit in allowed set (${line.unit})`);
   });
+});
+
+// F1: one type spelling, families point at real drinks and every member points back
+const TYPES = ['sour', 'highball', 'aromatic', 'spirit-forward', 'contemporary'];
+data.drinks.forEach(drink => check(TYPES.includes(drink.type), `${drink.id}: type in allowed set (${drink.type})`));
+check(data.families && typeof data.families === 'object', 'drinks.json: families is a map');
+const drinkById = new Map(data.drinks.map(drink => [drink.id, drink]));
+Object.entries(data.families).forEach(([key, family]) => {
+  check(KEBAB.test(key) && typeof family.name === 'string' && family.name.length > 0, `family ${key}: kebab key and a name`);
+  check(Array.isArray(family.order) && family.order.length >= 2 && new Set(family.order).size === family.order.length,
+    `family ${key}: at least two distinct members`);
+  check(family.order.includes(family.primary), `family ${key}: primary is a member`);
+  family.order.forEach(id => check(drinkById.has(id) && drinkById.get(id).family === key, `family ${key}: ${id} exists and points back`));
+});
+data.drinks.forEach(drink => {
+  if (drink.family !== undefined) {
+    check(data.families[drink.family] && data.families[drink.family].order.includes(drink.id), `${drink.id}: listed in its family`);
+    check(drink.variantLabel && typeof drink.variantLabel.en === 'string' && drink.variantLabel.en.length > 0 &&
+      typeof drink.variantLabel.sv === 'string' && drink.variantLabel.sv.length > 0 && !drink.variantLabel.sv.includes('—'),
+      `${drink.id}: EN + SV variant label`);
+  }
+  if (drink.aliases !== undefined) check(Array.isArray(drink.aliases) && drink.aliases.every(a => typeof a === 'string' && a === a.toLowerCase()),
+    `${drink.id}: aliases are lowercase strings`);
+  if (drink.art !== undefined) check(drinkById.has(drink.art), `${drink.id}: art borrows an existing drink's image`);
 });
 
 const sourceUrls = data.drinks.map(drink => drink.source.url);

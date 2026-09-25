@@ -92,6 +92,9 @@ const STRINGS = {
     glass_julep: 'julep cup', glass_hurricane: 'hurricane glass', glass_collins: 'Collins glass',
     glass_wine: 'wine glass', glass_flute: 'flute', glass_shot: 'shot glass',
     method_stirred: 'stirred', method_frozen: 'frozen', method_layered: 'layered',
+    variants_one: '+1 variant', variants_many: '+{n} variants', variants_label: 'Variants',
+    variant_new: 'new', variant_was: 'was {a}', variant_without: 'Without: ',
+    variant_of: 'Variant of {name} · {n} in the family', search_tagged: 'Tagged: {tags}',
   },
   sv: {
     wheel_entry: 'Välj åt mig', wheel_title: 'Välj åt mig', wheel_back: 'Tillbaka',
@@ -183,6 +186,9 @@ const STRINGS = {
     glass_julep: 'julepbägare', glass_hurricane: 'hurricaneglas', glass_collins: 'collinsglas',
     glass_wine: 'vinglas', glass_flute: 'champagneglas', glass_shot: 'shotglas',
     method_stirred: 'rörd', method_frozen: 'frusen', method_layered: 'skiktad',
+    variants_one: '+1 variant', variants_many: '+{n} varianter', variants_label: 'Varianter',
+    variant_new: 'ny', variant_was: 'var {a}', variant_without: 'Utan: ',
+    variant_of: 'Variant av {name} · {n} i familjen', search_tagged: 'Taggad: {tags}',
   },
 };
 function t(lang, key) { return (STRINGS[lang] && STRINGS[lang][key]) || STRINGS.en[key] || key; }
@@ -328,8 +334,44 @@ function filterDrinks(drinks, filters, pantry) {
     .filter(drink => matchesFilters(drink, filters) && (!have || canMake(drink, have)));
 }
 
+// F1: a family (drinks.json `families`) is one card in the deck and one outcome on the wheel
+const familyKey = drink => drink.family || drink.id;
+function groupFamilies(drinks) {
+  const groups = new Map();
+  drinks.forEach(drink => groups.set(familyKey(drink), (groups.get(familyKey(drink)) || []).concat(drink)));
+  return Array.from(groups.values());
+}
+
+// one id per family: the only member that passes the filters, else a saved member, else the primary
+function deckCards(drinks, families, filters, pantry, favorites) {
+  const saved = new Set(favorites || []);
+  return groupFamilies(filterDrinks(drinks, filters, pantry)).map(group => {
+    const family = families && families[group[0].family];
+    const pick = group.length > 1 && (group.find(d => saved.has(d.id)) || group.find(d => family && d.id === family.primary));
+    return (pick || group[0]).id;
+  });
+}
+
+// a variant against its family's primary: new ingredient ids, changed lines (primary's line), removed lines
+function variantDiff(drink, primary) {
+  if (!primary || primary.id === drink.id) return { added: [], changed: {}, removed: [] };
+  const base = new Map(primary.ingredients.map(line => [line.id, line]));
+  const own = new Set(drink.ingredients.map(line => line.id));
+  const changed = {};
+  drink.ingredients.forEach(line => {
+    const was = base.get(line.id);
+    if (was && (was.ml !== line.ml || was.qty !== line.qty || was.unit !== line.unit)) changed[line.id] = was;
+  });
+  return {
+    added: drink.ingredients.filter(line => !base.has(line.id)).map(line => line.id),
+    changed,
+    removed: primary.ingredients.filter(line => !own.has(line.id)),
+  };
+}
+
 function searchHaystack(drink, ingredientNames) {
-  return [drink.name].concat(ingredientNames || []).join(' ').toLowerCase();
+  const label = drink.variantLabel ? [drink.variantLabel.en, drink.variantLabel.sv] : [];
+  return [drink.name].concat(drink.aliases || [], label, ingredientNames || []).join(' ').toLowerCase();
 }
 
 function matchesSearch(haystack, query) {
@@ -459,11 +501,15 @@ function buildSpinLineup(wheel, moodId, drinks, rng, prefs) {
 
   const cocktailCount = mood.slots.filter(slot => slot === 'cocktail').length +
     (mood.slots.includes('flex') && !useBottle ? 1 : 0) + deadCategorySlots;
-  const cocktailPool = (Array.isArray(drinks) ? drinks : [])
-    .filter(drink => wheelCocktailWeight(drink, mood) > 0);
+  const favSet = new Set(options.favoritesOnly && Array.isArray(options.favorites) ? options.favorites : []);
+  // F1: one entry per family, a saved member first, so variants never crowd the wheel
+  const cocktailPool = groupFamilies((Array.isArray(drinks) ? drinks : [])
+    .filter(drink => wheelCocktailWeight(drink, mood) > 0)).map(group => {
+    const saved = group.filter(drink => favSet.has(drink.id)), from = saved.length ? saved : group;
+    return from.length > 1 ? from[Math.floor(wheelRng(rng) * from.length)] : from[0];
+  });
   let primaryPool = cocktailPool;
   if (options.favoritesOnly) {
-    const favSet = new Set(Array.isArray(options.favorites) ? options.favorites : []);
     const favPool = cocktailPool.filter(drink => favSet.has(drink.id));
     if (favPool.length) primaryPool = favPool;
   }
@@ -508,7 +554,7 @@ function buildSpinLineup(wheel, moodId, drinks, rng, prefs) {
     const name = wheelDrinkName(drink);
     return {
       kind: 'cocktail', outcomeId: drink.id, category: 'cocktail',
-      sector: name, result: name, art: `img/${drink.id}.webp`,
+      sector: name, result: name, art: `img/${drink.art || drink.id}.webp`,
       eligible: !mood.forcedOutcome,
     };
   }
@@ -650,6 +696,7 @@ if (typeof module !== 'undefined') module.exports = {
   scaleMl, convert, roundForUnit, formatNumber, formatOz, formatAmount,
   formatLineAmount, drinkAsText,
   shuffle, advanceQueue, swipeDirectionForKey, BASE_FILTERS, matchesFilters, canMake, filterDrinks,
+  groupFamilies, deckCards, variantDiff,
   missingIngredients, mergeState, searchHaystack, matchesSearch, ingredientCounts, authErrorKey, AUTH_ERRORS,
   normalizeServingCount, MAX_SERVINGS,
   reconcileState,
@@ -800,7 +847,7 @@ if (typeof document !== 'undefined') (function () {
   let db = null;       // null = loading; {ingredients, drinks} once fetch resolves
   let drinksFailed = false;
   fetch('drinks.json').then(r => r.json()).then(data => {
-    db = { ingredients: data.ingredients || {}, drinks: Array.isArray(data.drinks) ? data.drinks : [] };
+    db = { ingredients: data.ingredients || {}, drinks: Array.isArray(data.drinks) ? data.drinks : [], families: data.families || {} };
     render();
   }).catch(() => { drinksFailed = true; render(); });
 
@@ -852,7 +899,7 @@ if (typeof document !== 'undefined') (function () {
     const baseOptions = [`<option value="">${esc(t(lang(), 'settings_filter_base_none'))}</option>`]
       .concat(BASE_FILTERS.map(base => `<option value="${base}"${f.base === base ? ' selected' : ''}>${esc(t(lang(), 'base_' + base))}</option>`))
       .join('');
-    const matches = filteredDrinks();
+    const matches = deckIds();
     const filtered = !!(f.bar || f.base || makeableOnly);
     const chip = (name, on, label) => `<button class="fchip${on ? ' on' : ''}" data-chip="${name}" aria-pressed="${on}">${label}</button>`;
     // T11: one scrollable chip row above the deck; the match count lives in the first chip
@@ -894,12 +941,30 @@ if (typeof document !== 'undefined') (function () {
     recipeServings = normalizeServingCount(value);
   }
 
-  function filteredDrinks() {
-    return filterDrinks(db.drinks, state.settings.filters, makeableOnly ? state.pantry : null);
+  function deckIds() {
+    return deckCards(db.drinks, db.families, state.settings.filters, makeableOnly ? state.pantry : null, state.favorites);
   }
 
   function ensureQueue() {
-    if (!deckQueue || !deckQueue.length) deckQueue = shuffle(filteredDrinks().map(d => d.id));
+    if (!deckQueue || !deckQueue.length) deckQueue = shuffle(deckIds());
+  }
+
+  // F1: the family around a drink; familyPrimary is null for the primary itself and for standalone drinks
+  function familyOf(drink) { return drink.family && db.families[drink.family] || null; }
+  function familyPrimary(drink) {
+    const family = familyOf(drink);
+    return family && family.primary !== drink.id ? db.drinks.find(d => d.id === family.primary) || null : null;
+  }
+  function variantSeg(drink, act) {
+    const family = familyOf(drink);
+    if (!family) return '';
+    const buttons = family.order.map(id => db.drinks.find(d => d.id === id)).filter(Boolean).map(v =>
+      `<button data-${act}="variant" data-variant="${esc(v.id)}" aria-pressed="${v.id === drink.id}">${esc(localText(v.variantLabel) || v.name)}</button>`).join('');
+    return `<div class="variant-seg" role="group" aria-label="${esc(t(lang(), 'variants_label'))}">${buttons}</div>`;
+  }
+  function wasText(line, servings) { return t(lang(), 'variant_was').replace('{a}', amountText(line, servings)); }
+  function variantWithout(diff) {
+    return diff.removed.length ? `<p class="variant-without">${esc(t(lang(), 'variant_without') + diff.removed.map(line => ingName(line.id)).join(', '))}</p>` : '';
   }
 
   function ingName(id) {
@@ -929,15 +994,20 @@ if (typeof document !== 'undefined') (function () {
     return line.unit === 'garnish' ? formatNumber(line.qty * servings, lang()) : formatLineAmount(line, servings, unit(), lang());
   }
 
-  function lineTag(line, missing) {
-    if (missing) return missingTag();
-    return line.unit === 'garnish' ? `<span class="garnish-tag">${esc(t(lang(), 'unit_garnish'))}</span>` : '';
+  // right-hand column: missing, then the F1 diff against the primary; garnish only when nothing else shows
+  function lineTag(line, missing, diff, servings) {
+    const tags = missing ? [missingTag()] : [];
+    if (diff && diff.added.includes(line.id)) tags.push(`<span class="diff-tag diff-new">${esc(t(lang(), 'variant_new'))}</span>`);
+    const was = diff && diff.changed[line.id];
+    if (was) tags.push(`<span class="diff-tag" data-was="${esc(line.id)}">${esc(wasText(was, servings))}</span>`);
+    if (!tags.length && line.unit === 'garnish') tags.push(`<span class="garnish-tag">${esc(t(lang(), 'unit_garnish'))}</span>`);
+    return tags.length > 1 ? `<span class="line-tags">${tags.join('')}</span>` : tags.join('');
   }
 
-  function ingLine(line, have, servings, index) {
+  function ingLine(line, have, servings, index, diff) {
     const missing = isMissing(have, line);
     const cls = (missing ? 'missing' : '') + (line.unit === 'garnish' ? ' garnish' : '');
-    return `<li class="${cls.trim()}">${missing ? `<span class="sr-only">${esc(t(lang(), 'missing_prefix'))}</span>` : ''}<span class="amount" data-line="${index}">${esc(amountText(line, servings))}</span><span>${esc(ingName(line.id))}</span>${lineTag(line, missing)}</li>`;
+    return `<li class="${cls.trim()}">${missing ? `<span class="sr-only">${esc(t(lang(), 'missing_prefix'))}</span>` : ''}<span class="amount" data-line="${index}">${esc(amountText(line, servings))}</span><span>${esc(ingName(line.id))}</span>${lineTag(line, missing, diff, servings)}</li>`;
   }
 
   const METHOD_TAGS = ['stirred', 'frozen', 'layered'];
@@ -976,6 +1046,10 @@ if (typeof document !== 'undefined') (function () {
       box.querySelectorAll('.amount[data-line]').forEach(el => {
         el.textContent = amountText(drink.ingredients[Number(el.dataset.line)], servings);
       });
+      const primary = familyPrimary(drink);
+      box.querySelectorAll('[data-was]').forEach(el => {
+        el.textContent = wasText(primary.ingredients.find(line => line.id === el.dataset.was), servings);
+      });
       box.querySelectorAll('.units button').forEach(b => {
         const on = b.dataset.unit === unit();
         b.classList.toggle('active', on);
@@ -992,7 +1066,7 @@ if (typeof document !== 'undefined') (function () {
   }
 
   function artMarkup(drink) {
-    return `${glassPlaceholder(drink.glass)}<img class="cocktail-art" src="img/${esc(drink.id)}.webp" alt="" loading="lazy" decoding="async" draggable="false">`;
+    return `${glassPlaceholder(drink.glass)}<img class="cocktail-art" src="img/${esc(drink.art || drink.id)}.webp" alt="" loading="lazy" decoding="async" draggable="false">`;
   }
 
   function buildCard(drink, depth, opts) {
@@ -1013,19 +1087,24 @@ if (typeof document !== 'undefined') (function () {
     const hint = state.settings.seenFlipHint ? '' : `<span class="flip-hint">${esc(t(lang(), 'flip_hint'))}</span>`;
     const source = drink.source && drink.source.label
       ? `<p class="card-source">${esc(t(lang(), 'source_label'))}: ${esc(drink.source.label)}</p>` : '';
+    const family = familyOf(drink), others = family ? family.order.length - 1 : 0;
+    const variants = others ? `<span class="chip variant-chip">${esc(t(lang(), others === 1 ? 'variants_one' : 'variants_many').replace('{n}', others))}</span>` : '';
+    const diff = variantDiff(drink, familyPrimary(drink));
     el.innerHTML = `
       <div class="card-inner">
         <div class="card-face card-front">
           <div class="card-art">${artMarkup(drink)}</div>
           <div class="card-title"><h2 class="card-name">${esc(drink.name)}</h2>${hint}</div>
           <div class="card-meta">${esc(recipeMeta(drink, false))}</div>
-          <div class="card-tags">${tags}</div>
+          <div class="card-tags">${tags}${variants}</div>
         </div>
         <div class="card-face card-back">
+          ${variantSeg(drink, 'act')}
           <h2 class="card-name">${esc(drink.name)}</h2>
           <div class="card-meta">${esc(recipeMeta(drink, true))}</div>
           <div class="card-recipe">
-            <ul class="ing">${drink.ingredients.map((l, i) => ingLine(l, have, servings, i)).join('')}</ul>
+            <ul class="ing">${drink.ingredients.map((l, i) => ingLine(l, have, servings, i, diff)).join('')}</ul>
+            ${variantWithout(diff)}
             <p class="card-method">${esc(drink.method[lang()] || drink.method.en)}</p>
           </div>
           <div class="card-ctrl">${recipeControls(drink.id, servings, 'act')}</div>
@@ -1067,12 +1146,25 @@ if (typeof document !== 'undefined') (function () {
       const s = state.settings;
       const card = b.closest('.card');
       const input = card && card.querySelector('[data-servings]');
+      if (b.dataset.act === 'variant') return switchVariant(card, b.dataset.variant);
       if (b.dataset.act === 'inc') setServings(card.dataset.id, Number(input.value) + 1);
       else if (b.dataset.act === 'dec') setServings(card.dataset.id, Number(input.value) - 1);
       else if (b.dataset.act === 'unit') { s.unit = b.dataset.unit; save(); }
       refreshRecipes();
     });
     attachDrag(deckEl.querySelector('.card[data-depth="0"]'));
+  }
+
+  // F1: the top card swaps to another variant in place, still flipped; Save then saves the one shown
+  function switchVariant(card, id) {
+    const drink = db.drinks.find(d => d.id === id);
+    if (!drink || card.dataset.leaving || id === card.dataset.id) return;
+    setServings(id, servingsFor(card.dataset.id));
+    deckQueue[0] = flippedId = id;
+    const next = buildCard(drink, 0);
+    card.replaceWith(next);
+    attachDrag(next);
+    next.querySelector('.variant-seg [aria-pressed="true"]').focus();
   }
 
   // leavingCard is null when a card comes back (undo) instead of leaving
@@ -1134,7 +1226,7 @@ if (typeof document !== 'undefined') (function () {
     });
 
     card.addEventListener('pointerdown', e => {
-      if (e.target.closest('.card-ctrl')) return; // controls are dead zones
+      if (e.target.closest('.card-ctrl, .variant-seg')) return; // controls are dead zones
       if (!e.target.closest('.card-recipe')) e.preventDefault(); // let recipe text scroll vertically
       dragging = true; moved = false;
       startX = lastX = e.clientX; startY = e.clientY; dx = dy = vx = 0; lastT = e.timeStamp;
@@ -1260,13 +1352,14 @@ if (typeof document !== 'undefined') (function () {
       const servings = servingsFor(open.id);
       const have = new Set(state.pantry);
       const tags = chipTags(open.ingredients, have);
+      const diff = variantDiff(open, familyPrimary(open));
       const ingredientRows = open.ingredients.map((line, i) => {
         const checked = favChecked.has(line.id);
         const missing = isMissing(have, line);
         return `<label class="fav-ing-row${checked ? ' done' : ''}${line.unit === 'garnish' ? ' garnish' : ''}">
           <input type="checkbox" data-fav-ing="${esc(line.id)}"${checked ? ' checked' : ''} aria-label="${esc(t(lang(), 'check_ingredient') + ' ' + ingName(line.id))}">
           <span class="amount" data-line="${i}">${esc(amountText(line, servings))}</span>
-          <span>${missing ? `<span class="sr-only">${esc(t(lang(), 'missing_prefix'))}</span>` : ''}${esc(ingName(line.id))}</span>${lineTag(line, missing)}
+          <span>${missing ? `<span class="sr-only">${esc(t(lang(), 'missing_prefix'))}</span>` : ''}${esc(ingName(line.id))}</span>${lineTag(line, missing, diff, servings)}
         </label>`;
       }).join('');
       const source = open.source && open.source.url && open.source.label
@@ -1279,6 +1372,7 @@ if (typeof document !== 'undefined') (function () {
         </div>
         <article class="fav-detail">
           <section class="fav-hero">
+            ${variantSeg(open, 'fav-act')}
             <div class="fav-detail-art">${artMarkup(open)}</div>
             <h2 class="card-name">${esc(open.name)}</h2>
             <div class="card-meta">${esc(recipeMeta(open, true))}</div>
@@ -1290,6 +1384,7 @@ if (typeof document !== 'undefined') (function () {
             <h3>${esc(t(lang(), 'ingredients_title'))}</h3>
             <p class="fav-hint">${esc(t(lang(), 'ingredient_check_hint'))}</p>
             <div class="fav-ing-list">${ingredientRows}</div>
+            ${variantWithout(diff)}
             <h3>${esc(t(lang(), 'method_title'))}</h3>
             <p class="fav-method">${esc(open.method[lang()] || open.method.en)}</p>
             ${source}
@@ -1578,25 +1673,35 @@ if (typeof document !== 'undefined') (function () {
     </section>`;
   }
 
+  // F1: direct hits, then variants (a hit opens that variant), then drinks found only through a tag
   function searchResults() {
-    const q = searchQuery.trim();
-    const results = db && q
-      ? db.drinks.filter(d => matchesSearch(searchHaystack(d, d.ingredients.map(l => ingName(l.id))), q))
-      : [];
-    const rows = results.map(d => `
+    const q = searchQuery.trim().toLowerCase();
+    if (!db) return `<p class="empty">${esc(t(lang(), 'deck_loading'))}</p>`;
+    if (!q) return `<p class="empty">${esc(t(lang(), 'search_intro'))}</p>`;
+    const direct = [], variants = [], tagged = [], tags = new Set();
+    db.drinks.forEach(d => {
+      if (matchesSearch(searchHaystack(d, d.ingredients.map(l => ingName(l.id))), q)) (familyPrimary(d) ? variants : direct).push(d);
+      else {
+        const hits = (d.tags || []).filter(tag => tag.includes(q));
+        if (hits.length) { tagged.push(d); hits.forEach(tag => tags.add(tag)); }
+      }
+    });
+    const meta = d => familyPrimary(d)
+      ? t(lang(), 'variant_of').replace('{name}', familyOf(d).name).replace('{n}', familyOf(d).order.length)
+      : taxonomyName('type', d.type);
+    const group = (title, list) => list.length ? (title ? `<h2 class="search-group">${esc(title)}</h2>` : '') + list.map(d => `
       <div class="list-card fav-row">
         <button class="fav-open" data-id="${esc(d.id)}">
           <span class="fav-thumb">${artMarkup(d)}</span>
           <span class="fav-info">
             <span class="name">${esc(d.name)}</span>
-            <span class="meta">${esc(taxonomyName('type', d.type))}</span>
+            <span class="meta">${esc(meta(d))}</span>
           </span>
         </button>
-      </div>`).join('');
-    return !db ? `<p class="empty">${esc(t(lang(), 'deck_loading'))}</p>`
-      : !q ? `<p class="empty">${esc(t(lang(), 'search_intro'))}</p>`
-      : results.length ? rows
-      : `<p class="empty">${esc(t(lang(), 'search_empty'))}</p>`;
+      </div>`).join('') : '';
+    return group('', direct) + group(t(lang(), 'variants_label'), variants)
+      + group(t(lang(), 'search_tagged').replace('{tags}', Array.from(tags).join(', ')), tagged)
+      || `<p class="empty">${esc(t(lang(), 'search_empty'))}</p>`;
   }
 
   function wheelOutcomeGroups(s) {
@@ -2029,6 +2134,15 @@ if (typeof document !== 'undefined') (function () {
     if (favAction) {
       const s = state.settings;
       const input = $('#view [data-servings]');
+      if (favAction.dataset.favAct === 'variant') { // same screen, another variant: no page change or announcement
+        const id = favAction.dataset.variant;
+        setServings(id, servingsFor(favOpenId));
+        lastRouteHash = (drinkIdFromHash(location.hash) !== null ? '#/drink/' : '#/favoriter/') + encodeURIComponent(id);
+        history.replaceState(null, '', lastRouteHash);
+        render();
+        $('#view .variant-seg [aria-pressed="true"]').focus();
+        return;
+      }
       if (favAction.dataset.favAct === 'inc') setServings(favOpenId, Number(input.value) + 1);
       else if (favAction.dataset.favAct === 'dec') setServings(favOpenId, Number(input.value) - 1);
       else if (favAction.dataset.favAct === 'unit') { s.unit = favAction.dataset.unit; save(); }

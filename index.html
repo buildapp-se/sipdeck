@@ -202,6 +202,21 @@ header.brand .wordmark{color:var(--sd-ink);width:84px;height:auto;display:block}
 .card-ctrl{margin-top:auto;padding-top:.7rem;display:flex;align-items:center;justify-content:space-between;
   flex-wrap:wrap;gap:.5rem;flex-shrink:0}
 .card-source{margin-top:.5rem;text-align:right;font:500 10.5px/1 var(--sd-font-ui);color:#6E6455;flex-shrink:0}
+/* F1 variants: the chip on the front, the segmented control on the back, the diff against the primary */
+.chip.variant-chip{background:#211B12;border-color:#211B12;color:#FBF7EF;font:600 11px/1.4 var(--sd-font-ui)}
+.variant-seg{display:flex;gap:2px;height:34px;padding:2px;margin-bottom:.6rem;flex-shrink:0;
+  border:1px solid rgba(33,27,18,.18);border-radius:999px}
+.variant-seg button{position:relative;flex:1 1 auto;min-width:0;padding:0 .6rem;border-radius:999px;color:#211B12;
+  font:500 12.5px/1 var(--sd-font-ui);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.variant-seg button::after{content:"";position:absolute;inset:-8px 0}
+.variant-seg button[aria-pressed="true"]{background:#211B12;color:#FBF7EF;font-weight:600}
+.variant-seg button:focus-visible{outline:3px solid #2F6B3F;outline-offset:2px}
+.line-tags{display:flex;align-items:center;gap:.4rem}
+.diff-tag{align-self:center;font:500 11px/1 var(--sd-font-ui);color:#6E6455;white-space:nowrap}
+.diff-new{font-weight:600;color:#2F6B3F}
+.variant-without{margin:-.3rem 0 .7rem;font:400 .8rem/1.4 var(--sd-font-ui);color:#6E6455}
+.fav-ing-list+.variant-without{margin:.6rem 0 0}
+.search-group{margin:1rem 0 .5rem;font:600 11px/1.3 var(--sd-font-ui);letter-spacing:.06em;text-transform:uppercase;color:var(--sd-ink-2)}
 /* T12 segmented controls. The top card is unscaled, so 44 px segments measure 44 on screen. */
 .stepper,.units{display:flex;align-items:center;height:44px;flex-shrink:0;border:1px solid rgba(33,27,18,.18);
   border-radius:999px;overflow:hidden;color:#211B12}
@@ -470,6 +485,6 @@ body.search-mode .brand,body.search-mode .bottom-nav{display:none}
   <a href="#/installningar" data-match="#/installningar"></a>
 </nav>
 <div id="wheelLayer" hidden></div>
-<script src="app.js?v=1.16"></script>
+<script src="app.js?v=1.17"></script>
 </body>
 </html>
