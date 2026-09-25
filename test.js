@@ -6,11 +6,14 @@ const { STRINGS, t, detectLang, defaultState, normalizeState, favoriteIdFromHash
   scaleMl, normalizeServingCount, MAX_SERVINGS, convert, roundForUnit, formatNumber, formatOz, formatAmount, shuffle, advanceQueue,
   swipeDirectionForKey,
   formatLineAmount, drinkAsText,
-  BASE_FILTERS, matchesFilters, canMake, filterDrinks, missingIngredients, mergeState, reconcileState,
-  searchHaystack, matchesSearch,
+  BASE_FILTERS, matchesFilters, canMake, filterDrinks, groupFamilies, deckCards, variantDiff, missingIngredients, mergeState, reconcileState,
+  searchHaystack, matchesSearch, ingredientCounts, authErrorKey, AUTH_ERRORS,
   weightedSampleUnique, wheelCocktailWeight, buildSpinLineup, selectWheelIndex,
-  wheelLandingRotation, wheelSectorPath,
-  GLASS_SILHOUETTES, glassPlaceholder } = require('./app.js');
+  wheelSectorPath, springLinear, SPIN_SLOW, SPIN_FAST, SLOW_SPINS, spinMs, spinAngle, landingTravel, sectorAtAngle, WHEEL_COLORS,
+  GLASS_SILHOUETTES, glassPlaceholder,
+  WHEEL_EXTRAS, wheelExcludedOutcomes, CUSTOM_GLASSES, CUSTOM_COLORS, slugify, buildCustomDrink, similarDrink, mergeCustom } = require('./app.js');
+// node 22.12+ loads the Worker's ES module with require(); the same rules guard the catalog below
+const { drinkErrors, GLASSES, COLORS, QTY_UNITS: RULE_UNITS } = require('./worker/drink-rules.js');
 
 let pass = 0, fail = 0;
 function check(cond, msg) {
@@ -32,8 +35,8 @@ check(d.v === 1 && d.settings.lang === 'sv' && d.settings.unit === 'cl' && d.set
   'defaultState: shape + lang passthrough');
 check(Array.isArray(d.favorites) && d.favorites.length === 0, 'defaultState: empty favorites');
 check(d.settings.wheelFavoritesOnly === false, 'defaultState: wheel favorites-only off by default');
-check(Array.isArray(d.settings.wheelOutcomesExcluded) && d.settings.wheelOutcomesExcluded.length === 0,
-  'defaultState: no wheel outcomes excluded by default (opt-out, everything starts checked)');
+check(Array.isArray(d.settings.wheelExtras) && d.settings.wheelExtras.join() === 'shot',
+  'defaultState: shots start on in the wheel, beer and wine are opt-in');
 
 // normalizeState round-trip: a valid blob comes back unchanged in shape
 const valid = { v: 1, favorites: ['margarita'], pantry: ['gin'],
@@ -44,14 +47,18 @@ check(rt.settings.unit === 'oz' && rt.settings.servings === 4, 'normalizeState: 
 check(rt.settings.filters.bar === true && rt.settings.filters.base === 'gin', 'normalizeState: filters survive');
 
 const validWithWheelPrefs = Object.assign({}, valid, { settings: Object.assign({}, valid.settings,
-  { wheelFavoritesOnly: true, wheelOutcomesExcluded: ['fernet-shot', 42, 'red-wine'] }) });
+  { wheelFavoritesOnly: true, wheelExtras: ['shot', 42, 'water', 'wine'] }) });
 const rtWheelPrefs = normalizeState(validWithWheelPrefs, 'sv');
 check(rtWheelPrefs.settings.wheelFavoritesOnly === true, 'normalizeState: wheel favorites-only survives');
-check(rtWheelPrefs.settings.wheelOutcomesExcluded.join() === 'fernet-shot,red-wine',
-  'normalizeState: wheel outcomes excluded survives, non-string entries dropped');
-check(normalizeState({ settings: { wheelOutcomesExcluded: 'not-an-array' } }, 'en')
-  .settings.wheelOutcomesExcluded.length === 0,
-  'normalizeState: garbage wheelOutcomesExcluded falls back to empty');
+check(rtWheelPrefs.settings.wheelExtras.join() === 'shot,wine',
+  'normalizeState: wheel extras survive, anything but beer-cider/wine/shot is dropped');
+check(normalizeState({ settings: { wheelLabels: true } }, 'en').settings.wheelLabels === true &&
+  normalizeState({ settings: { wheelLabels: 'yes' } }, 'en').settings.wheelLabels === false &&
+  defaultState('en').settings.wheelLabels === false,
+  'normalizeState: wheel sector labels are off by default and only true survives');
+check(normalizeState({ settings: { wheelExtras: 'not-an-array' } }, 'en').settings.wheelExtras.join() === 'shot' &&
+  normalizeState({ settings: { wheelExtras: [] } }, 'en').settings.wheelExtras.length === 0,
+  'normalizeState: garbage or missing wheelExtras falls back to the default, an explicit empty choice stays');
 
 // normalizeState never throws on garbage, falls back to defaults
 check((() => { try { return normalizeState('garbage', 'en').v === 1; } catch (e) { return false; } })(),
@@ -195,6 +202,86 @@ check(matchesSearch(searchHay, '  '), 'matchesSearch: blank query matches everyt
 check(matchesSearch(searchHay, ''), 'matchesSearch: empty query matches everything');
 check(!matchesSearch(searchHay, 'vodka'), 'matchesSearch: no match rejects');
 
+// ---------- F1 variants ----------
+check(searchHaystack({ name: "Tommy's Margarita", aliases: ['tommys'], variantLabel: { en: "Tommy's", sv: "Tommy's" } }, [])
+  .includes('tommys'), 'searchHaystack: aliases and variant label are searchable');
+const famDrinks = [
+  { id: 'm', family: 'f', bar: true, base: 'tequila', ingredients: [{ id: 'teq', ml: 50 }, { id: 'sec', ml: 20 }, { id: 'lime', ml: 15 }] },
+  { id: 't', family: 'f', bar: false, base: 'tequila', ingredients: [{ id: 'teq', ml: 60 }, { id: 'agave', ml: 30 }, { id: 'lime', ml: 15 }] },
+  { id: 'solo', bar: true, base: 'gin', ingredients: [{ id: 'gin', ml: 50 }] },
+];
+const famMap = { f: { name: 'F', primary: 'm', order: ['m', 't'] } };
+check(groupFamilies(famDrinks).length === 2, 'groupFamilies: a family is one group, a standalone drink its own');
+check(deckCards(famDrinks, famMap, {}, null, []).join() === 'm,solo', 'deckCards: one card per family, the primary by default');
+check(deckCards(famDrinks, famMap, {}, null, ['t']).join() === 't,solo', 'deckCards: a saved variant represents its family');
+check(deckCards(famDrinks, famMap, { bar: true }, null, ['t']).join() === 'm,solo',
+  'deckCards: the only member that passes the filters wins over a saved one');
+check(deckCards(famDrinks, famMap, { base: 'gin' }, null, []).join() === 'solo', 'deckCards: a family with no passing member drops out');
+const famDiff = variantDiff(famDrinks[1], famDrinks[0]);
+check(famDiff.added.join() === 'agave' && Object.keys(famDiff.changed).join() === 'teq' && famDiff.changed.teq.ml === 50 &&
+  famDiff.removed.map(line => line.id).join() === 'sec', 'variantDiff: new, changed (with the primary amount) and removed lines');
+check(variantDiff(famDrinks[0], famDrinks[0]).added.length === 0 && variantDiff(famDrinks[0], null).removed.length === 0,
+  'variantDiff: the primary itself has no diff');
+
+// ---------- F2 own drinks + F3 suggestions ----------
+const customIngredients = { bourbon: { en: 'Bourbon', sv: 'Bourbon' }, 'lemon-juice': { en: 'Lemon juice', sv: 'Citronjuice' },
+  flader: { en: 'Fläder', sv: 'Fläder', custom: true } };
+const built = buildCustomDrink({ id: 'egen-abc', name: ' Kvällens sour ', glass: 'coupe', color: 'citrus', method: 'Skaka hårt.',
+  source: 'Egen skapelse', lines: [
+    { amount: '5', unit: 'cl', name: 'bourbon' }, { amount: '2.5', unit: 'cl', name: 'Citronjuice' },
+    { amount: '', unit: 'garnish', name: 'Äppelskiva' }, { amount: '1', unit: 'oz', name: 'Fläder' }, { amount: '3', unit: 'cl', name: '  ' },
+  ] }, customIngredients);
+check(drinkErrors(built).length === 0, 'buildCustomDrink: the form result passes the Worker rules');
+check(built.name === 'Kvällens sour' && built.custom === true && built.bar === false && built.method.en === 'Skaka hårt.',
+  'buildCustomDrink: trimmed name, own marker, never bar-audited');
+check(built.ingredients.length === 4, 'buildCustomDrink: empty rows are dropped');
+check(built.ingredients[0].id === 'bourbon' && built.ingredients[0].ml === 50 && !('label' in built.ingredients[0]) &&
+  built.ingredients[1].id === 'lemon-juice' && built.ingredients[1].ml === 25,
+  'buildCustomDrink: names in either language map to catalog ids, cl becomes ml');
+check(built.ingredients[2].id === 'appelskiva' && built.ingredients[2].label === 'Äppelskiva' &&
+  built.ingredients[2].unit === 'garnish' && built.ingredients[2].qty === 1 && built.ingredients[2].essential === false,
+  'buildCustomDrink: free text keeps its label, garnish is optional');
+check(built.ingredients[3].id === 'flader' && built.ingredients[3].label === 'Fläder' && built.ingredients[3].ml === 30,
+  'buildCustomDrink: an earlier free-text name is not taken for a catalog ingredient');
+check(built.source.label === 'Egen skapelse' && !('url' in built.source) &&
+  buildCustomDrink({ id: 'egen-x', name: 'X', glass: 'rocks', color: 'red', method: 'M', source: 'https://example.com/r', lines: [] }, {}).source.url === 'https://example.com/r',
+  'buildCustomDrink: source is a label, a https link also becomes the url');
+check(slugify('Äppel  Juice!') === 'appel-juice' && slugify('***') === '', 'slugify: accents folded, kebab-case');
+check(CUSTOM_GLASSES.length === 8 && Object.keys(CUSTOM_COLORS).length === 6 &&
+  CUSTOM_GLASSES.every(g => GLASSES.includes(g) && GLASS_SILHOUETTES[g]) && Object.keys(CUSTOM_COLORS).join() === COLORS.join(),
+  'custom form: 8 glasses × 6 colours, all known to the rules and drawn as silhouettes');
+check(Object.keys(GLASS_SILHOUETTES).sort().join() === GLASSES.slice().sort().join(), 'drink rules: glass list matches the silhouettes');
+check(drinkErrors(Object.assign({}, built, { ingredients: [{ id: 'gin', ml: 50, qty: 1, unit: 'dash', essential: true }] })).length === 1 &&
+  drinkErrors(Object.assign({}, built, { ingredients: [{ id: 'gin', qty: 1, unit: 'bucket', essential: true }] })).length === 1 &&
+  drinkErrors(Object.assign({}, built, { name: '' })).join() === 'name' && drinkErrors(null).length === 1,
+  'drink rules: ml xor qty+unit, unit set, name and shape');
+const simCatalog = [
+  { id: 'whiskey-sour', ingredients: [{ id: 'bourbon', essential: true }, { id: 'lemon-juice', essential: true }, { id: 'sugar-syrup', essential: true }, { id: 'egg-white', essential: false }] },
+  { id: 'old-fashioned', ingredients: [{ id: 'bourbon', essential: true }, { id: 'sugar', essential: true }, { id: 'bitters', essential: true }] },
+];
+const simOwn = { id: 'egen-1', ingredients: [{ id: 'bourbon', essential: true }, { id: 'lemon-juice', essential: true },
+  { id: 'sugar-syrup', essential: true }, { id: 'flader', essential: true }, { id: 'mint', essential: false }] };
+const sim = similarDrink(simOwn, simCatalog);
+check(sim && sim.drink.id === 'whiskey-sour' && sim.shared === 3 && sim.all === 4 && sim.score === 0.75,
+  'similarDrink: Jaccard on essential ids, 3 of 4 in common');
+check(similarDrink({ id: 'egen-2', ingredients: [{ id: 'bourbon', essential: true }, { id: 'lemon-juice', essential: true }, { id: 'x', essential: true }, { id: 'y', essential: true }] }, simCatalog) === null,
+  'similarDrink: below 0,6 is no match (2 of 5 = 0,4)');
+check(similarDrink({ id: 'e', ingredients: [{ id: 'bourbon', essential: true }, { id: 'lemon-juice', essential: true }, { id: 'x', essential: true }] },
+  [{ id: 'three', ingredients: [{ id: 'bourbon', essential: true }, { id: 'lemon-juice', essential: true }, { id: 'y', essential: true }, { id: 'z', essential: true }] }]) === null &&
+  similarDrink({ id: 'e', ingredients: simCatalog[0].ingredients }, [{ id: 'mine', custom: true, ingredients: simCatalog[0].ingredients }]) === null &&
+  similarDrink({ id: 'e', ingredients: [{ id: 'a', essential: true }, { id: 'b', essential: true }, { id: 'c', essential: true }] },
+    [{ id: 'p', ingredients: [{ id: 'a', essential: true }, { id: 'b', essential: true }, { id: 'c', essential: true }, { id: 'd', essential: true }, { id: 'e', essential: true }] }]).score === 0.6,
+  'similarDrink: exactly 0,6 counts, 2 of 5 does not, own drinks are never the match');
+const merged2 = mergeCustom([{ id: 'a', drink: { n: 1 }, updatedAt: 5 }, { id: 'b', drink: { n: 2 }, updatedAt: 9 }],
+  [{ id: 'a', drink: null, updatedAt: 7 }, { id: 'b', drink: { n: 3 }, updatedAt: 8 }, { id: 'c', drink: { n: 4 }, updatedAt: 1 }]);
+check(merged2.length === 3 && merged2.find(e => e.id === 'a').drink === null && merged2.find(e => e.id === 'b').drink.n === 2 &&
+  merged2.find(e => e.id === 'c').drink.n === 4, 'mergeCustom: newer edit wins per drink, a newer deletion too, new ones join');
+check(['en', 'sv'].every(l => Object.keys(CUSTOM_COLORS).every(c => t(l, 'color_' + c) !== 'color_' + c) &&
+  ['new', 'accepted', 'published', 'declined'].every(s => t(l, 'suggest_status_' + s) !== 'suggest_status_' + s)),
+  'i18n: colour names and every suggestion status in EN + SV');
+check(RULE_UNITS.join() === ['dash', 'barspoon', 'teaspoon', 'drop', 'piece', 'leaf', 'slice', 'garnish', 'splash', 'top'].join(),
+  'drink rules: the same qty units as the catalog validator');
+
 check(swipeDirectionForKey('ArrowLeft') === -1, 'keyboard swipe: left skips');
 check(swipeDirectionForKey('ArrowRight') === 1, 'keyboard swipe: right saves');
 check(swipeDirectionForKey('Enter') === 0, 'keyboard swipe: unrelated keys are ignored');
@@ -222,14 +309,14 @@ const lineups = Object.fromEntries(wheelData.moods.map(mood => [
 Object.entries(lineups).forEach(([mood, lineup]) => {
   check(lineup.length === 12, `wheel lineup ${mood}: exactly 12 visible sectors`);
 });
-check(lineups.fresh.filter(item => item.category === 'shot').length === 3,
-  'wheel lineup fresh: three shot sectors');
+check(lineups.fresh.filter(item => item.category === 'shot').length === 2,
+  'wheel lineup fresh: two shot sectors (owner 2026-09-25)');
 check(lineups.fresh.filter(item => item.category === 'bottle').length === 1,
   'wheel lineup fresh: bottle appears when flex draw is below one third');
-check(lineups.groove.filter(item => item.category === 'shot').length === 2,
-  'wheel lineup groove: two shot sectors');
-check(lineups.tipsy.filter(item => item.category === 'shot').length === 1,
-  'wheel lineup tipsy: one shot sector');
+check(lineups.groove.filter(item => item.category === 'shot').length === 1,
+  'wheel lineup groove: one shot sector');
+check(lineups.tipsy.every(item => item.category !== 'shot'),
+  'wheel lineup tipsy: no shots, so the first three levels differ with only cocktails and shots on');
 check(lineups.wobbly.every(item => item.category !== 'shot'),
   'wheel lineup wobbly: no shot sectors');
 check(lineups.wobbly.filter(item => item.category === 'water').length === 2,
@@ -247,7 +334,7 @@ check(lineups.groove[selectWheelIndex(lineups.groove, () => 0.99)].eligible,
   'wheel selection normal mood: selected visible sector is eligible');
 
 // wheel prefs: favorites-only cocktails + per-outcome beer/wine/shot exclusion
-const favEnough = ['drink-0', 'drink-1', 'drink-2', 'drink-3', 'drink-4']; // groove needs 5 cocktail slots
+const favEnough = ['drink-0', 'drink-1', 'drink-2', 'drink-3', 'drink-4', 'drink-5']; // groove needs 6 cocktail slots
 const lineupFavEnough = buildSpinLineup(wheelData, 'groove', wheelFixture, () => 0.5,
   { favoritesOnly: true, favorites: favEnough });
 check(lineupFavEnough.length === 12, 'wheel prefs: favorites-only keeps 12 sectors when favorites suffice');
@@ -277,13 +364,70 @@ check(lineupNoShots.every(item => item.category !== 'shot'),
   'wheel prefs: excluding every shot outcome removes the category entirely');
 check(lineupNoShots.filter(item => item.kind === 'cocktail').length === 9,
   'wheel prefs: slots freed by an excluded category fall back to extra cocktails');
+{
+  const cats = ids => new Set(ids.map(id => wheelData.outcomes[id].category));
+  const none = cats(wheelExcludedOutcomes(wheelData, []));
+  check(['beer-cider', 'wine', 'bottle', 'shot'].every(c => none.has(c)) && !none.has('water') && !none.has('red-bull'),
+    'wheel extras: by default beer, wine, the bottle and shots are excluded; water and Red Bull stay');
+  const wine = cats(wheelExcludedOutcomes(wheelData, ['wine']));
+  check(!wine.has('wine') && !wine.has('bottle') && wine.has('shot'), 'wheel extras: wine brings the bottle with it');
+  check(wheelExcludedOutcomes(wheelData, WHEEL_EXTRAS).length === 0, 'wheel extras: all on excludes nothing');
+  // fresh with the flex draw under a third wants the bottle; with wine off it must still be 12 sectors
+  const lineupBarOnly = buildSpinLineup(wheelData, 'fresh', wheelFixture, () => 0, { excludedOutcomes: wheelExcludedOutcomes(wheelData, []) });
+  check(lineupBarOnly.length === 12 && lineupBarOnly.every(item => item.kind === 'cocktail'),
+    'wheel extras: default fresh wheel is 12 bar cocktails, the bottle slot falls back too');
+  const shitfaced = buildSpinLineup(wheelData, 'shitfaced', wheelFixture, () => 0.5, { excludedOutcomes: wheelExcludedOutcomes(wheelData, []) });
+  check(shitfaced.length === 12 && shitfaced.some(item => item.outcomeId === 'water' && item.eligible),
+    'wheel extras: level 5 still lands on water by default');
+}
+{
+  // 8 of 16 drinks are one family; without the family rule about half the cocktail sectors would be members
+  const wheelFam = Array.from({ length: 16 }, (_, i) => Object.assign({ id: `drink-${i}`, name: `Drink ${i}`, bar: true, tags: [] },
+    i < 8 ? { family: 'fam' } : {}));
+  const members = seed => {
+    let x = seed;
+    const rng = () => (x = (x * 16807) % 2147483647) / 2147483647;
+    return buildSpinLineup(wheelData, 'groove', wheelFam, rng).filter(item => /^drink-[0-7]$/.test(item.outcomeId)).length;
+  };
+  check([1, 2, 3, 4, 5, 6, 7, 8].every(seed => members(seed) <= 1), 'wheel lineup: a family counts as one outcome');
+  const favLineup = buildSpinLineup(wheelData, 'groove', wheelFam, () => 0.5, { favoritesOnly: true, favorites: ['drink-3'] });
+  check(favLineup.some(item => item.outcomeId === 'drink-3'), 'wheel lineup: a saved variant represents its family');
+}
 
-const landing = wheelLandingRotation(17, 4, (() => { const values = [0.5, 0]; return () => values.shift(); })(), 12);
-const landedCenter = ((-landing % 360) + 360) % 360;
-const expectedCenter = 4 * 30;
-const landingError = Math.abs((((landedCenter - expectedCenter) + 540) % 360) - 180);
-check(landing >= 17 + 6 * 360, 'wheel landing: travels at least six full rotations');
-check(landingError <= 10.2, 'wheel landing: finishes safely inside selected sector');
+for (const [from, index, r] of [[17, 4, 0.5], [0, 0, 0], [123.4, 11, 0.999], [-40, 7, 0.2]]) {
+  const end = from + landingTravel(from, index, () => r, 12);
+  const endFast = from + landingTravel(from, index, () => r, 12, SPIN_FAST);
+  check(endFast - from >= 3 * 360 && endFast - from < 4 * 360 && sectorAtAngle(endFast, 12) === index,
+    `wheel landing ${index}: a quick spin makes three turns and still lands in the sector`);
+  check(end - from >= 4 * 360 && end - from < 5 * 360, `wheel landing ${index}: four full turns plus under one`);
+  check(sectorAtAngle(end, 12) === index, `wheel landing ${index}: finishes inside the selected sector`);
+  const centre = ((-end % 360) + 360) % 360, off = Math.abs((((centre - index * 30) + 540) % 360) - 180);
+  check(off <= 10.2 + 1e-9, `wheel landing ${index}: keeps a safe margin from the sector edges`);
+}
+{
+  // T16: one continuous curve per profile, no velocity jumps, lands exactly on the travel
+  for (const [profile, travels] of [[SPIN_SLOW, [1440, 1620, 1799]], [SPIN_FAST, [1080, 1260, 1439]]]) {
+    let maxJump = 0, prev = null;
+    for (const travel of travels) {
+      for (let t = 0; t <= spinMs(profile); t += 1) {
+        const v = (spinAngle(t + 0.5, travel, profile) - spinAngle(t - 0.5, travel, profile)) * 1000;
+        if (t > 0 && prev !== null) maxJump = Math.max(maxJump, Math.abs(v - prev));
+        prev = v;
+      }
+      check(Math.abs(spinAngle(spinMs(profile), travel, profile) - travel) < 1e-9 && spinAngle(spinMs(profile) + 500, travel, profile) === travel,
+        `wheel spin ${profile.main} ms, ${travel}°: rests exactly on the travel`);
+      prev = null;
+    }
+    check(maxJump < 10, `wheel spin ${profile.main} ms: speed is continuous (largest change per ms ${maxJump.toFixed(2)}°/s)`);
+  }
+  // owner 2026-09-25: the first spins crawl through the last sectors, spammed spins are quick
+  const lastSectors = ms => 1620 - spinAngle(spinMs(SPIN_SLOW) - SPIN_SLOW.settle - ms, 1620, SPIN_SLOW);
+  check(lastSectors(2000) > 150 && lastSectors(1000) > 25, `wheel spin slow: still passing sectors near the end (${Math.round(lastSectors(2000))}° in the last 2 s)`);
+  check(spinMs(SPIN_SLOW) > 5500 && spinMs(SPIN_FAST) < 3000 && SLOW_SPINS === 3, 'wheel spin: three slow spins of about 6 s, then about 2,5 s');
+  check(springLinear(0.8, 600).startsWith('linear(0.0000,') && springLinear(0.8, 600).endsWith(',1)'),
+    'wheel spring: CSS linear() easing starts at 0 and rests at 1');
+  check(Object.keys(WHEEL_COLORS).length === 7, 'wheel colours: one per outcome category');
+}
 check(wheelSectorPath(0, 12).startsWith('M50 50L'), 'wheel SVG: sector path starts at hub');
 check(wheelSectorPath(0, 12) !== wheelSectorPath(1, 12), 'wheel SVG: adjacent sector paths differ');
 
@@ -300,10 +444,19 @@ const workerSource = fs.readFileSync(path.join(__dirname, 'worker', 'worker.js')
 // bumped 74kB -> 79kB 2026-07-21 for wheel prefs (favorites-only cocktails, per-outcome beer/wine/shot toggles)
 // bumped 86kB -> 87kB 2026-07-23 for transient editable 1–100 recipe servings
 // bumped 87kB -> 89kB 2026-07-24 for keyboard-safe card faces and accessible status semantics
+// bumped 89kB -> 90kB 2026-09-25 for design review batch 1 (missing status only with a pantry, route announcements)
+// bumped 90kB -> 97kB 2026-09-25 for design review batch 2 (deck buttons, undo toast, filter chips, segmented recipe controls, in-place updates)
+// bumped 97kB -> 99kB 2026-09-25 for design review batch 3 part 1 (wheel motion: spinAngle, landingTravel, springLinear)
+// bumped 99kB -> 104kB 2026-09-25 for design review batch 3 (wheel layer, FLIP, runSpin, mood buttons, result card, wave patch)
+// bumped 104kB -> 113kB 2026-09-25 for design review batch 4 (pantry search/count, account modes, forgot step, delete dialog, auth error copy)
+// bumped 113kB -> 120kB 2026-09-25 for design review batch 5 (F1 variants: family deck/wheel units, variant switch, diff, grouped search)
+// bumped 120kB -> 140kB 2026-09-25 for design review batch 6 (F2 own-drink form, local store + per-drink sync, F3 similarity
+// check, suggestion form and status; about 6,5 kB of it is the new EN + SV copy)
+// bumped 140kB -> 150kB 2026-09-25, owner's call: wheel extras, spin profiles, level 5 lines, mood card over the wheel
 // Mät LF-storleken, alltså det git lagrar och GitHub Pages levererar. En Windows-
 // arbetskopia checkas ut med CRLF och lägger på ~1,8 kB som aldrig deployas.
-check(Buffer.byteLength(appSource.split('\r').join('')) < 89000,
-  'bundle budget: app.js stays under 89 kB unminified');
+check(Buffer.byteLength(appSource.split('\r').join('')) < 150000,
+  'bundle budget: app.js stays under 150 kB unminified');
 check(!htmlSource.includes('fonts.googleapis.com') && htmlSource.includes("fonts/work-sans.woff2"),
   'privacy: fonts are self-hosted with no Google Fonts request');
 check(htmlSource.includes('rel="canonical" href="https://buildapp.se/sipdeck/"') &&
@@ -323,7 +476,7 @@ check(!htmlSource.includes('gstatic.com/firebase') && appSource.includes("async 
 check(appSource.includes("const AUTH_KEY = KEY + '-auth'") && appSource.includes("signInWithPopup") &&
   !appSource.includes("signInWithRedirect"),
   'privacy: requested account persistence resumes lazy auth with cross-origin-safe sign-in');
-check(appSource.split('href="info.html"').length === 3,
+check(appSource.split('href="info.html#${lang()}"').length === 3,
   'privacy: legal information is linked for signed-in and signed-out account views');
 check(appSource.split('data-servings').length >= 5 && appSource.includes('max="${MAX_SERVINGS}"') &&
   appSource.includes('if (servingDrinkId !== id)'),
@@ -333,52 +486,81 @@ check(htmlSource.includes('.servings-input::-webkit-inner-spin-button') &&
   'recipe scaling: native number spinners stay hidden beside the larger minus/plus controls');
 const settingsViewSource = appSource.slice(appSource.indexOf('function viewSettings()'),
   appSource.indexOf('function random01()'));
-check(!settingsViewSource.includes("settings_unit')") &&
+// fas 4: the unit is a real control in settings (data-unit-setting); deck filters stay on the deck
+check(settingsViewSource.includes('data-unit-setting') &&
   !settingsViewSource.includes("settings_filter_bar')") &&
   !settingsViewSource.includes("settings_filter_base')"),
-  'settings: read-only unit and deck-filter summaries are not duplicated');
+  'settings: unit is a control, deck-filter summaries are not duplicated');
+check(settingsViewSource.indexOf('accountSection()') < settingsViewSource.indexOf('settings_lang'),
+  'settings: the folded account comes first (owner 2026-09-25, overrides the review spec)');
+check(!appSource.includes('confirm(') && appSource.includes('<dialog class="confirm-dialog" id="accDelete"'),
+  'account deletion: confirmed in a <dialog>, never window.confirm');
+check(authErrorKey({ code: 'auth/wrong-password' }) === 'auth_wrong_password' &&
+  authErrorKey({ code: 'auth/email-already-in-use' }) === 'auth_email_already_in_use' &&
+  authErrorKey({ code: 'auth/network-request-failed' }) === 'auth_generic' &&
+  authErrorKey(new Error('Kunde inte radera synkad data.')) === null,
+  'auth errors: known codes map to own copy, other codes to the generic line, app errors keep their text');
+check(AUTH_ERRORS.every(code => {
+  const key = authErrorKey({ code: 'auth/' + code });
+  return STRINGS.en[key] && STRINGS.sv[key];
+}), 'auth errors: every mapped code has English and Swedish copy');
+const counted = ingredientCounts([
+  { ingredients: [{ id: 'gin' }, { id: 'lime-juice' }, { id: 'gin' }] },
+  { ingredients: [{ id: 'gin' }] },
+]);
+check(counted.gin === 2 && counted['lime-juice'] === 1, 'ingredientCounts: counts drinks, not lines');
 check(infoSource.includes('Patrik Löfgren') && infoSource.includes('kontakt@orgutveckling.se') &&
   infoSource.includes('id="sv"') && infoSource.includes('id="en"'),
   'legal page: controller, contact and Swedish/English notices are present');
 check(infoSource.includes('inga annonserings- eller analyscookies') &&
   infoSource.includes('current D1 database is not locked'),
   'legal page: current storage, analytics and D1 jurisdiction are disclosed');
+check(infoSource.includes('sipdeck.custom') && infoSource.includes('Förslag till katalogen') && infoSource.includes('Suggestions to the catalog') &&
+  infoSource.includes('redigera och illustrera det i appen') && infoSource.includes('and illustrate it in the app'),
+  'legal page (F2/F3): own drinks, suggestion storage, retention and publishing rights in both languages');
 ['instrument-serif-regular.woff2', 'instrument-serif-italic.woff2', 'work-sans.woff2'].forEach(file => {
   const font = fs.readFileSync(path.join(__dirname, 'fonts', file));
   check(font.subarray(0, 4).toString() === 'wOF2', `self-hosted font: ${file} is valid WOFF2`);
 });
 check(htmlSource.includes('href="#/hjul"') && appSource.includes("'#/hjul'"),
   'wheel route: starting-page entry and router target are wired');
-check(htmlSource.includes('view-transition-name:wheel-shared') && appSource.includes('document.startViewTransition'),
-  'wheel transition: mini-wheel expands through progressive View Transitions');
-check(htmlSource.includes('html.wheel-opening::view-transition-new(wheel-shared)') &&
-  htmlSource.includes('html.wheel-closing::view-transition-old(wheel-shared)') &&
-  appSource.includes("root.classList.toggle('wheel-opening'") &&
-  appSource.includes("root.classList.toggle('wheel-closing'"),
-  'wheel transition: opening and closing use composed, directional shared-element scenes');
-check(htmlSource.includes('wheel-fallback-screen-in') && htmlSource.includes('wheel-fallback-screen-out') &&
-  appSource.includes("root.classList.add('wheel-fallback-opening')") &&
-  appSource.includes("root.classList.add('wheel-fallback-closing')") &&
-  appSource.includes('const nativeWebKit = /AppleWebKit/'),
-  'wheel transition: unsupported and native WebKit engines retain a deliberate fallback');
-check(appSource.includes("matchMedia('(prefers-reduced-motion: reduce)')"),
-  'wheel accessibility: reduced motion is honored');
-check(appSource.includes('aria-live="polite"') && appSource.includes('aria-valuetext='),
-  'wheel accessibility: result and slider meaning are announced');
+check(!appSource.includes('startViewTransition') && !htmlSource.includes('view-transition') &&
+  !htmlSource.includes('wheel-fallback') && !appSource.includes('nativeWebKit'),
+  'wheel transition (T15): no View Transitions branch, engine sniffing or fallback keyframes');
+check(appSource.includes('springLinear(.8, 600)') && appSource.includes('springLinear(.92, 480)') &&
+  appSource.includes("$('#wheelStage').getBoundingClientRect()"),
+  'wheel transition (T15): FLIP opens and closes on springs, measured on the unrotated stage');
+check(appSource.includes('const keepBase = base === viewDeck') && htmlSource.includes('<div id="wheelLayer" hidden></div>'),
+  'wheel transition (T15): the wheel is a layer over the deck, so closing never cuts to a blank page');
+check(appSource.includes("matchMedia('(prefers-reduced-motion: reduce)')") &&
+  appSource.includes("layer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 150 })"),
+  'wheel accessibility: reduced motion opens with a 150 ms fade and no transform');
+check(appSource.includes('aria-live="polite"') && appSource.includes('aria-pressed="${item.id === wheelMoodId}"'),
+  'wheel accessibility: result is announced and mood buttons expose their state');
 check(appSource.includes('navigator.vibrate(18)') && appSource.includes('wheelMuted = false'),
   'wheel feedback: one landing haptic and visit-local sound default');
 check(appSource.includes('sound is optional and must never block a spin') &&
   appSource.includes('wheelAudio = null;'),
   'wheel resilience: unavailable Web Audio cannot block a spin');
-check(appSource.includes('wheelAnimation.onfinish =') &&
-  appSource.includes('setTimeout(() => finishWheelSpin(index, end, false), 180)'),
-  'wheel resilience: animation API differences cannot leave controls locked');
-check(appSource.includes('!wheelMoodId && wheelData && db'),
-  'wheel start: opens live on the first mood, no empty intro wheel');
-check(appSource.split("wheelResult ? 'wheel_respin' : 'wheel_spin'").length === 3,
-  'wheel respin: hub and controls button relabel in place of a result-box button row');
-check(!appSource.includes('wheel-result-actions'),
-  'wheel result: compact box carries no action buttons');
+check(appSource.includes('setTimeout(finish, total + 400)') && appSource.includes('if (spin !== wheelSpinId) return;'),
+  'wheel resilience: a paused rAF still lands, and a finished or abandoned spin never lands twice');
+const spinSource = appSource.slice(appSource.indexOf('  function spinWheel()'), appSource.indexOf('  function wheelFlip('));
+const frameSource = spinSource.slice(spinSource.indexOf('const frame'), spinSource.indexOf('setTimeout(finish, total'));
+check(frameSource.length > 200 && !/classList|getBoundingClientRect|offset(Width|Height)|getComputedStyle/.test(frameSource),
+  'wheel spin (T16): the animation frame writes transforms only, no class toggles or layout reads');
+check(reconcileState(defaultState('en'), defaultState('en'), Object.assign(defaultState('en'), { settings: Object.assign(defaultState('en').settings, { wheelLabels: true }) })).settings.wheelLabels === true,
+  'reconcileState: a remote wheel-labels change wins over an unchanged local one');
+check(!appSource.includes('offsetWidth;') && !appSource.includes('getComputedStyle(element).transform'),
+  'wheel spin (T16): no forced layout or computed-style reads while spinning');
+check(!appSource.includes('default to first mood') && appSource.includes(' class="wheel-unset"'),
+  'wheel start (T4): no preselected mood, the wheel starts neutral');
+check(!htmlSource.includes('.wheel-action.primary') && appSource.split('data-wheel-act="spin"').length === 2,
+  'wheel spin (T14): the hub is the only spin button');
+const moodSource = appSource.slice(appSource.indexOf('  function selectWheelMood('), appSource.indexOf('  function closeWheel('));
+check(!moodSource.includes('render()') && moodSource.includes('distance * 25'),
+  'wheel mood (T17): choosing a mood patches sectors in a 25 ms wave without re-rendering');
+check(appSource.includes("act === 'change'") && !appSource.includes("action === 'new'"),
+  'wheel mood (T14): "Change mood" brings the picker back; choosing the active mood again is the new wheel');
 check(appSource.includes('detailId === null) resetWheelVisit()'),
   'wheel result: spin state survives opening the landed recipe');
 check(appSource.includes('`<button class="fav-open" data-id="${esc(entry.outcomeId)}"'),
@@ -458,6 +640,11 @@ check(appSource.indexOf("authedFetch('/account'") < appSource.indexOf('await use
 check(workerSource.includes('allowDeleted = false') && workerSource.includes('deletedAt: Date.now()') &&
   workerSource.includes('Date.now() - 2 * 60 * 60 * 1000'),
   'account deletion: tombstone blocks old tokens and is purged after token expiry');
+check(workerSource.includes("DELETE FROM user_drinks WHERE firebase_uid = ?") &&
+  workerSource.includes("status IN ('new', 'declined')") && workerSource.includes('SUGGESTIONS_PER_DAY = 5'),
+  'account deletion: own drinks and unpublished suggestions go with the account (worker.test.mjs runs it)');
+check(appSource.includes("const CUSTOM_KEY = 'sipdeck.custom'") && !('custom' in normalizeState({ custom: [1] }, 'en')),
+  'F2: own drinks live under sipdeck.custom, never in the synced state blob');
 check(workerSource.includes('!refreshed && Date.now() - jwksMissRefresh') &&
   workerSource.includes('c.iat <= now') && workerSource.includes('c.auth_time <= now'),
   'Firebase verifier: unknown keys refresh once and required time claims are checked');
@@ -470,7 +657,7 @@ const data = JSON.parse(fs.readFileSync(path.join(__dirname, 'drinks.json'), 'ut
 UNITS.forEach(unit => ['en', 'sv'].forEach(lang =>
   check(t(lang, `unit_${unit}`) !== `unit_${unit}`, `unit ${unit}: ${lang} translation present`)));
 
-check(data.schema === 1, 'drinks.json: schema === 1');
+check(data.schema === 2, 'drinks.json: schema === 2');
 check(data.ingredients && typeof data.ingredients === 'object', 'drinks.json: ingredients is a map');
 check(Array.isArray(data.drinks), 'drinks.json: drinks is an array');
 check(wheelData.schema === 1, 'wheel.json: schema === 1');
@@ -492,6 +679,9 @@ check(wheelData.moods.find(mood => mood.id === 'shitfaced').forcedOutcome === 'w
   'wheel.json: highest mood forces water');
 check(wheelData.moods.find(mood => mood.id === 'shitfaced').repeatCopy.length === 2,
   'wheel.json: highest mood has second and third-spin copy');
+check(wheelData.moods.find(mood => mood.id === 'shitfaced').safety.en === "Don't drink and drive." &&
+  !('sv' in wheelData.moods.find(mood => mood.id === 'shitfaced').safety),
+  'wheel.json: the drink-and-drive line is English only (owner 2026-09-25)');
 const wheelArt = new Set();
 Object.entries(wheelData.outcomes).forEach(([id, outcome]) => {
   check(outcome.sector && outcome.sector.en && outcome.sector.sv,
@@ -614,6 +804,7 @@ data.drinks.forEach(drink => {
     check(!drink.method.sv.includes('—'), `${drink.id}: method.sv has no em-dash`);
   }
 
+  check(drinkErrors(drink).length === 0, `${drink.id}: passes the shared drink rules (${drinkErrors(drink)})`);
   check(Array.isArray(drink.ingredients) && drink.ingredients.length > 0,
     `${drink.id}: ingredients is a non-empty array`);
   (drink.ingredients || []).forEach((line, i) => {
@@ -626,6 +817,30 @@ data.drinks.forEach(drink => {
     check(hasMl !== hasQtyUnit, `${drink.id}[${i}]: ml xor qty+unit (${line.id})`);
     if (hasQtyUnit) check(UNITS.includes(line.unit), `${drink.id}[${i}]: unit in allowed set (${line.unit})`);
   });
+});
+
+// F1: one type spelling, families point at real drinks and every member points back
+const TYPES = ['sour', 'highball', 'aromatic', 'spirit-forward', 'contemporary'];
+data.drinks.forEach(drink => check(TYPES.includes(drink.type), `${drink.id}: type in allowed set (${drink.type})`));
+check(data.families && typeof data.families === 'object', 'drinks.json: families is a map');
+const drinkById = new Map(data.drinks.map(drink => [drink.id, drink]));
+Object.entries(data.families).forEach(([key, family]) => {
+  check(KEBAB.test(key) && typeof family.name === 'string' && family.name.length > 0, `family ${key}: kebab key and a name`);
+  check(Array.isArray(family.order) && family.order.length >= 2 && new Set(family.order).size === family.order.length,
+    `family ${key}: at least two distinct members`);
+  check(family.order.includes(family.primary), `family ${key}: primary is a member`);
+  family.order.forEach(id => check(drinkById.has(id) && drinkById.get(id).family === key, `family ${key}: ${id} exists and points back`));
+});
+data.drinks.forEach(drink => {
+  if (drink.family !== undefined) {
+    check(data.families[drink.family] && data.families[drink.family].order.includes(drink.id), `${drink.id}: listed in its family`);
+    check(drink.variantLabel && typeof drink.variantLabel.en === 'string' && drink.variantLabel.en.length > 0 &&
+      typeof drink.variantLabel.sv === 'string' && drink.variantLabel.sv.length > 0 && !drink.variantLabel.sv.includes('—'),
+      `${drink.id}: EN + SV variant label`);
+  }
+  if (drink.aliases !== undefined) check(Array.isArray(drink.aliases) && drink.aliases.every(a => typeof a === 'string' && a === a.toLowerCase()),
+    `${drink.id}: aliases are lowercase strings`);
+  if (drink.art !== undefined) check(drinkById.has(drink.art), `${drink.id}: art borrows an existing drink's image`);
 });
 
 const sourceUrls = data.drinks.map(drink => drink.source.url);

@@ -7,5 +7,9 @@ binding = "DB"
 database_name = "sipdeck"
 database_id = "ffdfc07e-e916-4085-b379-140069fd43fc"
 
+[[send_email]]
+name = "MAIL"
+destination_address = "patz.lofgren@gmail.com"
+
 [triggers]
 crons = ["17 * * * *"]

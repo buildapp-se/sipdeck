@@ -16,6 +16,7 @@
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.6 'Work Sans',system-ui,sans-serif}
 main{width:min(100% - 2rem,760px);margin:auto;padding:1.5rem 0 4rem}
 .top{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.5rem}
+.back{margin:0 0 1rem;font-size:.9rem}
 .top img{width:112px;display:block}.top nav{display:flex;gap:.5rem;flex-wrap:wrap}
 a{color:var(--accent);text-underline-offset:2px}.top nav a{padding:.35rem .65rem;border:1px solid var(--line);border-radius:8px}
 article{background:var(--paper);padding:clamp(1.2rem,4vw,2.5rem);border-radius:16px;margin-bottom:1.5rem;box-shadow:0 12px 32px -20px rgba(33,27,18,.35)}
@@ -24,11 +25,12 @@ h2{font-size:1.55rem;margin:2rem 0 .5rem}h3{font-size:1rem;margin:1.25rem 0 .25r
 p,ul{margin:.4rem 0 1rem}li+li{margin-top:.35rem}.meta{color:var(--muted);font-size:.86rem}
 .notice{border-left:4px solid var(--accent);padding:.7rem 1rem;background:rgba(47,107,63,.07)}
 @media(prefers-color-scheme:dark){:root{--bg:#17130e;--ink:#ede5d6;--muted:#a79b87;--accent:#7fb56f;--line:rgba(237,229,214,.16)}
-  article{color:#211b12}.meta{color:#6e6455}}
+  .top>a{background:var(--paper);padding:.3rem .5rem;border-radius:10px}article{color:#211b12}article a{color:#2f6b3f}.meta{color:#6e6455}}
 </style>
 </head>
 <body>
 <main>
+  <p class="back"><a href="./#/installningar">‹ Tillbaka till Sipdeck · Back to Sipdeck</a></p>
   <div class="top">
     <a href="./" aria-label="Till Sipdeck"><img src="design/wordmark.svg" alt="Sipdeck"></a>
     <nav aria-label="Språk / Language"><a href="#sv">Svenska</a><a href="#en">English</a></nav>
@@ -36,7 +38,7 @@ p,ul{margin:.4rem 0 1rem}li+li{margin-top:.35rem}.meta{color:var(--muted);font-s
 
   <article id="sv" lang="sv">
     <h1>Integritet, lokal lagring och villkor</h1>
-    <p class="meta">Senast uppdaterad 16 september 2026 · Version 1.2</p>
+    <p class="meta">Senast uppdaterad 25 september 2026 · Version 1.3</p>
     <p class="notice">Sipdeck är ett gratis hobbyprojekt utan annonser, beteendespårning eller försäljning av personuppgifter.</p>
 
     <h2>Vem ansvarar för uppgifterna?</h2>
@@ -45,20 +47,26 @@ p,ul{margin:.4rem 0 1rem}li+li{margin-top:.35rem}.meta{color:var(--muted);font-s
 
     <h2>Vilka uppgifter behandlas?</h2>
     <h3>Utan konto</h3>
-    <p>Favoriter, skafferi och inställningar sparas bara lokalt i din webbläsare. Sipdeck tar inte emot dessa uppgifter så länge du är utloggad.
+    <p>Favoriter, skafferi, inställningar och drinkar du skapar under Mina drinkar sparas bara lokalt i din webbläsare. Sipdeck tar inte emot dessa uppgifter så länge du är utloggad.
       Cloudflare behandlar tekniska uppgifter som IP-adress, tidpunkt, efterfrågad adress och webbläsarinformation när sidan levereras och skyddas.
       Cloudflare Web Analytics ger dessutom aggregerad besöksstatistik (sida, land, webbläsare, hänvisande sida, laddningstid) via ett skript, <code>beacon.min.js</code> från <code>static.cloudflareinsights.com</code>, som Cloudflare lägger in i sidan. Det sätter inga cookies, skapar ingen enhetsprofil och sparar inte din IP-adress.</p>
     <h3>Med konto</h3>
     <p>Firebase Authentication behandlar e-postadress, inloggningsleverantör, tekniska identifierare, IP-adress och webbläsarinformation.
-      Sipdeck lagrar ett Firebase-UID tillsammans med dina synkade favoriter, ditt skafferi och dina inställningar i Cloudflare D1.
+      Sipdeck lagrar ett Firebase-UID tillsammans med dina synkade favoriter, ditt skafferi, dina inställningar och dina egna drinkar
+      (Mina drinkar, en rad per drink med tidpunkt för senaste ändring) i Cloudflare D1.
       Sipdeck tar aldrig emot ditt lösenord. Koden som sköter inloggningen (Firebase) hämtas från Googles CDN
       (<code>gstatic.com</code>) först när du använder kontofunktionen; då går din IP-adress till Google även för den hämtningen.</p>
+    <h3>Förslag till katalogen</h3>
+    <p>Föreslår du en egen drink till Sipdecks katalog lagras förslaget i Cloudflare D1 med ditt Firebase-UID: receptet, om det skickas som
+      variant eller ny drink, vilken katalogdrink det liknar, källan och visningsnamnet du eventuellt angett, tidpunkten för ditt godkännande,
+      status (skickad, granskas, publicerad eller avböjd) och kuratorns eventuella anteckning. Förslag kräver konto, och högst fem kan skickas per dygn.</p>
     <p>Ingen profilering eller automatiserat beslutsfattande med rättsliga eller liknande betydande effekter sker.</p>
 
     <h2>Varför och med vilken rättslig grund?</h2>
     <ul>
       <li><strong>Appfunktioner och lokal lagring:</strong> för att tillhandahålla funktionerna du uttryckligen använder.</li>
       <li><strong>Konto och synk:</strong> för att fullgöra den kostnadsfria tjänst du begär när du skapar eller använder ett konto.</li>
+      <li><strong>Förslag:</strong> för att granska och eventuellt publicera det recept du skickar in, enligt villkoren du godkänner i formuläret.</li>
       <li><strong>Säkerhet och teknisk drift:</strong> berättigat intresse av att förebygga missbruk, felsöka och hålla tjänsten säker.</li>
       <li><strong>Besöksstatistik:</strong> berättigat intresse av att veta vilka sidor som används och hur snabbt de laddar. Statistiken är aggregerad och kan inte kopplas till dig.</li>
       <li><strong>Support:</strong> för att besvara din begäran och, där det behövs, vårt berättigade intresse av att dokumentera lösta ärenden.</li>
@@ -67,7 +75,7 @@ p,ul{margin:.4rem 0 1rem}li+li{margin-top:.35rem}.meta{color:var(--muted);font-s
     <h2>Cookies och lagring på din enhet</h2>
     <p>Sipdeck använder inga annonserings- eller analyscookies. Besöksstatistiken från Cloudflare Web Analytics lagrar ingenting på din enhet och använder ingen identifierare som följer dig mellan besök. Appen använder:</p>
     <ul>
-      <li><code>localStorage</code> för appens state, senaste synkbas och för att minnas att du tidigare har valt kontosynk.</li>
+      <li><code>localStorage</code> för appens state, dina egna drinkar (<code>sipdeck.custom</code>), senaste synkbas och för att minnas att du tidigare har valt kontosynk.</li>
       <li>Firebase-lagring i IndexedDB först när du använder kontofunktionen eller tidigare har valt att vara inloggad.</li>
     </ul>
     <p>Lagringen är nödvändig för de funktioner du begär och aktiveras därför utan samtyckesbanner. Du kan ta bort lokal data genom att rensa
@@ -78,6 +86,9 @@ p,ul{margin:.4rem 0 1rem}li+li{margin-top:.35rem}.meta{color:var(--muted);font-s
     <ul>
       <li>Lokal data finns kvar tills du rensar webbplatsdata.</li>
       <li>Synkad data sparas tills du raderar kontot. Radering finns i Sipdecks inställningar.</li>
+      <li>En egen drink du raderar lämnar en markering utan recept kvar tills kontot raderas, så att en annan enhet inte laddar upp den igen.</li>
+      <li>Förslag sparas tills kontot raderas. Då raderas förslag som är skickade eller avböjda direkt. Förslag som har accepterats eller
+        publicerats blir kvar som underlag för katalogen men kopplas bort från ditt konto.</li>
       <li>Vid kontoradering tas synkat app-state bort direkt. En spärrmarkör utan app-state kan finnas i högst cirka två timmar för att hindra gamla
         inloggningstoken från att återskapa uppgifterna.</li>
       <li>Firebase uppger att autentiseringsdata tas bort från aktiva system och backupsystem inom upp till 180 dagar efter radering.
@@ -103,6 +114,9 @@ p,ul{margin:.4rem 0 1rem}li+li{margin-top:.35rem}.meta{color:var(--muted);font-s
       <li>Du ansvarar för hur tjänsten och recepten används. Sipdeck säljer eller levererar inte alkohol.</li>
       <li>Försök inte störa tjänsten, komma åt andras konton eller använda den olagligt.</li>
       <li>Sipdecks egen kod, design och illustrationer får inte återpubliceras kommersiellt utan tillstånd. Publicerade receptkällor tillhör sina respektive ägare.</li>
+      <li>Skicka bara recept du har rätt att dela. När du föreslår ett recept ger du Sipdeck en kostnadsfri, tidsobegränsad rätt att publicera,
+        redigera och illustrera det i appen. Sipdeck väljer själv vad som publiceras. Publiceras receptet anges visningsnamnet om du har
+        fyllt i ett, annars inget namn. Receptet finns kvar i katalogen även om du senare raderar kontot.</li>
     </ul>
 
     <h2>Ansvarsfull alkoholanvändning</h2>
@@ -116,7 +130,7 @@ p,ul{margin:.4rem 0 1rem}li+li{margin-top:.35rem}.meta{color:var(--muted);font-s
 
   <article id="en" lang="en">
     <h1>Privacy, local storage and terms</h1>
-    <p class="meta">Last updated 16 September 2026 · Version 1.2</p>
+    <p class="meta">Last updated 25 September 2026 · Version 1.3</p>
     <p class="notice">Sipdeck is a free hobby project with no advertising, behavioural tracking or sale of personal data.</p>
 
     <h2>Who is responsible for the data?</h2>
@@ -125,20 +139,27 @@ p,ul{margin:.4rem 0 1rem}li+li{margin-top:.35rem}.meta{color:var(--muted);font-s
 
     <h2>What data is processed?</h2>
     <h3>Without an account</h3>
-    <p>Favorites, pantry contents and settings are stored only in your browser. Sipdeck does not receive this data while you are signed out.
+    <p>Favorites, pantry contents, settings and drinks you create under My drinks are stored only in your browser. Sipdeck does not receive this data while you are signed out.
       Cloudflare processes technical data such as IP address, time, requested address and browser information to deliver and protect the site.
       Cloudflare Web Analytics also provides aggregated visit statistics (page, country, browser, referring page, load time) through a script, <code>beacon.min.js</code> from <code>static.cloudflareinsights.com</code>, that Cloudflare injects into the page. It sets no cookies, builds no device profile and does not store your IP address.</p>
     <h3>With an account</h3>
     <p>Firebase Authentication processes your email address, sign-in provider, technical identifiers, IP address and browser information.
-      Sipdeck stores a Firebase UID with your synced favorites, pantry and settings in Cloudflare D1. Sipdeck never receives your password.
+      Sipdeck stores a Firebase UID with your synced favorites, pantry, settings and own drinks (My drinks, one row per drink with the time
+      of its last change) in Cloudflare D1. Sipdeck never receives your password.
       The sign-in code (Firebase) is fetched from Google's CDN (<code>gstatic.com</code>) only when you use the account feature; your IP address
       then goes to Google for that fetch as well.</p>
+    <h3>Suggestions to the catalog</h3>
+    <p>If you suggest one of your drinks for Sipdeck's catalog, the suggestion is stored in Cloudflare D1 with your Firebase UID: the recipe,
+      whether it is sent as a variant or a new drink, which catalog drink it resembles, the source and display name you may have given, when
+      you gave your consent, its status (sent, in review, published or declined) and any note from the curator. Suggestions need an account,
+      and at most five can be sent per day.</p>
     <p>No profiling or automated decision-making with legal or similarly significant effects takes place.</p>
 
     <h2>Purposes and legal bases</h2>
     <ul>
       <li><strong>App features and local storage:</strong> to provide features you explicitly use.</li>
       <li><strong>Account and sync:</strong> to perform the free service you request when creating or using an account.</li>
+      <li><strong>Suggestions:</strong> to review and possibly publish the recipe you send, under the terms you accept in the form.</li>
       <li><strong>Security and technical operation:</strong> our legitimate interest in preventing abuse, troubleshooting and keeping the service secure.</li>
       <li><strong>Visit statistics:</strong> our legitimate interest in knowing which pages are used and how fast they load. The statistics are aggregated and cannot be linked to you.</li>
       <li><strong>Support:</strong> to answer your request and, where needed, our legitimate interest in documenting resolved matters.</li>
@@ -147,7 +168,7 @@ p,ul{margin:.4rem 0 1rem}li+li{margin-top:.35rem}.meta{color:var(--muted);font-s
     <h2>Cookies and storage on your device</h2>
     <p>Sipdeck uses no advertising or analytics cookies. The visit statistics from Cloudflare Web Analytics store nothing on your device and use no identifier that follows you between visits. The app uses:</p>
     <ul>
-      <li><code>localStorage</code> for app state, the latest sync base and to remember that you previously chose account sync.</li>
+      <li><code>localStorage</code> for app state, your own drinks (<code>sipdeck.custom</code>), the latest sync base and to remember that you previously chose account sync.</li>
       <li>Firebase storage in IndexedDB only after you use the account feature or have previously chosen to stay signed in.</li>
     </ul>
     <p>This storage is necessary for features you request and is therefore activated without a consent banner. You can remove local data by clearing
@@ -158,6 +179,9 @@ p,ul{margin:.4rem 0 1rem}li+li{margin-top:.35rem}.meta{color:var(--muted);font-s
     <ul>
       <li>Local data remains until you clear the site's data.</li>
       <li>Synced data is retained until you delete the account. Deletion is available in Sipdeck's settings.</li>
+      <li>An own drink you delete leaves a marker without the recipe until the account is deleted, so another device does not upload it again.</li>
+      <li>Suggestions are kept until the account is deleted. Sent and declined suggestions are then deleted at once. Accepted and published
+        suggestions remain as the record behind the catalog but are unlinked from your account.</li>
       <li>On account deletion, synced app state is removed immediately. A blocking marker without app state may remain for up to approximately two
         hours to prevent old sign-in tokens from recreating the data.</li>
       <li>Firebase states that authentication data is removed from live and backup systems within up to 180 days after deletion.
@@ -183,6 +207,9 @@ p,ul{margin:.4rem 0 1rem}li+li{margin-top:.35rem}.meta{color:var(--muted);font-s
       <li>You are responsible for how you use the service and recipes. Sipdeck does not sell or deliver alcohol.</li>
       <li>Do not disrupt the service, access another person's account or use it unlawfully.</li>
       <li>Sipdeck's original code, design and illustrations may not be republished commercially without permission. Published recipe sources belong to their owners.</li>
+      <li>Only send recipes you have the right to share. When you suggest a recipe you give Sipdeck a free, perpetual right to publish, edit
+        and illustrate it in the app. Sipdeck decides what is published. A published recipe credits your display name if you gave one, and no
+        name otherwise. The recipe stays in the catalog even if you later delete your account.</li>
     </ul>
 
     <h2>Responsible alcohol use</h2>
