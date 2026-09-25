@@ -30,7 +30,7 @@ const STRINGS = {
     fav_back: 'Back',
     fav_unfavorite: 'Remove favorite',
     fav_add: 'Save',
-    missing_prefix: 'Missing: ', missing_many: 'Missing 3+',
+    missing_prefix: 'Missing: ', missing_many: 'Missing 3+', missing_tag: 'Missing',
     recipe_title: 'Recipe', ingredients_title: 'Ingredients', method_title: 'Method',
     ingredient_check_hint: 'Check off ingredients as you mix.',
     check_ingredient: 'Check off', copy_recipe: 'Copy recipe',
@@ -100,7 +100,7 @@ const STRINGS = {
     fav_back: 'Tillbaka',
     fav_unfavorite: 'Ta bort favorit',
     fav_add: 'Spara',
-    missing_prefix: 'Saknar: ', missing_many: 'Saknar 3+',
+    missing_prefix: 'Saknar: ', missing_many: 'Saknar 3+', missing_tag: 'Saknas',
     recipe_title: 'Recept', ingredients_title: 'Ingredienser', method_title: 'Gör så här',
     ingredient_check_hint: 'Bocka av ingredienserna medan du blandar.',
     check_ingredient: 'Bocka av', copy_recipe: 'Kopiera receptet',
@@ -798,18 +798,22 @@ if (typeof document !== 'undefined') (function () {
     return t(lang(), kind + '_' + String(id).replace(/-/g, '_'));
   }
 
+  // an empty pantry means "not using the pantry", not "missing everything": no missing status then
+  function isMissing(have, id) { return state.pantry.length > 0 && !have.has(id); }
+  function missingTag() { return `<span class="missing-tag" aria-hidden="true">${esc(t(lang(), 'missing_tag'))}</span>`; }
+
   function chipTags(ingredients, have) {
     return ingredients.filter(l => l.essential)
       .map(l => {
-        const missing = !have.has(l.id);
+        const missing = isMissing(have, l.id);
         return `<span class="chip${missing ? ' missing' : ''}">${missing ? `<span class="sr-only">${esc(t(lang(), 'missing_prefix'))}</span>` : ''}${esc(ingName(l.id))}</span>`;
       }).join('');
   }
 
   function ingLine(line, have, servings) {
     const amt = formatLineAmount(line, servings, unit(), lang());
-    const missing = !have.has(line.id);
-    return `<li${missing ? ' class="missing"' : ''}>${missing ? `<span class="sr-only">${esc(t(lang(), 'missing_prefix'))}</span>` : ''}<span class="amount">${esc(amt)}</span> ${esc(ingName(line.id))}</li>`;
+    const missing = isMissing(have, line.id);
+    return `<li${missing ? ' class="missing"' : ''}>${missing ? `<span class="sr-only">${esc(t(lang(), 'missing_prefix'))}</span>` : ''}<span class="amount">${esc(amt)}</span> ${esc(ingName(line.id))}${missing ? missingTag() : ''}</li>`;
   }
 
   function wireArt(img) {
@@ -1038,7 +1042,7 @@ if (typeof document !== 'undefined') (function () {
   }
 
   function missingBadge(drink) {
-    const missing = missingIngredients(drink, state.pantry);
+    const missing = state.pantry.length ? missingIngredients(drink, state.pantry) : [];
     if (!missing.length) return '';
     const text = missing.length > 2
       ? t(lang(), 'missing_many')
@@ -1060,13 +1064,13 @@ if (typeof document !== 'undefined') (function () {
       const servings = servingsFor(open.id);
       const have = new Set(state.pantry);
       const tags = chipTags(open.ingredients, have);
-      const pantryMissing = new Set(open.ingredients.filter(line => !have.has(line.id)).map(line => line.id));
+      const pantryMissing = new Set(open.ingredients.filter(line => isMissing(have, line.id)).map(line => line.id));
       const ingredientRows = open.ingredients.map(line => {
         const checked = favChecked.has(line.id);
         return `<label class="fav-ing-row${checked ? ' done' : ''}${pantryMissing.has(line.id) ? ' pantry-missing' : ''}">
           <input type="checkbox" data-fav-ing="${esc(line.id)}"${checked ? ' checked' : ''} aria-label="${esc(t(lang(), 'check_ingredient') + ' ' + ingName(line.id))}">
           <span class="amount">${esc(formatLineAmount(line, servings, selectedUnit, lang()))}</span>
-          <span>${esc(ingName(line.id))}</span>
+          <span>${pantryMissing.has(line.id) ? `<span class="sr-only">${esc(t(lang(), 'missing_prefix'))}</span>` : ''}${esc(ingName(line.id))}</span>${pantryMissing.has(line.id) ? missingTag() : ''}
         </label>`;
       }).join('');
       const unitBtns = recipeUnits().map(u => `<button data-fav-act="unit" data-unit="${u}" aria-pressed="${u === selectedUnit}"${u === selectedUnit ? ' class="active"' : ''}>${u}</button>`).join('');
@@ -1273,7 +1277,7 @@ if (typeof document !== 'undefined') (function () {
         <button data-acc="signout">${esc(t(lang(), 'account_signout'))}</button>
         <button data-acc="delete">${esc(t(lang(), 'account_delete'))}</button>
       </div>
-      <p><a href="info.html">${esc(t(lang(), 'account_legal'))}</a></p>
+      <p><a href="info.html#${lang()}">${esc(t(lang(), 'account_legal'))}</a></p>
       <p id="accError" class="warn" role="status" aria-live="polite" aria-atomic="true" hidden></p>
     </section>`;
     }
@@ -1290,7 +1294,7 @@ if (typeof document !== 'undefined') (function () {
           <button type="button" data-acc="forgot">${esc(t(lang(), 'account_forgot'))}</button>
         </div>
       </form>
-      <p><a href="info.html">${esc(t(lang(), 'account_legal'))}</a></p>
+      <p><a href="info.html#${lang()}">${esc(t(lang(), 'account_legal'))}</a></p>
       <p id="accError" class="warn" role="status" aria-live="polite" aria-atomic="true" hidden></p>
     </section>`;
   }
@@ -1565,6 +1569,7 @@ if (typeof document !== 'undefined') (function () {
     }
   }
 
+  let lastRouteHash = null;
   function render() {
     const hash = location.hash || '#/';
     const detailId = favoriteIdFromHash(hash) || drinkIdFromHash(hash);
@@ -1585,6 +1590,10 @@ if (typeof document !== 'undefined') (function () {
       favHistoryEntry = false;
     }
     $('#view').innerHTML = route.view();
+    if (hash !== lastRouteHash) { // announce the new screen once per route change, never per re-render
+      if (lastRouteHash !== null) $('#routeLive').textContent = ($('#view h1') || {}).textContent || '';
+      lastRouteHash = hash;
+    }
     if (route.view === viewDeck && db) mountDeck();
     if (route.view === viewFavorites || route.view === viewSearch) $('#view').querySelectorAll('.cocktail-art').forEach(wireArt);
     if (route.view === viewSearch && matchMedia('(pointer: fine)').matches) $('#searchInput').focus();

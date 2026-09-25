@@ -296,7 +296,7 @@ mixable drinks.**
   five-step EN/SV mood slider builds a 12-sector lineup from current `bar: true` cocktails
   and the wheel-only catalog.
 - Every normal spin preselects one eligible visible sector and animates that exact sector
-  to the pointer in 5–6 seconds. The highest level may show non-water decoys but only its
+  to the pointer in about 4 seconds (4.15 s including the spring-back, `spinAngle` in `app.js`). The highest level may show non-water decoys but only its
   seven visible water sectors are eligible. Re-spin keeps the lineup; New wheel rebuilds it.
 - Sound starts on for each wheel visit and has a visible mute control. Ticks, one landing
   haptic and the result card progressively enhance the tactile feel. Reduced motion skips
@@ -305,8 +305,30 @@ mixable drinks.**
 - Wheel-only art is committed as 512×512 WebP under `img-wheel/`; reusable portrait PNG
   masters and 640×800 card-ready variants remain local under gitignored `img-src/`.
 
+### Epic K — Variants, own drinks and suggestions (decided 2026-09-25)
+
+Source: design review `design_handoff_sipdeck/README.md`, phase 5. Catalog content stays
+curated: user input reaches `drinks.json` only through the suggestion review below.
+
+- **K1 Variants.** `drinks.json` schema 2 groups drinks in `families`
+  (`name`, `primary`, `order`). Each variant is a complete, source-audited recipe with its
+  own `bar`; nothing is inherited. The deck queues families, the wheel counts a family as
+  one outcome, the card back switches variant in place and shows the diff against
+  `primary`. Search matches name, aliases, variant label, tags and ingredient names.
+- **K2 My drinks.** Without an account a person can create drinks (name, glass, liquid
+  colour, ingredients, amounts, method, optional source). Stored locally under
+  `sipdeck.custom`, outside the state blob; synced per drink through `user_drinks` when
+  signed in. Shown in deck and favorites marked "Own", with generic art (K4).
+- **K3 Suggestions.** Signed-in users can suggest a drink to the catalog after a Jaccard
+  similarity check (≥ 0.6 offers "as variant" or "as new drink") and explicit consent to
+  publication, editing and illustration. Worker `POST /suggestions` (max 5 per day and
+  UID), `GET /suggestions/mine`, admin routes behind a Worker secret. Account deletion
+  removes open suggestions and all user drinks.
+- **K4 Generic art.** 8 glasses × 6 liquid colours = 48 generic illustrations in
+  `img-generic/<glass>-<colour>.webp`, made with the frozen image pipeline, none
+  confusable with a catalog drink.
+
 ## Non-goals (v1)
 
-No UGC/moderation (all content is curated JSON), no search box, no richer tag filter UI,
-no service worker, no custom domain, no accounts, no drink editor. (Deep links shipped in
-v1.1, BACKLOG 16.)
+No service worker, no custom domain. (Deep links shipped in v1.1, BACKLOG 16. Search,
+accounts, user drinks and curated suggestions were later decided in, see Epic K.)
