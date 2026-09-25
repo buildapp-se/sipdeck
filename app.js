@@ -824,6 +824,7 @@ if (typeof document !== 'undefined') (function () {
   let fb = null, fbUser = null, fbPromise = null, pushTimer = null, pushPromise = null;
   let syncUid = null, syncBase = null, syncEtag = null, deletingAccount = false;
   let accountOpen = false, accountMode = 'login', accountEmail = ''; // transient UI: 'login' | 'register' | 'forgot'
+  let redirectError = ''; // a failed Google redirect reports on the next start, shown until the next account action
   const API = 'https://sipdeck-api.sipdeck.workers.dev';
   const AUTH_KEY = KEY + '-auth';
 
@@ -835,7 +836,8 @@ if (typeof document !== 'undefined') (function () {
     ]).then(([core, auth]) => {
       const app = core.initializeApp({
         apiKey: 'AIzaSyCVDnImzoWxop-n1nKYfO7dde8qQl-SPZs',
-        authDomain: 'sipdeck.firebaseapp.com',
+        // same site as buildapp.se, so the redirect works without third-party storage; revert: 'sipdeck.firebaseapp.com'
+        authDomain: 'sipdeck.buildapp.se',
         projectId: 'sipdeck',
         appId: '1:735040812464:web:ee5191404d377daac45275',
       });
@@ -932,6 +934,10 @@ if (typeof document !== 'undefined') (function () {
     pushTimer = setTimeout(flushState, 800);
   }
   function initFirebase() {
+    fb.getRedirectResult(fb.auth).catch(err => {
+      redirectError = authMessage(err);
+      if (redirectError) { accountOpen = true; render(); }
+    });
     fb.onAuthStateChanged(fb.auth, async user => {
       fbUser = user;
       if (user) {
@@ -1849,7 +1855,7 @@ if (typeof document !== 'undefined') (function () {
   }
 
   function accountBody() {
-    const error = '<p id="accError" class="warn" role="status" aria-live="polite" aria-atomic="true" hidden></p>';
+    const error = `<p id="accError" class="warn" role="status" aria-live="polite" aria-atomic="true"${redirectError ? '' : ' hidden'}>${esc(redirectError)}</p>`;
     if (fbUser) {
       const providers = fbUser.providerData.map(p => p.providerId);
       const linkGoogle = providers.includes('google.com') ? '' : `<p><button data-acc="link-google">${esc(t(lang(), 'account_link_google'))}</button></p>`;
@@ -1902,12 +1908,16 @@ if (typeof document !== 'undefined') (function () {
       ${error}`;
   }
 
-  // Firebase codes in the app's own words; a closed Google popup is the user's choice, not an error
-  function showAccountError(err) {
-    const el = $('#accError');
-    if (!el || (err && err.code === 'auth/popup-closed-by-user')) return;
+  // Firebase codes in the app's own words; a closed Google popup or cancelled redirect is the user's choice, not an error
+  function authMessage(err) {
+    if (err && ['auth/popup-closed-by-user', 'auth/redirect-cancelled-by-user'].includes(err.code)) return '';
     const key = authErrorKey(err);
-    el.textContent = key ? t(lang(), key) : err.message;
+    return key ? t(lang(), key) : err.message;
+  }
+  function showAccountError(err) {
+    const el = $('#accError'), msg = authMessage(err);
+    if (!el || !msg) return;
+    el.textContent = msg;
     el.hidden = false;
   }
 
@@ -2340,6 +2350,7 @@ if (typeof document !== 'undefined') (function () {
     const accBtn = e.target.closest('[data-acc]');
     if (accBtn) {
       const action = accBtn.dataset.acc, dialog = $('#accDelete');
+      redirectError = '';
       if (action === 'delete') return dialog.showModal();
       if (action === 'delete-cancel' || action === 'delete-confirm') dialog.close();
       if (action === 'delete-cancel') return;
@@ -2347,7 +2358,10 @@ if (typeof document !== 'undefined') (function () {
         await ensureFirebase();
         if (action === 'google') {
           localStorage.setItem(AUTH_KEY, '1');
-          await fb.signInWithPopup(fb.auth, new fb.GoogleAuthProvider());
+          // T6: a popup from an installed iOS app opens outside it and never comes back, so standalone redirects
+          const provider = new fb.GoogleAuthProvider();
+          if (matchMedia('(display-mode: standalone)').matches || navigator.standalone) await fb.signInWithRedirect(fb.auth, provider);
+          else await fb.signInWithPopup(fb.auth, provider);
         }
         else if (action === 'link-google') { await fb.linkWithPopup(fbUser, new fb.GoogleAuthProvider()); render(); }
         else if (action === 'signout') await fb.signOut(fb.auth);
