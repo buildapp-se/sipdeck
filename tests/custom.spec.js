@@ -111,7 +111,7 @@ test('own drink: create, list as Egen, deck and search, edit, delete with undo, 
   await expect(page.locator('.fav-row', { hasText: 'Nattens sour' })).toBeVisible();
 });
 
-test('own drink: the deck deals it with the Egen chip and a glass silhouette', async ({ page }) => {
+test('own drink: the deck deals it with the Egen chip and its generic glass art', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await seed(page, {}, [own('egen-deck', 'Husets drink', [{ id: 'gin', ml: 50, essential: true }])]);
   await page.goto('/');
@@ -119,13 +119,13 @@ test('own drink: the deck deals it with the Egen chip and a glass silhouette', a
   const found = await page.evaluate(async () => {
     for (let i = 0; i < 120; i++) {
       const top = document.querySelector('.card[data-depth="0"]');
-      if (top.dataset.id === 'egen-deck') return { chip: top.querySelector('.custom-chip').textContent, img: !!top.querySelector('img'), ph: !!top.querySelector('.glass-rocks') };
+      if (top.dataset.id === 'egen-deck') return { chip: top.querySelector('.custom-chip').textContent, img: top.querySelector('img').getAttribute('src'), ph: !!top.querySelector('.glass-rocks') };
       document.querySelector('.deck-skip').click();
       await new Promise(r => setTimeout(r, 20));
     }
     return null;
   });
-  expect(found).toEqual({ chip: 'Egen', img: false, ph: true });
+  expect(found).toEqual({ chip: 'Egen', img: 'img-generic/rocks-amber.webp', ph: true });
   const db = await (await page.request.get('/drinks.json')).json();
   const cards = new Set(db.drinks.map(d => d.family || d.id)).size; // one card per family
   await expect(page.locator('.fchip[data-chip="all"] .amount')).toHaveText(String(cards + 1));

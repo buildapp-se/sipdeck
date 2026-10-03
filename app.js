@@ -740,7 +740,7 @@ function drinkAsText(drink, ingredients, servings, unit, lang) {
 }
 
 // ---------- F2 own drinks + F3 suggestions ----------
-// the form's 8 glasses and 6 liquid colours are the F4 generic-image grid (img-generic/<glass>-<color>.webp)
+// the form's 8 glasses and 6 liquid colours are the F4 generic-image grid (img-generic/<glass>-<color>.webp, drawn by img-src/generic.py)
 const CUSTOM_GLASSES = ['coupe', 'rocks', 'highball', 'martini', 'flute', 'wine', 'shot', 'collins'];
 const CUSTOM_COLORS = { clear: '#E9E4D6', citrus: '#E6D36A', red: '#CF6A5C', green: '#93C27F', amber: '#C4863F', pink: '#E39AB8' };
 const QTY_UNITS = ['dash', 'barspoon', 'teaspoon', 'drop', 'piece', 'leaf', 'slice', 'garnish', 'splash', 'top'];
@@ -1225,8 +1225,9 @@ if (typeof document !== 'undefined') (function () {
   }
 
   function artMarkup(drink) {
-    if (drink.custom) return glassPlaceholder(drink.glass); // ponytail: silhouette until F4's img-generic/<glass>-<color>.webp
-    return `${glassPlaceholder(drink.glass)}<img class="cocktail-art" src="img/${esc(drink.art || drink.id)}.webp" alt="" loading="lazy" decoding="async" draggable="false">`;
+    // own drinks share F4's generic art; a glass outside the 8 has no file, so wireArt hides the img and the silhouette stays
+    const src = drink.custom ? `img-generic/${drink.glass}-${drink.color || 'clear'}` : `img/${drink.art || drink.id}`;
+    return `${glassPlaceholder(drink.glass)}<img class="cocktail-art" src="${esc(src)}.webp" alt="" loading="lazy" decoding="async" draggable="false">`;
   }
 
   function buildCard(drink, depth, opts) {
