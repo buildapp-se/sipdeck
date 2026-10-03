@@ -1608,6 +1608,7 @@ if (typeof document !== 'undefined') (function () {
     return `${title}<form id="customForm" class="account-form custom-form" data-id="${d ? esc(d.id) : ''}">
       <label>${esc(t(lang(), 'custom_name'))} <input name="name" required maxlength="80" value="${d ? esc(d.name) : ''}"></label>
       <fieldset><legend>${esc(t(lang(), 'custom_glass'))}</legend>
+        <span class="fav-thumb custom-preview" id="customArt">${artMarkup({ custom: true, glass, color })}</span>
         <div class="picks">${CUSTOM_GLASSES.map(g => pick('glass', g, g === glass, taxonomyName('glass', g))).join('')}</div>
         <div class="picks">${Object.keys(CUSTOM_COLORS).map(c => pick('color', c, c === color, t(lang(), 'color_' + c), ` style="--swatch:${CUSTOM_COLORS[c]}"`)).join('')}</div>
       </fieldset>
@@ -2540,6 +2541,12 @@ if (typeof document !== 'undefined') (function () {
   // <details> toggle does not bubble, so listen in the capture phase
   $('#view').addEventListener('toggle', e => { if (e.target.id === 'account') accountOpen = e.target.open; }, true);
 
+  $('#view').addEventListener('change', e => { // own-drink form: the preview follows the picked glass and colour
+    const form = e.target.closest('#customForm');
+    if (!form || !e.target.matches('[name=glass],[name=color]')) return;
+    $('#customArt').innerHTML = artMarkup({ custom: true, glass: form.elements.glass.value, color: form.elements.color.value });
+    wireArt($('#customArt .cocktail-art'));
+  });
   $('#view').addEventListener('change', e => {
     const control = e.target.closest('[data-servings]');
     if (!control) return;

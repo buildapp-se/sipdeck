@@ -53,8 +53,13 @@ test('own drink: create, list as Egen, deck and search, edit, delete with undo, 
 
   const form = page.locator('#customForm');
   await form.getByLabel('Namn').fill('Kvällens sour');
+  const preview = form.locator('#customArt img');
+  await expect(preview).toHaveAttribute('src', 'img-generic/coupe-clear.webp');
   await form.locator('.pick', { hasText: 'rocksglas' }).click();
   await form.getByLabel('Bärnsten').check();
+  await expect(preview).toHaveAttribute('src', 'img-generic/rocks-amber.webp');
+  await expect(preview).toHaveClass(/loaded/);
+  await expect(form.locator('#customArt .glass-rocks')).toHaveCount(1);
   const lines = form.locator('.custom-line');
   await lines.nth(0).getByLabel('Mängd').fill('5');
   await lines.nth(0).getByLabel('Ingrediens', { exact: true }).fill('Bourbon');
