@@ -2,9 +2,9 @@
 schemaVersion: 1
 status: active
 currentGoal: Keep Sipdeck live and pick up v2 items as they become worth doing
-nextAction: Owner reviews F4 generic art on f4-generic-art.sipdeck.pages.dev, then merge feat/f4-generic-art
+nextAction: Watch the first real use of own drinks and suggestions
 blockers: []
-reviewedAt: 2026-10-03
+reviewedAt: 2026-10-04
 ---
 
 **Drift:** riktiga användare finns bara på buildapp.se/sipdeck (GitHub Pages från `main`, A-posterna 185.199.108–111.153). sipdeck.pages.dev har aldrig länkats ut; den och grenaliasen `<gren>.sipdeck.pages.dev` är granskningsytor. Merge till `main` är det som går live och det enda som kräver ägarens ja; en deploy till pages.dev behöver inget eget ja (ägaren 2026-09-25).
@@ -13,16 +13,15 @@ reviewedAt: 2026-10-03
 
 # Handoff: Sipdeck
 
-## 2026-10-03: F4, generiska bilder för egna drinkar, på förhandsvisning (gren `feat/f4-generic-art`, `c10d433` + `44f32e7`)
+## 2026-10-04: F4, generiska bilder för egna drinkar, **live** (PR #23, squash `0b4702b`)
 
-- **Pausen från 2026-09-25 hävd av ägaren 2026-10-03** (Codex-kvot som annars brann inne vid midnatt). Inte live: merge till `main` väntar på ägarens ja.
+- **Pausen från 2026-09-25 hävd av ägaren 2026-10-03** (Codex-kvot som annars brann inne vid midnatt). Ägaren godkände merge 2026-10-04; CI grön (6 min 40 s). **Verifierat live på buildapp.se/sipdeck:** `app.js?v=1.27`, alla 48 bilder svarar 200, och förhandsbilden i `#/egen` följer valet (coupe-clear → flute-pink, laddad i 640 px bredd). Hela e2e-sviten går inte att köra mot live som den är: testerna går till `/`, som är buildapp.se:s rot och inte `/sipdeck/`.
 - **48 bilder** i `img-generic/<glas>-<färg>.webp` (8 glas × 6 färger, 640 × 800, 9,9–42,0 kB, 1,1 MB totalt). `artMarkup` ger egna drinkar bilden med silhuetten kvar bakom; ett synkat glas utanför de 8 saknar fil, då gömmer `wireArt` bilden och silhuetten står kvar. `app.js?v=1.26`, 147,3 kB.
 - **Pipeline: `python img-src/generic.py [workers] [filter ...]`** (gitignorerad). `codex exec` med de fyra frysta referenserna och F4-prompten, sedan konvertering. Återupptagbar: färdig `img-src/generic/<namn>.png` hoppas över, flytta undan PNG:n för att rita om. Sista raden är domen (`PASS: 48/48`), exit 1 vid fel. Ca 2 min per bild.
 - **Tre fällor, alla fångas nu av skriptets dom:** (1) Codex ger ibland genomskinlig bakgrund, som `convert("RGB")` gör svart: skriptet lägger bilden på `#FBF7EF` först (5 av 48). (2) Flute och andra höga glas ryms inte i mittbeskärningen 2:3 → 4:5: skriptet krymper och fyller ut sidorna med hörnets pappersfärg i stället för att kapa (avviker från steg 4 bara för dessa). (3) Vid 10 parallella körningar kopierade Codex två gånger en annan körnings bild ur den delade `~/.codex/generated_images` (md5-dubbletter): håll workers ≤ 4, prompten säger nu "kopiera den fil ditt eget anrop rapporterade". Underkända original: `img-src/generic/rejected/` (två dubbletter, en coupe-pink med grå skugga).
 - **Granskat:** alla 48 visuellt på kontaktkartor (rätt glas och färg, hela glaset, ingen garnityr, ingen förväxlingsbar med en katalogdrink). Skalan varierar något (coupe-amber och wine-green är mindre).
 - **Verifierat:** `npm test` 5 446 + worker 33 (nytt: alla 48 finns, 640 × 800, ≤ 80 kB), e2e 45/45 lokalt och mot https://f4-generic-art.sipdeck.pages.dev, där alla 48 svarar 200 `image/webp`. Skärmbilder av detaljvyn och Mina drinkar, ljust och mörkt.
-- **Förhandsbild i formuläret (`44f32e7`, ägarens önskemål 2026-10-03):** `#customArt` (120 × 150 px) ovanför glas- och färgknapparna i `#/egen` visar samma `artMarkup({custom, glass, color})` som det sparade kortet och byts i en `change`-lyssnare på `#view`, utan omritning. `app.js?v=1.27`, 147,9 kB. `custom.spec.js` kontrollerar att bilden följer valet och laddas. e2e 45/45 lokalt och mot förhandsvisningen.
-- **Push och PR inte gjorda:** sessionens behörighetsspärr nekade `git push` + `gh pr create`. Grenen finns bara lokalt (tre commits).
+- **Förhandsbild i formuläret (ägarens önskemål 2026-10-03):** `#customArt` (120 × 150 px) ovanför glas- och färgknapparna i `#/egen` visar samma `artMarkup({custom, glass, color})` som det sparade kortet och byts i en `change`-lyssnare på `#view`, utan omritning. `app.js?v=1.27`, 147,9 kB. `custom.spec.js` kontrollerar att bilden följer valet och laddas. e2e 45/45 lokalt och mot förhandsvisningen.
 - **Inte gjort:** bilder för de fem glas Workern tillåter men formuläret inte erbjuder (goblet, hurricane, irish-coffee, julep, margarita). `test.js` låser formuläret till 8 glas; utan val i formuläret vore bilderna döda filer.
 
 ## 2026-09-25: T6, Google-inloggning i installerad app, **live** (PR #21, squash `47e8857`)
