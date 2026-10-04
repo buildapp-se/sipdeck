@@ -326,8 +326,8 @@ curated: user input reaches `drinks.json` only through the suggestion review bel
   `sipdeck.custom`, outside the state blob; synced per drink through `user_drinks` when
   signed in (`GET /drinks`, `GET/PUT/DELETE /drinks/:id`, newest edit wins, a deletion is
   kept as a tombstone). Shown in the deck and search marked "Own" and in their own "My
-  drinks" section of Favorites; never on the wheel (not bar-audited). Glass silhouette
-  until the generic art (K4) exists. Shape rules shared with the catalog validator in
+  drinks" section of Favorites; never on the wheel (not bar-audited). Art is the
+  generic illustration for its glass and colour (K4), over the glass silhouette. Shape rules shared with the catalog validator in
   `worker/drink-rules.js`.
 - **K3 Suggestions.** Signed-in users can suggest a drink to the catalog after a Jaccard
   similarity check (≥ 0.6 offers "as variant" or "as new drink") and explicit consent to

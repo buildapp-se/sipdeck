@@ -740,7 +740,7 @@ function drinkAsText(drink, ingredients, servings, unit, lang) {
 }
 
 // ---------- F2 own drinks + F3 suggestions ----------
-// the form's 8 glasses and 6 liquid colours are the F4 generic-image grid (img-generic/<glass>-<color>.webp)
+// the form's 8 glasses and 6 liquid colours are the F4 generic-image grid (img-generic/<glass>-<color>.webp, drawn by img-src/generic.py)
 const CUSTOM_GLASSES = ['coupe', 'rocks', 'highball', 'martini', 'flute', 'wine', 'shot', 'collins'];
 const CUSTOM_COLORS = { clear: '#E9E4D6', citrus: '#E6D36A', red: '#CF6A5C', green: '#93C27F', amber: '#C4863F', pink: '#E39AB8' };
 const QTY_UNITS = ['dash', 'barspoon', 'teaspoon', 'drop', 'piece', 'leaf', 'slice', 'garnish', 'splash', 'top'];
@@ -1225,8 +1225,9 @@ if (typeof document !== 'undefined') (function () {
   }
 
   function artMarkup(drink) {
-    if (drink.custom) return glassPlaceholder(drink.glass); // ponytail: silhouette until F4's img-generic/<glass>-<color>.webp
-    return `${glassPlaceholder(drink.glass)}<img class="cocktail-art" src="img/${esc(drink.art || drink.id)}.webp" alt="" loading="lazy" decoding="async" draggable="false">`;
+    // own drinks share F4's generic art; a glass outside the 8 has no file, so wireArt hides the img and the silhouette stays
+    const src = drink.custom ? `img-generic/${drink.glass}-${drink.color || 'clear'}` : `img/${drink.art || drink.id}`;
+    return `${glassPlaceholder(drink.glass)}<img class="cocktail-art" src="${esc(src)}.webp" alt="" loading="lazy" decoding="async" draggable="false">`;
   }
 
   function buildCard(drink, depth, opts) {
@@ -1607,6 +1608,7 @@ if (typeof document !== 'undefined') (function () {
     return `${title}<form id="customForm" class="account-form custom-form" data-id="${d ? esc(d.id) : ''}">
       <label>${esc(t(lang(), 'custom_name'))} <input name="name" required maxlength="80" value="${d ? esc(d.name) : ''}"></label>
       <fieldset><legend>${esc(t(lang(), 'custom_glass'))}</legend>
+        <span class="fav-thumb custom-preview" id="customArt">${artMarkup({ custom: true, glass, color })}</span>
         <div class="picks">${CUSTOM_GLASSES.map(g => pick('glass', g, g === glass, taxonomyName('glass', g))).join('')}</div>
         <div class="picks">${Object.keys(CUSTOM_COLORS).map(c => pick('color', c, c === color, t(lang(), 'color_' + c), ` style="--swatch:${CUSTOM_COLORS[c]}"`)).join('')}</div>
       </fieldset>
@@ -2539,6 +2541,12 @@ if (typeof document !== 'undefined') (function () {
   // <details> toggle does not bubble, so listen in the capture phase
   $('#view').addEventListener('toggle', e => { if (e.target.id === 'account') accountOpen = e.target.open; }, true);
 
+  $('#view').addEventListener('change', e => { // own-drink form: the preview follows the picked glass and colour
+    const form = e.target.closest('#customForm');
+    if (!form || !e.target.matches('[name=glass],[name=color]')) return;
+    $('#customArt').innerHTML = artMarkup({ custom: true, glass: form.elements.glass.value, color: form.elements.color.value });
+    wireArt($('#customArt .cocktail-art'));
+  });
   $('#view').addEventListener('change', e => {
     const control = e.target.closest('[data-servings]');
     if (!control) return;

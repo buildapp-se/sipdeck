@@ -713,6 +713,14 @@ Object.entries(wheelData.outcomes).forEach(([id, outcome]) => {
   });
 });
 check(wheelArt.size === 13, 'wheel.json: exact 13-image wheel artwork inventory');
+// F4: every glass x colour the own-drink form offers has its generic card art
+CUSTOM_GLASSES.forEach(glass => Object.keys(CUSTOM_COLORS).forEach(color => {
+  const file = path.join(__dirname, 'img-generic', `${glass}-${color}.webp`);
+  const image = fs.existsSync(file) ? fs.readFileSync(file) : Buffer.alloc(0);
+  const marker = image.indexOf(Buffer.from([0x9d, 0x01, 0x2a]));
+  check(marker >= 0 && (image.readUInt16LE(marker + 3) & 0x3fff) === 640 && (image.readUInt16LE(marker + 5) & 0x3fff) === 800 &&
+    image.length <= 80000, `generic artwork: img-generic/${glass}-${color}.webp is 640x800 and at most 80 kB`);
+}));
 ['sazerac', 'bees-knees', 'bellini'].forEach(id => {
   const drink = data.drinks.find(item => item.id === id);
   check(drink && drink.bar === false, `bar-ready editorial exception: ${id}`);
