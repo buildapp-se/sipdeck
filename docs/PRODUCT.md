@@ -12,6 +12,8 @@ is the user's own to-do before going public.
 
 ## Vision
 
+**Accepted change, not implemented (2026-10-04):** [Flaskor ADR 0001](../../flaskor/docs/adr/0001-sipdeck-hemma.md) supersedes the exact-id pantry model and ingredient-checklist UX in the locked decisions, state description and Epic E below. Keep those descriptions as the current implementation until the new behavior is verified. The ADR is the single shared target specification; accounts remain optional for standalone use.
+
 The fastest, best-feeling way to answer "what should we drink tonight?" — at home or to
 order at a bar. Discovery feels like play (dealing cards), not like search (forms and
 lists). Personal + friends first, but every decision assumes it goes public later.

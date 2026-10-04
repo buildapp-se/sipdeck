@@ -287,11 +287,22 @@ counts.
 - [ ] **Batch volumes**: total liquid across X drinks and how much goes in each glass, so a
   batch can be mixed as X litres and split into Y per glass.
 
+## Hemma och Flaskor, beslutat 2026-10-04
+
+Gemensam specifikation: [Flaskor ADR 0001](../flaskor/docs/adr/0001-sipdeck-hemma.md). Godkänt produktbeslut, inte byggt. Flaskors backlog äger flask-/hushållssidan; uppgifterna här äger Sipdecks sida.
+
+- [ ] `[P1]` Inventarieingredienser skilda från receptkrav; riktade relationer för uppfyller, beredning och tydligt märkta ersättningar. Samma matcher i alla receptvyer och egna drinkar.
+- [ ] `[P1]` Versionsstyrd migrering av befintligt skafferi, separata tillgänglighetskällor och konflikt-/bakåtkompatibilitet utan dataförlust.
+- [ ] `[P1]` Hemma/At home med innehav först, Barskåp och Övriga ingredienser, sök/lägg till, förklarad matchning och gamla djuplänkar kvar.
+- [ ] `[P1]` Valfri Flaskor-koppling med granskning av klassificering, källmärkning, uppdatering, nätfel, frånkoppling och återkallad behörighet. Kontextlänk från Flaskor.
+- [ ] `[P2]` Inköpshjälp efter favoritdrinkar, separat inköpsland och svensk Systembolagsväg med produktval före önskelista.
+- [ ] `[P1]` ADR:s acceptanstester, browser-QA och samordnad migrations-/utrullningsplan före produktionsgodkännande.
+
 ## Known accepted limitations
 
 - A first login without a stored sync baseline still unions local and remote lists once;
   subsequent syncs use conflict-safe three-way merge.
-- Pantry matching is id-exact: seeding discipline on ingredient ids is what makes it work.
+- Pantry matching is currently id-exact; replacement is approved under ADR 0001 and tracked above, not implemented yet.
 - No image = the drink's glass silhouette forever; acceptable for future additions and
   tracked per drink by file absence. All 93 current drinks have complete production art.
 

@@ -4,6 +4,8 @@ Sipdeck helps a person discover a suitable drink to make or order through playfu
 
 ## Language
 
+**Accepted direction, not implemented (2026-10-04):** [Flaskor ADR 0001](../flaskor/docs/adr/0001-sipdeck-hemma.md) is the shared specification for At home, inventory versus recipe requirements, and optional Flaskor household linking. Existing behavior below remains the current implementation until verified. Task status lives in BACKLOG.md.
+
 **Spinning wheel**:
 A visual bar-order chooser whose sectors represent possible drink outcomes and which selects one outcome when spun.
 _Avoid_: Roulette, roulette wheel, casino wheel

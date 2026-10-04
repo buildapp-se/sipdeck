@@ -1,8 +1,8 @@
 ---
 schemaVersion: 1
 status: active
-currentGoal: Keep Sipdeck live and pick up v2 items as they become worth doing
-nextAction: Watch the first real use of own drinks and suggestions
+currentGoal: Build the accepted At home and optional Flaskor integration, ADR 0001
+nextAction: Read ../flaskor/docs/adr/0001-sipdeck-hemma.md; start with ingredient matching and safe pantry migration on a review branch
 blockers: []
 reviewedAt: 2026-10-04
 ---
@@ -12,6 +12,10 @@ reviewedAt: 2026-10-04
 **2026-09-24, audits från aifabriken (`tools/audit-run.mjs`).** Actions: `persist-credentials: false` på checkout i ci.yml. Nya auditrader Secrets (pass, två Firebase-nycklar granskade som publika i `.gitleaksignore`) och Actions (pass). Gick live med PR #19.
 
 # Handoff: Sipdeck
+
+## 2026-10-04: Hemma och Flaskor, beslutad byggöverlämning
+
+Patrik godkände riktningen och beställde docs samt en ny Claude-byggprompt. [ADR 0001 i Flaskor](../flaskor/docs/adr/0001-sipdeck-hemma.md) är gemensam specifikation, BACKLOG äger Sipdecks arbetssteg. Bara dokumentation ändrad, funktionen är inte byggd. Utveckla med lokal testdata, bevara gästläge, egna drinkar och gamla klienters data. Befintlig ägar-QA kvarstår. Ingen merge till main eller produktionsdeploy är godkänd av denna docs-beställning.
 
 ## 2026-10-04: F4, generiska bilder för egna drinkar, **live** (PR #23, squash `0b4702b`)
 
