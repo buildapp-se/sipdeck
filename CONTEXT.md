@@ -4,7 +4,7 @@ Sipdeck helps a person discover a suitable drink to make or order through playfu
 
 ## Language
 
-**At home, built on the branch `feat/hemma-flaskor`, not live (2026-10-06):** [Flaskor ADR 0001](../flaskor/docs/adr/0001-sipdeck-hemma.md) is the shared specification for At home, inventory versus recipe requirements, and optional Flaskor household linking; its section Genomförande records how it was built. Task status lives in BACKLOG.md.
+**At home, live since 2026-10-06:** [Flaskor ADR 0001](../flaskor/docs/adr/0001-sipdeck-hemma.md) is the shared specification for At home, inventory versus recipe requirements, and optional Flaskor household linking; its section Genomförande records how it was built. Task status lives in BACKLOG.md.
 
 **At home / Hemma**:
 The view of what the person has, replacing the pantry. Holdings come first, in Bar cabinet / Barskåp and Other ingredients / Övriga ingredienser.
