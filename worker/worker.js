@@ -164,6 +164,10 @@ export default {
           if (request.etag !== currentEtag) {
             return json({ error: 'Synkkonflikt.', state: u.state ? JSON.parse(u.state) : null, etag: currentEtag }, 409);
           }
+          // At home (ADR 0001): a client from before it drops `home` and writes the blob back without it.
+          // Its favorites, pantry and settings are accepted, and the stored `home` is carried forward.
+          const stored = u.state ? JSON.parse(u.state) : null;
+          if (stored && stored.home !== undefined && s.home === undefined) s.home = stored.home;
           const next = JSON.stringify(s);
           const result = await env.DB.prepare('UPDATE users SET state = ? WHERE id = ? AND state = ?')
             .bind(next, u.id, u.state).run();

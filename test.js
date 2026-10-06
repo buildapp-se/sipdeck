@@ -453,10 +453,12 @@ const workerSource = fs.readFileSync(path.join(__dirname, 'worker', 'worker.js')
 // bumped 120kB -> 140kB 2026-09-25 for design review batch 6 (F2 own-drink form, local store + per-drink sync, F3 similarity
 // check, suggestion form and status; about 6,5 kB of it is the new EN + SV copy)
 // bumped 140kB -> 150kB 2026-09-25, owner's call: wheel extras, spin profiles, level 5 lines, mood card over the wheel
+// bumped 150kB -> 190kB 2026-10-06 for ADR 0001 (At home, inventory matching, migration, optional Flaskor link,
+// shopping help), decided by the agent in chunk mode and listed for the owner in HANDOFF.md
 // Mät LF-storleken, alltså det git lagrar och GitHub Pages levererar. En Windows-
 // arbetskopia checkas ut med CRLF och lägger på ~1,8 kB som aldrig deployas.
-check(Buffer.byteLength(appSource.split('\r').join('')) < 150000,
-  'bundle budget: app.js stays under 150 kB unminified');
+check(Buffer.byteLength(appSource.split('\r').join('')) < 190000,
+  'bundle budget: app.js stays under 190 kB unminified');
 // T6: own authDomain on buildapp.se (same site, so a redirect survives blocked third-party storage),
 // and only an installed app redirects; a normal tab keeps the popup
 check(appSource.includes("authDomain: 'sipdeck.buildapp.se'"), 'auth: authDomain is sipdeck.buildapp.se');
@@ -873,6 +875,162 @@ check(cranberryJack.glass === 'highball' &&
 const lynchburgLemonade = data.drinks.find(drink => drink.id === 'lynchburg-lemonade');
 check(lynchburgLemonade.ingredients.find(line => line.id === 'lemon-lime-soda').ml === 120,
   'lynchburg-lemonade: source keeps its explicit 12 cl soda amount');
+
+// ---------- At home: ADR 0001 acceptance (flaskor/docs/adr/0001-sipdeck-hemma.md) ----------
+const { normalizeHome, coverage, swapFor, bridgeHome, classify, homeSources, homeGives, shopping, onShelf } = require('./app.js');
+const ING = data.ingredients, RULES = data.products;
+
+const makes = (id, have) => canMake(drinkById.get(id), have, ING);
+
+// the reviewed relations point at real, ownable ingredients, one level deep
+Object.keys(ING).forEach(id => {
+  const ing = ING[id], owned = other => ING[other] && !ING[other].form;
+  check(!ing.form || (owned(ing.form) && !ing.madeFrom && !ing.metBy && !ing.swap), `relation ${id}: a form points at something ownable and has no other relation`);
+  (ing.madeFrom || []).concat(ing.metBy || []).forEach(by => check(owned(by) && by !== id, `relation ${id}: ${by} is an ownable ingredient`));
+  (ing.swap || []).forEach(s => check(owned(s.id) && s.id !== id && s.en && s.sv && !s.sv.includes('—') &&
+    !(ing.metBy || []).includes(s.id), `swap ${id} <- ${s.id}: ownable, explained in both languages, and not also counted as the original`));
+  check(!ing.shelf || ing.shelf === 'bar', `ingredient ${id}: shelf is bar or absent`);
+});
+RULES.forEach((rule, i) => {
+  const ids = Array.isArray(rule.is) ? rule.is : rule.is ? [rule.is] : [];
+  check((rule.name || rule.cat || rule.from) && ids.every(id => ING[id] && !ING[id].form), `product rule ${i}: has a condition and gives ownable ingredients`);
+  [].concat(rule.name || [], rule.cat || [], rule.from || []).forEach(text =>
+    check(text === text.toLowerCase() && !/[^a-z0-9 &'-]/.test(text), `product rule ${i}: "${text}" is folded text`));
+});
+
+// Cointreau and triple sec, both directions
+const margaritaRest = ['tequila-blanco', 'lime-juice'], cosmoRest = ['citron-vodka', 'cranberry-juice', 'lime-juice'];
+check(makes('margarita', margaritaRest.concat('cointreau')), 'margarita: Cointreau meets the triple sec requirement');
+check(makes('margarita', margaritaRest.concat('triple-sec')), 'margarita: generic triple sec still works');
+check(makes('cosmopolitan', cosmoRest.concat('cointreau')), 'cosmopolitan: Cointreau is Cointreau');
+check(!makes('cosmopolitan', cosmoRest.concat('triple-sec')), 'cosmopolitan: generic triple sec does not give Cointreau');
+check(swapFor(ING, new Set(['triple-sec']), 'cointreau').id === 'triple-sec' && swapFor(ING, new Set(['triple-sec']), 'cointreau').sv.length > 10 &&
+  swapFor(ING, new Set(['cointreau']), 'triple-sec') === null,
+  'cosmopolitan: triple sec is offered as a labelled swap, and a met requirement is not a swap');
+check(coverage(ING, new Set(['cointreau']), 'triple-sec').how === 'met' && coverage(ING, new Set(['cointreau']), 'triple-sec').by === 'cointreau',
+  'coverage: says which product met the requirement');
+
+// mint leaf and sprig; whole lime against juice
+const mojitoRest = ['white-rum', 'lime-juice', 'white-sugar', 'soda-water'];
+check(makes('mojito', mojitoRest.concat('mint')) && makes('southside', ['gin', 'lemon-juice', 'sugar-syrup', 'mint']),
+  'mint: one ingredient at home gives both sprigs and leaves');
+check(!makes('mojito', mojitoRest), 'mojito: no mint, no mojito');
+check(coverage(ING, new Set(['lime']), 'lime-juice').how === 'made' && coverage(ING, new Set(['lime']), 'lime-peel') &&
+  coverage(ING, new Set(['lime']), 'lime-wedge') && coverage(ING, new Set(['lime']), 'lime'), 'lime: a whole lime gives juice, peel and wedge');
+check(!coverage(ING, new Set(['lime-juice']), 'lime-peel') && !coverage(ING, new Set(['lime-juice']), 'lime') &&
+  !coverage(ING, new Set(['lime-juice']), 'lime-wheel'), 'lime juice: gives neither peel, wheel nor a whole lime');
+check(!makes('caipirinha', ['cachaca', 'white-sugar', 'lime-juice']) && makes('caipirinha', ['cachaca', 'white-sugar', 'lime']),
+  'caipirinha: needs the whole lime, bottled juice is not enough');
+check(makes('daiquiri', ['white-rum', 'white-sugar', 'lime']) && makes('whiskey-sour', ['bourbon', 'lemon', 'white-sugar']),
+  'preparation: whole citrus and sugar cover juice and syrup, and the optional egg white never blocks');
+check(homeGives(ING).lime.includes('lime-juice') && homeGives(ING).mint.join() === 'mint-leaves,mint-sprig' && homeGives(ING).cointreau.join() === 'triple-sec',
+  'homeGives: what an ingredient at home is good for beyond itself');
+
+// real differences stay different: nothing in a group covers or silently replaces another
+[['sweet-vermouth', 'dry-vermouth', 'blanc-vermouth'], ['yellow-chartreuse', 'green-chartreuse'],
+  ['white-rum', 'aged-rum', 'dark-rum', 'demerara-rum', 'jamaican-rum', 'navy-rum', 'overproof-rum', 'blackstrap-rum', 'martinique-molasses-rum'],
+  ['gin', 'old-tom-gin', 'oude-genever'], ['vodka', 'vanilla-vodka', 'citron-vodka'], ['orange-curacao', 'blue-curacao', 'triple-sec', 'grand-marnier'],
+  ['creme-de-cacao-dark', 'creme-de-cacao-white'], ['bourbon', 'scotch-whisky', 'irish-whiskey', 'rye-whiskey']].forEach(group =>
+  group.forEach(want => group.forEach(have => {
+    if (want !== have) check(!coverage(ING, new Set([have]), want), `distinct: ${have} does not count as ${want}`);
+  })));
+check(!makes('manhattan', ['rye-whiskey', 'dry-vermouth', 'angostura-bitters']), 'manhattan: dry vermouth is not sweet vermouth');
+
+// own drinks: a free-text ingredient is its own inventory item
+const ownDrink = { id: 'egen-x', custom: true, ingredients: [{ id: 'flader', label: 'Fläder', ml: 30, essential: true }, { id: 'mint-leaves', qty: 4, unit: 'leaf', essential: true }] };
+check(canMake(ownDrink, ['flader', 'mint'], ING) && !canMake(ownDrink, ['mint'], ING) && missingIngredients(ownDrink, ['mint'], ING)[0].id === 'flader',
+  'own drinks: same matcher, unknown ingredients match on their own id');
+
+// migration: versioned, loss-free, idempotent, and an old client keeps getting through
+const oldBlob = () => normalizeState({ favorites: ['mojito'], pantry: ['gin', 'mint-leaves', 'lime-wheel', 'lime-juice', 'flader', 'triple-sec'], settings: { lang: 'sv', unit: 'ml' } }, 'en');
+const migrated = bridgeHome(oldBlob(), ING);
+check(migrated.home.have.slice().sort().join() === 'flader,gin,lime,lime-juice,mint,triple-sec', 'migration: every pantry mark arrives, forms become their ingredient');
+check(migrated.pantry.length === 6 && migrated.favorites.join() === 'mojito' && migrated.settings.unit === 'ml' && migrated.settings.lang === 'sv',
+  'migration: the old pantry, favorites and settings are left untouched');
+const twice = JSON.stringify(bridgeHome(JSON.parse(JSON.stringify(migrated)), ING));
+check(twice === JSON.stringify(migrated) && JSON.stringify(normalizeState(JSON.parse(twice), 'en')) === twice, 'migration: running it twice changes nothing, and the result round-trips');
+const removedByHand = JSON.parse(twice);
+removedByHand.home.have = removedByHand.home.have.filter(id => id !== 'gin');
+check(!bridgeHome(removedByHand, ING).home.have.includes('gin'), 'migration: something removed At home is not brought back by the old pantry list');
+const oldClientEdit = JSON.parse(twice);
+oldClientEdit.pantry = oldClientEdit.pantry.filter(id => id !== 'triple-sec' && id !== 'lime-wheel').concat('campari', 'mint-sprig');
+bridgeHome(oldClientEdit, ING);
+check(oldClientEdit.home.have.includes('campari') && !oldClientEdit.home.have.includes('triple-sec') && oldClientEdit.home.have.includes('mint'),
+  'migration: an old client that adds and removes pantry items is followed');
+check(!oldClientEdit.home.have.includes('lime'), 'migration: an old client removing the last form of an ingredient removes it');
+check(JSON.stringify(normalizeState(JSON.parse(JSON.stringify(normalizeState({ pantry: ['gin'] }, 'en'))), 'en').home) === JSON.stringify(normalizeHome()) &&
+  normalizeHome({ have: ['a', 'a', 4], picks: { 'sb:1': 'gin', bad: 7 }, country: 'XX', flaskor: 'yes' }).have.join() === 'a' &&
+  normalizeHome({ picks: { 'sb:1': 'gin', bad: 7 } }).picks.bad === undefined && normalizeHome({ country: 'SE' }).country === 'SE',
+  'normalizeHome: unknown shapes are dropped, an untouched state has an empty home');
+
+// logged-out editing followed by sign-in, and two devices changing at once
+const loggedOut = bridgeHome(normalizeState({ pantry: ['gin'], home: { have: ['mint'] } }, 'sv'), ING);
+const onServer = bridgeHome(normalizeState({ pantry: ['campari'], home: { have: ['lemon'], flaskor: true, picks: { 'sb:1': 'gin' }, country: 'SE' } }, 'sv'), ING);
+const firstLogin = bridgeHome(normalizeState(mergeState(loggedOut, onServer), 'sv'), ING);
+check(['gin', 'mint', 'campari', 'lemon'].every(id => firstLogin.home.have.includes(id)) && firstLogin.home.flaskor && firstLogin.home.picks['sb:1'] === 'gin' && firstLogin.home.country === 'SE',
+  'sign-in after logged-out edits: nothing marked on either side is lost');
+const homeState = (have, extra) => normalizeState({ pantry: ['gin'], home: Object.assign({ have, seen: ['gin'] }, extra) }, 'sv');
+const twoDevices = reconcileState(homeState(['gin', 'campari', 'lime']), homeState(['gin', 'lime', 'mint']), homeState(['campari', 'lime', 'aperol'], { picks: { 'sb:7': 'bourbon' } }));
+check(twoDevices.home.have.slice().sort().join() === 'aperol,lime,mint', 'two devices: additions on both sides survive, and both removals stay removed');
+check(twoDevices.home.picks['sb:7'] === 'bourbon' && Object.keys(twoDevices).join() === 'v,favorites,pantry,settings,home', 'two devices: a choice made elsewhere arrives, key order matches normalizeState');
+const pickClash = reconcileState(homeState([], { picks: { a: 'gin', b: 'gin' } }), homeState([], { picks: { a: 'vodka' } }), homeState([], { picks: { a: 'gin', b: 'rum' } }));
+check(pickClash.home.picks.a === 'vodka' && pickClash.home.picks.b === undefined, 'two devices: a changed choice wins over an unchanged one, a removed choice stays removed');
+check(workerSource.includes('s.home === undefined'), 'sync Worker: a write from an old client keeps the home it does not know about');
+
+// Flaskor bottles: reviewed classification, uncertain cases left to the person, sources kept apart
+const bottle = (id, name, extra) => Object.assign({ id, kind: 'spirit', name, producer: null, category: null, style: null, country: null, region: null, ref: null }, extra);
+const kind = (b, picks) => { const c = classify(b, RULES, ING, picks); return c.sure ? c.id : c.options; };
+check(kind(bottle(1, 'Cointreau', { category: 'Likör', style: 'Fruktlikör' })) === 'cointreau' && kind(bottle(2, 'De Kuyper Triple Sec', { category: 'Likör' })) === 'triple-sec',
+  'classify: a known product, and a generic triple sec is not Cointreau');
+check(kind(bottle(3, 'Tanqueray No. Ten', { category: 'Gin & Genever', style: 'Gin' })) === 'gin' && kind(bottle(4, 'Gin', { category: 'Gin' })) === 'gin', 'classify: category gin');
+check(kind(bottle(5, 'Mörk rom', { category: 'Rom' })) === 'dark-rum' && kind(bottle(6, 'Bourbonwhisky', { category: 'Whisky' })) === 'bourbon', 'classify: an ingredient named in full on the bottle');
+check(Array.isArray(kind(bottle(7, 'Plantation 5 Years', { category: 'Rom & Lagrad sockerrörssprit', style: 'Mörk rom & Lagrad sockerrörssprit' }))) &&
+  kind(bottle(7, 'Plantation 5 Years', { category: 'Rom & Lagrad sockerrörssprit', style: 'Mörk rom & Lagrad sockerrörssprit' })).includes('jamaican-rum'),
+  'classify: a dark rum needs the person to choose its style');
+check(Array.isArray(kind(bottle(8, 'Talisker 10', { category: 'Whisky', style: 'Maltwhisky', country: 'Storbritannien', region: 'Skottland' }))) &&
+  kind(bottle(8, 'Talisker 10', { category: 'Whisky', style: 'Maltwhisky', country: 'Storbritannien', region: 'Skottland' })).join() === 'scotch-whisky,peated-scotch',
+  'classify: a Scotch malt may be peated, so the person chooses');
+check(kind(bottle(9, 'Angostura 1919', { category: 'Rom & Lagrad sockerrörssprit', style: 'Mörk rom & Lagrad sockerrörssprit' })) !== 'angostura-bitters' &&
+  kind(bottle(10, 'Angostura Aromatic Bitters', { category: 'Bitter' })) === 'angostura-bitters', 'classify: a rum by Angostura is not the bitters');
+check(kind(bottle(11, 'Absolut Lime', { category: 'Smaksatt sprit', style: 'Smaksatt vodka' })) !== 'lime' && kind(bottle(11, 'Absolut Vodka', { category: 'Vodka & Okryddat brännvin', style: 'Vodka' })) === 'vodka',
+  'classify: a flavoured vodka is neither lime nor plain vodka');
+const unknown = classify(bottle(12, 'Cocchi Americano', { category: 'Aperitif' }), RULES, ING, {});
+check(unknown.id === null && unknown.sure === false && unknown.options.length === 0, 'classify: an unknown spirit is kept without a guessed match');
+// wine and bubbly from the cellar count too
+const wine = (id, name, extra) => bottle(id, name, Object.assign({ kind: 'wine' }, extra));
+check(kind(wine(20, 'Martini Rosso', { category: 'Vermouth', style: 'Vermouth röd söt' })) === 'sweet-vermouth' && kind(wine(21, 'Noilly Prat', { category: 'Vermouth', style: 'Vermouth vit torr' })) === 'dry-vermouth' &&
+  kind(wine(22, 'Martini Bianco', { category: 'Vermouth', style: 'Vermouth vit söt' })) === 'blanc-vermouth', 'classify: the three vermouths stay three');
+check(kind(wine(23, 'Bollinger Special Cuvée', { category: 'Mousserande vin', style: 'Torrt vitt', country: 'Frankrike', region: 'Champagne' })) === 'champagne' &&
+  kind(wine(24, 'Mionetto Prosecco Brut', { category: 'Mousserande vin', style: 'Torrt vitt' })) === 'prosecco' &&
+  kind(wine(25, 'Segura Viudas Cava', { category: 'Mousserande vin', style: 'Torrt vitt', region: 'Cava' })) === 'sparkling-wine' &&
+  kind(wine(26, 'Campari Bitter', { category: 'Aperitifer' })) === 'campari', 'classify: champagne, prosecco, other dry bubbly and an aperitif filed as wine');
+check(kind(wine(27, 'Barolo', { category: 'Rött vin' })) === 'red-wine' && kind(wine(28, 'Chablis', { category: 'Vitt vin' })) === null &&
+  classify(wine(28, 'Chablis', { category: 'Vitt vin' }), RULES, ING, {}).sure === true, 'classify: red wine is an ingredient, white wine gives none and asks nothing');
+check(!makes('french-75', ['gin', 'lemon-juice', 'sugar-syrup', 'sparkling-wine']) && swapFor(ING, new Set(['sparkling-wine']), 'champagne').id === 'sparkling-wine',
+  'bubbly: a cava is shown as a swap for champagne, never counted as champagne');
+
+const gins = [bottle(31, 'Tanqueray', { category: 'Gin', ref: 'sb:100' }), bottle(32, 'Hernö Gin', { category: 'Gin', ref: 'sb:200' })];
+const fromFlaskor = (list, home) => homeSources(normalizeHome(home), list, RULES, ING);
+check(fromFlaskor(gins).get('gin').bottles.length === 2 && fromFlaskor(gins.slice(1)).get('gin').bottles.length === 1 && !fromFlaskor([]).has('gin'),
+  'sources: two gin bottles give gin until the last one is gone');
+check(fromFlaskor([], { have: ['gin'] }).get('gin').manual === true && fromFlaskor(gins, { have: ['gin'] }).get('gin').manual === true &&
+  fromFlaskor(gins, { have: ['gin'] }).get('gin').bottles.length === 2, 'sources: a hand-made mark is kept apart and outlives the bottles');
+const repicked = fromFlaskor(gins, { picks: { 'sb:100': 'old-tom-gin' } });
+check(repicked.get('old-tom-gin').bottles[0].id === 31 && repicked.get('gin').bottles.length === 1 && repicked.get('gin').bottles[0].id === 32,
+  'sources: reclassifying one product moves only that bottle');
+check(!fromFlaskor(gins.slice(0, 1), { picks: { 'sb:100': '' } }).has('gin') && classify(gins[0], RULES, ING, { 'sb:100': 'no-such-ingredient' }).id === null,
+  'sources: "gives nothing" is a choice too, and a choice of an unknown ingredient gives nothing');
+check(fromFlaskor([bottle(40, 'Same product', { category: 'Gin', ref: 'sb:9' }), bottle(41, 'Same product', { category: 'Gin', ref: 'sb:9' })], { picks: { 'sb:9': 'vodka' } }).get('vodka').bottles.length === 2,
+  'sources: a choice is per product, so two rows of one product follow it');
+
+// shopping help uses the same matching
+const shop = shopping([drinkById.get('margarita'), drinkById.get('cosmopolitan'), drinkById.get('mojito')], ['tequila-blanco', 'lime', 'citron-vodka', 'cranberry-juice', 'white-rum', 'white-sugar', 'soda-water'], ING);
+check(shop[0].id === 'cointreau' || shop[0].id === 'triple-sec' || shop[0].id === 'mint', 'shopping: something that opens a drink comes first');
+check(shop.find(x => x.id === 'mint').opens.join() === 'mojito' && shop.find(x => x.id === 'cointreau').opens.join() === 'cosmopolitan' &&
+  shop.find(x => x.id === 'triple-sec').opens.join() === 'margarita' && !shop.some(x => x.id === 'lime-juice' || x.id === 'mint-sprig'),
+  'shopping: buys the ingredient, not its preparation, and never asks for what a lime already gives');
+check(onShelf(ING.gin) && onShelf(ING.champagne) && onShelf(ING['angostura-bitters']) && !onShelf(ING.lime) && !onShelf(ING['sugar-syrup']),
+  'shelves: spirits, liqueurs, bitters and wine are the bar cabinet, the rest is other ingredients');
 
 console.log(`${pass} passed, ${fail} failed`);
 if (fail > 0) process.exit(1);

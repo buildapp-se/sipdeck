@@ -4,22 +4,36 @@
     "tequila-blanco": {
       "en": "Blanco tequila",
       "sv": "Blanco-tequila",
-      "group": "spirits"
+      "group": "spirits",
+      "swap": [
+        {
+          "id": "tequila-reposado",
+          "en": "Reposado is rounder, with some oak.",
+          "sv": "Reposado är rundare, med lite fat."
+        }
+      ]
     },
     "triple-sec": {
       "en": "Triple sec",
       "sv": "Triple sec",
-      "group": "liqueurs"
+      "group": "liqueurs",
+      "metBy": [
+        "cointreau"
+      ]
     },
     "lime-juice": {
       "en": "Lime juice",
       "sv": "Limejuice",
-      "group": "fresh"
+      "group": "fresh",
+      "madeFrom": [
+        "lime"
+      ]
     },
     "salt-rim": {
       "en": "Salt rim",
       "sv": "Saltad kant",
-      "group": "pantry"
+      "group": "pantry",
+      "form": "salt"
     },
     "white-rum": {
       "en": "White rum",
@@ -29,12 +43,16 @@
     "sugar-syrup": {
       "en": "Sugar syrup",
       "sv": "Sockerlag",
-      "group": "pantry"
+      "group": "pantry",
+      "madeFrom": [
+        "white-sugar"
+      ]
     },
     "mint-leaves": {
       "en": "Mint leaves",
       "sv": "Myntablad",
-      "group": "fresh"
+      "group": "fresh",
+      "form": "mint"
     },
     "soda-water": {
       "en": "Soda water",
@@ -59,27 +77,45 @@
     "orange-peel": {
       "en": "Orange peel",
       "sv": "Apelsinskal",
-      "group": "fresh"
+      "group": "fresh",
+      "form": "orange"
     },
     "bourbon": {
       "en": "Bourbon whiskey",
       "sv": "Bourbonwhisky",
-      "group": "spirits"
+      "group": "spirits",
+      "swap": [
+        {
+          "id": "rye-whiskey",
+          "en": "Rye makes the drink drier and spicier.",
+          "sv": "Rye ger en torrare och kryddigare drink."
+        },
+        {
+          "id": "tennessee-whiskey",
+          "en": "Tennessee whiskey is close to bourbon, a little softer.",
+          "sv": "Tennessee-whiskey ligger nära bourbon, något mjukare."
+        }
+      ]
     },
     "angostura-bitters": {
       "en": "Angostura bitters",
       "sv": "Angostura bitters",
-      "group": "pantry"
+      "group": "pantry",
+      "shelf": "bar"
     },
     "lemon-juice": {
       "en": "Lemon juice",
       "sv": "Citronjuice",
-      "group": "fresh"
+      "group": "fresh",
+      "madeFrom": [
+        "lemon"
+      ]
     },
     "egg-white": {
       "en": "Egg white",
       "sv": "Äggvita",
-      "group": "fresh"
+      "group": "fresh",
+      "form": "egg"
     },
     "maraschino-cherry": {
       "en": "Maraschino cherry",
@@ -104,7 +140,8 @@
     "lime-wheel": {
       "en": "Lime wheel",
       "sv": "Limeskiva",
-      "group": "fresh"
+      "group": "fresh",
+      "form": "lime"
     },
     "vodka": {
       "en": "Vodka",
@@ -189,12 +226,26 @@
     "champagne": {
       "en": "Champagne",
       "sv": "Champagne",
-      "group": "pantry"
+      "group": "pantry",
+      "swap": [
+        {
+          "id": "sparkling-wine",
+          "en": "Another dry sparkling wine works, but it is not the original.",
+          "sv": "Ett annat torrt mousserande vin fungerar, men det är inte originalet."
+        },
+        {
+          "id": "prosecco",
+          "en": "Prosecco is fruitier and softer than champagne.",
+          "sv": "Prosecco är fruktigare och mjukare än champagne."
+        }
+      ],
+      "shelf": "bar"
     },
     "lemon-wheel": {
       "en": "Lemon slice",
       "sv": "Citronskiva",
-      "group": "fresh"
+      "group": "fresh",
+      "form": "lemon"
     },
     "irish-whiskey": {
       "en": "Irish whiskey",
@@ -299,7 +350,8 @@
     "strawberry-garnish": {
       "en": "Strawberry",
       "sv": "Jordgubbe",
-      "group": "fresh"
+      "group": "fresh",
+      "form": "strawberries"
     },
     "ice-cubes": {
       "en": "Ice cubes",
@@ -309,7 +361,14 @@
     "rye-whiskey": {
       "en": "Rye whiskey",
       "sv": "Rye whiskey",
-      "group": "spirits"
+      "group": "spirits",
+      "swap": [
+        {
+          "id": "bourbon",
+          "en": "Bourbon makes the drink sweeter and rounder.",
+          "sv": "Bourbon ger en sötare och rundare drink."
+        }
+      ]
     },
     "cognac": {
       "en": "Cognac",
@@ -319,7 +378,8 @@
     "peychauds-bitters": {
       "en": "Peychaud's bitters",
       "sv": "Peychaud's bitters",
-      "group": "pantry"
+      "group": "pantry",
+      "shelf": "bar"
     },
     "absinthe": {
       "en": "Absinthe",
@@ -334,7 +394,14 @@
     "scotch-whisky": {
       "en": "Scotch whisky",
       "sv": "Skotsk whisky",
-      "group": "spirits"
+      "group": "spirits",
+      "swap": [
+        {
+          "id": "peated-scotch",
+          "en": "A peated whisky makes the drink clearly smokier.",
+          "sv": "En rökig whisky ger en tydligt rökigare drink."
+        }
+      ]
     },
     "peated-scotch": {
       "en": "Peated Scotch whisky",
@@ -349,7 +416,10 @@
     "honey-syrup": {
       "en": "Honey syrup",
       "sv": "Honungssirap",
-      "group": "pantry"
+      "group": "pantry",
+      "madeFrom": [
+        "honey"
+      ]
     },
     "yellow-chartreuse": {
       "en": "Yellow Chartreuse",
@@ -374,12 +444,20 @@
     "red-wine": {
       "en": "Dry red wine",
       "sv": "Torrt rödvin",
-      "group": "pantry"
+      "group": "pantry",
+      "shelf": "bar"
     },
     "tennessee-whiskey": {
       "en": "Tennessee whiskey",
       "sv": "Tennessee-whiskey",
-      "group": "spirits"
+      "group": "spirits",
+      "swap": [
+        {
+          "id": "bourbon",
+          "en": "Bourbon is close to Tennessee whiskey.",
+          "sv": "Bourbon ligger nära Tennessee-whiskey."
+        }
+      ]
     },
     "maraschino-liqueur": {
       "en": "Maraschino liqueur",
@@ -414,7 +492,8 @@
     "orange-bitters": {
       "en": "Orange bitters",
       "sv": "Apelsinbitter",
-      "group": "pantry"
+      "group": "pantry",
+      "shelf": "bar"
     },
     "orange-flower-water": {
       "en": "Orange flower water",
@@ -474,7 +553,19 @@
     "orange-curacao": {
       "en": "Orange curaçao",
       "sv": "Apelsincuraçao",
-      "group": "liqueurs"
+      "group": "liqueurs",
+      "swap": [
+        {
+          "id": "grand-marnier",
+          "en": "Grand Marnier is cognac-based and richer than a dry curaçao.",
+          "sv": "Grand Marnier är cognacbaserad och fylligare än en torr curaçao."
+        },
+        {
+          "id": "cointreau",
+          "en": "Cointreau is drier and lighter than orange curaçao.",
+          "sv": "Cointreau är torrare och lättare än apelsincuraçao."
+        }
+      ]
     },
     "coconut-cream": {
       "en": "Cream of coconut",
@@ -529,7 +620,10 @@
     "orange-juice": {
       "en": "Orange juice",
       "sv": "Apelsinjuice",
-      "group": "fresh"
+      "group": "fresh",
+      "madeFrom": [
+        "orange"
+      ]
     },
     "raspberry-liqueur": {
       "en": "Raspberry liqueur",
@@ -549,7 +643,20 @@
     "prosecco": {
       "en": "Prosecco",
       "sv": "Prosecco",
-      "group": "pantry"
+      "group": "pantry",
+      "swap": [
+        {
+          "id": "sparkling-wine",
+          "en": "Another dry sparkling wine works, but it is not the original.",
+          "sv": "Ett annat torrt mousserande vin fungerar, men det är inte originalet."
+        },
+        {
+          "id": "champagne",
+          "en": "Champagne is drier and more toasty than prosecco.",
+          "sv": "Champagne är torrare och brödigare än prosecco."
+        }
+      ],
+      "shelf": "bar"
     },
     "elderflower-liqueur": {
       "en": "Elderflower liqueur",
@@ -564,7 +671,19 @@
     "sugar-cube": {
       "en": "Sugar cube",
       "sv": "Sockerbit",
-      "group": "pantry"
+      "group": "pantry",
+      "swap": [
+        {
+          "id": "white-sugar",
+          "en": "One teaspoon of sugar for each cube.",
+          "sv": "En tesked socker per sockerbit."
+        },
+        {
+          "id": "sugar-syrup",
+          "en": "One barspoon of sugar syrup for each cube.",
+          "sv": "En barsked sockerlag per sockerbit."
+        }
+      ]
     },
     "creme-de-cacao-dark": {
       "en": "Dark crème de cacao",
@@ -589,17 +708,20 @@
     "lemon-peel": {
       "en": "Lemon peel",
       "sv": "Citronskal",
-      "group": "fresh"
+      "group": "fresh",
+      "form": "lemon"
     },
     "orange-slice": {
       "en": "Orange slice",
       "sv": "Apelsinskiva",
-      "group": "fresh"
+      "group": "fresh",
+      "form": "orange"
     },
     "pineapple-wedge": {
       "en": "Pineapple wedge",
       "sv": "Ananasklyfta",
-      "group": "fresh"
+      "group": "fresh",
+      "form": "pineapple"
     },
     "sugar-cane-juice": {
       "en": "Sugar cane juice",
@@ -614,7 +736,8 @@
     "chilled-water": {
       "en": "Chilled water",
       "sv": "Kallt vatten",
-      "group": "pantry"
+      "group": "pantry",
+      "form": "water"
     },
     "blanc-vermouth": {
       "en": "Blanc vermouth",
@@ -624,12 +747,14 @@
     "abbotts-bitters": {
       "en": "Abbott's bitters",
       "sv": "Abbott's bitters",
-      "group": "pantry"
+      "group": "pantry",
+      "shelf": "bar"
     },
     "amargo-bitters": {
       "en": "Amargo bitters",
       "sv": "Amargo-bitter",
-      "group": "pantry"
+      "group": "pantry",
+      "shelf": "bar"
     },
     "blackstrap-rum": {
       "en": "Blackstrap rum",
@@ -649,7 +774,14 @@
     "cointreau": {
       "en": "Cointreau",
       "sv": "Cointreau",
-      "group": "liqueurs"
+      "group": "liqueurs",
+      "swap": [
+        {
+          "id": "triple-sec",
+          "en": "Generic triple sec is usually sweeter and weaker than Cointreau.",
+          "sv": "Generisk triple sec är oftast sötare och svagare än Cointreau."
+        }
+      ]
     },
     "demerara-syrup": {
       "en": "Demerara sugar syrup",
@@ -674,17 +806,20 @@
     "lemon-wedge": {
       "en": "Lemon wedge",
       "sv": "Citronklyfta",
-      "group": "fresh"
+      "group": "fresh",
+      "form": "lemon"
     },
     "lime-peel": {
       "en": "Lime peel",
       "sv": "Limeskal",
-      "group": "fresh"
+      "group": "fresh",
+      "form": "lime"
     },
     "lime-wedge": {
       "en": "Lime wedge",
       "sv": "Limeklyfta",
-      "group": "fresh"
+      "group": "fresh",
+      "form": "lime"
     },
     "martinique-molasses-rum": {
       "en": "Martinique molasses rum",
@@ -694,7 +829,8 @@
     "mint-sprig": {
       "en": "Mint sprig",
       "sv": "Myntakvist",
-      "group": "fresh"
+      "group": "fresh",
+      "form": "mint"
     },
     "navy-rum": {
       "en": "Navy rum",
@@ -714,7 +850,8 @@
     "pineapple-spear": {
       "en": "Pineapple spear",
       "sv": "Ananasspets",
-      "group": "fresh"
+      "group": "fresh",
+      "form": "pineapple"
     },
     "powdered-sugar": {
       "en": "Powdered sugar",
@@ -724,12 +861,18 @@
     "rich-sugar-syrup": {
       "en": "Rich sugar syrup (2:1)",
       "sv": "Rik sockerlag (2:1)",
-      "group": "pantry"
+      "group": "pantry",
+      "madeFrom": [
+        "white-sugar"
+      ]
     },
     "saline-solution": {
       "en": "Saline solution",
       "sv": "Saltlösning",
-      "group": "pantry"
+      "group": "pantry",
+      "madeFrom": [
+        "salt"
+      ]
     },
     "seasonal-berry": {
       "en": "Seasonal berry",
@@ -739,7 +882,14 @@
     "tequila-reposado": {
       "en": "Reposado tequila",
       "sv": "Reposadotequila",
-      "group": "spirits"
+      "group": "spirits",
+      "swap": [
+        {
+          "id": "tequila-blanco",
+          "en": "Blanco is fresher, without the oak.",
+          "sv": "Blanco är friskare, utan fatkaraktär."
+        }
+      ]
     },
     "vanilla-extract": {
       "en": "Vanilla extract",
@@ -760,8 +910,645 @@
       "en": "Milk",
       "sv": "Mjölk",
       "group": "fresh"
+    },
+    "lemon": {
+      "en": "Lemon",
+      "sv": "Citron",
+      "group": "fresh"
+    },
+    "orange": {
+      "en": "Orange",
+      "sv": "Apelsin",
+      "group": "fresh"
+    },
+    "mint": {
+      "en": "Mint",
+      "sv": "Mynta",
+      "group": "fresh"
+    },
+    "pineapple": {
+      "en": "Pineapple",
+      "sv": "Ananas",
+      "group": "fresh"
+    },
+    "egg": {
+      "en": "Egg",
+      "sv": "Ägg",
+      "group": "fresh"
+    },
+    "honey": {
+      "en": "Honey",
+      "sv": "Honung",
+      "group": "pantry"
+    },
+    "sparkling-wine": {
+      "en": "Dry sparkling wine",
+      "sv": "Torrt mousserande vin",
+      "group": "pantry",
+      "shelf": "bar"
     }
   },
+  "products": [
+    {
+      "name": [
+        "angostura bitter",
+        "angostura aromatic"
+      ],
+      "is": "angostura-bitters"
+    },
+    {
+      "name": [
+        "peychaud"
+      ],
+      "is": "peychauds-bitters"
+    },
+    {
+      "name": [
+        "orange bitter",
+        "apelsinbitter"
+      ],
+      "is": "orange-bitters"
+    },
+    {
+      "name": [
+        "cointreau"
+      ],
+      "is": "cointreau"
+    },
+    {
+      "name": [
+        "grand marnier"
+      ],
+      "is": "grand-marnier"
+    },
+    {
+      "name": [
+        "blue curacao",
+        "bla curacao"
+      ],
+      "is": "blue-curacao"
+    },
+    {
+      "name": [
+        "triple sec"
+      ],
+      "cat": [
+        "likor"
+      ],
+      "is": "triple-sec"
+    },
+    {
+      "name": [
+        "curacao"
+      ],
+      "is": [
+        "orange-curacao",
+        "triple-sec",
+        "blue-curacao"
+      ]
+    },
+    {
+      "name": [
+        "campari"
+      ],
+      "is": "campari"
+    },
+    {
+      "name": [
+        "aperol"
+      ],
+      "is": "aperol"
+    },
+    {
+      "name": [
+        "kahlua",
+        "tia maria",
+        "mr black"
+      ],
+      "is": "coffee-liqueur"
+    },
+    {
+      "name": [
+        "disaronno",
+        "amaretto"
+      ],
+      "is": "amaretto"
+    },
+    {
+      "name": [
+        "benedictine"
+      ],
+      "is": "benedictine"
+    },
+    {
+      "name": [
+        "drambuie"
+      ],
+      "is": "drambuie"
+    },
+    {
+      "name": [
+        "chartreuse gron",
+        "chartreuse verte",
+        "chartreuse green"
+      ],
+      "is": "green-chartreuse"
+    },
+    {
+      "name": [
+        "chartreuse gul",
+        "chartreuse jaune",
+        "chartreuse yellow"
+      ],
+      "is": "yellow-chartreuse"
+    },
+    {
+      "name": [
+        "chartreuse"
+      ],
+      "is": [
+        "green-chartreuse",
+        "yellow-chartreuse"
+      ]
+    },
+    {
+      "name": [
+        "amaro nonino"
+      ],
+      "is": "amaro-nonino"
+    },
+    {
+      "name": [
+        "maraschino"
+      ],
+      "cat": [
+        "fruktlikor"
+      ],
+      "is": "maraschino-liqueur"
+    },
+    {
+      "name": [
+        "violette"
+      ],
+      "is": "creme-de-violette"
+    },
+    {
+      "name": [
+        "lillet blanc"
+      ],
+      "is": "lillet-blanc"
+    },
+    {
+      "name": [
+        "fernet branca"
+      ],
+      "is": "fernet-branca"
+    },
+    {
+      "name": [
+        "heering"
+      ],
+      "is": "cherry-liqueur"
+    },
+    {
+      "name": [
+        "falernum"
+      ],
+      "is": "falernum"
+    },
+    {
+      "name": [
+        "creme de cassis",
+        "cassis"
+      ],
+      "cat": [
+        "likor"
+      ],
+      "is": "creme-de-cassis"
+    },
+    {
+      "name": [
+        "galliano"
+      ],
+      "is": "galliano"
+    },
+    {
+      "name": [
+        "st germain",
+        "st-germain",
+        "fladerlikor",
+        "elderflower liqueur"
+      ],
+      "is": "elderflower-liqueur"
+    },
+    {
+      "name": [
+        "cacao white",
+        "cacao blanc",
+        "cacao vit"
+      ],
+      "is": "creme-de-cacao-white"
+    },
+    {
+      "name": [
+        "cacao"
+      ],
+      "cat": [
+        "likor"
+      ],
+      "is": [
+        "creme-de-cacao-dark",
+        "creme-de-cacao-white"
+      ]
+    },
+    {
+      "name": [
+        "creme de menthe"
+      ],
+      "is": [
+        "creme-de-menthe-green"
+      ]
+    },
+    {
+      "name": [
+        "chambord"
+      ],
+      "is": "raspberry-liqueur"
+    },
+    {
+      "name": [
+        "passoa"
+      ],
+      "is": "passion-fruit-liqueur"
+    },
+    {
+      "name": [
+        "dooley"
+      ],
+      "is": "cream-liqueur"
+    },
+    {
+      "name": [
+        "sour apple",
+        "apple sour"
+      ],
+      "cat": [
+        "likor"
+      ],
+      "is": "apple-liqueur"
+    },
+    {
+      "name": [
+        "peach",
+        "persiko"
+      ],
+      "cat": [
+        "likor"
+      ],
+      "is": "peach-liqueur"
+    },
+    {
+      "name": [
+        "pernod"
+      ],
+      "is": "pernod"
+    },
+    {
+      "name": [
+        "cachaca"
+      ],
+      "is": "cachaca"
+    },
+    {
+      "name": [
+        "pisco"
+      ],
+      "is": "pisco"
+    },
+    {
+      "name": [
+        "old tom"
+      ],
+      "is": "old-tom-gin"
+    },
+    {
+      "name": [
+        "oude genever"
+      ],
+      "is": "oude-genever"
+    },
+    {
+      "name": [
+        "vanilia",
+        "vanilla vodka",
+        "vaniljvodka"
+      ],
+      "is": "vanilla-vodka"
+    },
+    {
+      "name": [
+        "absolut citron",
+        "citron vodka",
+        "citronvodka",
+        "lemon vodka"
+      ],
+      "is": "citron-vodka"
+    },
+    {
+      "name": [
+        "reposado"
+      ],
+      "cat": [
+        "tequila"
+      ],
+      "is": "tequila-reposado"
+    },
+    {
+      "name": [
+        "blanco",
+        "silver",
+        "plata"
+      ],
+      "cat": [
+        "tequila"
+      ],
+      "is": "tequila-blanco"
+    },
+    {
+      "name": [
+        "prosecco"
+      ],
+      "cat": [
+        "mousserande"
+      ],
+      "is": "prosecco"
+    },
+    {
+      "name": [
+        "champagne"
+      ],
+      "cat": [
+        "mousserande"
+      ],
+      "is": "champagne"
+    },
+    {
+      "cat": [
+        "mousserande"
+      ],
+      "from": [
+        "champagne"
+      ],
+      "is": "champagne"
+    },
+    {
+      "cat": [
+        "mousserande vin torrt vitt"
+      ],
+      "is": "sparkling-wine"
+    },
+    {
+      "cat": [
+        "mousserande vin rose",
+        "mousserande vin rott",
+        "mousserande vin sott",
+        "mousserande vin halvtorrt",
+        "mousserande vin smaksatt",
+        "mousserande vin fruktvin"
+      ],
+      "is": null
+    },
+    {
+      "cat": [
+        "mousserande"
+      ],
+      "is": [
+        "sparkling-wine",
+        "champagne",
+        "prosecco"
+      ]
+    },
+    {
+      "cat": [
+        "vermouth rod sot"
+      ],
+      "is": "sweet-vermouth"
+    },
+    {
+      "cat": [
+        "vermouth vit torr"
+      ],
+      "is": "dry-vermouth"
+    },
+    {
+      "cat": [
+        "vermouth vit sot"
+      ],
+      "is": "blanc-vermouth"
+    },
+    {
+      "cat": [
+        "vermouth"
+      ],
+      "is": [
+        "sweet-vermouth",
+        "dry-vermouth",
+        "blanc-vermouth"
+      ]
+    },
+    {
+      "cat": [
+        "rott vin"
+      ],
+      "is": "red-wine"
+    },
+    {
+      "cat": [
+        "absint"
+      ],
+      "is": "absinthe"
+    },
+    {
+      "cat": [
+        "pastis"
+      ],
+      "is": [
+        "pernod"
+      ]
+    },
+    {
+      "cat": [
+        "genever genever"
+      ],
+      "is": [
+        "oude-genever"
+      ]
+    },
+    {
+      "cat": [
+        "gin"
+      ],
+      "is": "gin"
+    },
+    {
+      "cat": [
+        "smaksatt vodka"
+      ],
+      "is": [
+        "vanilla-vodka",
+        "citron-vodka"
+      ]
+    },
+    {
+      "cat": [
+        "shochu",
+        "brannvin brannvin"
+      ],
+      "is": []
+    },
+    {
+      "cat": [
+        "vodka"
+      ],
+      "is": "vodka"
+    },
+    {
+      "cat": [
+        "mezcal"
+      ],
+      "is": "mezcal"
+    },
+    {
+      "cat": [
+        "tequila"
+      ],
+      "is": [
+        "tequila-blanco",
+        "tequila-reposado"
+      ]
+    },
+    {
+      "cat": [
+        "cognac"
+      ],
+      "is": "cognac"
+    },
+    {
+      "cat": [
+        "bourbon"
+      ],
+      "is": "bourbon"
+    },
+    {
+      "cat": [
+        "tennessee"
+      ],
+      "is": "tennessee-whiskey"
+    },
+    {
+      "cat": [
+        "ryewhisky",
+        "rye"
+      ],
+      "is": "rye-whiskey"
+    },
+    {
+      "cat": [
+        "blended whisky"
+      ],
+      "from": [
+        "skottland",
+        "scotland"
+      ],
+      "is": "scotch-whisky"
+    },
+    {
+      "cat": [
+        "whisky",
+        "whiskey"
+      ],
+      "from": [
+        "skottland",
+        "scotland"
+      ],
+      "is": [
+        "scotch-whisky",
+        "peated-scotch"
+      ]
+    },
+    {
+      "cat": [
+        "whisky",
+        "whiskey"
+      ],
+      "from": [
+        "irland",
+        "ireland"
+      ],
+      "is": "irish-whiskey"
+    },
+    {
+      "cat": [
+        "whisky",
+        "whiskey"
+      ],
+      "is": [
+        "bourbon",
+        "scotch-whisky",
+        "peated-scotch",
+        "irish-whiskey",
+        "rye-whiskey",
+        "tennessee-whiskey"
+      ]
+    },
+    {
+      "cat": [
+        "smaksatt sprit"
+      ],
+      "is": []
+    },
+    {
+      "cat": [
+        "ljus rom"
+      ],
+      "is": "white-rum"
+    },
+    {
+      "cat": [
+        "rom"
+      ],
+      "is": [
+        "white-rum",
+        "aged-rum",
+        "dark-rum",
+        "jamaican-rum",
+        "demerara-rum",
+        "navy-rum",
+        "overproof-rum",
+        "blackstrap-rum",
+        "martinique-molasses-rum"
+      ]
+    },
+    {
+      "cat": [
+        "kaffelikor"
+      ],
+      "is": "coffee-liqueur"
+    },
+    {
+      "cat": [
+        "bitter"
+      ],
+      "is": [
+        "campari",
+        "aperol",
+        "fernet-branca",
+        "angostura-bitters",
+        "orange-bitters",
+        "peychauds-bitters"
+      ]
+    }
+  ],
   "families": {
     "margarita": {
       "name": "Margarita",
