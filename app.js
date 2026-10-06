@@ -114,6 +114,7 @@ const STRINGS = {
     method_stirred: 'stirred', method_frozen: 'frozen', method_layered: 'layered',
     variants_one: '+1 variant', variants_many: '+{n} variants', variants_label: 'Variants',
     variant_new: 'new', variant_was: 'was {a}', variant_without: 'Without: ',
+    batch: 'Batch: {total} in all, {each} per glass', batch_top: ', before topping up',
     variant_of: 'Variant of {name} · {n} in the family', search_tagged: 'Tagged: {tags}',
     custom_tag: 'Own', custom_title: 'My drinks', custom_new: '+ New drink', custom_new_title: 'New drink',
     custom_edit_title: 'Edit drink', custom_empty: 'Drinks you create end up here, in the deck and in search.',
@@ -246,6 +247,7 @@ const STRINGS = {
     method_stirred: 'rörd', method_frozen: 'frusen', method_layered: 'skiktad',
     variants_one: '+1 variant', variants_many: '+{n} varianter', variants_label: 'Varianter',
     variant_new: 'ny', variant_was: 'var {a}', variant_without: 'Utan: ',
+    batch: 'Sats: {total} totalt, {each} per glas', batch_top: ', före toppning',
     variant_of: 'Variant av {name} · {n} i familjen', search_tagged: 'Taggad: {tags}',
     custom_tag: 'Egen', custom_title: 'Mina drinkar', custom_new: '+ Ny drink', custom_new_title: 'Ny drink',
     custom_edit_title: 'Redigera drink', custom_empty: 'Drinkar du skapar hamnar här, i kortleken och i sökningen.',
@@ -886,6 +888,16 @@ function formatLineAmount(line, servings, unit, lang) {
   return typeof line.ml === 'number' ? amount : amount.replace(line.unit, t(lang, 'unit_' + line.unit));
 }
 
+// batch volumes: the measured liquid for the whole round and per glass, so it can be mixed in one jug.
+// Dashes, pieces and a "top up" line have no volume here; a top-up is named, the rest is small.
+function batchText(drink, servings, unit, lang) {
+  const each = drink.ingredients.reduce((sum, line) => sum + (typeof line.ml === 'number' ? line.ml : 0), 0);
+  if (servings < 2 || !each) return '';
+  const vol = ml => unit !== 'oz' && ml >= 1000 ? `${formatNumber(Math.round(ml / 10) / 100, lang)} l` : formatAmount({ ml }, 1, unit, lang);
+  return t(lang, 'batch').replace('{total}', vol(each * servings)).replace('{each}', vol(each))
+    + (drink.ingredients.some(line => line.unit === 'top') ? t(lang, 'batch_top') : '');
+}
+
 function drinkAsText(drink, ingredients, servings, unit, lang) {
   const name = typeof drink.name === 'string' ? drink.name : (drink.name[lang] || drink.name.en);
   const lines = [name, '', `${formatNumber(servings, lang)} ${t(lang, 'servings_copy')}`, '', t(lang, 'ingredients_title')];
@@ -955,7 +967,7 @@ function mergeCustom(local, remote) {
 if (typeof module !== 'undefined') module.exports = {
   STRINGS, t, UNITS, detectLang, defaultState, normalizeState, favoriteIdFromHash, drinkIdFromHash,
   scaleMl, convert, roundForUnit, formatNumber, formatOz, formatAmount,
-  formatLineAmount, drinkAsText,
+  formatLineAmount, drinkAsText, batchText,
   shuffle, advanceQueue, swipeDirectionForKey, BASE_FILTERS, matchesFilters, canMake, filterDrinks,
   groupFamilies, deckCards, variantDiff,
   normalizeHome, coverage, swapFor, bridgeHome, classify, bottleKey, homeSources, homeGives, shopping, fold, onShelf,
@@ -1359,6 +1371,11 @@ if (typeof document !== 'undefined') (function () {
       .filter(Boolean).join(' · ');
   }
 
+  function batchNote(drink, servings) {
+    const text = batchText(drink, servings, unit(), lang());
+    return `<p class="batch-note" data-batch${text ? '' : ' hidden'}>${esc(text)}</p>`;
+  }
+
   function servingWord(servings) { return t(lang(), servings === 1 ? 'serving_one' : 'serving_many'); }
 
   // shared by the card back (data-act) and the favorite detail (data-fav-act)
@@ -1385,6 +1402,9 @@ if (typeof document !== 'undefined') (function () {
       const servings = box.dataset.depth && box.dataset.depth !== '0' ? 1 : servingsFor(drink.id);
       input.value = servings;
       box.querySelector('.servings-unit').textContent = servingWord(servings);
+      const note = box.querySelector('[data-batch]'), text = batchText(drink, servings, unit(), lang());
+      note.textContent = text;
+      note.hidden = !text;
       box.querySelectorAll('.amount[data-line]').forEach(el => {
         el.textContent = amountText(drink.ingredients[Number(el.dataset.line)], servings);
       });
@@ -1448,6 +1468,7 @@ if (typeof document !== 'undefined') (function () {
           <div class="card-meta">${esc(recipeMeta(drink, true))}</div>
           <div class="card-recipe">
             <ul class="ing">${drink.ingredients.map((l, i) => ingLine(l, have, servings, i, diff)).join('')}</ul>
+            ${batchNote(drink, servings)}
             ${variantWithout(diff)}
             <p class="card-method">${esc(drink.method[lang()] || drink.method.en)}</p>
           </div>
@@ -1748,7 +1769,7 @@ if (typeof document !== 'undefined') (function () {
             <h3>${esc(t(lang(), 'ingredients_title'))}</h3>
             <p class="fav-hint">${esc(t(lang(), 'ingredient_check_hint'))}</p>
             <div class="fav-ing-list">${ingredientRows}</div>
-            ${variantWithout(diff)}${swapNotes(open)}
+            ${variantWithout(diff)}${swapNotes(open)}${batchNote(open, servings)}
             <h3>${esc(t(lang(), 'method_title'))}</h3>
             <p class="fav-method">${esc(open.method[lang()] || open.method.en)}</p>
             ${source}

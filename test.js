@@ -5,7 +5,7 @@ const path = require('path');
 const { STRINGS, t, detectLang, defaultState, normalizeState, favoriteIdFromHash, drinkIdFromHash,
   scaleMl, normalizeServingCount, MAX_SERVINGS, convert, roundForUnit, formatNumber, formatOz, formatAmount, shuffle, advanceQueue,
   swipeDirectionForKey,
-  formatLineAmount, drinkAsText,
+  formatLineAmount, drinkAsText, batchText,
   BASE_FILTERS, matchesFilters, canMake, filterDrinks, groupFamilies, deckCards, variantDiff, missingIngredients, mergeState, reconcileState,
   searchHaystack, matchesSearch, ingredientCounts, authErrorKey, AUTH_ERRORS,
   weightedSampleUnique, wheelCocktailWeight, buildSpinLineup, selectWheelIndex,
@@ -139,6 +139,17 @@ check(formatAmount({ qty: 1, unit: 'piece', essential: false }, 3, 'cl', 'en') =
   'formatAmount: qty x servings stays integer when it divides evenly');
 check(formatAmount({ qty: 1, unit: 'dash', essential: false }, 3, 'cl', 'en').includes('.') === false,
   'formatAmount: integer scaled qty has no decimal tail');
+// ---------- batch volumes ----------
+const batchDrink = { ingredients: [{ id: 'a', ml: 50 }, { id: 'b', ml: 25 }, { id: 'c', qty: 2, unit: 'dash' }] };
+check(batchText(batchDrink, 1, 'cl', 'sv') === '', 'batchText: one glass is not a batch');
+check(batchText(batchDrink, 4, 'cl', 'sv') === 'Sats: 30 cl totalt, 7,5 cl per glas', 'batchText: total and per glass in cl, decimal comma');
+check(batchText(batchDrink, 20, 'cl', 'sv') === 'Sats: 1,5 l totalt, 7,5 cl per glas', 'batchText: a litre or more is written in litres');
+check(batchText(batchDrink, 20, 'ml', 'en') === 'Batch: 1.5 l in all, 75 ml per glass', 'batchText: litres in English ml mode');
+check(batchText(batchDrink, 20, 'oz', 'en') === 'Batch: 50 oz in all, 2½ oz per glass', 'batchText: oz stays oz');
+check(batchText({ ingredients: [{ id: 'a', ml: 40 }, { id: 's', qty: 1, unit: 'top' }] }, 2, 'cl', 'sv') === 'Sats: 8 cl totalt, 4 cl per glas, före toppning',
+  'batchText: a top-up line is named as outside the sum');
+check(batchText({ ingredients: [{ id: 'c', qty: 2, unit: 'dash' }] }, 6, 'cl', 'en') === '', 'batchText: nothing measured, no note');
+
 check(formatLineAmount({ qty: 1, unit: 'dash' }, 2, 'cl', 'sv') === '2 stänk',
   'formatLineAmount: translates non-convertible unit');
 check(formatLineAmount({ qty: 1, unit: 'barspoon' }, 1, 'oz', 'en') === '1 barspoon (0.5 cl)',

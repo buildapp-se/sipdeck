@@ -284,7 +284,7 @@ counts.
 - [ ] More recipes for well-known drinks.
 - [x] (shipped 2026-09-25 as F1: `families` in `drinks.json`, `groupFamilies`/`deckCards`, the variant control on the card back) **Variations on a card**: when several drinks are very close to each other, fold them
   into one card as playful variations rather than near-duplicate entries.
-- [ ] **Batch volumes**: total liquid across X drinks and how much goes in each glass, so a
+- [x] (built 2026-10-06: from two glasses, the recipe on the card back and in the detail view shows "Sats: 48 cl totalt, 24 cl per glas", in litres from 1 l, with "före toppning" when the recipe has a top-up line; `batchText` in `app.js`) **Batch volumes**: total liquid across X drinks and how much goes in each glass, so a
   batch can be mixed as X litres and split into Y per glass.
 
 ## Hemma och Flaskor, beslutat 2026-10-04

@@ -53,8 +53,11 @@ for (const width of [320, 375, 390]) {
       await expect(recipe.locator('.amount', { hasText: '80 ml' })).toHaveCount(3);
       await recipe.locator('[data-unit="cl"]').click();
       await expect(recipe.locator('.amount', { hasText: '8 cl' })).toHaveCount(3);
+      await expect(recipe.locator('[data-batch]')).toBeHidden();
       await recipe.locator('[data-fav-act="inc"]').click();
       await expect(recipe.locator('.amount', { hasText: '16 cl' })).toHaveCount(3);
+      await expect(recipe.locator('[data-batch]')).toHaveText(lang === 'sv' ? 'Sats: 48 cl totalt, 24 cl per glas' : 'Batch: 48 cl in all, 24 cl per glass');
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
       await expect.poll(() => page.locator('.cocktail-art').evaluate(img => img.complete && img.naturalWidth === 640)).toBe(true);
     });
   }

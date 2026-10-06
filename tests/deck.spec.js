@@ -49,8 +49,13 @@ test('stepper and unit patch the card in place', async ({ page }) => {
   const card = page.locator('#deck .card[data-depth="0"]');
   await card.click();
   await card.evaluate(el => { el.dataset.same = 'yes'; });
+  await expect(card.locator('[data-batch]')).toBeHidden(); // one glass is not a batch
   await card.locator('[data-act="inc"]').click();
   await expect(card.locator('[data-servings]')).toHaveValue('2');
+  await expect(card.locator('[data-batch]')).toHaveText(/^Sats: .+ totalt, .+ per glas/);
+  await card.locator('[data-act="dec"]').click();
+  await expect(card.locator('[data-batch]')).toBeHidden();
+  await card.locator('[data-act="inc"]').click();
   await card.locator('[data-unit="ml"]').click();
   await expect(card.locator('[data-unit="ml"]')).toHaveAttribute('aria-pressed', 'true');
   await expect(card).toHaveAttribute('data-same', 'yes');
