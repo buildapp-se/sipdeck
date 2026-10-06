@@ -12,7 +12,7 @@ is the user's own to-do before going public.
 
 ## Vision
 
-**At home (built on a branch 2026-10-06, not live):** [Flaskor ADR 0001](../../flaskor/docs/adr/0001-sipdeck-hemma.md) supersedes the exact-id pantry model and the ingredient-checklist UX: the "Pantry is in v1" locked decision, the `pantry` part of the state description and Epic E below describe what is live until the branch is merged. What replaces them is specified in the ADR (its section Genomförande says how it is built) and summarised in Epic L below. Accounts remain optional for standalone use.
+**At home (live since 2026-10-06):** [Flaskor ADR 0001](../../flaskor/docs/adr/0001-sipdeck-hemma.md) supersedes the exact-id pantry model and the ingredient-checklist UX: the "Pantry is in v1" locked decision, the `pantry` part of the state description and Epic E below describe what is live until the branch is merged. What replaces them is specified in the ADR (its section Genomförande says how it is built) and summarised in Epic L below. Accounts remain optional for standalone use.
 
 The fastest, best-feeling way to answer "what should we drink tonight?" — at home or to
 order at a bar. Discovery feels like play (dealing cards), not like search (forms and

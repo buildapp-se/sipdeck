@@ -1,8 +1,8 @@
 ---
 schemaVersion: 1
 status: active
-currentGoal: At home and the optional Flaskor link (ADR 0001) are built on the branch feat/hemma-flaskor, not live
-nextAction: Owner reviews the PR and approves the rollout in the order in ../flaskor/HANDOFF.md (this Worker before this frontend), then owner QA with a real sign-in
+currentGoal: At home and the optional Flaskor link (ADR 0001) are live since 2026-10-06, owner QA remains
+nextAction: Owner QA with a real sign-in, the seven points in ../flaskor/HANDOFF.md under 2026-10-06
 blockers: []
 reviewedAt: 2026-10-06
 ---
@@ -13,9 +13,9 @@ reviewedAt: 2026-10-06
 
 # Handoff: Sipdeck
 
-## 2026-10-06: Hemma och Flaskor-kopplingen byggda på gren, **inte live**
+## 2026-10-06: Hemma och Flaskor-kopplingen, **live** (PR #25, squash `cfce434`)
 
-ADR 0001 byggd i chunkläge på grenen `feat/hemma-flaskor`. Inget är mergat eller deployat. Teknikvalen står i [ADR 0001 §Genomförande](../flaskor/docs/adr/0001-sipdeck-hemma.md); **utrullningsordning, återställning, ägar-QA och valen som togs åt ägaren står i [Flaskors HANDOFF.md](../flaskor/HANDOFF.md)** och upprepas inte här.
+ADR 0001 byggd i chunkläge och utrullad 2026-10-06 på ägarens ja: Worker `909cc820` först (`/state` utan token 401), sedan PR #25. Verifierat live på buildapp.se/sipdeck: `app.js?v=1.28`, `#/skafferi` öppnar Hemma med ett gammalt state i Chrome på 390 px, `pantry` och favoriter orörda, inga konsolfel eller 4xx. D1 exporterad före till `C:/dev/sipdeck-backup-fore-hemma.sql`. Teknikvalen står i [ADR 0001 §Genomförande](../flaskor/docs/adr/0001-sipdeck-hemma.md); **utrullningsordning, återställning, ägar-QA och valen som togs åt ägaren står i [Flaskors HANDOFF.md](../flaskor/HANDOFF.md)** och upprepas inte här.
 
 - **Modell:** `drinks.json` har relationerna `form`, `madeFrom`, `metBy`, `swap` och `shelf` på ingredienserna, sju nya saker man kan ha hemma (citron, apelsin, mynta, ananas, ägg, honung, torrt mousserande vin) och listan `products` (77 regler för flaskor från Flaskor). Katalogen: 95 drinkar, 159 ingredienser. Rena funktioner överst i `app.js`: `coverage`, `swapFor`, `bridgeHome`, `classify`, `homeSources`, `homeGives`, `shopping`, `normalizeHome`.
 - **State:** nyckeln `home` i bloben. `pantry` lämnas orörd och är migreringens indata, se `bridgeHome`. `settle()` kör bron varje gång ett state kommer in (katalogen laddad, inloggningens hämtning, synkkonflikt). `reconcileState` och `mergeState` bär `home`; nyckelordningen måste vara densamma som i `normalizeState`, eftersom synken jämför state som JSON-text.
