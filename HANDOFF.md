@@ -15,7 +15,7 @@ reviewedAt: 2026-10-06
 
 ## 2026-10-06, kväll: nattbatch på grenen `batch/2026-10-06`, **lokalt, inte pushad, inte live**
 
-Tre kodcommits och en docs-commit ovanpå `origin/main` (`6d034ec`) i worktree `C:/dev/.worktrees/batch-2026-10-06/sipdeck`. Inget är mergat eller deployat; merge till `main` är ägarens ja.
+Två kodcommits och två docs-commits ovanpå `origin/main` (`6d034ec`) i worktree `C:/dev/.worktrees/batch-2026-10-06/sipdeck`. Inget är mergat eller deployat; merge till `main` är ägarens ja.
 
 - **Satsvolymer (`286c604`):** från två glas visar kortets baksida och detaljvyn "Sats: 48 cl totalt, 24 cl per glas" (`batchText`, `[data-batch]`, uppdateras av `refreshRecipes`). Liter från 1 l, "före toppning" när receptet har en `top`-rad. Bara rader med `ml` räknas; stänk, bitar och utspädning från is ingår inte. `app.js?v=1.30`.
 - **Blandning och haptik (`07fd7fe`):** `freshFirst` lägger besökets 12 senaste toppkort sist i varje ny blandning (filterbyte eller slut på kort). Listan `seenTop` finns bara i minnet, inget nytt i `localStorage` eller synken. Spara på kortleken ger `navigator.vibrate(12)` (bara Android, **overifierat på riktig telefon**).
