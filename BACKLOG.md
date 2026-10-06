@@ -276,11 +276,11 @@ counts.
   only shows alcohol-free-tagged drinks is the actual ask.
 - [ ] Fill out alcohol-free-tagged drinks in the seed — only worth doing once the toggle
   above exists, otherwise they're stuck behind a tag nothing filters on.
-- [ ] Weighted shuffle: bias the deck shuffle away from recently-surfaced top drinks
+- [x] (built 2026-10-06: `freshFirst` puts the last 12 top cards of the visit at the back of every new shuffle; in memory only, a reload starts fresh) Weighted shuffle: bias the deck shuffle away from recently-surfaced top drinks
   (recency-only, no new data, pure shuffle-logic tweak).
 - [x] ~~Custom domain once the name is final.~~ Done 2026-07-21: live at buildapp.se/sipdeck.
 - [ ] Service worker/offline (only if real-world use shows the need — recept precedent).
-- [ ] Shake-to-shuffle, haptics on save (progressive enhancement only).
+- [ ] Shake-to-shuffle (progressive enhancement only). Haptics on save built 2026-10-06 (`navigator.vibrate(12)` in `flyOff`, Android only; unverified on a real phone). Shake is left: iOS needs a motion-permission prompt, which is a UI decision, and it cannot be verified without a device.
 - [ ] More recipes for well-known drinks.
 - [x] (shipped 2026-09-25 as F1: `families` in `drinks.json`, `groupFamilies`/`deckCards`, the variant control on the card back) **Variations on a card**: when several drinks are very close to each other, fold them
   into one card as playful variations rather than near-duplicate entries.

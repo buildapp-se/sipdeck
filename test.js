@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const { STRINGS, t, detectLang, defaultState, normalizeState, favoriteIdFromHash, drinkIdFromHash,
-  scaleMl, normalizeServingCount, MAX_SERVINGS, convert, roundForUnit, formatNumber, formatOz, formatAmount, shuffle, advanceQueue,
+  scaleMl, normalizeServingCount, MAX_SERVINGS, convert, roundForUnit, formatNumber, formatOz, formatAmount, shuffle, freshFirst, advanceQueue,
   swipeDirectionForKey,
   formatLineAmount, drinkAsText, batchText,
   BASE_FILTERS, matchesFilters, canMake, filterDrinks, groupFamilies, deckCards, variantDiff, missingIngredients, mergeState, reconcileState,
@@ -182,6 +182,11 @@ check(shuffled.length === 4 && [1, 2, 3, 4].every(n => shuffled.includes(n)),
   'shuffle: same members, same length');
 check(shuffle([], () => 0.5).length === 0, 'shuffle: empty array ok');
 check(shuffle(['a']).join() === 'a', 'shuffle: single element ok');
+const fresh = freshFirst(['a', 'b', 'c', 'd', 'e'], ['d', 'x', 'b']);
+check(fresh.join() === 'a,c,e,d,b', 'freshFirst: unseen keep their order in front, seen go last with the most recent at the very end');
+check(freshFirst(['a', 'b'], []).join() === 'a,b' && freshFirst([], ['a']).length === 0, 'freshFirst: nothing seen or nothing to order is a no-op');
+const freshIn = ['b', 'a'];
+check(freshFirst(freshIn, ['b']).join() === 'a,b' && freshIn.join() === 'b,a', 'freshFirst: does not mutate input');
 const queue = ['a', 'b', 'c'];
 check(advanceQueue(queue, false).join() === 'b,c,a', 'advanceQueue: skip moves top to back');
 check(advanceQueue(queue, true).join() === 'b,c', 'advanceQueue: save removes top for this cycle');
@@ -470,6 +475,9 @@ const workerSource = fs.readFileSync(path.join(__dirname, 'worker', 'worker.js')
 // arbetskopia checkas ut med CRLF och lägger på ~1,8 kB som aldrig deployas.
 check(Buffer.byteLength(appSource.split('\r').join('')) < 185000,
   'bundle budget: app.js stays under 185 kB unminified');
+check(appSource.includes('deckQueue = freshFirst(shuffle(deckIds()), seenTop);') && appSource.split('seenTop').length === 8,
+  'deck: a new shuffle is biased away from the recent top cards of this visit, which live in memory only (declared, read once, written in flyOff)');
+check(appSource.includes('if (navigator.vibrate) navigator.vibrate(12);'), 'deck: saving a card gives one short haptic where supported');
 // T6: own authDomain on buildapp.se (same site, so a redirect survives blocked third-party storage),
 // and only an installed app redirects; a normal tab keeps the popup
 check(appSource.includes("authDomain: 'sipdeck.buildapp.se'"), 'auth: authDomain is sipdeck.buildapp.se');

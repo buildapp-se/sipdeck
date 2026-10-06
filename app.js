@@ -391,6 +391,12 @@ function shuffle(arr, rng) {
   return a;
 }
 
+// recency-only bias for a new shuffle: ids recently on top go last, the longest-ago of them first.
+// `recent` is oldest to newest; ids not in it keep their shuffled order at the front (sort is stable).
+function freshFirst(ids, recent) {
+  return ids.slice().sort((a, b) => recent.indexOf(a) - recent.indexOf(b));
+}
+
 function advanceQueue(queue, saved) {
   const next = Array.isArray(queue) ? queue.slice() : [];
   if (!next.length) return next;
@@ -968,7 +974,7 @@ if (typeof module !== 'undefined') module.exports = {
   STRINGS, t, UNITS, detectLang, defaultState, normalizeState, favoriteIdFromHash, drinkIdFromHash,
   scaleMl, convert, roundForUnit, formatNumber, formatOz, formatAmount,
   formatLineAmount, drinkAsText, batchText,
-  shuffle, advanceQueue, swipeDirectionForKey, BASE_FILTERS, matchesFilters, canMake, filterDrinks,
+  shuffle, freshFirst, advanceQueue, swipeDirectionForKey, BASE_FILTERS, matchesFilters, canMake, filterDrinks,
   groupFamilies, deckCards, variantDiff,
   normalizeHome, coverage, swapFor, bridgeHome, classify, bottleKey, homeSources, homeGives, shopping, fold, onShelf,
   missingIngredients, mergeState, searchHaystack, matchesSearch, ingredientCounts, authErrorKey, AUTH_ERRORS,
@@ -1267,6 +1273,8 @@ if (typeof document !== 'undefined') (function () {
 
   // ---------- deck: the one imperative-DOM zone (drag/flip animate outside re-renders) ----------
   let deckQueue = null; // drink ids, [0] = top card; survives view switches, reshuffles on exhaustion
+  // ponytail: the last 12 top cards of this visit, in memory only; persist it if a reload should remember too
+  const seenTop = [];
   let flippedId = null; // top-card id when showing the recipe back
   let favOpenId = null;  // id of the favorite currently opened in detail view, or null = list
   let favChecked = new Set(); // mixing progress for the open favorite; resets when it closes
@@ -1295,7 +1303,7 @@ if (typeof document !== 'undefined') (function () {
   }
 
   function ensureQueue() {
-    if (!deckQueue || !deckQueue.length) deckQueue = shuffle(deckIds());
+    if (!deckQueue || !deckQueue.length) deckQueue = freshFirst(shuffle(deckIds()), seenTop);
   }
 
   // F1: the family around a drink; familyPrimary is null for the primary itself and for standalone drinks
@@ -1646,8 +1654,11 @@ if (typeof document !== 'undefined') (function () {
     card.style.transition = `transform ${Math.round(ms)}ms var(--sd-ease-fly)`; // never fades, it leaves
     card.style.transform = `translate(${x}px, ${dy * 0.4}px) rotate(${dir * 18}deg)`;
     const id = deckQueue[0];
+    if (seenTop.includes(id)) seenTop.splice(seenTop.indexOf(id), 1);
+    if (seenTop.push(id) > 12) seenTop.shift();
     if (dir > 0) { // save (A3): idempotent, out of this cycle; exhaustion reshuffles the full set
       if (!state.favorites.includes(id)) state.favorites.push(id);
+      if (navigator.vibrate) navigator.vibrate(12); // progressive: Android only, same call as the wheel landing
       deckQueue = advanceQueue(deckQueue, true);
       save();
       updateNav();

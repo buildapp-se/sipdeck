@@ -96,3 +96,21 @@ test('removing a favorite can be undone', async ({ page }) => {
   await expect.poll(() => favorites(page)).toEqual(saved);
   await expect(page.locator('.fav-row')).toHaveCount(1);
 });
+
+test('a new shuffle puts the cards just seen at the back', async ({ page }) => {
+  await page.goto('/');
+  const base = page.locator('select[data-filter="base"]');
+  await base.selectOption('gin'); // 19 cards
+  const top = () => page.locator('#deck .card[data-depth="0"]:not([data-leaving])').getAttribute('data-id');
+  const seen = [];
+  for (let i = 0; i < 12; i++) {
+    seen.push(await top());
+    await page.locator('[data-deck="-1"]').click();
+    await expect.poll(top).not.toBe(seen[i]);
+  }
+  await base.selectOption('');
+  await base.selectOption('gin'); // each filter change shuffles again
+  const shown = await page.locator('#deck .card').evaluateAll(cards => cards.map(card => card.dataset.id));
+  expect(shown).toHaveLength(4);
+  expect(shown.filter(id => seen.includes(id))).toEqual([]); // by chance alone: under 1 in 100
+});
