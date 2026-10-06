@@ -6,10 +6,10 @@ build, no dependencies. English + Swedish.
 
 ## Current state
 
-The catalog contains 95 source-audited recipes, 152 normalized ingredients and 95
+The catalog contains 95 source-audited recipes, 159 ingredients (seven of them things to have at home rather than recipe lines) and 95
 optimized, visually reviewed 640×800 WebP illustrations, all under 68 kB. Every recipe
 links to its specific published source; amounts, garnishes, glass and method are
-checked against those pages. Filters, pantry, essential-ingredient
+checked against those pages. Filters, At home (what you have, with reviewed matching and an optional Flaskor link), essential-ingredient
 makeability, EN/SV switching and glass-specific missing-art fallbacks are implemented.
 Favorites use compact art rows and a continuous recipe view with checkmarks, clipboard
 copy, published-recipe links and mobile Back navigation. Card gestures suppress native

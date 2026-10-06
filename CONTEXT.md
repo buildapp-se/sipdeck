@@ -4,7 +4,34 @@ Sipdeck helps a person discover a suitable drink to make or order through playfu
 
 ## Language
 
-**Accepted direction, not implemented (2026-10-04):** [Flaskor ADR 0001](../flaskor/docs/adr/0001-sipdeck-hemma.md) is the shared specification for At home, inventory versus recipe requirements, and optional Flaskor household linking. Existing behavior below remains the current implementation until verified. Task status lives in BACKLOG.md.
+**At home, built on the branch `feat/hemma-flaskor`, not live (2026-10-06):** [Flaskor ADR 0001](../flaskor/docs/adr/0001-sipdeck-hemma.md) is the shared specification for At home, inventory versus recipe requirements, and optional Flaskor household linking; its section Genomförande records how it was built. Task status lives in BACKLOG.md.
+
+**At home / Hemma**:
+The view of what the person has, replacing the pantry. Holdings come first, in Bar cabinet / Barskåp and Other ingredients / Övriga ingredienser.
+_Avoid_: Pantry, Skafferi (the old name; `#/skafferi` still opens the view)
+
+**Inventory ingredient**:
+Something a person has at home, such as mint or a whole lime. Distinct from what a recipe asks for.
+
+**Recipe requirement**:
+An ingredient line in a recipe: the ingredient, its preparation and sometimes a specific product. Never rewritten to make matching easier.
+
+**Covers**:
+An inventory ingredient covers a requirement when it is the same thing, when the requirement is prepared from it (lime juice from a lime), or when it is a more specific product that meets it (Cointreau for triple sec). Directed and reviewed in `drinks.json`.
+_Avoid_: Matches by name, similar
+
+**Swap / Ersättning**:
+A replacement shown with its explanation next to a missing requirement. It never makes the drink count as makeable.
+_Avoid_: Substitute counted as the original
+
+**Source**:
+Where an ingredient at home comes from: the person's own mark, or a named bottle from a linked Flaskor household. Kept apart, so removing one never removes the other.
+
+**Flaskor link**:
+The optional connection between one Sipdeck account and one Flaskor household, made with a one-time code from a member of that household. Never made from an email address.
+
+**Shopping country / Inköpsland**:
+Where the person shops, a setting of its own. Never inferred from the language.
 
 **Spinning wheel**:
 A visual bar-order chooser whose sectors represent possible drink outcomes and which selects one outcome when spun.

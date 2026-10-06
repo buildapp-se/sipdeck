@@ -4,4 +4,4 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   Content-Security-Policy: frame-ancestors 'none'; base-uri 'self'; object-src 'none'
-  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' https://www.gstatic.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://sipdeck-api.sipdeck.workers.dev https://*.googleapis.com; frame-src 'self' https://sipdeck.firebaseapp.com; frame-ancestors 'none'; base-uri 'self'; object-src 'none'
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' https://www.gstatic.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://sipdeck-api.sipdeck.workers.dev https://flaskor-api.buildapp.se https://*.googleapis.com; frame-src 'self' https://sipdeck.firebaseapp.com; frame-ancestors 'none'; base-uri 'self'; object-src 'none'

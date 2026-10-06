@@ -453,12 +453,12 @@ const workerSource = fs.readFileSync(path.join(__dirname, 'worker', 'worker.js')
 // bumped 120kB -> 140kB 2026-09-25 for design review batch 6 (F2 own-drink form, local store + per-drink sync, F3 similarity
 // check, suggestion form and status; about 6,5 kB of it is the new EN + SV copy)
 // bumped 140kB -> 150kB 2026-09-25, owner's call: wheel extras, spin profiles, level 5 lines, mood card over the wheel
-// bumped 150kB -> 190kB 2026-10-06 for ADR 0001 (At home, inventory matching, migration, optional Flaskor link,
+// bumped 150kB -> 185kB 2026-10-06 for ADR 0001 (At home, inventory matching, migration, optional Flaskor link,
 // shopping help), decided by the agent in chunk mode and listed for the owner in HANDOFF.md
 // Mät LF-storleken, alltså det git lagrar och GitHub Pages levererar. En Windows-
 // arbetskopia checkas ut med CRLF och lägger på ~1,8 kB som aldrig deployas.
-check(Buffer.byteLength(appSource.split('\r').join('')) < 190000,
-  'bundle budget: app.js stays under 190 kB unminified');
+check(Buffer.byteLength(appSource.split('\r').join('')) < 185000,
+  'bundle budget: app.js stays under 185 kB unminified');
 // T6: own authDomain on buildapp.se (same site, so a redirect survives blocked third-party storage),
 // and only an installed app redirects; a normal tab keeps the popup
 check(appSource.includes("authDomain: 'sipdeck.buildapp.se'"), 'auth: authDomain is sipdeck.buildapp.se');
