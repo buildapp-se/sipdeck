@@ -1,10 +1,10 @@
 ---
 schemaVersion: 1
 status: active
-currentGoal: Keep Sipdeck live and pick up v2 items as they become worth doing
-nextAction: Watch the first real use of own drinks and suggestions
+currentGoal: At home and the optional Flaskor link (ADR 0001) are built on the branch feat/hemma-flaskor, not live
+nextAction: Owner reviews the PR and approves the rollout in the order in ../flaskor/HANDOFF.md (this Worker before this frontend), then owner QA with a real sign-in
 blockers: []
-reviewedAt: 2026-10-04
+reviewedAt: 2026-10-06
 ---
 
 **Drift:** riktiga användare finns bara på buildapp.se/sipdeck (GitHub Pages från `main`, A-posterna 185.199.108–111.153). sipdeck.pages.dev har aldrig länkats ut; den och grenaliasen `<gren>.sipdeck.pages.dev` är granskningsytor. Merge till `main` är det som går live och det enda som kräver ägarens ja; en deploy till pages.dev behöver inget eget ja (ägaren 2026-09-25).
@@ -12,6 +12,25 @@ reviewedAt: 2026-10-04
 **2026-09-24, audits från aifabriken (`tools/audit-run.mjs`).** Actions: `persist-credentials: false` på checkout i ci.yml. Nya auditrader Secrets (pass, två Firebase-nycklar granskade som publika i `.gitleaksignore`) och Actions (pass). Gick live med PR #19.
 
 # Handoff: Sipdeck
+
+## 2026-10-06: Hemma och Flaskor-kopplingen byggda på gren, **inte live**
+
+ADR 0001 byggd i chunkläge på grenen `feat/hemma-flaskor`. Inget är mergat eller deployat. Teknikvalen står i [ADR 0001 §Genomförande](../flaskor/docs/adr/0001-sipdeck-hemma.md); **utrullningsordning, återställning, ägar-QA och valen som togs åt ägaren står i [Flaskors HANDOFF.md](../flaskor/HANDOFF.md)** och upprepas inte här.
+
+- **Modell:** `drinks.json` har relationerna `form`, `madeFrom`, `metBy`, `swap` och `shelf` på ingredienserna, sju nya saker man kan ha hemma (citron, apelsin, mynta, ananas, ägg, honung, torrt mousserande vin) och listan `products` (77 regler för flaskor från Flaskor). Katalogen: 95 drinkar, 159 ingredienser. Rena funktioner överst i `app.js`: `coverage`, `swapFor`, `bridgeHome`, `classify`, `homeSources`, `homeGives`, `shopping`, `normalizeHome`.
+- **State:** nyckeln `home` i bloben. `pantry` lämnas orörd och är migreringens indata, se `bridgeHome`. `settle()` kör bron varje gång ett state kommer in (katalogen laddad, inloggningens hämtning, synkkonflikt). `reconcileState` och `mergeState` bär `home`; nyckelordningen måste vara densamma som i `normalizeState`, eftersom synken jämför state som JSON-text.
+- **Worker:** `PUT /state` bär vidare lagrad `home` när en klient skickar bloben utan den. Inget schema ändrat.
+- **Vy:** `#/hemma` (gamla `#/skafferi` kvar), `#/med/<fält>` för "drinkar med det här", `#/hemma/koppla/<kod>` för kopplingskoden (koden lyfts ur adressen direkt).
+- **Flaskor-klienten:** `FLASKOR_API` i `app.js`. Ögonblicksbilden ligger i `localStorage` under `sipdeck-flaskor`, per inloggat konto, och tas bort vid utloggning, kontobyte, frånkoppling och svarskoderna `revoked` och `not_linked`. `flaskorEpoch` gör sena svar verkningslösa.
+- **Budget:** `app.js` 178,8 kB, taket höjt 150 → 185 kB (agentens val, ägaren har satt taket förut). `app.js?v=1.28`. `info.html` version 1.4 beskriver kopplingen. `_headers` Report-Only tillåter `flaskor-api.buildapp.se`.
+- **Verifierat 2026-10-06:** `npm test` 6 194 + Worker 39 (nya: `/state` med gammal klient). e2e 54/54 i installerad Chrome lokalt (`tests/home.spec.js` ny: migrering i webbläsaren, samma matchning i alla vyer, gäst på 390 px svenska och 1 280 px engelska, kopplat läge, sista flaskan slut, nätfel, 401, återkallad, sent svar efter frånkoppling, utloggning, kod i adressen, kontextlänk, inköpshjälp). Kontrasttestet fångade en för ljus text i mörkt läge på Hemma, rättad. Skärmbilder: `node img-src/homeshot.cjs http://127.0.0.1:4199 <mapp>`.
+- **CI på PR #25 grön 2026-10-06 kl. 16:50** (körning 37481474508: Chromium, Firefox, WebKit och två mobilprofiler). Firefox även lokalt, 53 godkända och 1 överhoppad.
+- **Overifierat:** riktig inloggning mot Flaskors Worker (Firebase och API:t är stubbade i e2e), iPhone.
+- **Fällor:** `save()` körs innan resten av modulen är initierad, så `haveMemo` deklareras före den. `have()` ger en `Set`, `sources()` en `Map`: `missingIngredients` vill ha `Set` eller lista. Python-servern tappar ibland en anslutning vid 8 parallella e2e-arbetare; kör `--workers=4`.
+
+## 2026-10-04: Hemma och Flaskor, beslutad byggöverlämning
+
+Patrik godkände riktningen och beställde docs samt en ny Claude-byggprompt. [ADR 0001 i Flaskor](../flaskor/docs/adr/0001-sipdeck-hemma.md) är gemensam specifikation, BACKLOG äger Sipdecks arbetssteg. Bara dokumentation ändrad, funktionen är inte byggd. Utveckla med lokal testdata, bevara gästläge, egna drinkar och gamla klienters data. Befintlig ägar-QA kvarstår. Ingen merge till main eller produktionsdeploy är godkänd av denna docs-beställning.
 
 ## 2026-10-04: F4, generiska bilder för egna drinkar, **live** (PR #23, squash `0b4702b`)
 

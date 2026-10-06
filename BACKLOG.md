@@ -287,11 +287,26 @@ counts.
 - [ ] **Batch volumes**: total liquid across X drinks and how much goes in each glass, so a
   batch can be mixed as X litres and split into Y per glass.
 
+## Hemma och Flaskor, beslutat 2026-10-04
+
+Gemensam specifikation: [Flaskor ADR 0001](../flaskor/docs/adr/0001-sipdeck-hemma.md). Byggt 2026-10-06 på grenen `feat/hemma-flaskor`, lokalt verifierat, **inte live**: merge till `main` väntar på ägarens ja. Flaskors backlog äger flask-/hushållssidan; uppgifterna här äger Sipdecks sida.
+
+- [x] `[P1]` (byggt 2026-10-06, `coverage` i `app.js`, relationerna i `drinks.json`) Inventarieingredienser skilda från receptkrav; riktade relationer för uppfyller, beredning och tydligt märkta ersättningar. Samma matcher i alla receptvyer och egna drinkar.
+- [x] `[P1]` (byggt 2026-10-06, `bridgeHome`, Workerns `PUT /state`) Versionsstyrd migrering av befintligt skafferi, separata tillgänglighetskällor och konflikt-/bakåtkompatibilitet utan dataförlust.
+- [x] `[P1]` (byggt 2026-10-06, `#/hemma`) Hemma/At home med innehav först, Barskåp och Övriga ingredienser, sök/lägg till, förklarad matchning och gamla djuplänkar kvar.
+- [x] `[P1]` (byggt 2026-10-06, klienten mot Flaskors Worker, `tests/home.spec.js` med stubbat API) Valfri Flaskor-koppling med granskning av klassificering, källmärkning, uppdatering, nätfel, frånkoppling och återkallad behörighet. Kontextlänk från Flaskor (`#/med/`).
+- [x] `[P2]` (byggt 2026-10-06) Inköpshjälp efter favoritdrinkar, separat inköpsland och svensk Systembolagsväg med produktval före önskelista.
+- [x] `[P1]` (2026-10-06) ADR:s acceptanstester i `test.js` och `tests/home.spec.js`, browser-QA lokalt, utrullningsplan i Flaskors `HANDOFF.md`.
+- [ ] `[P1]` **Ägaren:** granska PR:n och godkänn merge enligt ordningen i Flaskors `HANDOFF.md` (Workern före frontenden). Sedan ägar-QA med riktig inloggning.
+- [ ] `[P2]` Ägarens läsning av relationerna och produktreglerna i `drinks.json` (sammanfattade i Flaskors `HANDOFF.md` §Val tagna). De är granskade av agenten, inte av en bartender.
+- [ ] `[P3]` Hemma-listans grupper följer ingrediensens `group`, så bitter och vin ligger under Skafferivaror i bläddringen men i Barskåp i innehavet. Flytta dem om det stör.
+
 ## Known accepted limitations
 
 - A first login without a stored sync baseline still unions local and remote lists once;
   subsequent syncs use conflict-safe three-way merge.
-- Pantry matching is id-exact: seeding discipline on ingredient ids is what makes it work.
+- Pantry matching is id-exact on `main`; the branch `feat/hemma-flaskor` replaces it under ADR 0001 (above).
+- At home on that branch: what is added in the new version is not shown by a client from before it (its `pantry` list is left as it was), and a different person signing in on a shared browser still merges the local state into theirs, as favorites always have.
 - No image = the drink's glass silhouette forever; acceptable for future additions and
   tracked per drink by file absence. All 93 current drinks have complete production art.
 

@@ -12,6 +12,8 @@ is the user's own to-do before going public.
 
 ## Vision
 
+**At home (built on a branch 2026-10-06, not live):** [Flaskor ADR 0001](../../flaskor/docs/adr/0001-sipdeck-hemma.md) supersedes the exact-id pantry model and the ingredient-checklist UX: the "Pantry is in v1" locked decision, the `pantry` part of the state description and Epic E below describe what is live until the branch is merged. What replaces them is specified in the ADR (its section Genomförande says how it is built) and summarised in Epic L below. Accounts remain optional for standalone use.
+
 The fastest, best-feeling way to answer "what should we drink tonight?" — at home or to
 order at a bar. Discovery feels like play (dealing cards), not like search (forms and
 lists). Personal + friends first, but every decision assumes it goes public later.
@@ -338,6 +340,25 @@ curated: user input reaches `drinks.json` only through the suggestion review bel
 - **K4 Generic art.** 8 glasses × 6 liquid colours = 48 generic illustrations in
   `img-generic/<glass>-<colour>.webp`, made with the frozen image pipeline, none
   confusable with a catalog drink.
+
+### Epic L — At home (ADR 0001, built on a branch 2026-10-06)
+
+- **L1 Matching.** `drinks.json` ingredients carry reviewed, directed relations on the requirement: `form`
+  (only a preparation of something at home), `madeFrom` (can also be prepared from it), `metBy` (a more
+  specific product meets it) and `swap` (`id`, `en`, `sv`: a labelled replacement that never counts).
+  `shelf: "bar"` puts bitters and wine in the bar cabinet. One function, `coverage`, answers every view.
+- **L2 State.** The blob gains `home`: `{ v, have, seen, flaskor, picks, country }`. `have` is the person's own
+  marks, `seen` the old `pantry` list as last migrated, `picks` their choice of ingredient per Flaskor product,
+  `country` where they shop (`''` or `'SE'`). `pantry` stays in the blob untouched as the migration's input.
+  The Worker carries `home` forward when a client from before it writes the blob.
+- **L3 View.** `#/hemma` (and the old `#/skafferi`): the count, holdings by shelf with their sources, Almost
+  there, the Flaskor card, search by ingredient name in both languages or by product name, the full grouped
+  list folded away, shopping help. `#/med/<fields>` lists the drinks an ingredient or a bottle helps with.
+- **L4 Flaskor.** Optional. `products` in `drinks.json` is the ordered, reviewed rule list that says which
+  ingredient a bottle gives: a string is certain, a list is the person's choice, `null` gives none, and an
+  unmatched spirit is kept unclassified. Bottles are a cached snapshot per signed-in account, never synced.
+- **L5 Shopping help.** Per missing ingredient, the favorites it opens alone and the ones it is one of
+  several for. With Sweden chosen, bar-cabinet items link to the product search in Flaskor.
 
 ## Non-goals (v1)
 

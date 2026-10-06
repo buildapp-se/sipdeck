@@ -13,10 +13,12 @@ async function seed(page, state) {
 test('pantry: search filters in place, count is live, almost-there comes first', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await seed(page, {});
-  await page.goto('/#/skafferi');
+  await page.goto('/#/skafferi'); // the pantry's old address still opens At home
+  await expect(page.locator('h1')).toHaveText('Hemma');
   await expect(page.locator('#pantryCount')).toHaveText('Du kan blanda 0 drinkar');
-  await expect(page.locator('#pantryAlmost')).toBeEmpty(); // an empty pantry is not "almost" anything
+  await expect(page.locator('#pantryAlmost')).toBeEmpty(); // an empty home is not "almost" anything
 
+  await page.locator('#homeAll summary').click(); // browsing every ingredient is still there, folded away
   const gin = page.locator('[data-pantry="gin"]');
   await gin.check();
   await expect(gin).toBeFocused(); // the list is patched, never re-rendered
@@ -24,18 +26,13 @@ test('pantry: search filters in place, count is live, almost-there comes first',
   const almostTop = await page.locator('#pantryAlmost').boundingBox();
   const groupTop = await page.locator('.pantry-group').first().boundingBox();
   expect(almostTop.y).toBeLessThan(groupTop.y);
+  // what is at home comes before everything else
+  expect((await page.locator('#homeHave .home-row').first().boundingBox()).y).toBeLessThan(almostTop.y);
 
-  // the most used ingredient leads each group
-  const leaders = await page.evaluate(async () => {
-    const db = await (await fetch('drinks.json')).json();
-    const counts = {};
-    db.drinks.forEach(d => new Set(d.ingredients.map(l => l.id)).forEach(id => { counts[id] = (counts[id] || 0) + 1; }));
-    return Array.from(document.querySelectorAll('.pantry-group')).map(g => {
-      const ids = Array.from(g.querySelectorAll('[data-pantry]')).map(i => i.dataset.pantry);
-      return counts[ids[0]] === Math.max(...ids.map(id => counts[id]));
-    });
-  });
-  expect(leaders.every(Boolean)).toBe(true);
+  // the most used ingredient leads its group, and preparations are not things to own
+  expect(await page.locator('.pantry-group').first().locator('[data-pantry]').first().getAttribute('data-pantry')).toBe('gin');
+  await expect(page.locator('[data-pantry="mint-leaves"], [data-pantry="lime-wheel"]')).toHaveCount(0);
+  await expect(page.locator('[data-pantry="mint"]')).toHaveCount(1);
 
   await page.locator('#pantrySearch').fill('lime');
   const shown = page.locator('.pantry-item:visible');
@@ -69,7 +66,8 @@ test('pantry: almost-there shows its count and "show all" wraps the cards downwa
   const last = await rows.nth(n - 1).boundingBox();
   expect(last.x + last.width).toBeLessThanOrEqual(390); // nothing runs off to the right any more
 
-  await page.locator('[data-pantry="gin"]').click(); // checking an item keeps the expanded list
+  await page.locator('#homeAll summary').click();
+  await page.locator('[data-pantry="gin"]').click(); // unchecking an item keeps the expanded list
   await expect(page.locator('.pantry-almost-list.all')).toHaveCount(1);
 });
 
@@ -146,9 +144,10 @@ test('page change animates #view on a route change only, never for the wheel', a
   await expect(page.locator('#deck .card[data-depth="0"]')).toBeVisible();
   expect(await anims()).toBe(0);
 
-  await page.locator('#nav a[href="#/skafferi"]').click();
+  await page.locator('#nav a[href="#/hemma"]').click();
   await expect(page.locator('#pantryCount')).toBeVisible();
   expect(await anims()).toBe(1);
+  await page.locator('#homeAll summary').click();
   await page.locator('[data-pantry="gin"]').check(); // within the route: no page change
   await page.locator('#nav a[href="#/"]').click();
   await expect(page.locator('#deck .card[data-depth="0"]')).toBeVisible();

@@ -3,7 +3,7 @@
 // ---------- string table (EN + SV) — every UI string routes through t(), none hardcoded in markup ----------
 const STRINGS = {
   en: {
-    nav_deck: 'Deck', nav_favorites: 'Favorites', nav_pantry: 'Pantry', nav_settings: 'Settings',
+    nav_deck: 'Deck', nav_favorites: 'Favorites', nav_pantry: 'At home', nav_settings: 'Settings',
     nav_label: 'Main navigation',
     wheel_entry: 'Pick for me', wheel_title: 'Pick for me', wheel_back: 'Back',
     wheel_sound_on: 'Sound on', wheel_sound_off: 'Sound off',
@@ -33,14 +33,34 @@ const STRINGS = {
     ingredient_check_hint: 'Check off ingredients as you mix.',
     check_ingredient: 'Check off', copy_recipe: 'Copy recipe',
     copied: 'Copied!', copy_failed: 'Could not copy', servings_copy: 'servings', source_label: 'Source',
-    pantry_title: 'Pantry',
+    pantry_title: 'At home',
     pantry_empty: 'No ingredients are used by the current drinks.',
-    pantry_intro: 'Check off what you have. Optional garnishes never block a match.',
+    pantry_intro: 'Tick what you have. Optional garnishes never block a match.',
     pantry_group_spirits: 'Spirits', pantry_group_liqueurs: 'Liqueurs',
     pantry_group_fresh: 'Fresh & mixers', pantry_group_pantry: 'Pantry staples',
     pantry_almost_title: 'Almost there', pantry_almost_all: 'Show all', pantry_almost_fewer: 'Show fewer',
-    pantry_search: 'Search ingredients', pantry_search_empty: 'No ingredient matches that search.',
+    pantry_search: 'Search ingredient or product', pantry_search_empty: 'No ingredient matches that search.',
     pantry_count_one: 'You can mix 1 drink', pantry_count_many: 'You can mix {n} drinks',
+    home_add: '+ Add', home_add_title: 'Add', home_all: 'Browse all ingredients', home_bar: 'Bar cabinet', home_other: 'Other ingredients',
+    home_empty: 'Nothing here yet. Search below and add what you have at home.',
+    home_gives: 'Also covers: ', home_from: 'From Flaskor: ', home_more: 'and {n} more', home_own: 'Also added by you', home_remove: 'Remove',
+    swap_with: 'swap: {name}', swap_note: 'Swap: {by} instead of {name}.', via: 'via {name}',
+    flaskor_lead: 'Optional: keep your bottles in Flaskor and they count as ingredients here. It needs an account in both apps, and nothing is linked by email address.',
+    flaskor_login: 'Sign in under Settings first', flaskor_how: 'In Flaskor, open Account and choose Link Sipdeck.',
+    flaskor_open: 'Open Flaskor', flaskor_code: 'Link code from Flaskor', flaskor_link: 'Link',
+    flaskor_confirm: 'Link the Flaskor household to {email}? Sipdeck then sees which bottles you have, never prices or notes.',
+    flaskor_household: 'Linked household: {name}', flaskor_updated: 'Updated {time}', flaskor_loading: 'Fetching from Flaskor...',
+    flaskor_stale: 'Could not reach Flaskor. Showing what was fetched {time}.', flaskor_failed: 'Could not reach Flaskor. Try again.',
+    flaskor_refresh: 'Update', flaskor_unlink: 'Disconnect',
+    flaskor_revoked: 'The link to Flaskor is gone. What you added yourself is untouched.',
+    flaskor_bad_code: 'That code is no longer valid. Create a new one in Flaskor.',
+    flaskor_review: 'Needs your choice · {n}', flaskor_all: 'All bottles from Flaskor · {n}',
+    flaskor_choose: 'Choose ingredient', flaskor_auto: 'Back to the reviewed match', flaskor_nothing: 'Gives no ingredient',
+    shop_title: 'Shopping help', shop_lead: 'What your favorites are missing, the most useful first.',
+    shop_opens: 'Opens {names}', shop_needs_one: 'One of several missing for 1 favorite', shop_needs: 'One of several missing for {n} favorites',
+    shop_country: 'Where you shop', shop_none: 'Not set', shop_se: 'Sweden', shop_pick: 'Choose product',
+    with_title: 'Drinks with {name}', with_choose: 'Sipdeck cannot tell which ingredient this bottle is. Choose one:',
+    with_unknown: 'Sipdeck does not know which ingredient this bottle is.', with_none: 'No drink uses that ingredient.', with_can: 'You have the ingredients',
     settings_sync: 'Sync between devices',
     settings_title: 'Settings',
     settings_lang: 'Language', settings_unit: 'Unit',
@@ -123,7 +143,7 @@ const STRINGS = {
     wheel_pick_below: 'Välj ett läge', wheel_change: 'Byt läge', wheel_recipe: 'Visa recept',
     wheel_loading: 'Förbereder hjulet...', wheel_error: 'Kunde inte ladda hjulet. Ladda om sidan för att försöka igen.',
     wheel_spinning: 'Hjulet snurrar', wheel_ready: 'Hjulet är redo att snurra',
-    nav_deck: 'Kortlek', nav_favorites: 'Favoriter', nav_pantry: 'Skafferi', nav_settings: 'Inställningar',
+    nav_deck: 'Kortlek', nav_favorites: 'Favoriter', nav_pantry: 'Hemma', nav_settings: 'Inställningar',
     nav_label: 'Huvudnavigering',
     deck_empty: 'Inga drinkar än. Kortleken delas ut när drinks.json finns.',
     deck_loading: 'Delar ut kortleken...',
@@ -145,14 +165,34 @@ const STRINGS = {
     ingredient_check_hint: 'Bocka av ingredienserna medan du blandar.',
     check_ingredient: 'Bocka av', copy_recipe: 'Kopiera receptet',
     copied: 'Kopierat!', copy_failed: 'Kunde inte kopiera', servings_copy: 'portioner', source_label: 'Källa',
-    pantry_title: 'Skafferi',
+    pantry_title: 'Hemma',
     pantry_empty: 'Inga ingredienser används av de aktuella drinkarna.',
     pantry_intro: 'Bocka av vad du har. Valfri garnering stoppar aldrig en träff.',
     pantry_group_spirits: 'Sprit', pantry_group_liqueurs: 'Likörer',
     pantry_group_fresh: 'Färskt och blanddryck', pantry_group_pantry: 'Skafferivaror',
     pantry_almost_title: 'Nästan klart', pantry_almost_all: 'Visa alla', pantry_almost_fewer: 'Visa färre',
-    pantry_search: 'Sök ingrediens', pantry_search_empty: 'Ingen ingrediens matchar sökningen.',
+    pantry_search: 'Sök ingrediens eller produkt', pantry_search_empty: 'Ingen ingrediens matchar sökningen.',
     pantry_count_one: 'Du kan blanda 1 drink', pantry_count_many: 'Du kan blanda {n} drinkar',
+    home_add: '+ Lägg till', home_add_title: 'Lägg till', home_all: 'Bläddra bland alla ingredienser', home_bar: 'Barskåp', home_other: 'Övriga ingredienser',
+    home_empty: 'Inget här än. Sök nedan och lägg till det du har hemma.',
+    home_gives: 'Räcker även till: ', home_from: 'Från Flaskor: ', home_more: 'och {n} till', home_own: 'Även tillagd av dig', home_remove: 'Ta bort',
+    swap_with: 'ersätt: {name}', swap_note: 'Ersättning: {by} i stället för {name}.', via: 'via {name}',
+    flaskor_lead: 'Valfritt: håll reda på flaskorna i Flaskor, så räknas de som ingredienser här. Det kräver konto i båda apparna, och inget kopplas via e-postadress.',
+    flaskor_login: 'Logga in under Inställningar först', flaskor_how: 'Öppna Konto i Flaskor och välj Koppla Sipdeck.',
+    flaskor_open: 'Öppna Flaskor', flaskor_code: 'Kopplingskod från Flaskor', flaskor_link: 'Koppla',
+    flaskor_confirm: 'Koppla Flaskor-hushållet till {email}? Sipdeck ser då vilka flaskor ni har, aldrig priser eller anteckningar.',
+    flaskor_household: 'Kopplat hushåll: {name}', flaskor_updated: 'Uppdaterad {time}', flaskor_loading: 'Hämtar från Flaskor...',
+    flaskor_stale: 'Kunde inte nå Flaskor. Visar det som hämtades {time}.', flaskor_failed: 'Kunde inte nå Flaskor. Försök igen.',
+    flaskor_refresh: 'Uppdatera', flaskor_unlink: 'Koppla från',
+    flaskor_revoked: 'Kopplingen till Flaskor är borta. Det du lagt till själv är orört.',
+    flaskor_bad_code: 'Koden gäller inte längre. Skapa en ny i Flaskor.',
+    flaskor_review: 'Behöver ditt val · {n}', flaskor_all: 'Alla flaskor från Flaskor · {n}',
+    flaskor_choose: 'Välj ingrediens', flaskor_auto: 'Tillbaka till granskad matchning', flaskor_nothing: 'Ger ingen ingrediens',
+    shop_title: 'Inköpshjälp', shop_lead: 'Det dina favoriter saknar, det nyttigaste först.',
+    shop_opens: 'Öppnar {names}', shop_needs_one: 'En av flera som saknas för 1 favorit', shop_needs: 'En av flera som saknas för {n} favoriter',
+    shop_country: 'Inköpsland', shop_none: 'Inte valt', shop_se: 'Sverige', shop_pick: 'Välj produkt',
+    with_title: 'Drinkar med {name}', with_choose: 'Sipdeck kan inte avgöra vilken ingrediens flaskan är. Välj en:',
+    with_unknown: 'Sipdeck vet inte vilken ingrediens den här flaskan är.', with_none: 'Ingen drink använder den ingrediensen.', with_can: 'Du har ingredienserna',
     settings_sync: 'Synka mellan enheter',
     settings_title: 'Inställningar',
     settings_lang: 'Språk', settings_unit: 'Enhet',
@@ -251,7 +291,20 @@ function defaultState(lang) {
       wheelLabels: false,
       seenFlipHint: false,
     },
+    home: normalizeHome(),
   };
+}
+
+// At home (ADR 0001): `have` is what the person marked by hand, `seen` the old pantry list as last migrated
+// (see bridgeHome), `flaskor` whether this account linked a Flaskor household, `picks` the person's own
+// choice of ingredient per Flaskor product, `country` where they shop. Old clients drop this key; the
+// Worker carries it forward on their writes.
+function normalizeHome(raw) {
+  const h = raw && typeof raw === 'object' ? raw : {}, picks = {};
+  const list = v => Array.isArray(v) ? Array.from(new Set(v.filter(x => typeof x === 'string'))) : [];
+  if (h.picks && typeof h.picks === 'object') Object.keys(h.picks).slice(0, 500)
+    .forEach(key => { if (typeof h.picks[key] === 'string') picks[key] = h.picks[key]; });
+  return { v: 1, have: list(h.have), seen: list(h.seen), flaskor: h.flaskor === true, picks, country: h.country === 'SE' ? 'SE' : '' };
 }
 
 // Beer and wine (with the bottle) are opt-in in the wheel, shots start on (owner 2026-09-25). Water and Red Bull stay.
@@ -279,6 +332,7 @@ function normalizeState(raw, lang) {
       wheelLabels: rs.wheelLabels === true,
       seenFlipHint: rs.seenFlipHint === true,
     },
+    home: normalizeHome(raw.home),
   };
 }
 
@@ -359,17 +413,33 @@ function matchesFilters(drink, filters) {
   return drink.base === f.base;
 }
 
-function canMake(drink, pantry) {
-  const have = pantry instanceof Set ? pantry : new Set(Array.isArray(pantry) ? pantry : []);
-  return Array.isArray(drink.ingredients) && drink.ingredients
-    .filter(line => line.essential)
-    .every(line => have.has(line.id));
+// ---------- At home (ADR 0001 in the Flaskor repo): what a person has is not what a recipe asks for ----------
+// drinks.json keeps the reviewed, directed relations on the requirement: `form` (only a preparation of
+// something at home: mint leaves of mint), `madeFrom` (can also be prepared: lime juice from a lime, never
+// the other way), `metBy` (a more specific product meets it: Cointreau for triple sec, never the other way)
+// and `swap` (a labelled replacement that is shown, never counted as having the ingredient).
+const asSet = list => list instanceof Set ? list : new Set(Array.isArray(list) ? list : []);
+function coverage(ings, have, id) {
+  const ing = (ings && ings[id]) || {};
+  if (ing.form) return have.has(ing.form) ? { how: 'made', by: ing.form } : null;
+  if (have.has(id)) return { how: 'own', by: id };
+  const made = (ing.madeFrom || []).find(x => have.has(x));
+  if (made) return { how: 'made', by: made };
+  const met = (ing.metBy || []).find(x => have.has(x));
+  return met ? { how: 'met', by: met } : null;
+}
+function swapFor(ings, have, id) {
+  return (((ings && ings[id]) || {}).swap || []).find(s => have.has(s.id)) || null;
 }
 
-function filterDrinks(drinks, filters, pantry) {
-  const have = Array.isArray(pantry) ? new Set(pantry) : null;
+function canMake(drink, pantry, ings) {
+  return Array.isArray(drink.ingredients) && !missingIngredients(drink, pantry, ings).length;
+}
+
+function filterDrinks(drinks, filters, pantry, ings) {
+  const have = pantry ? asSet(pantry) : null;
   return (Array.isArray(drinks) ? drinks : [])
-    .filter(drink => matchesFilters(drink, filters) && (!have || canMake(drink, have)));
+    .filter(drink => matchesFilters(drink, filters) && (!have || canMake(drink, have, ings)));
 }
 
 // F1: a family (drinks.json `families`) is one card in the deck and one outcome on the wheel
@@ -381,9 +451,9 @@ function groupFamilies(drinks) {
 }
 
 // one id per family: the only member that passes the filters, else a saved member, else the primary
-function deckCards(drinks, families, filters, pantry, favorites) {
+function deckCards(drinks, families, filters, pantry, favorites, ings) {
   const saved = new Set(favorites || []);
-  return groupFamilies(filterDrinks(drinks, filters, pantry)).map(group => {
+  return groupFamilies(filterDrinks(drinks, filters, pantry, ings)).map(group => {
     const family = families && families[group[0].family];
     const pick = group.length > 1 && (group.find(d => saved.has(d.id)) || group.find(d => family && d.id === family.primary));
     return (pick || group[0]).id;
@@ -417,11 +487,87 @@ function matchesSearch(haystack, query) {
   return !q || haystack.indexOf(q) !== -1;
 }
 
-function missingIngredients(drink, pantry) {
-  const have = pantry instanceof Set ? pantry : new Set(Array.isArray(pantry) ? pantry : []);
+function missingIngredients(drink, pantry, ings) {
+  const have = asSet(pantry);
   return Array.isArray(drink.ingredients)
-    ? drink.ingredients.filter(line => line.essential && !have.has(line.id))
+    ? drink.ingredients.filter(line => line.essential && !coverage(ings, have, line.id))
     : [];
+}
+
+// The old pantry list stays in the blob untouched and is the migration's input: whatever it gained or lost
+// since it was last seen is applied to home.have. Running it twice changes nothing, and an old client that
+// still edits the pantry keeps getting through.
+function bridgeHome(state, ings) {
+  const h = state.home, seen = new Set(h.seen), have = new Set(h.have);
+  const item = id => (ings[id] && ings[id].form) || id, now = new Set(state.pantry.map(item));
+  state.pantry.forEach(id => { if (!seen.has(id)) have.add(item(id)); });
+  h.seen.forEach(id => { if (!now.has(item(id))) have.delete(item(id)); });
+  h.have = Array.from(have);
+  h.seen = state.pantry.slice();
+  return state;
+}
+
+const fold = text => String(text || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const onShelf = ing => !!ing && (ing.shelf === 'bar' || ing.group === 'spirits' || ing.group === 'liqueurs');
+const bottleKey = bottle => bottle.ref || 'fl:' + bottle.id;
+
+// Which ingredient a bottle from Flaskor gives. The person's own choice first, then the reviewed product
+// rules that name a product, then an ingredient named in full on the bottle, then the category rules.
+// sure: false means the person has to choose (options may be empty); id: null with sure: true means the
+// bottle gives no cocktail ingredient. Nothing is guessed from a partial name.
+function classify(bottle, rules, ings, picks) {
+  const key = bottleKey(bottle), pick = picks && picks[key];
+  if (typeof pick === 'string') return { key, id: ings[pick] ? pick : null, sure: true, options: [], why: 'pick' };
+  const words = text => ' ' + fold(text).replace(/[^a-z0-9]+/g, ' ').trim() + ' ';
+  const name = words(bottle.name + ' ' + (bottle.producer || '')), cat = fold((bottle.category || '') + ' ' + (bottle.style || ''));
+  const from = fold((bottle.country || '') + ' ' + (bottle.region || ''));
+  const any = (list, text) => !list || list.some(x => text.includes(x));
+  const match = r => (!r.name || r.name.some(alt => alt.split(' ').every(w => name.includes(w)))) && any(r.cat, cat) && any(r.from, from);
+  let rule = (rules || []).find(r => r.name && match(r));
+  if (!rule) {
+    const own = words(bottle.name);
+    const named = Object.keys(ings).filter(id => onShelf(ings[id]) && [ings[id].en, ings[id].sv].some(n => {
+      const w = words(n);
+      return w === own || (w.length >= 8 && name.includes(w));
+    })).sort((a, b) => ings[b].sv.length - ings[a].sv.length)[0];
+    rule = named ? { is: named } : (rules || []).find(r => !r.name && match(r));
+  }
+  if (!rule) return { key, id: null, sure: bottle.kind !== 'spirit', options: [], why: 'none' };
+  if (Array.isArray(rule.is)) return { key, id: null, sure: false, options: rule.is.filter(id => ings[id]), why: 'rule' };
+  return { key, id: rule.is && ings[rule.is] ? rule.is : null, sure: true, options: [], why: 'rule' };
+}
+
+// Every ingredient at home with where it comes from: the person's own mark and each Flaskor bottle that
+// gives it. The two are never merged, so two gin bottles give gin until both are gone, and a hand-made
+// mark outlives them.
+function homeSources(home, bottles, rules, ings) {
+  const out = new Map(), at = id => out.get(id) || out.set(id, { manual: false, bottles: [] }).get(id);
+  home.have.forEach(id => { at(id).manual = true; });
+  (bottles || []).forEach(bottle => {
+    const c = classify(bottle, rules, ings, home.picks);
+    if (c.id) at(c.id).bottles.push(bottle);
+  });
+  return out;
+}
+
+// what each ingredient at home is good for beyond itself, and what to buy for a missing requirement
+function homeGives(ings) {
+  const out = {};
+  Object.keys(ings).forEach(id => [ings[id].form].concat(ings[id].madeFrom, ings[id].metBy).filter(Boolean)
+    .forEach(by => (out[by] = out[by] || []).push(id)));
+  return out;
+}
+const buyId = (ings, id) => (ings[id] && ings[id].form) || id;
+
+// Shopping help: per thing to buy, the drinks it completes on its own (opens) and the ones it is one of
+// several missing things for (needs). Uses the same matching as every other view.
+function shopping(drinks, pantry, ings) {
+  const out = {};
+  drinks.forEach(drink => {
+    const ids = Array.from(new Set(missingIngredients(drink, pantry, ings).map(line => buyId(ings, line.id))));
+    ids.forEach(id => (out[id] = out[id] || { id, opens: [], needs: [] })[ids.length === 1 ? 'opens' : 'needs'].push(drink.id));
+  });
+  return Object.values(out).sort((a, b) => b.opens.length - a.opens.length || b.needs.length - a.needs.length || a.id.localeCompare(b.id));
 }
 
 // how many drinks use each ingredient; the pantry lists the most used first in every group
@@ -440,11 +586,16 @@ function authErrorKey(err) {
 }
 
 function mergeState(local, server) { // union pantry/favorites (never lose a logged-out edit); settings stay server-wins
+  const union = (a, b) => Array.from(new Set([...a, ...b])), l = normalizeHome(local.home), s = normalizeHome(server.home);
   return {
     v: 1,
-    favorites: Array.from(new Set([...server.favorites, ...local.favorites])),
-    pantry: Array.from(new Set([...server.pantry, ...local.pantry])),
+    favorites: union(server.favorites, local.favorites),
+    pantry: union(server.pantry, local.pantry),
     settings: server.settings,
+    // only hand-made marks are stored here, so this union can never bring back a Flaskor bottle. The link
+    // and the choices belong to the account: what an earlier user left in this browser is not taken over.
+    home: { v: 1, have: union(s.have, l.have), seen: union(s.seen, l.seen), flaskor: s.flaskor,
+      picks: s.picks, country: s.country || l.country },
   };
 }
 
@@ -454,6 +605,13 @@ function reconcileState(base, local, remote) {
   const set = (before, here, there) => Array.from(new Set([...before, ...here, ...there]))
     .filter(item => here.includes(item) !== before.includes(item)
       ? here.includes(item) : there.includes(item));
+  const b = normalizeHome(base.home), l = normalizeHome(local.home), r = normalizeHome(remote.home), picks = {};
+  Object.keys(Object.assign({}, l.picks, r.picks)).forEach(key => {
+    const pick = changed(b.picks[key], l.picks[key], r.picks[key]);
+    if (typeof pick === 'string') picks[key] = pick;
+  });
+  const home = { v: 1, have: set(b.have, l.have, r.have), seen: set(b.seen, l.seen, r.seen),
+    flaskor: changed(b.flaskor, l.flaskor, r.flaskor), picks, country: changed(b.country, l.country, r.country) };
   return {
     v: 1,
     favorites: set(base.favorites, local.favorites, remote.favorites),
@@ -472,6 +630,7 @@ function reconcileState(base, local, remote) {
       wheelLabels: changed(base.settings.wheelLabels, local.settings.wheelLabels, remote.settings.wheelLabels),
       seenFlipHint: local.settings.seenFlipHint || remote.settings.seenFlipHint,
     },
+    home, // last, like normalizeState: the sync compares states as JSON text
   };
 }
 
@@ -799,6 +958,7 @@ if (typeof module !== 'undefined') module.exports = {
   formatLineAmount, drinkAsText,
   shuffle, advanceQueue, swipeDirectionForKey, BASE_FILTERS, matchesFilters, canMake, filterDrinks,
   groupFamilies, deckCards, variantDiff,
+  normalizeHome, coverage, swapFor, bridgeHome, classify, bottleKey, homeSources, homeGives, shopping, fold, onShelf,
   missingIngredients, mergeState, searchHaystack, matchesSearch, ingredientCounts, authErrorKey, AUTH_ERRORS,
   normalizeServingCount, MAX_SERVINGS,
   reconcileState,
@@ -848,11 +1008,19 @@ if (typeof document !== 'undefined') (function () {
     return fbPromise;
   }
 
+  let haveMemo = null; // what is at home, by source (see sources()); declared before the first save()
   function save() {
+    haveMemo = null;
     localStorage.setItem(KEY, JSON.stringify(state));
     if (fbUser && !deletingAccount) pushState();
   }
   save(); // persist first-run defaults immediately
+  // every state that arrives (first load, sign-in pull, a sync conflict) is migrated the same idempotent way
+  function settle() {
+    if (db) bridgeHome(state, db.ingredients);
+    haveMemo = null;
+    localStorage.setItem(KEY, JSON.stringify(state));
+  }
 
   function lang() { return state.settings.lang; }
   function unit() { return lang() === 'sv' && state.settings.unit === 'oz' ? 'cl' : state.settings.unit; }
@@ -899,9 +1067,9 @@ if (typeof document !== 'undefined') (function () {
         const data = await res.json();
         if (res.status === 409 && typeof data.etag === 'string') {
           const remote = normalizeState(data.state, lang());
-          state = syncBase ? reconcileState(syncBase, state, remote) : mergeState(state, remote);
+          state = normalizeState(syncBase ? reconcileState(syncBase, state, remote) : mergeState(state, remote), lang());
           syncEtag = data.etag;
-          localStorage.setItem(KEY, JSON.stringify(state));
+          settle();
           again = true;
         } else {
           if (!res.ok || typeof data.etag !== 'string') throw new Error(data.error || 'Synkningen misslyckades.');
@@ -921,9 +1089,9 @@ if (typeof document !== 'undefined') (function () {
       if (!res.ok || typeof data.etag !== 'string') throw new Error(data.error || 'Synkningen misslyckades.');
       const remote = normalizeState(data.state, lang());
       syncEtag = data.etag;
-      if (data.state) state = syncBase
-        ? reconcileState(syncBase, state, remote) : mergeState(state, remote);
-      localStorage.setItem(KEY, JSON.stringify(state));
+      if (data.state) state = normalizeState(syncBase
+        ? reconcileState(syncBase, state, remote) : mergeState(state, remote), lang());
+      settle();
       if (JSON.stringify(state) === JSON.stringify(remote)) rememberSync(remote, data.etag);
       else await flushState();
     } catch (e) { /* offline/blocked: stay on local state */ }
@@ -940,10 +1108,16 @@ if (typeof document !== 'undefined') (function () {
     });
     fb.onAuthStateChanged(fb.auth, async user => {
       fbUser = user;
+      authKnown = true;
+      // cached Flaskor bottles belong to one account: signing out, or in as someone else, removes them
+      if (flaskor && (!user || user.uid !== flaskor.uid)) dropFlaskor(false);
+      haveMemo = null;
       if (user) {
         localStorage.setItem(AUTH_KEY, '1');
         await pullState();
         await Promise.all([pullCustom().catch(() => {}), loadMine().catch(() => {})]);
+        // a device without a snapshot fetches once; otherwise only At home does, within its cache window
+        if (!flaskor || /^#\/(hemma|skafferi)/.test(location.hash)) refreshFlaskor();
       }
       else {
         localStorage.removeItem(AUTH_KEY);
@@ -958,8 +1132,12 @@ if (typeof document !== 'undefined') (function () {
   let db = null;       // null = loading; {ingredients, catalog, drinks = catalog + own drinks, families} once fetch resolves
   let drinksFailed = false;
   fetch('drinks.json').then(r => r.json()).then(data => {
-    db = { ingredients: data.ingredients || {}, catalog: Array.isArray(data.drinks) ? data.drinks : [], drinks: [], families: data.families || {} };
+    db = { ingredients: data.ingredients || {}, catalog: Array.isArray(data.drinks) ? data.drinks : [], drinks: [], families: data.families || {},
+      products: Array.isArray(data.products) ? data.products : [] };
     applyCustom();
+    const before = JSON.stringify(state.home);
+    settle(); // the pantry migration needs the catalog: it runs here, and again whenever a synced state arrives
+    if (JSON.stringify(state.home) !== before) save();
     render();
   }).catch(() => { drinksFailed = true; render(); });
 
@@ -977,6 +1155,7 @@ if (typeof document !== 'undefined') (function () {
       if (!db.ingredients[l.id]) db.ingredients[l.id] = { en: l.label || l.id, sv: l.label || l.id, group: 'pantry', custom: true };
     }));
     deckQueue = null;
+    haveMemo = null;
   }
   function putCustom(id, drink) {
     const old = custom.find(e => e.id === id);
@@ -1100,7 +1279,7 @@ if (typeof document !== 'undefined') (function () {
   }
 
   function deckIds() {
-    return deckCards(db.drinks, db.families, state.settings.filters, makeableOnly ? state.pantry : null, state.favorites);
+    return deckCards(db.drinks, db.families, state.settings.filters, makeableOnly ? have() : null, state.favorites, db.ingredients);
   }
 
   function ensureQueue() {
@@ -1136,7 +1315,7 @@ if (typeof document !== 'undefined') (function () {
 
   // an empty pantry means "not using the pantry", not "missing everything": no missing status then.
   // Optional lines (garnish) never count as missing, same rule as canMake.
-  function isMissing(have, line) { return state.pantry.length > 0 && line.essential && !have.has(line.id); }
+  function isMissing(have, line) { return have.size > 0 && line.essential && !coverage(db.ingredients, have, line.id); }
   function missingTag() { return `<span class="missing-tag" aria-hidden="true">${esc(t(lang(), 'missing_tag'))}</span>`; }
 
   function chipTags(ingredients, have) {
@@ -1154,7 +1333,11 @@ if (typeof document !== 'undefined') (function () {
 
   // right-hand column: missing, then the F1 diff against the primary; garnish only when nothing else shows
   function lineTag(line, missing, diff, servings) {
-    const tags = missing ? [missingTag()] : [];
+    const tags = missing ? [missingTag()] : [], h = have(), swap = missing && swapFor(db.ingredients, h, line.id);
+    const cover = !missing && line.essential && coverage(db.ingredients, h, line.id);
+    // a swap is named next to the gap it could fill; a requirement met by another product says which one
+    if (swap) tags.push(`<span class="diff-tag swap-tag">${esc(t(lang(), 'swap_with').replace('{name}', ingName(swap.id)))}</span>`);
+    if (cover && cover.how === 'met') tags.push(`<span class="diff-tag">${esc(t(lang(), 'via').replace('{name}', ingName(cover.by)))}</span>`);
     if (diff && diff.added.includes(line.id)) tags.push(`<span class="diff-tag diff-new">${esc(t(lang(), 'variant_new'))}</span>`);
     const was = diff && diff.changed[line.id];
     if (was) tags.push(`<span class="diff-tag" data-was="${esc(line.id)}">${esc(wasText(was, servings))}</span>`);
@@ -1242,7 +1425,7 @@ if (typeof document !== 'undefined') (function () {
     el.inert = depth !== 0;
     el.setAttribute('aria-keyshortcuts', 'Enter Space ArrowLeft ArrowRight');
     el.setAttribute('aria-label', drink.name);
-    const have = new Set(state.pantry);
+    const have = sources();
     const tags = chipTags(drink.ingredients, have);
     const servings = depth === 0 ? servingsFor(drink.id) : 1;
     const hint = state.settings.seenFlipHint ? '' : `<span class="flip-hint">${esc(t(lang(), 'flip_hint'))}</span>`;
@@ -1492,12 +1675,25 @@ if (typeof document !== 'undefined') (function () {
   }
 
   function missingBadge(drink) {
-    const missing = state.pantry.length ? missingIngredients(drink, state.pantry) : [];
+    const h = have(), missing = h.size ? missingIngredients(drink, h, db.ingredients) : [];
     if (!missing.length) return '';
     const text = missing.length > 2
       ? t(lang(), 'missing_many')
-      : t(lang(), 'missing_prefix') + missing.map(line => ingName(line.id)).join(', ');
+      : t(lang(), 'missing_prefix') + missing.map(line => missingName(line, h)).join(', ');
     return `<span class="fav-missing">${esc(text)}</span>`;
+  }
+  // "Cointreau (swap: Triple sec)": the swap is shown, the drink still counts as missing the original
+  function missingName(line, h) {
+    const swap = swapFor(db.ingredients, h, line.id);
+    return ingName(line.id) + (swap ? ` (${t(lang(), 'swap_with').replace('{name}', ingName(swap.id))})` : '');
+  }
+  // the explanation behind each swap on offer for this drink, below its ingredient list
+  function swapNotes(drink) {
+    const h = have();
+    return missingIngredients(drink, h, db.ingredients).map(line => {
+      const swap = h.size && swapFor(db.ingredients, h, line.id);
+      return swap ? `<p class="variant-without">${esc(t(lang(), 'swap_note').replace('{by}', ingName(swap.id)).replace('{name}', ingName(line.id)) + ' ' + (swap[lang()] || swap.en))}</p>` : '';
+    }).join('');
   }
 
   function copyText(text) {
@@ -1511,7 +1707,7 @@ if (typeof document !== 'undefined') (function () {
     if (favOpenId && !open) favOpenId = null; // favorite id vanished from db: just close, no crash
     if (open) {
       const servings = servingsFor(open.id);
-      const have = new Set(state.pantry);
+      const have = sources();
       const tags = chipTags(open.ingredients, have);
       const diff = variantDiff(open, familyPrimary(open));
       const ingredientRows = open.ingredients.map((line, i) => {
@@ -1552,7 +1748,7 @@ if (typeof document !== 'undefined') (function () {
             <h3>${esc(t(lang(), 'ingredients_title'))}</h3>
             <p class="fav-hint">${esc(t(lang(), 'ingredient_check_hint'))}</p>
             <div class="fav-ing-list">${ingredientRows}</div>
-            ${variantWithout(diff)}
+            ${variantWithout(diff)}${swapNotes(open)}
             <h3>${esc(t(lang(), 'method_title'))}</h3>
             <p class="fav-method">${esc(open.method[lang()] || open.method.en)}</p>
             ${source}
@@ -1650,44 +1846,117 @@ if (typeof document !== 'undefined') (function () {
     </form>`;
   }
 
-  function viewPantry() {
-    const title = `<h1 class="screen-title">${esc(t(lang(), 'pantry_title'))}</h1>`;
-    if (!db) return `${title}<p class="empty">${esc(t(lang(), 'deck_loading'))}</p>`;
-    const used = new Set();
-    db.drinks.forEach(drink => drink.ingredients.forEach(line => used.add(line.id)));
-    if (!used.size) return `${title}<p class="empty">${esc(t(lang(), 'pantry_empty'))}</p>`;
+  // ---------- At home (ADR 0001): what is at home comes first, then search and add; Flaskor is optional ----------
+  // ingredient id -> { manual, bottles }: the person's own marks and the Flaskor bottles, never merged
+  function sources() {
+    return haveMemo || (haveMemo = homeSources(state.home, flaskorOn() ? flaskor.bottles : [], db.products, db.ingredients));
+  }
+  function have() { return new Set(sources().keys()); }
+
+  function homeRow(id, src, gives) {
+    const names = src.bottles.map(b => b.name), also = (gives[id] || []).map(ingName).join(', ');
+    const shown = names.slice(0, 3).join(', ') + (names.length > 3 ? ' ' + t(lang(), 'home_more').replace('{n}', names.length - 3) : '');
+    return `<div class="list-card fav-row home-row">
+      <a class="fav-info" href="#/med/${encodeURIComponent('is=' + id)}">
+        <span class="name">${esc(ingName(id))}</span>
+        ${also ? `<span class="meta">${esc(t(lang(), 'home_gives') + also)}</span>` : ''}
+        ${names.length ? `<span class="meta home-src">${esc(t(lang(), 'home_from') + shown)}</span>` : ''}
+        ${names.length && src.manual ? `<span class="meta">${esc(t(lang(), 'home_own'))}</span>` : ''}
+      </a>
+      ${src.manual ? `<button class="fav-remove" data-home-remove="${esc(id)}" aria-label="${esc(t(lang(), 'home_remove') + ' ' + ingName(id))}">&times;</button>` : ''}
+    </div>`;
+  }
+
+  function homeHaveMarkup() {
+    const rows = Array.from(sources()).sort((a, b) => ingName(a[0]).localeCompare(ingName(b[0]), lang())), gives = homeGives(db.ingredients);
+    const shelf = (bar, key) => {
+      const list = rows.filter(([id]) => onShelf(db.ingredients[id]) === bar);
+      return `<h2 class="pantry-almost-title home-shelf">${esc(t(lang(), key))} · ${list.length}</h2>${list.map(([id, src]) => homeRow(id, src, gives)).join('')}`;
+    };
+    return rows.length ? shelf(true, 'home_bar') + shelf(false, 'home_other') : `<p class="empty home-empty">${esc(t(lang(), 'home_empty'))}</p>`;
+  }
+
+  // every ingredient a person can have, most used first: preparations are listed under what they are made of,
+  // and each item can be found by its name in both languages, by a product name and by a Flaskor bottle
+  function homeAllMarkup() {
+    const ings = db.ingredients, counts = {}, find = {}, gives = homeGives(ings);
+    db.drinks.forEach(drink => new Set(drink.ingredients.flatMap(line =>
+      [buyId(ings, line.id)].concat((ings[line.id] || {}).madeFrom || [], (ings[line.id] || {}).metBy || [])))
+      .forEach(id => { counts[id] = (counts[id] || 0) + 1; }));
+    Object.keys(ings).forEach(id => (ings[id].swap || []).forEach(s => { counts[s.id] = counts[s.id] || 0; }));
+    db.products.forEach(rule => { if (rule.name && typeof rule.is === 'string') find[rule.is] = (find[rule.is] || '') + ' ' + rule.name.join(' '); });
+    sources().forEach((src, id) => { find[id] = (find[id] || '') + ' ' + src.bottles.map(b => b.name).join(' '); });
     const groups = { spirits: [], liqueurs: [], fresh: [], pantry: [] };
-    used.forEach(id => {
-      const ingredient = db.ingredients[id];
-      const group = ingredient && groups[ingredient.group] ? ingredient.group : 'pantry';
-      groups[group].push(id);
-    });
-    const counts = ingredientCounts(db.drinks);
-    const fieldsets = Object.keys(groups).map(group => {
+    Object.keys(counts).filter(id => ings[id]).forEach(id => groups[groups[ings[id].group] ? ings[id].group : 'pantry'].push(id));
+    return Object.keys(groups).map(group => {
       const items = groups[group]
         .sort((a, b) => counts[b] - counts[a] || ingName(a).localeCompare(ingName(b), lang()))
-        .map(id => `<label class="pantry-item"><input type="checkbox" data-pantry="${esc(id)}"${state.pantry.includes(id) ? ' checked' : ''}> <span>${esc(ingName(id))}</span></label>`)
+        .map(id => `<label class="pantry-item" data-find="${esc(fold([ings[id].en, ings[id].sv, find[id]].concat((gives[id] || []).map(ingName)).join(' ')))}"><input type="checkbox" data-pantry="${esc(id)}"${state.home.have.includes(id) ? ' checked' : ''}> <span>${esc(ingName(id))}${gives[id] ? `<small>${esc(gives[id].map(ingName).join(', '))}</small>` : ''}</span></label>`)
         .join('');
       return items ? `<fieldset class="pantry-group"><legend>${esc(t(lang(), 'pantry_group_' + group))}</legend><div class="pantry-list">${items}</div></fieldset>` : '';
     }).join('');
-    return `${title}
-      <input type="search" id="pantrySearch" class="search-input" value="${esc(pantryQuery)}"
-        placeholder="${esc(t(lang(), 'pantry_search'))}" aria-label="${esc(t(lang(), 'pantry_search'))}">
+  }
+
+  function viewHome() {
+    const h = key => esc(t(lang(), key)), title = `<h1 class="screen-title">${h('pantry_title')}</h1>`;
+    if (!db) return `${title}<p class="empty">${h('deck_loading')}</p>`;
+    return `<div class="section-head home-head">${title}<button class="pill-btn" data-home-add>${h('home_add')}</button></div>
       <p class="pantry-count" id="pantryCount" role="status">${esc(pantryCountText())}</p>
+      <div id="homeHave">${homeHaveMarkup()}</div>
       <div id="pantryAlmost">${pantryAlmostMarkup()}</div>
-      <p class="pantry-intro">${esc(t(lang(), 'pantry_intro'))}</p>${fieldsets}<p class="empty" id="pantryNoHits" hidden>${esc(t(lang(), 'pantry_search_empty'))}</p>`;
+      <div id="homeFlaskor">${flaskorMarkup()}</div>
+      <h2 class="pantry-almost-title home-shelf">${h('home_add_title')}</h2>
+      <input type="search" id="pantrySearch" class="search-input" value="${esc(pantryQuery)}"
+        placeholder="${h('pantry_search')}" aria-label="${h('pantry_search')}">
+      <details id="homeAll"><summary>${h('home_all')}</summary>
+        <p class="pantry-intro">${h('pantry_intro')}</p>${homeAllMarkup()}</details>
+      <p class="empty" id="pantryNoHits" hidden>${h('pantry_search_empty')}</p>
+      <div id="homeShop">${shopMarkup()}</div>`;
+  }
+
+  // a change At home patches the parts that depend on it; the checklist and the search field are never
+  // re-rendered, so focus stays where the person is working
+  function patchHome() {
+    if (makeableOnly) deckQueue = null;
+    if (!$('#homeHave')) return;
+    $('#pantryCount').textContent = pantryCountText();
+    $('#homeHave').innerHTML = homeHaveMarkup();
+    $('#pantryAlmost').innerHTML = pantryAlmostMarkup();
+    $('#homeFlaskor').innerHTML = flaskorMarkup();
+    $('#homeShop').innerHTML = shopMarkup();
   }
 
   function pantryCountText() {
-    const n = db.drinks.filter(drink => canMake(drink, state.pantry)).length;
+    const h = have(), n = db.drinks.filter(drink => canMake(drink, h, db.ingredients)).length;
     return t(lang(), n === 1 ? 'pantry_count_one' : 'pantry_count_many').replace('{n}', n);
+  }
+
+  // Shopping help: what the favorites are missing, the purchase that opens most of them first. The country
+  // a person shops in is its own setting, not the language; only Sweden has a product route (through Flaskor,
+  // where a product is chosen before anything lands on the wishlist).
+  function shopMarkup() {
+    const h = have(), favs = state.favorites.map(id => db.drinks.find(d => d.id === id)).filter(Boolean);
+    const list = shopping(favs, h, db.ingredients).slice(0, 6), se = state.home.country === 'SE';
+    if (!list.length) return '';
+    const name = id => (db.drinks.find(d => d.id === id) || {}).name;
+    const rows = list.map(x => {
+      const ing = db.ingredients[x.id] || {};
+      const why = x.opens.length ? t(lang(), 'shop_opens').replace('{names}', x.opens.map(name).join(', '))
+        : t(lang(), x.needs.length === 1 ? 'shop_needs_one' : 'shop_needs').replace('{n}', x.needs.length);
+      return `<div class="list-card fav-row home-row"><span class="fav-info"><span class="name">${esc(ingName(x.id))}</span><span class="meta">${esc(why)}</span></span>
+        ${se && onShelf(ing) ? `<a class="fav-remove" href="${FLASKOR_APP}#/lagg-till?q=${encodeURIComponent(ing.buy || ing.sv)}" target="_blank" rel="noopener">${esc(t(lang(), 'shop_pick'))}</a>` : ''}</div>`;
+    }).join('');
+    const country = (code, key) => `<button data-country="${code}" aria-pressed="${state.home.country === code}"${state.home.country === code ? ' class="active"' : ''}>${esc(t(lang(), key))}</button>`;
+    return `<h2 class="pantry-almost-title home-shelf">${esc(t(lang(), 'shop_title'))}</h2>
+      <p class="pantry-intro">${esc(t(lang(), 'shop_lead'))}</p>${rows}
+      <div class="home-country"><span>${esc(t(lang(), 'shop_country'))}</span><div class="lang-toggle" role="group" aria-label="${esc(t(lang(), 'shop_country'))}">${country('', 'shop_none')}${country('SE', 'shop_se')}</div></div>`;
   }
 
   // drinks one ingredient away, first on the page but in a sideways row, so checking an item never
   // pushes the checkboxes down. An empty pantry is "not using the pantry", so no section then.
   function pantryAlmostMarkup() {
-    const almost = state.pantry.length ? db.drinks
-      .map(drink => ({ drink, missing: missingIngredients(drink, state.pantry) }))
+    const h = have(), almost = h.size ? db.drinks
+      .map(drink => ({ drink, missing: missingIngredients(drink, h, db.ingredients) }))
       .filter(x => x.missing.length === 1) : [];
     // owner 2026-09-25: the count says there are more; "show all" wraps the same cards downwards on request
     const all = almostAll && almost.length > 2, more = almost.length > 2
@@ -1697,24 +1966,166 @@ if (typeof document !== 'undefined') (function () {
       <div class="pantry-almost-list${all ? ' all' : ''}">${almost.map(({ drink, missing }) => `
         <a class="list-card pantry-almost-row" href="#/drink/${esc(drink.id)}">
           <span class="name">${esc(drink.name)}</span>
-          <span class="meta">${esc(t(lang(), 'missing_prefix') + ingName(missing[0].id))}</span>
+          <span class="meta">${esc(t(lang(), 'missing_prefix') + missingName(missing[0], h))}</span>
         </a>`).join('')}</div>` : '';
   }
 
   // the search hides items in place; the list is never re-rendered, so checkboxes keep focus
   function filterPantry() {
-    const q = pantryQuery.trim().toLowerCase();
+    const q = fold(pantryQuery.trim());
     let any = false;
+    if (q) $('#homeAll').open = true; // a search shows its hits; without one the full list stays folded away
     $('#view').querySelectorAll('.pantry-group').forEach(group => {
       let shown = 0;
       group.querySelectorAll('.pantry-item').forEach(item => {
-        item.hidden = !item.textContent.toLowerCase().includes(q);
+        item.hidden = !item.dataset.find.includes(q);
         if (!item.hidden) shown++;
       });
       group.hidden = !shown;
       any = any || shown > 0;
     });
     $('#pantryNoHits').hidden = any;
+  }
+
+  // ---------- optional Flaskor link (ADR 0001) ----------
+  // The Flaskor Worker verifies this account's own Sipdeck token and looks the link up itself: nothing is
+  // linked by email address, and nothing sent from here decides which household it is. The bottles are a
+  // cached snapshot for the signed-in account. They never enter the synced blob, so no merge can revive one.
+  const FLASKOR_API = 'https://flaskor-api.buildapp.se', FLASKOR_APP = 'https://buildapp.se/flaskor/', FLASKOR_KEY = KEY + '-flaskor';
+  let flaskor = null, flaskorStale = false, flaskorBusy = false, flaskorEpoch = 0, flaskorCode = '', flaskorNote = '';
+  let flaskorAllOpen = false, authKnown = false;
+  try { flaskor = JSON.parse(localStorage.getItem(FLASKOR_KEY) || 'null'); } catch (e) { /* unreadable = none */ }
+  if (!(flaskor && typeof flaskor.uid === 'string' && Array.isArray(flaskor.bottles))) flaskor = null;
+  // until Firebase has answered (it may be unreachable) the snapshot of the account that was signed in is trusted
+  function flaskorOn() {
+    return !!flaskor && state.home.flaskor && (fbUser ? fbUser.uid === flaskor.uid : !authKnown && localStorage.getItem(AUTH_KEY) === '1');
+  }
+  function setFlaskor(snapshot) {
+    flaskor = snapshot;
+    haveMemo = null;
+    if (snapshot) localStorage.setItem(FLASKOR_KEY, JSON.stringify(snapshot));
+    else localStorage.removeItem(FLASKOR_KEY);
+  }
+  // forget the link on this device; the new epoch turns every answer still on its way into a stale one
+  function dropFlaskor(unlinked) {
+    flaskorEpoch++;
+    flaskorStale = false;
+    setFlaskor(null);
+    if (unlinked && (state.home.flaskor || Object.keys(state.home.picks).length)) {
+      state.home.flaskor = false;
+      state.home.picks = {};
+      save();
+    }
+  }
+  async function flaskorCall(method, path, body) {
+    const token = await fbUser.getIdToken();
+    const res = await fetch(FLASKOR_API + path, { method, body: body && JSON.stringify(body),
+      headers: Object.assign({ Authorization: 'Bearer ' + token }, body ? { 'Content-Type': 'application/json' } : {}) });
+    return { ok: res.ok, status: res.status, data: res.status === 204 ? {} : await res.json().catch(() => ({})) };
+  }
+  const flaskorGone = res => !!res && ['not_linked', 'revoked'].includes(res.data.code);
+
+  // Fetched when At home opens and on the button, otherwise at most every five minutes: no polling. A network
+  // failure keeps the last good snapshot and marks it stale; only Flaskor saying the link is gone removes it.
+  async function refreshFlaskor(force) {
+    if (!fbUser || !state.home.flaskor || flaskorBusy) return;
+    if (!force && !flaskorStale && flaskorOn() && Date.now() - flaskor.at < 300000) return;
+    const epoch = flaskorEpoch, uid = fbUser.uid;
+    flaskorBusy = true;
+    patchHome();
+    const res = await flaskorCall('GET', '/api/sipdeck/bottles').catch(() => null);
+    flaskorBusy = false;
+    if (epoch === flaskorEpoch && fbUser && fbUser.uid === uid) { // a late answer never restores a link that is gone
+      if (res && res.ok && res.data.contract === 1 && Array.isArray(res.data.bottles)) {
+        flaskorStale = false;
+        setFlaskor({ uid, at: Date.now(), household: String(res.data.household || ''),
+          bottles: res.data.bottles.filter(b => b && typeof b.name === 'string' && Number.isFinite(b.id)) });
+      } else if (flaskorGone(res)) {
+        dropFlaskor(true);
+        flaskorNote = t(lang(), 'flaskor_revoked');
+      } else flaskorStale = true;
+    }
+    patchHome();
+  }
+  async function linkFlaskor(code) {
+    flaskorEpoch++;
+    flaskorCode = flaskorNote = '';
+    const res = await flaskorCall('POST', '/api/sipdeck/link', { code }).catch(() => null);
+    if (res && res.ok) {
+      state.home.flaskor = true;
+      save();
+      await refreshFlaskor(true);
+    } else flaskorNote = t(lang(), res && res.status !== 429 && res.status < 500 ? 'flaskor_bad_code' : 'flaskor_failed');
+    patchHome();
+  }
+  async function unlinkFlaskor() {
+    flaskorEpoch++; // an update still on its way must not bring the bottles back
+    flaskorNote = '';
+    const res = await flaskorCall('DELETE', '/api/sipdeck/link').catch(() => null);
+    if (res && (res.ok || flaskorGone(res))) dropFlaskor(true); // the person's own marks are not touched
+    else flaskorNote = t(lang(), 'flaskor_failed');
+    patchHome();
+  }
+
+  // one bottle and what it counts as: the reviewed match by default, the person's own choice when they make one
+  function bottlePick(b) {
+    const ings = db.ingredients, c = classify(b, db.products, ings, state.home.picks), picked = c.why === 'pick';
+    const now = c.id ? ingName(c.id) : t(lang(), c.sure ? 'flaskor_nothing' : 'flaskor_choose');
+    const option = (value, label, on) => `<option value="${esc(value)}"${on ? ' selected' : ''}>${esc(label)}</option>`;
+    const ids = Object.keys(ings).filter(id => !ings[id].form && !ings[id].custom && onShelf(ings[id]))
+      .sort((x, y) => c.options.includes(y) - c.options.includes(x) || ingName(x).localeCompare(ingName(y), lang()));
+    return `<label class="list-card home-pick"><span class="name">${esc(b.name)}</span>
+      <span class="meta">${esc([b.category, b.style].filter(Boolean).join(' · '))}</span>
+      <select data-flaskor-pick="${esc(c.key)}" aria-label="${esc(t(lang(), 'flaskor_choose') + ': ' + b.name)}">
+        ${option('auto', picked ? t(lang(), 'flaskor_auto') : now, !picked)}${option('', t(lang(), 'flaskor_nothing'), picked && !c.id)}
+        ${ids.map(id => option(id, ingName(id), picked && c.id === id)).join('')}</select></label>`;
+  }
+
+  function flaskorMarkup() {
+    const h = key => esc(t(lang(), key)), head = '<h2 class="pantry-almost-title home-shelf">Flaskor</h2>';
+    const note = flaskorNote ? `<p class="fav-hint" role="status">${esc(flaskorNote)}</p>` : '';
+    if (!fbUser) return `${head}<p class="fav-hint">${h('flaskor_lead')}</p>
+      <p class="home-actions"><a class="pill-btn" href="#/installningar">${h('flaskor_login')}</a></p>`;
+    if (flaskorCode) return `${head}<p class="fav-hint">${esc(t(lang(), 'flaskor_confirm').replace('{email}', fbUser.email || ''))}</p>
+      <p class="home-actions"><button class="pill-btn" data-flaskor="link">${h('flaskor_link')}</button><button class="account-link" data-flaskor="cancel">${h('account_cancel')}</button></p>`;
+    if (!state.home.flaskor) return `${head}<p class="fav-hint">${h('flaskor_lead')} ${h('flaskor_how')}</p>
+      <form id="flaskorForm" class="home-actions"><input class="search-input" name="code" required maxlength="64" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="${h('flaskor_code')}" placeholder="${h('flaskor_code')}"><button class="pill-btn">${h('flaskor_link')}</button></form>
+      <p class="home-actions"><a class="account-link" href="${FLASKOR_APP}#/konto" target="_blank" rel="noopener">${h('flaskor_open')}</a></p>${note}`;
+    const on = flaskorOn(), time = on ? new Date(flaskor.at).toLocaleString(lang() === 'sv' ? 'sv-SE' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' }) : '';
+    const status = flaskorBusy ? t(lang(), 'flaskor_loading')
+      : flaskorStale ? t(lang(), on ? 'flaskor_stale' : 'flaskor_failed').replace('{time}', time)
+        : on ? t(lang(), 'flaskor_updated').replace('{time}', time) : '';
+    const bottles = on ? flaskor.bottles : [], open = bottles.filter(b => !classify(b, db.products, db.ingredients, state.home.picks).sure);
+    return `${head}${on ? `<p class="fav-hint">${esc(t(lang(), 'flaskor_household').replace('{name}', flaskor.household))}</p>` : ''}
+      <p class="fav-hint" id="flaskorStatus" role="status">${esc(status)}</p>
+      <p class="home-actions"><button class="pill-btn" data-flaskor="refresh"${flaskorBusy ? ' disabled' : ''}>${h('flaskor_refresh')}</button><button class="account-link" data-flaskor="unlink">${h('flaskor_unlink')}</button></p>${note}
+      ${open.length ? `<h3 class="home-sub">${esc(t(lang(), 'flaskor_review').replace('{n}', open.length))}</h3>${open.map(bottlePick).join('')}` : ''}
+      ${bottles.length ? `<details id="flaskorAll"${flaskorAllOpen ? ' open' : ''}><summary>${esc(t(lang(), 'flaskor_all').replace('{n}', bottles.length))}</summary>${flaskorAllOpen ? bottles.map(bottlePick).join('') : ''}</details>` : ''}`;
+  }
+
+  function drinkRow(d) {
+    const can = have().size && canMake(d, have(), db.ingredients) ? `<span class="fav-missing home-can">${esc(t(lang(), 'with_can'))}</span>` : '';
+    return `<div class="list-card fav-row"><button class="fav-open" data-id="${esc(d.id)}"><span class="fav-thumb">${artMarkup(d)}</span>
+      <span class="fav-info"><span class="name">${esc(d.name)}</span><span class="meta">${esc(kindName(d))}</span>${missingBadge(d) || can}</span></button></div>`;
+  }
+
+  // "Drinks with this": the context link from a bottle in Flaskor, and from each row At home. A bottle is
+  // classified with the same rules as the link uses; it works signed out and without any link.
+  function viewWith() {
+    const p = new URLSearchParams(hid(location.hash, '#/med/') || ''), h = key => esc(t(lang(), key)), bottle = p.get('n') || '';
+    const title = text => `<h1 class="screen-title">${esc(text)}</h1><div class="fav-toolbar"><a class="fav-back" href="#/hemma">${h('nav_pantry')}</a></div>`;
+    if (!db) return `${title(bottle)}<p class="empty">${h('deck_loading')}</p>`;
+    let id = p.get('is'), c = null;
+    if (!db.ingredients[id]) {
+      c = classify({ id: 0, ref: p.get('ref'), kind: p.get('k') || 'spirit', name: bottle, producer: p.get('p'), category: p.get('c'),
+        style: p.get('s'), country: p.get('o'), region: p.get('r') }, db.products, db.ingredients, state.home.picks);
+      id = c.id;
+    }
+    if (!id) return `${title(bottle)}<p class="fav-hint">${h(c.options.length ? 'with_choose' : 'with_unknown')}</p>
+      ${c.options.map(o => `<p><a class="pill-btn" href="#/med/${encodeURIComponent('is=' + o)}">${esc(ingName(o))}</a></p>`).join('')}`;
+    const only = new Set([id]), list = db.drinks.filter(d => d.ingredients.some(l => coverage(db.ingredients, only, l.id)));
+    return `${title(t(lang(), 'with_title').replace('{name}', c && bottle ? `${bottle} (${ingName(id)})` : ingName(id)))}
+      ${list.map(drinkRow).join('') || `<p class="empty">${h('with_none')}</p>`}`;
   }
 
   function wheelMood() { return wheelData && wheelData.moods.find(mood => mood.id === wheelMoodId) || null; }
@@ -2217,7 +2628,9 @@ if (typeof document !== 'undefined') (function () {
     '#/hjul': { view: viewWheel, match: null },
     '#/sok': { view: viewSearch, match: null },
     '#/favoriter': { view: viewFavorites, match: '#/favoriter' },
-    '#/skafferi': { view: viewPantry, match: '#/skafferi' },
+    '#/hemma': { view: viewHome, match: '#/hemma' },
+    '#/skafferi': { view: viewHome, match: '#/hemma' }, // the pantry's old address keeps working
+    '#/med': { view: viewWith, match: '#/hemma' },
     '#/installningar': { view: viewSettings, match: '#/installningar' },
     '#/egen': { view: viewCustomForm, match: '#/favoriter' },
     '#/foresla': { view: viewSuggest, match: '#/favoriter' },
@@ -2242,9 +2655,15 @@ if (typeof document !== 'undefined') (function () {
 
   let lastRouteHash = null, renderedBase = null;
   function render() {
+    // a link code from Flaskor arrives in the address: it is kept in memory for the confirmation and taken out of the URL
+    const linkCode = /^#\/hemma\/koppla\/([A-Za-z0-9]{8,64})$/.exec(location.hash);
+    if (linkCode) {
+      flaskorCode = linkCode[1];
+      history.replaceState(null, '', '#/hemma');
+    }
     const hash = location.hash || '#/';
     const detailId = favoriteIdFromHash(hash) || drinkIdFromHash(hash);
-    const route = detailId !== null ? ROUTES['#/favoriter'] : (ROUTES[hash.replace(/^(#\/(?:egen|foresla))\/.+$/, '$1')] || ROUTES['#/']);
+    const route = detailId !== null ? ROUTES['#/favoriter'] : (ROUTES[hash.replace(/^(#\/(?:egen|foresla|med))\/.+$/, '$1')] || ROUTES['#/']);
     const isWheel = route.view === viewWheel, layer = $('#wheelLayer');
     const base = isWheel ? viewDeck : route.view; // the wheel is a layer over the deck, which stays in #view
     const keepBase = base === viewDeck && renderedBase === viewDeck && (isWheel || !layer.hidden);
@@ -2253,7 +2672,8 @@ if (typeof document !== 'undefined') (function () {
     document.body.classList.toggle('wheel-mode', isWheel);
     document.body.classList.toggle('search-mode', route.view === viewSearch);
     if (route.view !== viewSearch && detailId === null) searchQuery = ''; // survives fav detail peek
-    if (route.view !== viewPantry) { pantryQuery = ''; almostAll = false; }
+    if (route.view !== viewHome) { pantryQuery = ''; almostAll = false; flaskorNote = ''; }
+    else if (hash !== lastRouteHash) refreshFlaskor(); // opening At home fetches the bottles, within the cache window
     if (route.view === viewFavorites) {
       if (detailId !== favOpenId) favChecked = new Set();
       favOpenId = detailId;
@@ -2314,7 +2734,7 @@ if (typeof document !== 'undefined') (function () {
 
   // labels plus the favorites counter (T8); called on every favorites change without a render()
   function updateNav() {
-    const navLabels = { '#/': 'nav_deck', '#/favoriter': 'nav_favorites', '#/skafferi': 'nav_pantry', '#/installningar': 'nav_settings' };
+    const navLabels = { '#/': 'nav_deck', '#/favoriter': 'nav_favorites', '#/hemma': 'nav_pantry', '#/installningar': 'nav_settings' };
     document.querySelectorAll('#nav a').forEach(a => {
       a.textContent = t(lang(), navLabels[a.dataset.match]);
       if (a.dataset.match === '#/favoriter' && state.favorites.length) {
@@ -2372,6 +2792,9 @@ if (typeof document !== 'undefined') (function () {
           clearTimeout(pushTimer);
           if (pushPromise) await pushPromise;
           const user = fbUser;
+          // the link in Flaskor is keyed on this account: remove it while the token still works (best effort)
+          if (state.home.flaskor) await flaskorCall('DELETE', '/api/sipdeck/link').catch(() => {});
+          dropFlaskor(false);
           const res = await authedFetch('/account', { method: 'DELETE' });
           const data = await res.json();
           if (!res.ok) throw new Error(data.error || 'Kunde inte radera synkad data.');
@@ -2539,7 +2962,13 @@ if (typeof document !== 'undefined') (function () {
   });
 
   // <details> toggle does not bubble, so listen in the capture phase
-  $('#view').addEventListener('toggle', e => { if (e.target.id === 'account') accountOpen = e.target.open; }, true);
+  $('#view').addEventListener('toggle', e => {
+    if (e.target.id === 'account') accountOpen = e.target.open;
+    if (e.target.id === 'flaskorAll' && flaskorAllOpen !== e.target.open) { // the full bottle list is only built when asked for
+      flaskorAllOpen = e.target.open;
+      $('#homeFlaskor').innerHTML = flaskorMarkup();
+    }
+  }, true);
 
   $('#view').addEventListener('change', e => { // own-drink form: the preview follows the picked glass and colour
     const form = e.target.closest('#customForm');
@@ -2585,12 +3014,49 @@ if (typeof document !== 'undefined') (function () {
     const control = e.target.closest('[data-pantry]');
     if (!control) return;
     const id = control.dataset.pantry;
-    if (control.checked && !state.pantry.includes(id)) state.pantry.push(id);
-    if (!control.checked) state.pantry = state.pantry.filter(item => item !== id);
-    deckQueue = null;
+    // only the person's own mark changes; what a Flaskor bottle gives is not theirs to tick off here
+    state.home.have = state.home.have.filter(item => item !== id).concat(control.checked ? id : []);
     save();
-    $('#pantryCount').textContent = pantryCountText();
-    $('#pantryAlmost').innerHTML = pantryAlmostMarkup();
+    patchHome();
+  });
+
+  $('#view').addEventListener('click', e => {
+    const remove = e.target.closest('[data-home-remove]'), country = e.target.closest('[data-country]'), act = e.target.closest('[data-flaskor]');
+    if (remove) {
+      const id = remove.dataset.homeRemove, box = $(`#view [data-pantry="${CSS.escape(id)}"]`);
+      state.home.have = state.home.have.filter(item => item !== id);
+      if (box) box.checked = false;
+      save();
+      patchHome();
+      ($('#homeHave .fav-remove') || $('[data-home-add]')).focus(); // the pressed button is gone
+    } else if (e.target.closest('[data-home-add]')) {
+      $('#pantrySearch').scrollIntoView({ block: 'center' });
+      $('#pantrySearch').focus();
+    } else if (country) {
+      state.home.country = country.dataset.country;
+      save();
+      $('#homeShop').innerHTML = shopMarkup();
+      $(`#homeShop [data-country="${state.home.country}"]`).focus();
+    } else if (act) {
+      const what = act.dataset.flaskor;
+      if (what === 'refresh') refreshFlaskor(true);
+      else if (what === 'unlink') unlinkFlaskor();
+      else if (what === 'link') linkFlaskor(flaskorCode);
+      else { flaskorCode = ''; patchHome(); }
+    }
+  });
+  $('#view').addEventListener('submit', e => {
+    if (e.target.id !== 'flaskorForm') return;
+    e.preventDefault();
+    linkFlaskor(e.target.elements.code.value.trim().replace(/^.*\//, '')); // a pasted link works as well as the bare code
+  });
+  $('#view').addEventListener('change', e => {
+    const pick = e.target.closest('[data-flaskor-pick]');
+    if (!pick) return;
+    if (pick.value === 'auto') delete state.home.picks[pick.dataset.flaskorPick];
+    else state.home.picks[pick.dataset.flaskorPick] = pick.value;
+    save();
+    patchHome();
   });
 
   $('#view').addEventListener('click', e => {
