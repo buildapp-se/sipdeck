@@ -13,6 +13,18 @@ reviewedAt: 2026-10-06
 
 # Handoff: Sipdeck
 
+## 2026-10-06, kväll: nattbatch på grenen `batch/2026-10-06`, **lokalt, inte pushad, inte live**
+
+Tre kodcommits och en docs-commit ovanpå `origin/main` (`6d034ec`) i worktree `C:/dev/.worktrees/batch-2026-10-06/sipdeck`. Inget är mergat eller deployat; merge till `main` är ägarens ja.
+
+- **Satsvolymer (`286c604`):** från två glas visar kortets baksida och detaljvyn "Sats: 48 cl totalt, 24 cl per glas" (`batchText`, `[data-batch]`, uppdateras av `refreshRecipes`). Liter från 1 l, "före toppning" när receptet har en `top`-rad. Bara rader med `ml` räknas; stänk, bitar och utspädning från is ingår inte. `app.js?v=1.30`.
+- **Blandning och haptik (`07fd7fe`):** `freshFirst` lägger besökets 12 senaste toppkort sist i varje ny blandning (filterbyte eller slut på kort). Listan `seenTop` finns bara i minnet, inget nytt i `localStorage` eller synken. Spara på kortleken ger `navigator.vibrate(12)` (bara Android, **overifierat på riktig telefon**).
+- **Avbockat efter kontroll (`0c59ab0`):** W3C (1 CSS-fel kvar, `paint-order`, giltig egenskap som validatorn inte känner), 16 px-fältet (finns inte längre, decimalkomma tas emot), kanonisk domän (301 till HTTPS och headers på plats, mätt med `curl`), varianter (levererat som F1). PR #15-raden är densamma som på `docs/backlog-pr15`.
+- **Verifierat:** `npm test` 6 206 + Worker 39, e2e 55/55 i installerad Chrome lokalt (`--workers=4`). Blandningstestet faller 5 av 5 utan ändringen. Skärmbilder av satsraden på kort och detaljvy granskade på 390 px. `app.js` 180,9 kB av 185.
+- **Överhoppat, behöver ägaren:** rikare filter (chipraden är mätt att sluta mot kortets kant och `other.spec.js` låser det, så fler chips är ett designval), alkoholfritt läge (ingen drink har taggen, reglaget vore alltid tomt), fler recept och alkoholfria recept (källgranskning och bilder), CSP-skärpning (kräver riktig inloggning på en förhandsvisning), skaka för att blanda (iOS kräver en behörighetsfråga), Hemma-gruppernas placering (smaksak), service worker (villkoret "verkligt behov" är inte uppfyllt).
+- **Fynd, inte åtgärdat:** W3C Nu varnar för `aria-disabled="true"` på länken `#wheelEntry` i `index.html`, som har `href`. Det är laddningsläget och klicket stoppas i `app.js`; axe och Lighthouse klagar inte. Utanför det som var beställt.
+- **Fällor:** en heredoc i Bash-verktyget halverar dubbla omvända snedstreck och kan lämna ett ensamt CR i filen; då ser git hela filen som ändrad (`git ls-files --eol` visar `w/-text`). Skriv regex-rader med Edit i stället. Arbetskopian är CRLF, så skriptade ersättningar måste följa filens radslut. `ux-checks.mjs` saknar sin Chromium (`chromium_headless_shell-1243`); mätningen här gjordes med installerad Chrome via repots Playwright.
+
 ## 2026-10-06: Hemma och Flaskor-kopplingen, **live** (PR #25, squash `cfce434`)
 
 ADR 0001 byggd i chunkläge och utrullad 2026-10-06 på ägarens ja: Worker `909cc820` först (`/state` utan token 401), sedan PR #25. Verifierat live på buildapp.se/sipdeck: `app.js?v=1.28`, `#/skafferi` öppnar Hemma med ett gammalt state i Chrome på 390 px, `pantry` och favoriter orörda, inga konsolfel eller 4xx. D1 exporterad före till `C:/dev/sipdeck-backup-fore-hemma.sql`. Teknikvalen står i [ADR 0001 §Genomförande](../flaskor/docs/adr/0001-sipdeck-hemma.md); **utrullningsordning, återställning, ägar-QA och valen som togs åt ägaren står i [Flaskors HANDOFF.md](../flaskor/HANDOFF.md)** och upprepas inte här.
