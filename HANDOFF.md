@@ -24,7 +24,8 @@ ADR 0001 byggd i chunkläge på grenen `feat/hemma-flaskor`. Inget är mergat el
 - **Flaskor-klienten:** `FLASKOR_API` i `app.js`. Ögonblicksbilden ligger i `localStorage` under `sipdeck-flaskor`, per inloggat konto, och tas bort vid utloggning, kontobyte, frånkoppling och svarskoderna `revoked` och `not_linked`. `flaskorEpoch` gör sena svar verkningslösa.
 - **Budget:** `app.js` 178,8 kB, taket höjt 150 → 185 kB (agentens val, ägaren har satt taket förut). `app.js?v=1.28`. `info.html` version 1.4 beskriver kopplingen. `_headers` Report-Only tillåter `flaskor-api.buildapp.se`.
 - **Verifierat 2026-10-06:** `npm test` 6 194 + Worker 39 (nya: `/state` med gammal klient). e2e 54/54 i installerad Chrome lokalt (`tests/home.spec.js` ny: migrering i webbläsaren, samma matchning i alla vyer, gäst på 390 px svenska och 1 280 px engelska, kopplat läge, sista flaskan slut, nätfel, 401, återkallad, sent svar efter frånkoppling, utloggning, kod i adressen, kontextlänk, inköpshjälp). Kontrasttestet fångade en för ljus text i mörkt läge på Hemma, rättad. Skärmbilder: `node img-src/homeshot.cjs http://127.0.0.1:4199 <mapp>`.
-- **Overifierat:** riktig inloggning mot Flaskors Worker (Firebase och API:t är stubbade i e2e), Firefox och WebKit lokalt (CI kör dem på PR:n), iPhone.
+- **CI på PR #25 grön 2026-10-06 kl. 16:50** (körning 37481474508: Chromium, Firefox, WebKit och två mobilprofiler). Firefox även lokalt, 53 godkända och 1 överhoppad.
+- **Overifierat:** riktig inloggning mot Flaskors Worker (Firebase och API:t är stubbade i e2e), iPhone.
 - **Fällor:** `save()` körs innan resten av modulen är initierad, så `haveMemo` deklareras före den. `have()` ger en `Set`, `sources()` en `Map`: `missingIngredients` vill ha `Set` eller lista. Python-servern tappar ibland en anslutning vid 8 parallella e2e-arbetare; kör `--workers=4`.
 
 ## 2026-10-04: Hemma och Flaskor, beslutad byggöverlämning
