@@ -397,6 +397,33 @@ details.account[open] .account-chevron{transform:rotate(90deg)}
 .pantry-almost-row{display:flex;flex-direction:column;flex:0 0 11.5rem;text-align:left;color:#211B12}
 .pantry-almost-row:focus-visible{outline:3px solid var(--sd-accent);outline-offset:2px}
 
+/* ---- At home (ADR 0001): what is at home first, then search and add ---- */
+.home-head{margin:0 0 .5rem}
+.home-head .screen-title{margin:0}
+.home-shelf{margin-top:1.6rem}
+.home-sub{font:600 .85rem/1.3 var(--sd-font-ui);margin:1rem 0 .5rem}
+.home-row{margin-bottom:.5rem}
+.home-row .fav-info{color:inherit;text-decoration:none}
+.home-row .fav-info:focus-visible{outline:3px solid var(--sd-accent);outline-offset:2px}
+.home-row .fav-remove{min-width:44px;min-height:44px;flex-shrink:0;text-decoration:none;display:grid;place-items:center}
+.home-empty{padding:1.5rem 1rem}
+#homeHave+#pantryAlmost:not(:empty){margin-top:1.6rem}
+.home-can{color:#2F6B3F}
+.home-actions{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;margin:0 0 .8rem}
+.home-actions .search-input{flex:1 1 12rem;margin:0}
+.home-actions .account-link{min-height:44px;border:0;background:none;color:var(--sd-ink-2);text-decoration:underline;text-underline-offset:2px}
+#homeFlaskor .fav-hint{color:var(--sd-ink-2)} /* on the page background, not on paper */
+.home-pick{display:block;margin-bottom:.5rem}
+.home-pick .name,.home-pick .meta{display:block}
+.home-pick select{width:100%;min-height:44px;margin-top:.5rem;padding:0 .6rem;border:1px solid rgba(33,27,18,.18);border-radius:8px;
+  background:#fff;color:#211B12;font:500 .9rem/1.2 var(--sd-font-ui)}
+.home-country{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem 1rem;margin:1rem 0;color:var(--sd-ink-2);font-size:.9rem}
+#homeAll,#flaskorAll{margin:0 0 1.2rem}
+#homeAll>summary,#flaskorAll>summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font:600 .9rem/1.3 var(--sd-font-ui);color:var(--sd-accent)}
+#homeAll[open]>summary,#flaskorAll[open]>summary{margin-bottom:.6rem}
+.pantry-item small{display:block;margin-top:.15rem;font-weight:400;color:#6E6455}
+.swap-tag{white-space:normal;text-align:right}
+
 /* ---- full-screen search, and the topbar it shares with the wheel ---- */
 body.wheel-mode,body.search-mode{overflow:hidden}
 body.search-mode>.wrap{max-width:none;padding:0}
@@ -540,10 +567,10 @@ body.search-mode .brand,body.search-mode .bottom-nav{display:none}
 <nav class="bottom-nav" id="nav">
   <a href="#/" data-match="#/"></a>
   <a href="#/favoriter" data-match="#/favoriter"></a>
-  <a href="#/skafferi" data-match="#/skafferi"></a>
+  <a href="#/hemma" data-match="#/hemma"></a>
   <a href="#/installningar" data-match="#/installningar"></a>
 </nav>
 <div id="wheelLayer" hidden></div>
-<script src="app.js?v=1.27"></script>
+<script src="app.js?v=1.28"></script>
 </body>
 </html>

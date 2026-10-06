@@ -89,7 +89,7 @@ for (const colorScheme of ['light', 'dark']) {
       drink: { id: 'egen-a11y', custom: true, name: 'Egen sour', glass: 'coupe', color: 'citrus', bar: false, tags: [],
         ingredients: [{ id: 'gin', ml: 50, essential: true }, { id: 'flader', label: 'Fläder', ml: 10, essential: true }], method: { en: 'Skaka.' } } }])));
     const failures = [];
-    for (const route of ['#/', '#/favoriter', '#/favoriter/negroni', '#/skafferi', '#/installningar', '#/sok',
+    for (const route of ['#/', '#/favoriter', '#/favoriter/negroni', '#/skafferi', '#/hemma', '#/med/is%3Dgin', '#/installningar', '#/sok',
       '#/egen', '#/favoriter/egen-a11y', '#/egen/egen-a11y', '#/foresla/egen-a11y']) {
       await page.goto('/' + route);
       await page.waitForTimeout(300);

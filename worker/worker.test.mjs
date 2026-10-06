@@ -114,6 +114,23 @@ const after = (await call('GET', '/suggestions/mine', { who: 'alice' })).data.su
 check(after[0].status === 'published' && after[0].drink_id === 'kvallens-sour' && after[1].note === 'Finns redan.', 'suggestions/mine: shows the review');
 check((await call('POST', '/admin/suggestions/999', Object.assign({ body: { status: 'declined' } }, admin))).status === 404, 'admin: unknown id is 404');
 
+// /state and At home (ADR 0001): a client from before `home` must not erase it
+const blob = extra => Object.assign({ v: 1, favorites: ['margarita'], pantry: ['gin'], settings: { lang: 'sv' } }, extra);
+const empty = await call('GET', '/state', { who: 'bob' });
+const home = { v: 1, have: ['gin', 'mint'], seen: ['gin'], flaskor: true, picks: { 'sb:1': 'gin' }, country: 'SE' };
+const withHome = await call('PUT', '/state', { who: 'bob', body: { state: blob({ home }), etag: empty.data.etag } });
+check(empty.data.state === null && withHome.status === 200, 'state: a new client stores home');
+const oldWrite = await call('PUT', '/state', { who: 'bob', body: { state: blob({ pantry: ['gin', 'campari'] }), etag: withHome.data.etag } });
+const afterOld = await call('GET', '/state', { who: 'bob' });
+check(oldWrite.status === 200 && JSON.stringify(afterOld.data.state.home) === JSON.stringify(home) && afterOld.data.state.pantry.join() === 'gin,campari',
+  'state: an old client write is accepted, and the stored home is carried forward');
+check(afterOld.data.etag === oldWrite.data.etag, 'state: the old client gets the tag of what was actually stored');
+check((await call('PUT', '/state', { who: 'bob', body: { state: blob({ home: { v: 1, have: [] } }), etag: withHome.data.etag } })).status === 409,
+  'state: a stale write is still a conflict');
+const cleared = await call('PUT', '/state', { who: 'bob', body: { state: blob({ home: { v: 1, have: [] } }), etag: oldWrite.data.etag } });
+check(cleared.status === 200 && (await call('GET', '/state', { who: 'bob' })).data.state.home.have.length === 0, 'state: a new client can still empty home on purpose');
+check((await call('GET', '/state', { who: 'alice' })).data.state === null, 'state: one account never sees another one');
+
 // DELETE /account
 check((await call('DELETE', '/account', { who: 'alice' })).status === 200, 'account: delete');
 const left = sqlite.prepare('SELECT firebase_uid, status FROM suggestions ORDER BY id').all();
