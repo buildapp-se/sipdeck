@@ -4,7 +4,7 @@ status: active
 currentGoal: At home and the optional Flaskor link (ADR 0001) are live since 2026-10-06, owner QA remains
 nextAction: Owner QA with a real sign-in, the seven points in ../flaskor/HANDOFF.md under 2026-10-06
 blockers: []
-reviewedAt: 2026-10-06
+reviewedAt: 2026-10-11
 ---
 
 **Drift:** riktiga användare finns bara på buildapp.se/sipdeck (GitHub Pages från `main`, A-posterna 185.199.108–111.153). sipdeck.pages.dev har aldrig länkats ut; den och grenaliasen `<gren>.sipdeck.pages.dev` är granskningsytor. Merge till `main` är det som går live och det enda som kräver ägarens ja; en deploy till pages.dev behöver inget eget ja (ägaren 2026-09-25).
@@ -13,12 +13,15 @@ reviewedAt: 2026-10-06
 
 # Handoff: Sipdeck
 
-## 2026-10-06, kväll: nattbatch på grenen `batch/2026-10-06`, **lokalt, inte pushad, inte live**
+## 2026-10-06, kväll: nattbatchen, **live sedan 2026-10-11** (PR #29 squash `479fc32`, rättning PR #30 squash `b43e291`)
 
-Två kodcommits och två docs-commits ovanpå `origin/main` (`6d034ec`) i worktree `C:/dev/.worktrees/batch-2026-10-06/sipdeck`. Inget är mergat eller deployat; merge till `main` är ägarens ja.
+Ägaren mergade båda 2026-10-11. Verifierat live på buildapp.se/sipdeck: `app.js?v=1.31` med barskedsraden i `batchText`. Commit-hasharna nedan är grenens, före squash.
 
-- **Satsvolymer (`286c604`):** från två glas visar kortets baksida och detaljvyn "Sats: 48 cl totalt, 24 cl per glas" (`batchText`, `[data-batch]`, uppdateras av `refreshRecipes`). Liter från 1 l, "före toppning" när receptet har en `top`-rad. Bara rader med `ml` räknas; stänk, bitar och utspädning från is ingår inte. `app.js?v=1.30`.
-- **Blandning och haptik (`07fd7fe`):** `freshFirst` lägger besökets 12 senaste toppkort sist i varje ny blandning (filterbyte eller slut på kort). Listan `seenTop` finns bara i minnet, inget nytt i `localStorage` eller synken. Spara på kortleken ger `navigator.vibrate(12)` (bara Android, **overifierat på riktig telefon**).
+- **Klicktest 2026-10-11** av v1.30 på `batch-2026-10-06.sipdeck.pages.dev` (gäst, Chromium, 390 och 1 280 px): 0 konsolfel, 0 4xx/5xx. Tre fynd rättade i PR #30 (v1.31): (1) en barsked räknas som 5 ml i satsen, samma mått som `formatLineAmount` skriver ut (Porn Star Martini, 2 glas: 36 cl, förut 34); (2) satsraden avrundar inte till hällsteg, per glas är totalen delad (Mai Tai: 25,5 cl totalt, 12,75 cl per glas; oz i decimaler utanför kvartarna); (3) `freshFirst` håller båda grupperna i blandad ordning, så ett filter mindre än minneslistan är slumpat igen, och bara det nyss sedda kortet flyttas från toppen. Kontrollerat över katalogen, 760 fall i cl och ml: totalen är alltid glas gånger per glas. v1.31 är inte klicktestad i webbläsare, bara `npm test` 6 211 + 39 och CI.
+- **Lämnat, ägarens val 2026-10-11:** teskedar räknas inte i satsen (två av tre rader är socker; grenadinen saknar 0,5 cl per glas). **Fynd, inte åtgärdat:** Porn Star Martini räknar in vinet i satsen fast det serveras vid sidan av (raden saknar `top`); `tests/home.spec.js:133` räknar appens egna filer som läckor när `BASE_URL` är en förhandsvisning (2 röda där, gröna i CI); kommentaren vid `navigator.vibrate(12)` säger samma anrop som hjulet, som använder 18.
+
+- **Satsvolymer (`286c604`):** från två glas visar kortets baksida och detaljvyn "Sats: 48 cl totalt, 24 cl per glas" (`batchText`, `[data-batch]`, uppdateras av `refreshRecipes`). Liter från 1 l, "före toppning" när receptet har en `top`-rad. Rader med `ml` och barskedar räknas; stänk, bitar, teskedar och utspädning från is ingår inte.
+- **Blandning och haptik (`07fd7fe`):** `freshFirst` lägger besökets 12 senaste toppkort sist, sinsemellan blandade, i varje ny blandning (filterbyte eller slut på kort). Listan `seenTop` finns bara i minnet, inget nytt i `localStorage` eller synken. Spara på kortleken ger `navigator.vibrate(12)` (bara Android, **overifierat på riktig telefon**).
 - **Avbockat efter kontroll (`0c59ab0`):** W3C (1 CSS-fel kvar, `paint-order`, giltig egenskap som validatorn inte känner), 16 px-fältet (finns inte längre, decimalkomma tas emot), kanonisk domän (301 till HTTPS och headers på plats, mätt med `curl`), varianter (levererat som F1). PR #15-raden är densamma som på `docs/backlog-pr15`.
 - **Verifierat:** `npm test` 6 206 + Worker 39, e2e 55/55 i installerad Chrome lokalt (`--workers=4`). Blandningstestet faller 5 av 5 utan ändringen. Skärmbilder av satsraden på kort och detaljvy granskade på 390 px. `app.js` 180,9 kB av 185.
 - **Överhoppat, behöver ägaren:** rikare filter (chipraden är mätt att sluta mot kortets kant och `other.spec.js` låser det, så fler chips är ett designval), alkoholfritt läge (ingen drink har taggen, reglaget vore alltid tomt), fler recept och alkoholfria recept (källgranskning och bilder), CSP-skärpning (kräver riktig inloggning på en förhandsvisning), skaka för att blanda (iOS kräver en behörighetsfråga), Hemma-gruppernas placering (smaksak), service worker (villkoret "verkligt behov" är inte uppfyllt).
