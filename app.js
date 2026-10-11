@@ -391,10 +391,12 @@ function shuffle(arr, rng) {
   return a;
 }
 
-// recency-only bias for a new shuffle: ids recently on top go last, the longest-ago of them first.
-// `recent` is oldest to newest; ids not in it keep their shuffled order at the front (sort is stable).
+// recency-only bias for a new shuffle: ids recently on top go last. Both groups keep their shuffled
+// order, so a filter smaller than `recent` is still random; only the newest id never comes first.
 function freshFirst(ids, recent) {
-  return ids.slice().sort((a, b) => recent.indexOf(a) - recent.indexOf(b));
+  const out = ids.filter(id => !recent.includes(id)).concat(ids.filter(id => recent.includes(id)));
+  if (out.length > 1 && out[0] === recent[recent.length - 1]) out.push(out.shift());
+  return out;
 }
 
 function advanceQueue(queue, saved) {
@@ -895,11 +897,17 @@ function formatLineAmount(line, servings, unit, lang) {
 }
 
 // batch volumes: the measured liquid for the whole round and per glass, so it can be mixed in one jug.
-// Dashes, pieces and a "top up" line have no volume here; a top-up is named, the rest is small.
+// A barspoon is 5 ml, as formatLineAmount prints it. Dashes, pieces and a "top up" line have no volume
+// here; a top-up is named, the rest is small. Not rounded to pouring steps like the lines are: the
+// per-glass figure is measured out of the jug, so it has to be the total divided by the glasses.
 function batchText(drink, servings, unit, lang) {
-  const each = drink.ingredients.reduce((sum, line) => sum + (typeof line.ml === 'number' ? line.ml : 0), 0);
+  const each = drink.ingredients.reduce((sum, line) => sum + (typeof line.ml === 'number' ? line.ml : line.unit === 'barspoon' ? line.qty * 5 : 0), 0);
   if (servings < 2 || !each) return '';
-  const vol = ml => unit !== 'oz' && ml >= 1000 ? `${formatNumber(Math.round(ml / 10) / 100, lang)} l` : formatAmount({ ml }, 1, unit, lang);
+  const vol = ml => {
+    if (unit !== 'oz' && ml >= 1000) return `${formatNumber(Math.round(ml / 10) / 100, lang)} l`;
+    const value = Math.round(convert(ml, unit) * 100) / 100;
+    return `${unit === 'oz' && Number.isInteger(value * 4) ? formatOz(value, lang) : formatNumber(value, lang)} ${unit}`;
+  };
   return t(lang, 'batch').replace('{total}', vol(each * servings)).replace('{each}', vol(each))
     + (drink.ingredients.some(line => line.unit === 'top') ? t(lang, 'batch_top') : '');
 }

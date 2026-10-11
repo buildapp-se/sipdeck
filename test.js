@@ -149,6 +149,12 @@ check(batchText(batchDrink, 20, 'oz', 'en') === 'Batch: 50 oz in all, 2½ oz per
 check(batchText({ ingredients: [{ id: 'a', ml: 40 }, { id: 's', qty: 1, unit: 'top' }] }, 2, 'cl', 'sv') === 'Sats: 8 cl totalt, 4 cl per glas, före toppning',
   'batchText: a top-up line is named as outside the sum');
 check(batchText({ ingredients: [{ id: 'c', qty: 2, unit: 'dash' }] }, 6, 'cl', 'en') === '', 'batchText: nothing measured, no note');
+check(batchText({ ingredients: [{ id: 'a', ml: 170 }, { id: 'v', qty: 2, unit: 'barspoon' }] }, 2, 'cl', 'sv') === 'Sats: 36 cl totalt, 18 cl per glas',
+  'batchText: a barspoon counts as the 5 ml its own line prints');
+const oddDrink = { ingredients: [{ id: 'a', ml: 120 }, { id: 'b', ml: 7.5 }] };
+check(batchText(oddDrink, 2, 'cl', 'sv') === 'Sats: 25,5 cl totalt, 12,75 cl per glas', 'batchText: per glass is the total divided, not rounded to a pouring step');
+check(batchText(oddDrink, 2, 'ml', 'sv') === 'Sats: 255 ml totalt, 127,5 ml per glas', 'batchText: exact in ml too');
+check(batchText({ ingredients: [{ id: 'a', ml: 85 }] }, 2, 'oz', 'en') === 'Batch: 5.67 oz in all, 2.83 oz per glass', 'batchText: oz off the quarter grid is written in decimals');
 
 check(formatLineAmount({ qty: 1, unit: 'dash' }, 2, 'cl', 'sv') === '2 stänk',
   'formatLineAmount: translates non-convertible unit');
@@ -183,7 +189,9 @@ check(shuffled.length === 4 && [1, 2, 3, 4].every(n => shuffled.includes(n)),
 check(shuffle([], () => 0.5).length === 0, 'shuffle: empty array ok');
 check(shuffle(['a']).join() === 'a', 'shuffle: single element ok');
 const fresh = freshFirst(['a', 'b', 'c', 'd', 'e'], ['d', 'x', 'b']);
-check(fresh.join() === 'a,c,e,d,b', 'freshFirst: unseen keep their order in front, seen go last with the most recent at the very end');
+check(fresh.join() === 'a,c,e,b,d', 'freshFirst: unseen keep their order in front, seen go last in their shuffled order');
+check(freshFirst(['c', 'a', 'b'], ['a', 'b', 'c']).join() === 'a,b,c' && freshFirst(['b', 'a', 'c'], ['a', 'b', 'c']).join() === 'b,a,c',
+  'freshFirst: an all-seen deck stays shuffled, only the card just seen is moved off the top');
 check(freshFirst(['a', 'b'], []).join() === 'a,b' && freshFirst([], ['a']).length === 0, 'freshFirst: nothing seen or nothing to order is a no-op');
 const freshIn = ['b', 'a'];
 check(freshFirst(freshIn, ['b']).join() === 'a,b' && freshIn.join() === 'b,a', 'freshFirst: does not mutate input');
