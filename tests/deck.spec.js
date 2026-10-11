@@ -49,8 +49,13 @@ test('stepper and unit patch the card in place', async ({ page }) => {
   const card = page.locator('#deck .card[data-depth="0"]');
   await card.click();
   await card.evaluate(el => { el.dataset.same = 'yes'; });
+  await expect(card.locator('[data-batch]')).toBeHidden(); // one glass is not a batch
   await card.locator('[data-act="inc"]').click();
   await expect(card.locator('[data-servings]')).toHaveValue('2');
+  await expect(card.locator('[data-batch]')).toHaveText(/^Sats: .+ totalt, .+ per glas/);
+  await card.locator('[data-act="dec"]').click();
+  await expect(card.locator('[data-batch]')).toBeHidden();
+  await card.locator('[data-act="inc"]').click();
   await card.locator('[data-unit="ml"]').click();
   await expect(card.locator('[data-unit="ml"]')).toHaveAttribute('aria-pressed', 'true');
   await expect(card).toHaveAttribute('data-same', 'yes');
@@ -90,4 +95,22 @@ test('removing a favorite can be undone', async ({ page }) => {
   await page.locator('#toast button').click();
   await expect.poll(() => favorites(page)).toEqual(saved);
   await expect(page.locator('.fav-row')).toHaveCount(1);
+});
+
+test('a new shuffle puts the cards just seen at the back', async ({ page }) => {
+  await page.goto('/');
+  const base = page.locator('select[data-filter="base"]');
+  await base.selectOption('gin'); // 19 cards
+  const top = () => page.locator('#deck .card[data-depth="0"]:not([data-leaving])').getAttribute('data-id');
+  const seen = [];
+  for (let i = 0; i < 12; i++) {
+    seen.push(await top());
+    await page.locator('[data-deck="-1"]').click();
+    await expect.poll(top).not.toBe(seen[i]);
+  }
+  await base.selectOption('');
+  await base.selectOption('gin'); // each filter change shuffles again
+  const shown = await page.locator('#deck .card').evaluateAll(cards => cards.map(card => card.dataset.id));
+  expect(shown).toHaveLength(4);
+  expect(shown.filter(id => seen.includes(id))).toEqual([]); // by chance alone: under 1 in 100
 });
