@@ -262,7 +262,7 @@ their numbers are cross-referenced from this file and from `HANDOFF.md`. Only wh
 genuinely open is written as a task checkbox, which is also what the project cockpit
 counts.
 
-- [ ] **Canonical-domain transport/header follow-up**: `buildapp.se/sipdeck/` is currently
+- [x] (verified 2026-10-06 with `curl`: HTTP answers 301 to HTTPS, and `buildapp.se/sipdeck/` carries the `_headers` set plus HSTS `max-age=15552000` without `includeSubDomains`; the Report-Only CSP is not mirrored, see CSP promotion) **Canonical-domain transport/header follow-up**: `buildapp.se/sipdeck/` is currently
   Cloudflare-fronted but exposes GitHub Pages/Fastly origin behavior. Configure permanent
   HTTP→HTTPS and mirror `_headers` at that external proxy/zone. Inventory every
   `buildapp.se` subdomain before any HSTS `includeSubDomains` rollout.
@@ -276,15 +276,15 @@ counts.
   only shows alcohol-free-tagged drinks is the actual ask.
 - [ ] Fill out alcohol-free-tagged drinks in the seed — only worth doing once the toggle
   above exists, otherwise they're stuck behind a tag nothing filters on.
-- [ ] Weighted shuffle: bias the deck shuffle away from recently-surfaced top drinks
+- [x] (built 2026-10-06: `freshFirst` puts the last 12 top cards of the visit at the back of every new shuffle; in memory only, a reload starts fresh) Weighted shuffle: bias the deck shuffle away from recently-surfaced top drinks
   (recency-only, no new data, pure shuffle-logic tweak).
 - [x] ~~Custom domain once the name is final.~~ Done 2026-07-21: live at buildapp.se/sipdeck.
 - [ ] Service worker/offline (only if real-world use shows the need — recept precedent).
-- [ ] Shake-to-shuffle, haptics on save (progressive enhancement only).
+- [ ] Shake-to-shuffle (progressive enhancement only). Haptics on save built 2026-10-06 (`navigator.vibrate(12)` in `flyOff`, Android only; unverified on a real phone). Shake is left: iOS needs a motion-permission prompt, which is a UI decision, and it cannot be verified without a device.
 - [ ] More recipes for well-known drinks.
-- [ ] **Variations on a card**: when several drinks are very close to each other, fold them
+- [x] (shipped 2026-09-25 as F1: `families` in `drinks.json`, `groupFamilies`/`deckCards`, the variant control on the card back) **Variations on a card**: when several drinks are very close to each other, fold them
   into one card as playful variations rather than near-duplicate entries.
-- [ ] **Batch volumes**: total liquid across X drinks and how much goes in each glass, so a
+- [x] (built 2026-10-06: from two glasses, the recipe on the card back and in the detail view shows "Sats: 48 cl totalt, 24 cl per glas", in litres from 1 l, with "före toppning" when the recipe has a top-up line; `batchText` in `app.js`) **Batch volumes**: total liquid across X drinks and how much goes in each glass, so a
   batch can be mixed as X litres and split into Y per glass.
 
 ## Hemma och Flaskor, beslutat 2026-10-04
@@ -314,11 +314,11 @@ Gemensam specifikation: [Flaskor ADR 0001](../flaskor/docs/adr/0001-sipdeck-hemm
 
 Fynd från cockpitens granskningskolumner (Lighthouse mobil, W3C, UX-skript, headers, TLS, OWASP). Mätvärdena står under `## Audits` i CONTEXT.md.
 
-- [ ] `[P2]` **PR #15 väntar på din merge** (branchen `fix/tryckytor-44px`, 2026-09-16: bottennav, logga, filterväljare 44 px; kortens stegare, enheter och portioner 48 px eftersom korten ritas skalade; lokalt mätt: 2 ytor kvar, kryssrutorna där etiketten är ytan). UX, Fitts: 21 tryckytor under 44 px på telefon (390 px): portionsstegaren 24 px, rubrikraden 23 till 37 px. Skriptet `ux-checks.mjs` listar dem.
-- [ ] `[P3]` W3C: 29 CSS-fel, stickprovet är `view-transition-name` och `::view-transition-*` som validatorn inte känner. Kontrollera att inget riktigt fel gömmer sig bland dem.
+- [x] `[P2]` **PR #15 mergad 2026-09-16** (squash `0fbef8f`: bottennav, logga, filterväljare 44 px; kortens stegare, enheter och portioner 48 px eftersom korten ritas skalade; lokalt mätt: 2 ytor kvar, kryssrutorna där etiketten är ytan). UX, Fitts: 21 tryckytor under 44 px på telefon (390 px): portionsstegaren 24 px, rubrikraden 23 till 37 px. Skriptet `ux-checks.mjs` listar dem.
+- [x] `[P3]` (kontrollerat 2026-10-06: W3C Nu och CSS-validatorn mot buildapp.se/sipdeck ger nu 1 CSS-fel, `paint-order` på hjulets sektoretiketter, en giltig SVG 2-egenskap som validatorn inte känner; `info.html` 0 fel. Inget riktigt fel.) W3C: 29 CSS-fel, stickprovet är `view-transition-name` och `::view-transition-*` som validatorn inte känner. Kontrollera att inget riktigt fel gömmer sig bland dem.
 
 ## UX-audit 2026-09-24
 
 Från aifabriken `tools/audit-run.mjs ux` (skripthalvan av skillen ux-audit, mobil, hemsidan, utan --interact). Warn, inte fail: allt nedan klarar WCAG 2.5.8, men UX-ribban är 44 px.
 
-- [ ] `[P3]` "INPUT" 16 px (med luft runt, klarar WCAG). Decimalkontrollen (Postel) kräver `--interact` mot en lokal eller demo-instans, aldrig produktion med riktiga användare.
+- [x] `[P3]` (kontrollerat lokalt 2026-10-06 i Chrome på 390 px: ingen INPUT under 44 px på startsidan längre, och "12,5" tas emot i mängdfältet i `#/egen` och i portionsfältet, som avrundar till 13) "INPUT" 16 px (med luft runt, klarar WCAG). Decimalkontrollen (Postel) kräver `--interact` mot en lokal eller demo-instans, aldrig produktion med riktiga användare.

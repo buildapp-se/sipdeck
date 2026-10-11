@@ -162,7 +162,7 @@ Read by the cockpit Audits tab. One `- Label: YYYY-MM-DD, result` per check; con
 - Headers: 2026-09-16, pass, 6 of 6 on buildapp.se via a host-scoped Transform Rule on the zone, measured after the change
 - TLS: 2026-09-16, pass, SSL Labs A+ on buildapp.se, TLS 1.2 minimum and HSTS since today
 - Lighthouse: 2026-09-16, pass, a11y 100, best practices 100, SEO 100 (mobile, no perf)
-- Markup: 2026-09-16, warn, W3C 29 CSS errors, the sampled ones are view-transition rules the validator does not know, 0 broken links
+- Markup: 2026-10-06, warn, W3C Nu 1 CSS error (`paint-order` on the wheel labels, a valid SVG 2 property the validator does not know), no real error, info.html 0; links not rechecked
 - UX: 2026-09-16, fail, 21 targets under 44 px live; fix in PR #15 measured locally at 2 remaining (checkboxes), remeasure after merge, no --interact
 - npm audit: 2026-09-24, pass, 0 in production, 0 in the dev chain
 - Search Console: 2026-09-15, warn, unknown to Google, now in submitted buildapp.se sitemap
