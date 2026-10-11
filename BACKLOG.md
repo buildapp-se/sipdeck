@@ -276,7 +276,7 @@ counts.
   only shows alcohol-free-tagged drinks is the actual ask.
 - [ ] Fill out alcohol-free-tagged drinks in the seed — only worth doing once the toggle
   above exists, otherwise they're stuck behind a tag nothing filters on.
-- [x] (built 2026-10-06: `freshFirst` puts the last 12 top cards of the visit at the back of every new shuffle; in memory only, a reload starts fresh) Weighted shuffle: bias the deck shuffle away from recently-surfaced top drinks
+- [x] (built 2026-10-06, live 2026-10-11: `freshFirst` puts the last 12 top cards of the visit at the back of every new shuffle, in shuffled order; in memory only, a reload starts fresh) Weighted shuffle: bias the deck shuffle away from recently-surfaced top drinks
   (recency-only, no new data, pure shuffle-logic tweak).
 - [x] ~~Custom domain once the name is final.~~ Done 2026-07-21: live at buildapp.se/sipdeck.
 - [ ] Service worker/offline (only if real-world use shows the need — recept precedent).
