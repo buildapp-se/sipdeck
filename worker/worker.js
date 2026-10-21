@@ -131,7 +131,7 @@ async function userFromRequest(req, env, allowDeleted = false) {
     await env.DB.prepare('INSERT INTO users (firebase_uid, state) VALUES (?, ?)').bind(claims.sub, '').run().catch(() => {});
     u = await env.DB.prepare('SELECT * FROM users WHERE firebase_uid = ?').bind(claims.sub).first();
   }
-  return u && (allowDeleted || !isDeleted(u)) ? u : null;
+  return u && (allowDeleted || !isDeleted(u)) ? Object.assign(u, { auth_time: claims.auth_time }) : null;
 }
 
 async function stateEtag(raw) {
@@ -184,6 +184,7 @@ export default {
       if (path === '/account' && req.method === 'DELETE') {
         const u = await userFromRequest(req, env, true);
         if (!u) return json({ error: 'Inte inloggad.' }, 401);
+        if (Date.now() / 1000 - u.auth_time > 300) return json({ error: 'Logga in igen innan du raderar kontot.', code: 'requires-recent-login' }, 401);
         await env.DB.prepare('UPDATE users SET state = ? WHERE id = ?')
           .bind(JSON.stringify({ deletedAt: Date.now() }), u.id).run();
         await env.DB.prepare('DELETE FROM user_drinks WHERE firebase_uid = ?').bind(u.firebase_uid).run();

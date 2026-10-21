@@ -30,10 +30,10 @@ const { publicKey, privateKey } = await crypto.subtle.generateKey(
 const jwk = Object.assign(await crypto.subtle.exportKey('jwk', publicKey), { kid: 'test' });
 globalThis.fetch = async () => Response.json({ keys: [jwk] });
 const b64 = o => Buffer.from(typeof o === 'string' ? o : JSON.stringify(o)).toString('base64url');
-async function token(sub) {
+async function token(sub, age = 5) {
   const now = Math.floor(Date.now() / 1000);
   const head = b64({ alg: 'RS256', kid: 'test' }) + '.' + b64({ aud: 'sipdeck', iss: 'https://securetoken.google.com/sipdeck',
-    sub, iat: now - 5, auth_time: now - 5, exp: now + 3600 });
+    sub, iat: now - age, auth_time: now - age, exp: now + 3600 });
   const sig = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', privateKey, new TextEncoder().encode(head));
   return head + '.' + Buffer.from(sig).toString('base64url');
 }
@@ -179,6 +179,18 @@ const putDelBlob = await call('PUT', '/state', { who: 'bob', body: { state: blob
 const afterDelBlob = await call('GET', '/state', { who: 'bob' });
 check(putDelBlob.status === 200 && afterDelBlob.status === 200 && !('deletedAt' in afterDelBlob.data.state),
   'state: deletedAt in PUT /state blob is dropped and does not lock the account');
+
+const staleDel = await call('DELETE', '/account', { auth: 'Bearer ' + await token('bob', 400) });
+check(staleDel.status === 401 && staleDel.data.code === 'requires-recent-login' &&
+  staleDel.data.error === 'Logga in igen innan du raderar kontot.',
+  'account: DELETE with auth_time 400 s old is 401 requires-recent-login');
+check((await call('GET', '/state', { who: 'bob' })).data.state !== null &&
+  (await call('GET', '/drinks', { who: 'bob' })).data.drinks.length === 2,
+  'account: state and drinks stay untouched after stale DELETE');
+check((await call('DELETE', '/account', { auth: 'Bearer ' + await token('bob', 5) })).status === 200 &&
+  sqlite.prepare("SELECT COUNT(*) AS n FROM user_drinks WHERE firebase_uid = 'bob'").get().n === 0 &&
+  (await call('GET', '/state', { who: 'bob' })).status === 401,
+  'account: fresh token still deletes account state and drinks');
 
 console.log(`worker: ${pass} passed, ${fail} failed`);
 if (fail) process.exit(1);

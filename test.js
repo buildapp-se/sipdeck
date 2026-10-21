@@ -6,7 +6,7 @@ const { STRINGS, t, detectLang, defaultState, normalizeState, favoriteIdFromHash
   scaleMl, normalizeServingCount, MAX_SERVINGS, convert, roundForUnit, formatNumber, formatOz, formatAmount, shuffle, freshFirst, advanceQueue,
   swipeDirectionForKey,
   formatLineAmount, drinkAsText, batchText,
-  BASE_FILTERS, matchesFilters, canMake, filterDrinks, groupFamilies, deckCards, variantDiff, missingIngredients, mergeState, reconcileState,
+  BASE_FILTERS, matchesFilters, canMake, filterDrinks, groupFamilies, deckCards, variantDiff, missingIngredients, mergeState, reconcileState, pulledState,
   searchHaystack, matchesSearch, ingredientCounts, authErrorKey, AUTH_ERRORS,
   weightedSampleUnique, wheelCocktailWeight, buildSpinLineup, selectWheelIndex,
   wheelSectorPath, springLinear, SPIN_SLOW, SPIN_FAST, SLOW_SPINS, spinMs, spinAngle, landingTravel, sectorAtAngle, WHEEL_COLORS,
@@ -541,6 +541,9 @@ check(AUTH_ERRORS.every(code => {
   const key = authErrorKey({ code: 'auth/' + code });
   return STRINGS.en[key] && STRINGS.sv[key];
 }), 'auth errors: every mapped code has English and Swedish copy');
+check(authErrorKey({ code: 'auth/requires-recent-login' }) === 'auth_requires_recent_login' &&
+  authErrorKey({ code: 'requires-recent-login' }) === 'auth_requires_recent_login',
+  'auth errors: requires-recent-login maps to own copy from both Firebase and Worker 401');
 const counted = ingredientCounts([
   { ingredients: [{ id: 'gin' }, { id: 'lime-juice' }, { id: 'gin' }] },
   { ingredients: [{ id: 'gin' }] },
@@ -996,6 +999,16 @@ const onServer = bridgeHome(normalizeState({ pantry: ['campari'], home: { have: 
 const firstLogin = bridgeHome(normalizeState(mergeState(loggedOut, onServer), 'sv'), ING);
 check(['gin', 'mint', 'campari', 'lemon'].every(id => firstLogin.home.have.includes(id)) && firstLogin.home.flaskor && firstLogin.home.picks['sb:1'] === 'gin' && firstLogin.home.country === 'SE',
   'sign-in after logged-out edits: nothing marked on either side is lost');
+const brandNewOnShared = pulledState(Object.assign({}, onServer, { favorites: ['negroni'] }), null);
+check(!brandNewOnShared.home.flaskor && Object.keys(brandNewOnShared.home.picks).length === 0 &&
+  brandNewOnShared.favorites.join() === 'negroni' && brandNewOnShared.pantry.join() === 'campari' &&
+  brandNewOnShared.home.have.slice().sort().join() === 'campari,lemon' && brandNewOnShared.home.country === 'SE' &&
+  !appSource.includes('if (data.state)'),
+  'pullState: a brand-new account (state: null) drops an earlier browser user\'s flaskor link and picks while keeping favorites, pantry and hand-made home marks');
+const ozLocal = normalizeState({ settings: { lang: 'sv', unit: 'oz', servings: 4 } }, 'sv');
+const ozNew = pulledState(ozLocal, null);
+check(ozNew.settings.unit === 'oz' && ozNew.settings.servings === 4,
+  'pullState: a brand-new account keeps the settings made while signed out');
 const homeState = (have, extra) => normalizeState({ pantry: ['gin'], home: Object.assign({ have, seen: ['gin'] }, extra) }, 'sv');
 const twoDevices = reconcileState(homeState(['gin', 'campari', 'lime']), homeState(['gin', 'lime', 'mint']), homeState(['campari', 'lime', 'aperol'], { picks: { 'sb:7': 'bourbon' } }));
 check(twoDevices.home.have.slice().sort().join() === 'aperol,lime,mint', 'two devices: additions on both sides survive, and both removals stay removed');
