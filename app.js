@@ -102,6 +102,7 @@ const STRINGS = {
     auth_email_already_in_use: 'That email already has an account. Log in instead.',
     auth_invalid_email: "That doesn't look like an email address.",
     auth_too_many_requests: 'Too many attempts. Wait a moment and try again.',
+    auth_requires_recent_login: 'Sign out and sign in again before deleting your account.',
     auth_generic: 'Something went wrong. Try again.',
     deck_skip: '‹ Skip', deck_save: 'Save ›', flip_hint: 'Tap for recipe',
     swipe_save: 'Save', swipe_skip: 'Skip', toast_saved: 'Saved', toast_removed: 'Removed', undo: 'Undo',
@@ -235,6 +236,7 @@ const STRINGS = {
     auth_email_already_in_use: 'E-posten har redan ett konto. Logga in i stället.',
     auth_invalid_email: 'Det ser inte ut som en e-postadress.',
     auth_too_many_requests: 'För många försök. Vänta en stund och försök igen.',
+    auth_requires_recent_login: 'Logga ut och logga in igen innan du raderar kontot.',
     auth_generic: 'Något gick fel. Försök igen.',
     deck_skip: '‹ Hoppa över', deck_save: 'Spara ›', flip_hint: 'Tryck för recept',
     swipe_save: 'Spara', swipe_skip: 'Hoppa över', toast_saved: 'Sparad', toast_removed: 'Borttagen', undo: 'Ångra',
@@ -589,7 +591,7 @@ function ingredientCounts(drinks) {
 
 // Firebase auth codes the account UI names in its own words. Other Firebase codes get the generic
 // line; errors without a code are the app's own (already worded) messages, so null keeps them.
-const AUTH_ERRORS = ['wrong-password', 'invalid-credential', 'user-not-found', 'email-already-in-use', 'invalid-email', 'too-many-requests'];
+const AUTH_ERRORS = ['wrong-password', 'invalid-credential', 'user-not-found', 'email-already-in-use', 'invalid-email', 'too-many-requests', 'requires-recent-login'];
 function authErrorKey(err) {
   const code = err && typeof err.code === 'string' ? err.code.replace(/^auth\//, '') : '';
   return AUTH_ERRORS.includes(code) ? 'auth_' + code.replace(/-/g, '_') : code ? 'auth_generic' : null;
@@ -642,6 +644,13 @@ function reconcileState(base, local, remote) {
     },
     home, // last, like normalizeState: the sync compares states as JSON text
   };
+}
+
+// A brand-new account (no server state) keeps this browser's settings, but never an earlier user's Flaskor link or picks.
+function pulledState(local, serverState, base) {
+  const lang = local.settings.lang, remote = normalizeState(serverState, lang);
+  if (!serverState) return normalizeState(Object.assign(mergeState(local, remote), { settings: local.settings }), lang);
+  return normalizeState(base ? reconcileState(base, local, remote) : mergeState(local, remote), lang);
 }
 
 // ---------- spinning wheel: pure catalog, weighting and geometry ----------
@@ -987,7 +996,7 @@ if (typeof module !== 'undefined') module.exports = {
   normalizeHome, coverage, swapFor, bridgeHome, classify, bottleKey, homeSources, homeGives, shopping, fold, onShelf,
   missingIngredients, mergeState, searchHaystack, matchesSearch, ingredientCounts, authErrorKey, AUTH_ERRORS,
   normalizeServingCount, MAX_SERVINGS,
-  reconcileState,
+  reconcileState, pulledState,
   weightedSampleUnique, wheelCocktailWeight, buildSpinLineup, selectWheelIndex,
   wheelSectorPath, springLinear, SPIN_SLOW, SPIN_FAST, SLOW_SPINS, spinMs, spinAngle, landingTravel, sectorAtAngle, WHEEL_COLORS,
   GLASS_SILHOUETTES, glassPlaceholder,
@@ -1092,8 +1101,7 @@ if (typeof document !== 'undefined') (function () {
         });
         const data = await res.json();
         if (res.status === 409 && typeof data.etag === 'string') {
-          const remote = normalizeState(data.state, lang());
-          state = normalizeState(syncBase ? reconcileState(syncBase, state, remote) : mergeState(state, remote), lang());
+          state = pulledState(state, data.state, syncBase);
           syncEtag = data.etag;
           settle();
           again = true;
@@ -1115,8 +1123,7 @@ if (typeof document !== 'undefined') (function () {
       if (!res.ok || typeof data.etag !== 'string') throw new Error(data.error || 'Synkningen misslyckades.');
       const remote = normalizeState(data.state, lang());
       syncEtag = data.etag;
-      if (data.state) state = normalizeState(syncBase
-        ? reconcileState(syncBase, state, remote) : mergeState(state, remote), lang());
+      state = pulledState(state, data.state, syncBase);
       settle();
       if (JSON.stringify(state) === JSON.stringify(remote)) rememberSync(remote, data.etag);
       else await flushState();
@@ -2832,12 +2839,12 @@ if (typeof document !== 'undefined') (function () {
           clearTimeout(pushTimer);
           if (pushPromise) await pushPromise;
           const user = fbUser;
+          const res = await authedFetch('/account', { method: 'DELETE' });
+          const data = await res.json();
+          if (!res.ok) throw Object.assign(new Error(data.error || 'Kunde inte radera synkad data.'), data);
           // the link in Flaskor is keyed on this account: remove it while the token still works (best effort)
           if (state.home.flaskor) await flaskorCall('DELETE', '/api/sipdeck/link').catch(() => {});
           dropFlaskor(false);
-          const res = await authedFetch('/account', { method: 'DELETE' });
-          const data = await res.json();
-          if (!res.ok) throw new Error(data.error || 'Kunde inte radera synkad data.');
           localStorage.removeItem(syncKey(user.uid));
           await user.delete();
         }

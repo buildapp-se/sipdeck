@@ -30,10 +30,10 @@ const { publicKey, privateKey } = await crypto.subtle.generateKey(
 const jwk = Object.assign(await crypto.subtle.exportKey('jwk', publicKey), { kid: 'test' });
 globalThis.fetch = async () => Response.json({ keys: [jwk] });
 const b64 = o => Buffer.from(typeof o === 'string' ? o : JSON.stringify(o)).toString('base64url');
-async function token(sub) {
+async function token(sub, age = 5) {
   const now = Math.floor(Date.now() / 1000);
   const head = b64({ alg: 'RS256', kid: 'test' }) + '.' + b64({ aud: 'sipdeck', iss: 'https://securetoken.google.com/sipdeck',
-    sub, iat: now - 5, auth_time: now - 5, exp: now + 3600 });
+    sub, iat: now - age, auth_time: now - age, exp: now + 3600 });
   const sig = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', privateKey, new TextEncoder().encode(head));
   return head + '.' + Buffer.from(sig).toString('base64url');
 }
@@ -139,6 +139,58 @@ check(left.length === 2 && left[0].status === 'published' && left[0].firebase_ui
   'account: new/declined are deleted, the published one stays unlinked, other users untouched');
 check(sqlite.prepare("SELECT COUNT(*) AS n FROM user_drinks WHERE firebase_uid = 'alice'").get().n === 0, 'account: own drinks are deleted');
 check((await call('GET', '/drinks', { who: 'alice' })).status === 401, 'account: the old token is blocked afterwards');
+
+// Security review fixes
+const id65 = 'a'.repeat(65);
+check((await call('GET', '/drinks/' + id65, { who: 'bob' })).status === 400 &&
+  (await call('PUT', '/drinks/' + id65, { who: 'bob', body: { drink: drink(id65), updatedAt: 1 } })).status === 400 &&
+  (await call('DELETE', '/drinks/' + id65 + '?updatedAt=1', { who: 'bob' })).status === 400,
+  'drinks: path id of 65 characters is 400');
+
+const putSpoof = await call('PUT', '/drinks/egen-spoof', { who: 'bob',
+  body: { drink: Object.assign(drink('egen-spoof'), { custom: false, bar: true, art: 'x' }), updatedAt: 10 } });
+const spoofed = (await call('GET', '/drinks/egen-spoof', { who: 'bob' })).data.drink;
+check(putSpoof.status === 200 && spoofed.custom === true && spoofed.bar === false && !('art' in spoofed),
+  'drinks: stored with custom: true, bar: false and no art');
+
+tokens.carol = await token('carol');
+await call('PUT', '/drinks/d-0', { who: 'carol', body: { drink: drink('d-0'), updatedAt: 1 } });
+for (let i = 1; i < 200; i++) await call('DELETE', `/drinks/d-${i}?updatedAt=1`, { who: 'carol' });
+check((await call('DELETE', '/drinks/d-200?updatedAt=1', { who: 'carol' })).status === 413 &&
+  (await call('DELETE', '/drinks/d-0?updatedAt=2', { who: 'carol' })).status === 200 &&
+  (await call('GET', '/drinks/d-0', { who: 'carol' })).data.drink === null,
+  'drinks: DELETE of a new id at the row cap is 413 while DELETE of an existing id at the cap is 200');
+check((await call('PUT', '/drinks/d-200', { who: 'carol', body: { drink: drink('d-200'), updatedAt: 1 } })).status === 413,
+  'drinks: PUT of a new id at the row cap is 413');
+
+for (let u = 0; u < 10; u++) {
+  const auth = 'Bearer ' + await token('sug-' + u);
+  for (let i = 0; i < (u < 9 ? 5 : 3); i++) {
+    await call('POST', '/suggestions', { auth, body: suggestion });
+  }
+}
+mails.length = 0;
+const s51 = await call('POST', '/suggestions', { auth: 'Bearer ' + await token('sug-fresh'), body: suggestion });
+check(s51.status === 429 && s51.data.error === 'Förslagslådan är full för i dag.' && mails.length === 0,
+  'suggestions: the 51st suggestion in a day from a fresh account is 429 and sends no mail');
+
+const beforeDelBlob = await call('GET', '/state', { who: 'bob' });
+const putDelBlob = await call('PUT', '/state', { who: 'bob', body: { state: blob({ deletedAt: Date.now() }), etag: beforeDelBlob.data.etag } });
+const afterDelBlob = await call('GET', '/state', { who: 'bob' });
+check(putDelBlob.status === 200 && afterDelBlob.status === 200 && !('deletedAt' in afterDelBlob.data.state),
+  'state: deletedAt in PUT /state blob is dropped and does not lock the account');
+
+const staleDel = await call('DELETE', '/account', { auth: 'Bearer ' + await token('bob', 400) });
+check(staleDel.status === 401 && staleDel.data.code === 'requires-recent-login' &&
+  staleDel.data.error === 'Logga in igen innan du raderar kontot.',
+  'account: DELETE with auth_time 400 s old is 401 requires-recent-login');
+check((await call('GET', '/state', { who: 'bob' })).data.state !== null &&
+  (await call('GET', '/drinks', { who: 'bob' })).data.drinks.length === 2,
+  'account: state and drinks stay untouched after stale DELETE');
+check((await call('DELETE', '/account', { auth: 'Bearer ' + await token('bob', 5) })).status === 200 &&
+  sqlite.prepare("SELECT COUNT(*) AS n FROM user_drinks WHERE firebase_uid = 'bob'").get().n === 0 &&
+  (await call('GET', '/state', { who: 'bob' })).status === 401,
+  'account: fresh token still deletes account state and drinks');
 
 console.log(`worker: ${pass} passed, ${fail} failed`);
 if (fail) process.exit(1);

@@ -131,7 +131,7 @@ async function userFromRequest(req, env, allowDeleted = false) {
     await env.DB.prepare('INSERT INTO users (firebase_uid, state) VALUES (?, ?)').bind(claims.sub, '').run().catch(() => {});
     u = await env.DB.prepare('SELECT * FROM users WHERE firebase_uid = ?').bind(claims.sub).first();
   }
-  return u && (allowDeleted || !isDeleted(u)) ? u : null;
+  return u && (allowDeleted || !isDeleted(u)) ? Object.assign(u, { auth_time: claims.auth_time }) : null;
 }
 
 async function stateEtag(raw) {
@@ -168,7 +168,7 @@ export default {
           // Its favorites, pantry and settings are accepted, and the stored `home` is carried forward.
           const stored = u.state ? JSON.parse(u.state) : null;
           if (stored && stored.home !== undefined && s.home === undefined) s.home = stored.home;
-          const next = JSON.stringify(s);
+          const next = JSON.stringify({ v: s.v, favorites: s.favorites, pantry: s.pantry, settings: s.settings, home: s.home });
           const result = await env.DB.prepare('UPDATE users SET state = ? WHERE id = ? AND state = ?')
             .bind(next, u.id, u.state).run();
           if (!result.meta || result.meta.changes !== 1) {
@@ -184,6 +184,7 @@ export default {
       if (path === '/account' && req.method === 'DELETE') {
         const u = await userFromRequest(req, env, true);
         if (!u) return json({ error: 'Inte inloggad.' }, 401);
+        if (Date.now() / 1000 - u.auth_time > 300) return json({ error: 'Logga in igen innan du raderar kontot.', code: 'requires-recent-login' }, 401);
         await env.DB.prepare('UPDATE users SET state = ? WHERE id = ?')
           .bind(JSON.stringify({ deletedAt: Date.now() }), u.id).run();
         await env.DB.prepare('DELETE FROM user_drinks WHERE firebase_uid = ?').bind(u.firebase_uid).run();
@@ -203,7 +204,7 @@ export default {
       const drinkPath = /^\/drinks\/([^/]+)$/.exec(path);
       if (drinkPath) {
         const u = await requireUser(req, env), id = drinkPath[1];
-        if (!KEBAB.test(id)) throw new HttpError(400, 'Ogiltigt id.');
+        if (!KEBAB.test(id) || id.length > 64) throw new HttpError(400, 'Ogiltigt id.');
         const current = () => env.DB.prepare('SELECT id, drink_json, updated_at FROM user_drinks WHERE firebase_uid = ? AND id = ?')
           .bind(u.firebase_uid, id).first();
         if (req.method === 'GET') {
@@ -217,11 +218,13 @@ export default {
             drink = body && body.drink;
             at = body && body.updatedAt;
             if (drinkErrors(drink).length || drink.id !== id) throw new HttpError(400, 'Ogiltig drink.');
-            const count = await env.DB.prepare('SELECT TOTAL(drink_json IS NOT NULL AND id != ?) AS n, COUNT(*) AS rows FROM user_drinks WHERE firebase_uid = ?')
-              .bind(id, u.firebase_uid).first();
-            if (count.n >= MAX_DRINKS) throw new HttpError(413, 'Max 100 egna drinkar.');
-            first = count.rows === 0;
+            drink = Object.assign({}, drink, { custom: true, bar: false });
+            delete drink.art;
           }
+          const count = await env.DB.prepare('SELECT TOTAL(drink_json IS NOT NULL AND id != ?) AS n, TOTAL(id = ?) AS has, COUNT(*) AS rows FROM user_drinks WHERE firebase_uid = ?')
+            .bind(id, id, u.firebase_uid).first();
+          if ((req.method === 'PUT' && count.n >= MAX_DRINKS) || (!count.has && count.rows >= MAX_DRINKS * 2)) throw new HttpError(413, 'Max 100 egna drinkar.');
+          first = req.method === 'PUT' && count.rows === 0;
           if (!Number.isSafeInteger(at) || at <= 0) throw new HttpError(400, 'Ogiltig tidsstämpel.');
           const result = await env.DB.prepare(`INSERT INTO user_drinks (id, firebase_uid, drink_json, updated_at) VALUES (?, ?, ?, ?)
             ON CONFLICT(firebase_uid, id) DO UPDATE SET drink_json = excluded.drink_json, updated_at = excluded.updated_at
@@ -242,9 +245,10 @@ export default {
           !(s.similarTo === undefined || s.similarTo === null || (typeof s.similarTo === 'string' && KEBAB.test(s.similarTo))) ||
           !optText(s.source, 200) || !optText(s.displayName, 60)) throw new HttpError(400, 'Ogiltigt förslag.');
         const now = Date.now();
-        const recent = await env.DB.prepare('SELECT COUNT(*) AS n FROM suggestions WHERE firebase_uid = ? AND created_at > ?')
+        const recent = await env.DB.prepare('SELECT TOTAL(firebase_uid = ?) AS n, COUNT(*) AS total FROM suggestions WHERE created_at > ?')
           .bind(u.firebase_uid, now - DAY).first();
         if (recent.n >= SUGGESTIONS_PER_DAY) throw new HttpError(429, 'Max fem förslag per dygn.');
+        if (recent.total >= 50) throw new HttpError(429, 'Förslagslådan är full för i dag.');
         const payload = { drink: s.drink, kind: s.kind, similarTo: s.similarTo || null,
           source: s.source || null, displayName: s.displayName || null, consentAt: now };
         const result = await env.DB.prepare('INSERT INTO suggestions (firebase_uid, payload, created_at) VALUES (?, ?, ?)')
