@@ -4,12 +4,14 @@ const { test, expect } = require('@playwright/test');
 // link. Signed-in runs replace the Firebase modules, the Sipdeck API and the Flaskor API with page.route
 // stubs, so no request leaves the machine and the real client code does the talking.
 async function seed(page, state) {
+  const full = Object.assign({ v: 1, favorites: [], pantry: [], settings: { lang: 'sv' } }, state);
   await page.addInitScript(s => {
     if (!sessionStorage.getItem('seeded')) {
       sessionStorage.setItem('seeded', '1');
       localStorage.setItem('sipdeck', JSON.stringify(s));
     }
-  }, Object.assign({ v: 1, favorites: [], pantry: [], settings: { lang: 'sv' } }, state));
+  }, full);
+  return full;
 }
 const stored = page => page.evaluate(() => JSON.parse(localStorage.getItem('sipdeck')));
 const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*', 'Access-Control-Allow-Methods': '*' };
@@ -162,9 +164,9 @@ for (const [lang, width, title, bar, other] of [['sv', 390, 'Hemma', 'Barskåp �
 test('linked: bottles count next to hand-made marks, uncertain ones wait for a choice, a correction moves one product only', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await seed(page, linked);
+  const mine = await seed(page, linked); // the link belongs to the account, so the server state has it too
   const flaskor = { calls: [], reply: snapshot(BOTTLES) };
-  const api = await signIn(page, flaskor, null);
+  const api = await signIn(page, flaskor, mine);
   await page.goto('/#/hemma');
   await expect(page.locator('#homeFlaskor')).toContainText('Kopplat hushåll: Vinkällaren');
   await expect(page.locator('#flaskorStatus')).toContainText('Uppdaterad ');
@@ -204,9 +206,9 @@ test('linked: bottles count next to hand-made marks, uncertain ones wait for a c
 
 test('last bottle gone, then network failure, then a confirmed revocation', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await seed(page, { home: { have: ['gin', 'lime'], seen: [], flaskor: true } });
+  const mine = await seed(page, { home: { have: ['gin', 'lime'], seen: [], flaskor: true } });
   const flaskor = { calls: [], reply: snapshot(BOTTLES.slice(0, 3)) };
-  await signIn(page, flaskor, null);
+  await signIn(page, flaskor, mine);
   await page.goto('/#/hemma');
   const row = name => page.locator('#homeHave .home-row', { hasText: name });
   await expect(row(/^\s*Gin/).locator('.home-src')).toContainText('Tanqueray');
@@ -249,11 +251,11 @@ test('last bottle gone, then network failure, then a confirmed revocation', asyn
 
 test('disconnecting: an answer still on its way does not bring the link back, and signing out removes the cache', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await seed(page, linked);
+  const mine = await seed(page, linked);
   let release;
   const held = new Promise(resolve => { release = resolve; });
   const flaskor = { calls: [], reply: snapshot(BOTTLES) };
-  await signIn(page, flaskor, null);
+  await signIn(page, flaskor, mine);
   await page.goto('/#/hemma');
   await expect(page.locator('#homeHave .home-row', { hasText: 'Cointreau' })).toHaveCount(1);
 
