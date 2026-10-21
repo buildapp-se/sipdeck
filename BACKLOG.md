@@ -335,3 +335,11 @@ Kodgranskning av `5df59d8` (origin/main plus Playwright-uppdateringen) med Gemin
 - [ ] `[P3]` **Low, A05:** Report-Only-CSP:ns `frame-src` pekar på `sipdeck.firebaseapp.com`, men `authDomain` är `sipdeck.buildapp.se` sedan bytet, och `https://apis.google.com` saknas. Hör till punkten **CSP promotion** ovan.
 
 Sunt enligt granskningen och stickprov: alla D1-frågor parametriserade och avgränsade av `claims.sub`; JWT med fast RS256 och `aud`/`iss`/`exp`/`iat`/`auth_time`; admin-token jämförs som SHA-256; `esc()` på allt i `innerHTML`; CORS `*` utan cookies; storleksgränser på alla PUT/POST; ingen SSRF.
+
+## Git history 2026-10-21
+
+Unika tillagda rader i alla 160 commits (utan låsfiler, bilder och katalog) granskade av Gemini 4 Argon (`tools/history-lane.mjs` i aifabriken, 591 s, 433 000 tokens), kontrollerade av Claude med `git log -S` och `git grep`. Repot är publikt. Inga lösenord, nycklar, telefonnummer eller adresser.
+
+- [ ] `[P2]` **Ägaren:** ett familjemedlems förnamn står i `HANDOFF.md` i `e35fa3a` och `539318c` ("…dev-server"), borta ur nuvarande version. Att ta bort det kräver omskriven historik (`git-filter-repo`, force-push av ett publikt repo), eller att det accepteras.
+- [ ] `[P3]` **Ägaren:** den privata Gmail-adressen finns i `firebase.json` (`supportEmail`, visas för användare i Googles inloggningsruta), `worker/worker.js`, `worker/wrangler.toml`, `worker/worker.test.mjs` och fyra gånger i `HANDOFF.md`. Mottagaren i `send_email` måste vara en verifierad Email Routing-adress, så byte till `kontakt@buildapp.se` är ett ägarbeslut. Testet och HANDOFF kan använda en platshållare oberoende av det.
+- Accepterat: namn och ort som personuppgiftsansvarig i `info.html` (lagkrav), `kontakt@orgutveckling.se`, GitHub-namnet, Firebase webbnyckel och D1-id (publika identifierare), förnamnet som testdata och den lokala användarmappen i en gammal HANDOFF.
