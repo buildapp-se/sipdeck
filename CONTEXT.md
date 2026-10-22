@@ -158,15 +158,15 @@ _Avoid_: Flick, throw
 
 ## Audits
 Read by the cockpit Audits tab. One `- Label: YYYY-MM-DD, result` per check; conventions in elwyn-dash `docs/security.md`.
-- OWASP Top 10: 2026-10-20, warn, code review only (Gemini 4 Argon, verified by Claude), no live probe; 0 high, 2 medium open (fixed in code 2026-10-21, Worker not deployed), BACKLOG §OWASP-granskning 2026-10-20
-- Git history: 2026-10-21, warn, 2 findings in 160 commits (a family member's first name in two historical HANDOFF commits; the owner's private Gmail in five current files), Gemini 4 Argon via aifabriken tools/history-lane.mjs, verified by Claude; BACKLOG §Git history 2026-10-21
+- OWASP Top 10: 2026-10-20, warn, code review only (Gemini 4 Argon, verified by Claude), no live probe; 0 high, 0 medium open (both fixed and deployed 2026-10-21), low 1a fixed 2026-10-22, CSP frame-src open under CSP promotion; BACKLOG §OWASP-granskning 2026-10-20
+- Git history: 2026-10-22, warn, 1 open: the owner's private Gmail in worker.js, wrangler.toml, worker.test.mjs and firebase.json; a family member's first name removed by history rewrite 2026-10-22 (still reachable via GitHub PR refs); BACKLOG §Git history 2026-10-21
 - Headers: 2026-09-16, pass, 6 of 6 on buildapp.se via a host-scoped Transform Rule on the zone, measured after the change
 - TLS: 2026-09-16, pass, SSL Labs A+ on buildapp.se, TLS 1.2 minimum and HSTS since today
 - Lighthouse: 2026-09-16, pass, a11y 100, best practices 100, SEO 100 (mobile, no perf)
 - Markup: 2026-10-06, warn, W3C Nu 1 CSS error (`paint-order` on the wheel labels, a valid SVG 2 property the validator does not know), no real error, info.html 0; links not rechecked
 - UX: 2026-09-16, fail, 21 targets under 44 px live; fix in PR #15 measured locally at 2 remaining (checkboxes), remeasure after merge, no --interact
-- npm audit: 2026-09-24, pass, 0 in production, 0 in the dev chain
+- npm audit: 2026-10-22, pass, 0 in production, 0 in the dev chain
 - Search Console: 2026-09-15, warn, unknown to Google, now in submitted buildapp.se sitemap
-- Secrets: 2026-09-24, pass, gitleaks 0 findings in 82 commits, 2 reviewed as public in .gitleaksignore
-- Actions: 2026-09-24, pass, zizmor 0 high, 0 medium, 0 low
+- Secrets: 2026-10-22, pass, gitleaks 0 findings in 133 commits, 2 reviewed as public in .gitleaksignore
+- Actions: 2026-10-22, pass, zizmor 0 high, 0 medium, 0 low after pinning 3 actions to commit SHA (newer zizmor flags unpinned-uses as high)
 - WCAG 2.2 AA: 2026-09-24, warn, axe 4.13.0 0 violations on buildapp.se/sipdeck (mobile, one page); manual keyboard pass not done
