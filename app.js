@@ -1153,6 +1153,11 @@ if (typeof document !== 'undefined') (function () {
         if (!flaskor || /^#\/(hemma|skafferi)/.test(location.hash)) refreshFlaskor();
       }
       else {
+        if (localStorage.getItem(AUTH_KEY) === '1') { // own drinks stay on the account, not in a shared browser
+          custom = [];
+          localStorage.removeItem(CUSTOM_KEY);
+          if (db) applyCustom();
+        }
         localStorage.removeItem(AUTH_KEY);
         clearTimeout(pushTimer);
         syncUid = syncBase = syncEtag = null;
