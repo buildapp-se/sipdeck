@@ -252,6 +252,12 @@ test('last bottle gone, then network failure, then a confirmed revocation', asyn
 test('disconnecting: an answer still on its way does not bring the link back, and signing out removes the cache', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   const mine = await seed(page, linked);
+  await page.addInitScript(() => {
+    if (!sessionStorage.getItem('seeded-custom')) {
+      sessionStorage.setItem('seeded-custom', '1');
+      localStorage.setItem('sipdeck.custom', JSON.stringify([{ id: 'egen-x', updatedAt: 1, drink: { id: 'egen-x', name: 'Egen', ingredients: [], custom: true } }]));
+    }
+  });
   let release;
   const held = new Promise(resolve => { release = resolve; });
   const flaskor = { calls: [], reply: snapshot(BOTTLES) };
@@ -285,6 +291,7 @@ test('disconnecting: an answer still on its way does not bring the link back, an
   await page.locator('#account summary').click();
   await page.getByRole('button', { name: 'Logga ut' }).click();
   await expect.poll(() => page.evaluate(() => localStorage.getItem('sipdeck-flaskor'))).toBeNull();
+  expect(await page.evaluate(() => localStorage.getItem('sipdeck.custom'))).toBeNull();
   await page.goto('/#/hemma');
   await expect(page.locator('#homeHave .home-row .name')).toHaveText(['Lime']);
 });
