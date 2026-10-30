@@ -106,7 +106,7 @@ const STRINGS = {
     auth_generic: 'Something went wrong. Try again.',
     deck_skip: '‹ Skip', deck_save: 'Save ›', flip_hint: 'Tap for recipe',
     swipe_save: 'Save', swipe_skip: 'Skip', toast_saved: 'Saved', toast_removed: 'Removed', undo: 'Undo',
-    chip_all: 'All', chip_matches: 'Matches', chip_bar: 'Bar-servable', chip_makeable: 'Can make', chip_base: 'Base',
+    chip_all: 'All', chip_matches: 'Matches', chip_bar: 'Bar-servable', chip_alcohol_free: 'Alcohol-free', chip_makeable: 'Can make', chip_base: 'Base',
     serving_one: 'glass', serving_many: 'glasses',
     glass_coupe: 'coupe', glass_highball: 'highball glass', glass_rocks: 'rocks glass', glass_martini: 'martini glass',
     glass_goblet: 'goblet', glass_irish_coffee: 'Irish coffee glass', glass_margarita: 'margarita glass',
@@ -241,7 +241,7 @@ const STRINGS = {
     auth_generic: 'Något gick fel. Försök igen.',
     deck_skip: '‹ Hoppa över', deck_save: 'Spara ›', flip_hint: 'Tryck för recept',
     swipe_save: 'Spara', swipe_skip: 'Hoppa över', toast_saved: 'Sparad', toast_removed: 'Borttagen', undo: 'Ångra',
-    chip_all: 'Alla', chip_matches: 'Träffar', chip_bar: 'Barserverbara', chip_makeable: 'Kan blanda', chip_base: 'Bas',
+    chip_all: 'Alla', chip_matches: 'Träffar', chip_bar: 'Barserverbara', chip_alcohol_free: 'Alkoholfritt', chip_makeable: 'Kan blanda', chip_base: 'Bas',
     serving_one: 'glas', serving_many: 'glas',
     glass_coupe: 'coupeglas', glass_highball: 'highballglas', glass_rocks: 'rocksglas', glass_martini: 'martiniglas',
     glass_goblet: 'goblet', glass_irish_coffee: 'irish coffee-glas', glass_margarita: 'margaritaglas',
@@ -291,7 +291,7 @@ function defaultState(lang) {
       lang: lang === 'sv' ? 'sv' : 'en',
       unit: 'cl',
       servings: 1,
-      filters: { bar: false, base: null },
+      filters: { bar: false, alcoholFree: false, base: null },
       wheelFavoritesOnly: false,
       wheelExtras: ['shot'],
       wheelLabels: false,
@@ -331,6 +331,7 @@ function normalizeState(raw, lang) {
       servings: Number.isInteger(rs.servings) && rs.servings >= 1 && rs.servings <= 100 ? rs.servings : 1,
       filters: {
         bar: rf.bar === true,
+        alcoholFree: rf.alcoholFree === true,
         base: typeof rf.base === 'string' && rf.base ? rf.base : null,
       },
       wheelFavoritesOnly: rs.wheelFavoritesOnly === true,
@@ -422,6 +423,7 @@ const BASE_FILTERS = ['gin', 'vodka', 'rum', 'tequila', 'whiskey', 'brandy', 'ot
 function matchesFilters(drink, filters) {
   const f = filters || {};
   if (f.bar && drink.bar !== true) return false;
+  if (f.alcoholFree && !(drink.tags || []).includes('alcohol-free')) return false;
   if (!f.base) return true;
   if (f.base === 'other') return !BASE_FILTERS.slice(0, -1).includes(drink.base);
   return drink.base === f.base;
@@ -626,6 +628,7 @@ function reconcileState(base, local, remote) {
       servings: changed(base.settings.servings, local.settings.servings, remote.settings.servings),
       filters: {
         bar: changed(base.settings.filters.bar, local.settings.filters.bar, remote.settings.filters.bar),
+        alcoholFree: changed(base.settings.filters.alcoholFree, local.settings.filters.alcoholFree, remote.settings.filters.alcoholFree),
         base: changed(base.settings.filters.base, local.settings.filters.base, remote.settings.filters.base),
       },
       wheelFavoritesOnly: changed(base.settings.wheelFavoritesOnly,
@@ -1297,12 +1300,13 @@ if (typeof document !== 'undefined') (function () {
       .concat(BASE_FILTERS.map(base => `<option value="${base}"${f.base === base ? ' selected' : ''}>${esc(t(lang(), 'base_' + base))}</option>`))
       .join('');
     const matches = deckIds();
-    const filtered = !!(f.bar || f.base || makeableOnly);
+    const filtered = !!(f.bar || f.alcoholFree || f.base || makeableOnly);
     const chip = (name, on, label) => `<button class="fchip${on ? ' on' : ''}" data-chip="${name}" aria-pressed="${on}">${label}</button>`;
     // T11: one scrollable chip row above the deck; the match count lives in the first chip
     const chips = `<div class="fchips" role="group" aria-label="${esc(t(lang(), 'filters_label'))}">
       ${chip('all', !filtered, `${esc(t(lang(), filtered ? 'chip_matches' : 'chip_all'))} <span class="amount">${matches.length}</span>`)}
       ${chip('bar', f.bar, esc(t(lang(), 'chip_bar')))}
+      ${chip('alcohol-free', f.alcoholFree, esc(t(lang(), 'chip_alcohol_free')))}
       ${chip('makeable', makeableOnly, esc(t(lang(), 'chip_makeable')))}
       <label class="fchip fchip-select${f.base ? ' on' : ''}"><span aria-hidden="true">${esc(f.base ? t(lang(), 'base_' + f.base) : t(lang(), 'chip_base'))} ▾</span><select data-filter="base" aria-label="${esc(t(lang(), 'settings_filter_base'))}">${baseOptions}</select></label>
     </div>`;
@@ -2915,8 +2919,9 @@ if (typeof document !== 'undefined') (function () {
     const chipBtn = e.target.closest('[data-chip]');
     if (chipBtn) {
       const f = state.settings.filters, name = chipBtn.dataset.chip;
-      if (name === 'all') { f.bar = false; f.base = null; makeableOnly = false; }
+      if (name === 'all') { f.bar = false; f.alcoholFree = false; f.base = null; makeableOnly = false; }
       else if (name === 'bar') f.bar = !f.bar;
+      else if (name === 'alcohol-free') f.alcoholFree = !f.alcoholFree;
       else if (name === 'makeable') makeableOnly = !makeableOnly;
       deckQueue = null;
       flippedId = null;
@@ -3073,6 +3078,7 @@ if (typeof document !== 'undefined') (function () {
     const control = e.target.closest('[data-filter]');
     if (!control) return;
     if (control.dataset.filter === 'bar') state.settings.filters.bar = control.checked;
+    if (control.dataset.filter === 'alcohol-free') state.settings.filters.alcoholFree = control.checked;
     if (control.dataset.filter === 'base') state.settings.filters.base = control.value || null;
     if (control.dataset.filter === 'makeable') makeableOnly = control.checked;
     deckQueue = null;
