@@ -116,6 +116,7 @@ const STRINGS = {
     variants_one: '+1 variant', variants_many: '+{n} variants', variants_label: 'Variants',
     variant_new: 'new', variant_was: 'was {a}', variant_without: 'Without: ',
     batch: 'Batch: {total} in all, {each} per glass', batch_top: ', before topping up',
+    citrus: 'To buy: about {list}', citrus_lime: 'lime', citrus_limes: 'limes', citrus_lemon: 'lemon', citrus_lemons: 'lemons',
     variant_of: 'Variant of {name} · {n} in the family', search_tagged: 'Tagged: {tags}',
     custom_tag: 'Own', custom_title: 'My drinks', custom_new: '+ New drink', custom_new_title: 'New drink',
     custom_edit_title: 'Edit drink', custom_empty: 'Drinks you create end up here, in the deck and in search.',
@@ -250,6 +251,7 @@ const STRINGS = {
     variants_one: '+1 variant', variants_many: '+{n} varianter', variants_label: 'Varianter',
     variant_new: 'ny', variant_was: 'var {a}', variant_without: 'Utan: ',
     batch: 'Sats: {total} totalt, {each} per glas', batch_top: ', före toppning',
+    citrus: 'Att köpa: ca {list}', citrus_lime: 'lime', citrus_limes: 'lime', citrus_lemon: 'citron', citrus_lemons: 'citroner',
     variant_of: 'Variant av {name} · {n} i familjen', search_tagged: 'Taggad: {tags}',
     custom_tag: 'Egen', custom_title: 'Mina drinkar', custom_new: '+ Ny drink', custom_new_title: 'Ny drink',
     custom_edit_title: 'Redigera drink', custom_empty: 'Drinkar du skapar hamnar här, i kortleken och i sökningen.',
@@ -924,6 +926,34 @@ function batchText(drink, servings, unit, lang) {
     + (drink.ingredients.some(line => line.unit === 'top') ? t(lang, 'batch_top') : '');
 }
 
+// ponytail: rough juice per fruit in ml, on the low side so a round doesn't run short. Fruit size varies,
+// so these two numbers are the knob if real squeezing disagrees. Oranges stay out until someone asks.
+const CITRUS_ML = new Map([['lime', 30], ['lemon', 40]]);
+const CUTS_PER_FRUIT = 8; // wedges, slices or twists from one fruit
+
+// how many limes and lemons a recipe takes, always rounded up: "Att köpa: ca 10 lime". Follows the catalog's
+// madeFrom (juice) and form (garnish), so custom drinks that name a known ingredient are counted too.
+function citrusText(drink, servings, ingredients, lang) {
+  const fruits = new Map();
+  drink.ingredients.forEach(line => {
+    const ingredient = ingredients[line.id] || {};
+    const fruit = [line.id, ingredient.form, ...(ingredient.madeFrom || [])].find(id => CITRUS_ML.has(id));
+    if (!fruit) return;
+    const each = typeof line.ml === 'number' ? line.ml / CITRUS_ML.get(fruit)
+      : line.unit === 'barspoon' ? line.qty * 5 / CITRUS_ML.get(fruit)
+      : line.unit === 'piece' && line.id === fruit ? line.qty
+      : ['garnish', 'slice', 'piece'].includes(line.unit) ? line.qty / CUTS_PER_FRUIT : 0;
+    if (each) fruits.set(fruit, (fruits.get(fruit) || 0) + each);
+  });
+  if (!fruits.size) return '';
+  const list = [...fruits].map(([fruit, each]) => {
+    const halves = Math.ceil(Math.round(each * servings * 2e6) / 1e6) / 2; // the inner round drops float noise before ceil
+    const count = halves < 2 ? halves : Math.ceil(halves); // half a fruit tells a small recipe's size; nobody buys 9½
+    return `${formatOz(count, lang)} ${t(lang, `citrus_${fruit}${count > 1 ? 's' : ''}`)}`;
+  });
+  return t(lang, 'citrus').replace('{list}', list.join(', '));
+}
+
 function drinkAsText(drink, ingredients, servings, unit, lang) {
   const name = typeof drink.name === 'string' ? drink.name : (drink.name[lang] || drink.name.en);
   const lines = [name, '', `${formatNumber(servings, lang)} ${t(lang, 'servings_copy')}`, '', t(lang, 'ingredients_title')];
@@ -993,7 +1023,7 @@ function mergeCustom(local, remote) {
 if (typeof module !== 'undefined') module.exports = {
   STRINGS, t, UNITS, detectLang, defaultState, normalizeState, favoriteIdFromHash, drinkIdFromHash,
   scaleMl, convert, roundForUnit, formatNumber, formatOz, formatAmount,
-  formatLineAmount, drinkAsText, batchText,
+  formatLineAmount, drinkAsText, batchText, citrusText,
   shuffle, freshFirst, advanceQueue, swipeDirectionForKey, BASE_FILTERS, matchesFilters, canMake, filterDrinks,
   groupFamilies, deckCards, variantDiff,
   normalizeHome, coverage, swapFor, bridgeHome, classify, bottleKey, homeSources, homeGives, shopping, fold, onShelf,
@@ -1404,7 +1434,8 @@ if (typeof document !== 'undefined') (function () {
 
   function batchNote(drink, servings) {
     const text = batchText(drink, servings, unit(), lang());
-    return `<p class="batch-note" data-batch${text ? '' : ' hidden'}>${esc(text)}</p>`;
+    const citrus = citrusText(drink, servings, db.ingredients, lang());
+    return `<p class="batch-note" data-batch${text ? '' : ' hidden'}>${esc(text)}</p><p class="batch-note" data-citrus${citrus ? '' : ' hidden'}>${esc(citrus)}</p>`;
   }
 
   function servingWord(servings) { return t(lang(), servings === 1 ? 'serving_one' : 'serving_many'); }
@@ -1436,6 +1467,9 @@ if (typeof document !== 'undefined') (function () {
       const note = box.querySelector('[data-batch]'), text = batchText(drink, servings, unit(), lang());
       note.textContent = text;
       note.hidden = !text;
+      const citrusNote = box.querySelector('[data-citrus]'), citrus = citrusText(drink, servings, db.ingredients, lang());
+      citrusNote.textContent = citrus;
+      citrusNote.hidden = !citrus;
       box.querySelectorAll('.amount[data-line]').forEach(el => {
         el.textContent = amountText(drink.ingredients[Number(el.dataset.line)], servings);
       });

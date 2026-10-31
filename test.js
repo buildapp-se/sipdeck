@@ -5,7 +5,7 @@ const path = require('path');
 const { STRINGS, t, detectLang, defaultState, normalizeState, favoriteIdFromHash, drinkIdFromHash,
   scaleMl, normalizeServingCount, MAX_SERVINGS, convert, roundForUnit, formatNumber, formatOz, formatAmount, shuffle, freshFirst, advanceQueue,
   swipeDirectionForKey,
-  formatLineAmount, drinkAsText, batchText,
+  formatLineAmount, drinkAsText, batchText, citrusText,
   BASE_FILTERS, matchesFilters, canMake, filterDrinks, groupFamilies, deckCards, variantDiff, missingIngredients, mergeState, reconcileState, pulledState,
   searchHaystack, matchesSearch, ingredientCounts, authErrorKey, AUTH_ERRORS,
   weightedSampleUnique, wheelCocktailWeight, buildSpinLineup, selectWheelIndex,
@@ -166,6 +166,20 @@ check(formatLineAmount({ qty: 150, unit: 'gram' }, 2, 'oz', 'sv') === '300 g',
   'formatLineAmount: grams scale and stay grams in every display unit');
 check(batchText({ ingredients: [{ id: 'a', ml: 50 }, { id: 'b', qty: 150, unit: 'gram' }] }, 2, 'cl', 'sv') === '',
   'batchText: solids in grams, no per-glass figure');
+
+// ---------- citrus to buy ----------
+const citrusCatalog = require('./drinks.json');
+const citrusOf = (id, servings, lang = 'sv') => citrusText(citrusCatalog.drinks.find(d => d.id === id), servings, citrusCatalog.ingredients, lang);
+check(citrusOf('daiquiri', 14) === 'Att köpa: ca 10 lime', 'citrusText: 14 daiquiris, 28 cl juice, rounds up to whole limes');
+check(citrusOf('daiquiri', 1) === 'Att köpa: ca 1 lime', 'citrusText: 2 cl rounds up to one lime');
+check(citrusOf('margarita', 1) === 'Att köpa: ca ½ lime', 'citrusText: half a lime for 1,5 cl');
+check(citrusOf('margarita', 3) === 'Att köpa: ca 1½ lime', 'citrusText: exact 1,5 stays 1½, no float bump');
+check(citrusOf('daiquiri', 14, 'en') === 'To buy: about 10 limes', 'citrusText: English plural');
+check(citrusOf('caipirinha', 2) === 'Att köpa: ca 2 lime', 'citrusText: a whole lime counts as one');
+const citrusMixed = { ingredients: [{ id: 'lemon-juice', ml: 40 }, { id: 'lime-wedge', qty: 1, unit: 'garnish' }, { id: 'lemon-peel', qty: 1, unit: 'garnish' }] };
+check(citrusText(citrusMixed, 8, citrusCatalog.ingredients, 'sv') === 'Att köpa: ca 9 citroner, 1 lime', 'citrusText: juice and garnish add up per fruit');
+check(citrusText({ ingredients: [{ id: 'white-rum', ml: 50 }, { id: 'constructor', ml: 5 }] }, 4, citrusCatalog.ingredients, 'sv') === '', 'citrusText: no citrus, no note');
+check(citrusCatalog.drinks.every(d => [1, 7, 100].every(n => !/NaN|undefined|citrus_/.test(citrusText(d, n, citrusCatalog.ingredients, 'sv')))), 'citrusText: every catalog drink gives clean text');
 check(formatLineAmount({ qty: 1, unit: 'top' }, 4, 'oz', 'sv') === 'toppa upp',
   'formatLineAmount: top renders without quantity');
 
