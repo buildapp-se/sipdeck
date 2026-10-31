@@ -83,7 +83,7 @@ const STRINGS = {
     servings_decrease: 'Decrease servings', servings_increase: 'Increase servings',
     unit_dash: 'dash', unit_barspoon: 'barspoon', unit_teaspoon: 'tsp', unit_drop: 'drop',
     unit_piece: 'pc', unit_leaf: 'leaf', unit_slice: 'slice', unit_garnish: 'garnish',
-    unit_splash: 'splash', unit_top: 'top up',
+    unit_splash: 'splash', unit_top: 'top up', unit_gram: 'g',
     account_title: 'Account', account_hint: 'Sign in to sync favorites and pantry across devices.',
     account_google: 'Sign in with Google', account_signed_in_as: 'Signed in as',
     account_signout: 'Sign out', account_delete: 'Delete account',
@@ -217,7 +217,7 @@ const STRINGS = {
     servings_decrease: 'Minska antal portioner', servings_increase: 'Öka antal portioner',
     unit_dash: 'stänk', unit_barspoon: 'barsked', unit_teaspoon: 'tsk', unit_drop: 'droppe',
     unit_piece: 'st', unit_leaf: 'blad', unit_slice: 'skiva', unit_garnish: 'garnering',
-    unit_splash: 'skvätt', unit_top: 'toppa upp',
+    unit_splash: 'skvätt', unit_top: 'toppa upp', unit_gram: 'g',
     account_title: 'Konto', account_hint: 'Logga in för att synka favoriter och skafferi mellan enheter.',
     account_google: 'Logga in med Google', account_signed_in_as: 'Inloggad som',
     account_signout: 'Logga ut', account_delete: 'Radera konto',
@@ -910,6 +910,9 @@ function formatLineAmount(line, servings, unit, lang) {
 // here; a top-up is named, the rest is small. Not rounded to pouring steps like the lines are: the
 // per-glass figure is measured out of the jug, so it has to be the total divided by the glasses.
 function batchText(drink, servings, unit, lang) {
+  // Grams are solids blended in (frozen berries, ice): the jug holds far more than the measured liquid,
+  // so a per-glass figure from the liquid alone would be wrong. No note beats a wrong one.
+  if (drink.ingredients.some(line => line.unit === 'gram')) return '';
   const each = drink.ingredients.reduce((sum, line) => sum + (typeof line.ml === 'number' ? line.ml : line.unit === 'barspoon' ? line.qty * 5 : 0), 0);
   if (servings < 2 || !each) return '';
   const vol = ml => {
@@ -937,7 +940,7 @@ function drinkAsText(drink, ingredients, servings, unit, lang) {
 // the form's 8 glasses and 6 liquid colours are the F4 generic-image grid (img-generic/<glass>-<color>.webp, drawn by img-src/generic.py)
 const CUSTOM_GLASSES = ['coupe', 'rocks', 'highball', 'martini', 'flute', 'wine', 'shot', 'collins'];
 const CUSTOM_COLORS = { clear: '#E9E4D6', citrus: '#E6D36A', red: '#CF6A5C', green: '#93C27F', amber: '#C4863F', pink: '#E39AB8' };
-const QTY_UNITS = ['dash', 'barspoon', 'teaspoon', 'drop', 'piece', 'leaf', 'slice', 'garnish', 'splash', 'top'];
+const QTY_UNITS = ['dash', 'barspoon', 'teaspoon', 'drop', 'piece', 'leaf', 'slice', 'garnish', 'splash', 'top', 'gram'];
 const ML_PER = { cl: 10, ml: 1, oz: 30 };
 
 function slugify(text) {

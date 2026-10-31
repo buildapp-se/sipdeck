@@ -162,6 +162,10 @@ check(formatLineAmount({ qty: 1, unit: 'barspoon' }, 1, 'oz', 'en') === '1 barsp
   'formatLineAmount: barspoon includes cl equivalent in English');
 check(formatLineAmount({ qty: 2, unit: 'barspoon' }, 2, 'ml', 'sv') === '4 barsked (2 cl)',
   'formatLineAmount: barspoon and cl equivalent scale in Swedish');
+check(formatLineAmount({ qty: 150, unit: 'gram' }, 2, 'oz', 'sv') === '300 g',
+  'formatLineAmount: grams scale and stay grams in every display unit');
+check(batchText({ ingredients: [{ id: 'a', ml: 50 }, { id: 'b', qty: 150, unit: 'gram' }] }, 2, 'cl', 'sv') === '',
+  'batchText: solids in grams, no per-glass figure');
 check(formatLineAmount({ qty: 1, unit: 'top' }, 4, 'oz', 'sv') === 'toppa upp',
   'formatLineAmount: top renders without quantity');
 
@@ -279,6 +283,15 @@ check(drinkErrors(Object.assign({}, built, { ingredients: [{ id: 'gin', ml: 50, 
   drinkErrors(Object.assign({}, built, { ingredients: [{ id: 'gin', qty: 1, unit: 'bucket', essential: true }] })).length === 1 &&
   drinkErrors(Object.assign({}, built, { name: '' })).join() === 'name' && drinkErrors(null).length === 1,
   'drink rules: ml xor qty+unit, unit set, name and shape');
+check(drinkErrors(Object.assign({}, built, { ingredients: [{ id: 'x', qty: 150, unit: 'gram', essential: true }] })).length === 0 &&
+  drinkErrors(Object.assign({}, built, { ingredients: [{ id: 'x', qty: 2001, unit: 'gram', essential: true }] })).length === 1 &&
+  drinkErrors(Object.assign({}, built, { ingredients: [{ id: 'x', qty: 101, unit: 'piece', essential: true }] })).length === 1,
+  'drink rules: grams may go to 2000, other counts stop at 100');
+const frozenDaiquiri = require('./drinks.json').drinks.find(d => d.id === 'frozen-strawberry-daiquiri');
+check(frozenDaiquiri.source.label === 'Drinkoteket' &&
+  frozenDaiquiri.ingredients.map(l => `${l.id}:${l.ml || l.qty}`).join() ===
+    'white-rum:50,lime-juice:30,sugar-syrup:30,frozen-strawberries:150,ice-cubes:75,strawberry-garnish:1',
+  'frozen-strawberry-daiquiri: Drinkoteket recipe, halved from its two drinks');
 const simCatalog = [
   { id: 'whiskey-sour', ingredients: [{ id: 'bourbon', essential: true }, { id: 'lemon-juice', essential: true }, { id: 'sugar-syrup', essential: true }, { id: 'egg-white', essential: false }] },
   { id: 'old-fashioned', ingredients: [{ id: 'bourbon', essential: true }, { id: 'sugar', essential: true }, { id: 'bitters', essential: true }] },
@@ -303,7 +316,7 @@ check(merged2.length === 3 && merged2.find(e => e.id === 'a').drink === null && 
 check(['en', 'sv'].every(l => Object.keys(CUSTOM_COLORS).every(c => t(l, 'color_' + c) !== 'color_' + c) &&
   ['new', 'accepted', 'published', 'declined'].every(s => t(l, 'suggest_status_' + s) !== 'suggest_status_' + s)),
   'i18n: colour names and every suggestion status in EN + SV');
-check(RULE_UNITS.join() === ['dash', 'barspoon', 'teaspoon', 'drop', 'piece', 'leaf', 'slice', 'garnish', 'splash', 'top'].join(),
+check(RULE_UNITS.join() === ['dash', 'barspoon', 'teaspoon', 'drop', 'piece', 'leaf', 'slice', 'garnish', 'splash', 'top', 'gram'].join(),
   'drink rules: the same qty units as the catalog validator');
 
 check(swipeDirectionForKey('ArrowLeft') === -1, 'keyboard swipe: left skips');
@@ -690,7 +703,7 @@ check(workerSource.includes('!refreshed && Date.now() - jwksMissRefresh') &&
   'Firebase verifier: unknown keys refresh once and required time claims are checked');
 
 // ---------- drinks.json validator ----------
-const UNITS = ['dash', 'barspoon', 'teaspoon', 'drop', 'piece', 'leaf', 'slice', 'garnish', 'splash', 'top'];
+const UNITS = ['dash', 'barspoon', 'teaspoon', 'drop', 'piece', 'leaf', 'slice', 'garnish', 'splash', 'top', 'gram'];
 const INGREDIENT_GROUPS = ['spirits', 'liqueurs', 'fresh', 'pantry'];
 const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const data = JSON.parse(fs.readFileSync(path.join(__dirname, 'drinks.json'), 'utf8'));
