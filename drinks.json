@@ -347,6 +347,14 @@
       "sv": "Jordgubbar",
       "group": "fresh"
     },
+    "frozen-strawberries": {
+      "en": "Frozen strawberries",
+      "sv": "Frysta jordgubbar",
+      "group": "fresh",
+      "madeFrom": [
+        "strawberries"
+      ]
+    },
     "strawberry-garnish": {
       "en": "Strawberry",
       "sv": "Jordgubbe",
@@ -2956,35 +2964,35 @@
       ],
       "glass": "margarita",
       "source": {
-        "label": "Systembolaget",
-        "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/romdrinkar/frozen-strawberry-daiquiri/"
+        "label": "Drinkoteket",
+        "url": "https://drinkoteket.se/recept/frozen-strawberry-daiquiri/"
       },
       "ingredients": [
         {
           "id": "white-rum",
-          "ml": 60,
+          "ml": 50,
           "essential": true
         },
         {
-          "id": "lemon-juice",
-          "ml": 40,
+          "id": "lime-juice",
+          "ml": 30,
           "essential": true
         },
         {
           "id": "sugar-syrup",
-          "ml": 20,
+          "ml": 30,
           "essential": true
         },
         {
-          "id": "strawberries",
-          "qty": 5,
-          "unit": "piece",
+          "id": "frozen-strawberries",
+          "qty": 150,
+          "unit": "gram",
           "essential": true
         },
         {
           "id": "ice-cubes",
-          "qty": 9,
-          "unit": "piece",
+          "qty": 75,
+          "unit": "gram",
           "essential": false
         },
         {
@@ -2995,8 +3003,8 @@
         }
       ],
       "method": {
-        "en": "Blend all ingredients until smooth, pour into a margarita glass and garnish with a strawberry.",
-        "sv": "Mixa alla ingredienser till en slät massa, häll upp i ett margaritaglas och garnera med en jordgubbe."
+        "en": "Blend all ingredients to a slushy consistency. Taste and adjust the balance if needed. Pour into a margarita glass and garnish with a strawberry or lime. Frozen strawberries give the best texture: fresh ones need more ice, which makes the drink a little more watery and less creamy.",
+        "sv": "Mixa alla ingredienser i en blender till en slushig konsistens. Smaka av och justera balansen vid behov. Häll upp i ett margaritaglas och garnera med en jordgubbe eller lime. Frysta jordgubbar ger bäst konsistens: färska kräver mer is, vilket gör drinken lite blaskigare och mindre krämig."
       }
     },
     {

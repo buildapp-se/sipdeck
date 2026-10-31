@@ -156,7 +156,7 @@ transient and never synced. Never store derived data in the blob.
 
 - An ingredient line has **either** `ml` (number, canonical) **or** `qty` + `unit`
   (`dash`, `barspoon`, `teaspoon`, `drop`, `piece`, `leaf`, `slice`, `garnish`,
-  `splash`, `top`). `top` renders without a numeric quantity; `barspoon` also renders
+  `splash`, `top`, `gram`). `gram` is for solids blended in, and a recipe with grams shows no batch note. `top` renders without a numeric quantity; `barspoon` also renders
   its 0,5 cl-per-spoon equivalent.
 - Ingredient metadata has `en`, `sv` and pantry `group`; group is one of `spirits`,
   `liqueurs`, `fresh`, `pantry` and drives the grouped checklist.

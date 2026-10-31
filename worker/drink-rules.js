@@ -1,7 +1,7 @@
 // Receptets formregler, delade av Workern (egna drinkar, förslag) och test.js (hela katalogen).
 // test.js kör varje drink i drinks.json genom drinkErrors, så en regel här kan aldrig stänga ute katalogen.
 export const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
-export const QTY_UNITS = ['dash', 'barspoon', 'teaspoon', 'drop', 'piece', 'leaf', 'slice', 'garnish', 'splash', 'top'];
+export const QTY_UNITS = ['dash', 'barspoon', 'teaspoon', 'drop', 'piece', 'leaf', 'slice', 'garnish', 'splash', 'top', 'gram'];
 export const GLASSES = ['coupe', 'highball', 'rocks', 'martini', 'flute', 'shot', 'wine', 'collins', 'goblet',
   'hurricane', 'irish-coffee', 'julep', 'margarita'];
 export const COLORS = ['clear', 'citrus', 'red', 'green', 'amber', 'pink'];
@@ -27,7 +27,7 @@ export function drinkErrors(drink) {
       typeof line.essential === 'boolean' && (line.label === undefined || text(line.label, 60));
     const hasMl = typeof line.ml === 'number', hasQty = typeof line.qty === 'number' || typeof line.unit === 'string';
     const amount = hasMl !== hasQty && (hasMl ? line.ml > 0 && line.ml <= 2000
-      : typeof line.qty === 'number' && line.qty > 0 && line.qty <= 100 && QTY_UNITS.includes(line.unit));
+      : typeof line.qty === 'number' && line.qty > 0 && line.qty <= (line.unit === 'gram' ? 2000 : 100) && QTY_UNITS.includes(line.unit));
     if (!ok || !amount) errors.push(`ingredients[${i}]`);
   });
   return errors;

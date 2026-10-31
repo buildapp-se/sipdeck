@@ -4,10 +4,12 @@ status: active
 currentGoal: At home and the optional Flaskor link (ADR 0001) are live since 2026-10-06, owner QA remains
 nextAction: Owner QA with a real sign-in, the seven points in ../flaskor/HANDOFF.md under 2026-10-06
 blockers: []
-reviewedAt: 2026-10-11
+reviewedAt: 2026-10-31
 ---
 
 **Drift:** riktiga användare finns bara på buildapp.se/sipdeck (GitHub Pages från `main`, A-posterna 185.199.108–111.153). sipdeck.pages.dev har aldrig länkats ut; den och grenaliasen `<gren>.sipdeck.pages.dev` är granskningsytor. Merge till `main` är det som går live och det enda som kräver ägarens ja; en deploy till pages.dev behöver inget eget ja (ägaren 2026-09-25).
+
+**2026-10-31, Frozen Strawberry Daiquiri bytt till Drinkoteket (ägarens beslut), ej live.** Gren `fix/frozen-strawberry-drinkoteket`, väntar på ägarens ja. Per drink: 5 cl rom, 3 cl lime, 3 cl sockerlag, 150 g frysta jordgubbar, 75 g is (källan anger två drinkar). Ny enhet `gram` (tak 2000, övriga 100) och ingrediens `frozen-strawberries` (`madeFrom: strawberries`). `batchText` visar ingen sats för recept med gram, eftersom vätskan ensam ger fel volym per glas. **Utrullning: Workern först**, annars nekas egna drinkar med gram, som formuläret nu erbjuder. `app.js?v=1.34`. Parallell e2e föll på tre tester som gick igenom seriellt (55/55, chromium).
 
 **2026-09-24, audits från aifabriken (`tools/audit-run.mjs`).** Actions: `persist-credentials: false` på checkout i ci.yml. Nya auditrader Secrets (pass, två Firebase-nycklar granskade som publika i `.gitleaksignore`) och Actions (pass). Gick live med PR #19.
 
