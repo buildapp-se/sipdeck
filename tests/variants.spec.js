@@ -22,7 +22,7 @@ test('the margarita family is one card whose back switches variant in place and 
   await expect(page.locator('[data-chip="all"] .amount')).toHaveText('1');
   const card = page.locator('#deck .card[data-depth="0"]');
   await expect(card).toHaveAttribute('data-id', 'margarita');
-  await expect(card.locator('.variant-chip')).toHaveText('+1 variant');
+  await expect(card.locator('.variant-chip')).toHaveText('+6 varianter');
   await card.click();
   await card.locator('[data-variant="tommys-margarita"]').click();
   const shown = page.locator('#deck .card[data-depth="0"]');
@@ -39,8 +39,9 @@ test('search groups a variant hit, opens it preselected, and switches in place',
   await page.goto('/#/sok');
   await page.locator('#searchInput').fill('tommy');
   await expect(page.locator('#searchResults .search-group')).toHaveText('Varianter');
-  await expect(page.locator('#searchResults .meta')).toHaveText('Variant av Margarita · 2 i familjen');
-  await page.locator('#searchResults .fav-open').click();
+  const hit = page.locator('#searchResults .fav-open[data-id="tommys-margarita"]');
+  await expect(hit.locator('.meta')).toHaveText('Variant av Margarita · 7 i familjen');
+  await hit.click();
   await expect(page).toHaveURL(/#\/favoriter\/tommys-margarita$/);
   await expect(page.locator('.variant-seg [aria-pressed="true"]')).toHaveText("Tommy's");
   await page.locator('.variant-seg [data-variant="margarita"]').click();
@@ -53,6 +54,6 @@ test('search groups a variant hit, opens it preselected, and switches in place',
 test('search lists drinks found only through a tag under their own heading', async ({ page }) => {
   await page.goto('/#/sok');
   await page.locator('#searchInput').fill('spicy');
-  await expect(page.locator('#searchResults .search-group')).toHaveText('Taggad: spicy');
+  await expect(page.locator('#searchResults .search-group', { hasText: 'Taggad: spicy' })).toBeVisible();
   await expect(page.locator('#searchResults .fav-row').first()).toBeVisible();
 });

@@ -270,18 +270,20 @@ counts.
   inspect the Report-Only console/reports, then narrow and promote directives only if no
   required origin is blocked.
 - [ ] Richer filter UI over existing tags: style, strength.
-- [ ] **Alcohol-free mode**: separate boolean toggle (same pattern as the `bar` filter, D1),
+- [x] (built 2026-11-01, `filters.alcoholFree`, chip `alcohol-free`; owner's decision 2026-11-01: an alcohol-free drink without a family, such as Spa Water, stays in the normal deck so it is not missed, variants stay behind the filter or the variant row) **Alcohol-free mode**: separate boolean toggle (same pattern as the `bar` filter, D1),
   off by default. Mixing mocktails into the normal deck unprompted isn't wanted (nobody
   asked for tequila-free surprises); an explicit "Alkoholfritt"/"Alcohol-free" toggle that
   only shows alcohol-free-tagged drinks is the actual ask.
-- [ ] Fill out alcohol-free-tagged drinks in the seed — only worth doing once the toggle
+- [x] (built 2026-11-01, variants in each family with their own published source; drinks without a published recipe have none) Fill out alcohol-free-tagged drinks in the seed — only worth doing once the toggle
   above exists, otherwise they're stuck behind a tag nothing filters on.
 - [x] (built 2026-10-06, live 2026-10-11: `freshFirst` puts the last 12 top cards of the visit at the back of every new shuffle, in shuffled order; in memory only, a reload starts fresh) Weighted shuffle: bias the deck shuffle away from recently-surfaced top drinks
   (recency-only, no new data, pure shuffle-logic tweak).
 - [x] ~~Custom domain once the name is final.~~ Done 2026-07-21: live at buildapp.se/sipdeck.
 - [ ] Service worker/offline (only if real-world use shows the need — recept precedent).
 - [ ] Shake-to-shuffle (progressive enhancement only). Haptics on save built 2026-10-06 (`navigator.vibrate(12)` in `flyOff`, Android only; unverified on a real phone). Shake is left: iOS needs a motion-permission prompt, which is a UI decision, and it cannot be verified without a device.
-- [ ] More recipes for well-known drinks.
+- [x] (built 2026-11-01) More recipes for well-known drinks.
+- [ ] Homemade syrups as a guide (grenadine, orgeat, demerara): many new recipes use them, Anders Erickson has the recipes (videos CvEDhkR6K14, vGBMrJgjZB4).
+- [ ] Candidates for `bar: true`, each needs a BAR-AUDIT decision: Gin Sour, Screwdriver, Godmother, Negroni Sbagliato, Vodka Martini, Jack & Coke, Vodka Cranberry, Campari Soda, Campari Tonic, Kamikaze.
 - [x] (shipped 2026-09-25 as F1: `families` in `drinks.json`, `groupFamilies`/`deckCards`, the variant control on the card back) **Variations on a card**: when several drinks are very close to each other, fold them
   into one card as playful variations rather than near-duplicate entries.
 - [x] (built 2026-10-06: from two glasses, the recipe on the card back and in the detail view shows "Sats: 48 cl totalt, 24 cl per glas", in litres from 1 l, with "före toppning" when the recipe has a top-up line; `batchText` in `app.js`) **Batch volumes**: total liquid across X drinks and how much goes in each glass, so a

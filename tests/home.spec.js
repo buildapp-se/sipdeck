@@ -333,7 +333,7 @@ test('context link from Flaskor, and shopping help with its own country setting'
   expect(names).toContain('Cosmopolitan');
   expect(names).toContain('Margarita'); // Cointreau also meets triple sec
   await expect(page.locator('.fav-row', { hasText: 'Cosmopolitan' }).locator('.fav-missing')).toHaveText('Missing: Cointreau');
-  await page.locator('.fav-open', { hasText: 'Margarita' }).click();
+  await page.locator('.fav-open[data-id="margarita"]').click();
   await expect(page.locator('.fav-detail .card-name')).toHaveText('Margarita');
   await page.locator('#favClose').click();
   await expect(page.locator('h1')).toHaveText('Drinks with Cointreau (Cointreau)');
