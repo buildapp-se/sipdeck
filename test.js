@@ -742,6 +742,29 @@ check(workerSource.includes('!refreshed && Date.now() - jwksMissRefresh') &&
   workerSource.includes('c.iat <= now') && workerSource.includes('c.auth_time <= now'),
   'Firebase verifier: unknown keys refresh once and required time claims are checked');
 
+// ---------- alcohol-free and punch: the labels are promises ----------
+{
+  const catalog = require('./drinks.json');
+  const groupOf = id => (catalog.ingredients[id] || {}).group;
+  const free = catalog.drinks.filter(d => d.tags.includes('alcohol-free'));
+  check(free.length >= 80, 'alcohol-free: the catalog has its variants');
+  free.forEach(d => {
+    check(d.base === 'other' && d.bar === false, `${d.id}: alcohol-free has no base spirit and is not bar-servable`);
+    const proof = d.ingredients.filter(l => ['spirits', 'liqueurs'].includes(groupOf(l.id)) && !l.id.startsWith('alcohol-free') || /^angostura|bitters$/.test(l.id) && !l.id.startsWith('alcohol-free'));
+    check(proof.length === 0, `${d.id}: no alcoholic ingredient (${proof.map(l => l.id).join(', ')})`);
+    check(!d.art || catalog.drinks.some(o => o.id === d.art), `${d.id}: borrowed art points at a real drink`);
+  });
+  catalog.drinks.forEach(d => {
+    const isPunch = d.tags.includes('punch');
+    check(isPunch === (d.serves !== undefined), `${d.id}: serves exactly on a punch`);
+    if (isPunch) {
+      check(Number.isInteger(d.serves) && d.serves > 1 && d.serves <= 100, `${d.id}: serves fits the stepper`);
+      check(d.ingredients.filter(l => l.unit === 'garnish').every(l => l.qty === 1), `${d.id}: garnish is one per glass`);
+    }
+  });
+  check(catalog.drinks.filter(d => d.tags.includes('punch')).length >= 13, 'punch: the catalog has its bowls');
+}
+
 // ---------- drinks.json validator ----------
 const UNITS = ['dash', 'barspoon', 'teaspoon', 'drop', 'piece', 'leaf', 'slice', 'garnish', 'splash', 'top', 'gram'];
 const INGREDIENT_GROUPS = ['spirits', 'liqueurs', 'fresh', 'pantry'];

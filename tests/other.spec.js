@@ -181,6 +181,8 @@ for (const width of [390, 430]) {
     });
     expect(hit).toBe(true);
     await page.locator('select[data-filter="base"]').selectOption('gin');
-    await expect(page.locator('[data-chip="all"] .amount')).toHaveText('19');
+    const db = await (await page.request.get('/drinks.json')).json();
+    const gin = new Set(db.drinks.filter(d => d.base === 'gin').map(d => d.family || d.id)).size; // one card per family
+    await expect(page.locator('[data-chip="all"] .amount')).toHaveText(String(gin));
   });
 }
