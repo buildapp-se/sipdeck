@@ -270,7 +270,7 @@ counts.
   inspect the Report-Only console/reports, then narrow and promote directives only if no
   required origin is blocked.
 - [ ] Richer filter UI over existing tags: style, strength.
-- [x] (built 2026-11-01, `filters.alcoholFree`, chip `alcohol-free`) **Alcohol-free mode**: separate boolean toggle (same pattern as the `bar` filter, D1),
+- [x] (built 2026-11-01, `filters.alcoholFree`, chip `alcohol-free`; owner's decision 2026-11-01: an alcohol-free drink without a family, such as Spa Water, stays in the normal deck so it is not missed, variants stay behind the filter or the variant row) **Alcohol-free mode**: separate boolean toggle (same pattern as the `bar` filter, D1),
   off by default. Mixing mocktails into the normal deck unprompted isn't wanted (nobody
   asked for tequila-free surprises); an explicit "Alkoholfritt"/"Alcohol-free" toggle that
   only shows alcohol-free-tagged drinks is the actual ask.

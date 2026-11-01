@@ -1546,10 +1546,65 @@
       "sv": "Gentianalikör",
       "group": "liqueurs"
     },
+    "tom-and-jerry-batter": {
+      "en": "Tom & Jerry batter",
+      "sv": "Tom & Jerry-smet",
+      "group": "fresh"
+    },
+    "creme-de-menthe-white": {
+      "en": "White crème de menthe",
+      "sv": "Vit crème de menthe",
+      "group": "liqueurs"
+    },
+    "butter": {
+      "en": "Butter",
+      "sv": "Smör",
+      "group": "fresh"
+    },
+    "ground-cinnamon": {
+      "en": "Ground cinnamon",
+      "sv": "Mald kanel",
+      "group": "pantry"
+    },
+    "ground-cloves": {
+      "en": "Ground cloves",
+      "sv": "Mald kryddnejlika",
+      "group": "pantry"
+    },
+    "ground-allspice": {
+      "en": "Ground allspice",
+      "sv": "Mald kryddpeppar",
+      "group": "pantry"
+    },
+    "apple-brandy": {
+      "en": "Apple brandy",
+      "sv": "Äppelbrandy",
+      "group": "spirits"
+    },
     "oloroso-sherry": {
       "en": "Oloroso sherry",
       "sv": "Olorososherry",
       "group": "pantry"
+    },
+    "red-aperitif-wine": {
+      "en": "Red aperitif wine",
+      "sv": "Rött aperitifvin",
+      "group": "pantry"
+    },
+    "almond-extract": {
+      "en": "Almond extract",
+      "sv": "Mandelextrakt",
+      "group": "pantry"
+    },
+    "earl-grey-syrup": {
+      "en": "Rich Earl Grey syrup (2:1)",
+      "sv": "Earl Grey-sockerlag (2:1)",
+      "group": "pantry"
+    },
+    "thyme-sprig": {
+      "en": "Thyme sprig",
+      "sv": "Timjankvist",
+      "group": "fresh"
     },
     "alcohol-free-orange-aperitif": {
       "en": "Alcohol-free orange aperitif",
@@ -15656,6 +15711,52 @@
       }
     },
     {
+      "id": "revolver",
+      "name": "Revolver",
+      "type": "spirit-forward",
+      "base": "whiskey",
+      "iba": false,
+      "bar": false,
+      "tags": [
+        "coffee",
+        "aromatic",
+        "stirred"
+      ],
+      "glass": "coupe",
+      "source": {
+        "label": "Anders Erickson",
+        "url": "https://www.youtube.com/watch?v=mFOZcQvZ6oY&t=268s"
+      },
+      "ingredients": [
+        {
+          "id": "bourbon",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "coffee-liqueur",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "orange-bitters",
+          "qty": 2,
+          "unit": "dash",
+          "essential": true
+        },
+        {
+          "id": "orange-peel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Stir the liquids with ice and strain into a chilled coupe. Briefly flame the oils from an orange peel over the surface and discard the peel.",
+        "sv": "Rör vätskorna med is och sila upp i en kyld coupe. Flamma hastigt oljorna från ett apelsinskal över ytan och kasta skalet."
+      }
+    },
+    {
       "id": "white-negroni",
       "name": "White Negroni",
       "family": "negroni",
@@ -15704,6 +15805,407 @@
       "method": {
         "en": "Stir the liquids with ice and strain into a rocks glass over fresh ice. Express grapefruit peel over the drink and add it as garnish.",
         "sv": "Rör vätskorna med is och sila upp i ett lågt glas över färsk is. Pressa grapefruktskalets oljor över drinken och lägg i skalet som garnering."
+      }
+    },
+    {
+      "id": "whiskey-smash",
+      "name": "Whiskey Smash",
+      "type": "sour",
+      "base": "whiskey",
+      "iba": false,
+      "bar": false,
+      "tags": [
+        "citrusy",
+        "minty",
+        "refreshing"
+      ],
+      "glass": "rocks",
+      "source": {
+        "label": "Anders Erickson",
+        "url": "https://www.youtube.com/watch?v=Jo1wxAfyLto&t=145s"
+      },
+      "ingredients": [
+        {
+          "id": "bourbon",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "demerara-syrup",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "lemon-wheel",
+          "qty": 4,
+          "unit": "slice",
+          "essential": true
+        },
+        {
+          "id": "mint-leaves",
+          "qty": 4,
+          "unit": "leaf",
+          "essential": true
+        },
+        {
+          "id": "lemon-wheel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        },
+        {
+          "id": "mint-sprig",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Use Demerara syrup made with two parts sugar to one part water, muddle the seedless lemon slices with the syrup and mint, then add bourbon and shake with ice. Strain over fresh ice in a rocks glass and garnish with a lemon wheel and mint sprig.",
+        "sv": "Använd demerarasockerlag av två delar socker och en del vatten, muddla de kärnfria citronskivorna med lagen och myntan och tillsätt bourbon och skaka med is. Sila över färsk is i ett lågt glas och garnera med en citronskiva och en myntakvist."
+      }
+    },
+    {
+      "id": "gin-rickey",
+      "name": "Gin Rickey",
+      "type": "highball",
+      "base": "gin",
+      "iba": false,
+      "bar": false,
+      "tags": [
+        "citrusy",
+        "dry",
+        "sparkling",
+        "refreshing"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "Anders Erickson",
+        "url": "https://www.youtube.com/watch?v=vOM5wbvegzo&t=401s"
+      },
+      "ingredients": [
+        {
+          "id": "lime",
+          "qty": 0.5,
+          "unit": "piece",
+          "essential": true
+        },
+        {
+          "id": "gin",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "soda-water",
+          "ml": 90,
+          "essential": true
+        }
+      ],
+      "method": {
+        "en": "Squeeze the lime into an ice-filled highball glass, add gin and sparkling mineral water and stir gently; soda water also works.",
+        "sv": "Pressa limen i ett isfyllt highballglas, tillsätt gin och kolsyrat mineralvatten och rör försiktigt; sodavatten går också bra."
+      }
+    },
+    {
+      "id": "tradewinds",
+      "name": "Tradewinds",
+      "type": "sour",
+      "base": "rum",
+      "iba": false,
+      "bar": false,
+      "tags": [
+        "tropical",
+        "creamy",
+        "citrusy"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "Anders Erickson",
+        "url": "https://www.youtube.com/watch?v=RThEGH0sbgM&t=290s"
+      },
+      "ingredients": [
+        {
+          "id": "dark-rum",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "aged-rum",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "apricot-brandy",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "coconut-cream",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "ground-nutmeg",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        },
+        {
+          "id": "pineapple-frond",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Combine the liquids in a tall glass with crushed ice and swizzle until cold. Add more crushed ice and garnish with grated nutmeg and pineapple fronds.",
+        "sv": "Blanda vätskorna med krossad is i ett högt glas och snurra en swizzlestick eller barsked mellan handflatorna tills drinken är kall. Fyll på med mer krossad is och garnera med riven muskot och ananasblad."
+      }
+    },
+    {
+      "id": "tom-and-jerry",
+      "name": "Tom & Jerry",
+      "type": "contemporary",
+      "base": "rum",
+      "iba": false,
+      "bar": false,
+      "tags": [
+        "warm",
+        "creamy",
+        "frothy",
+        "rich"
+      ],
+      "glass": "irish-coffee",
+      "source": {
+        "label": "Anders Erickson",
+        "url": "https://www.youtube.com/watch?v=tfPrLUlFO8k&t=386s"
+      },
+      "ingredients": [
+        {
+          "id": "tom-and-jerry-batter",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "demerara-rum",
+          "ml": 22.5,
+          "essential": true
+        },
+        {
+          "id": "cognac",
+          "ml": 22.5,
+          "essential": true
+        },
+        {
+          "id": "water",
+          "ml": 90,
+          "essential": true
+        },
+        {
+          "id": "ground-nutmeg",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Make the batter with two eggs per 100 g sugar, folding stiffly whipped whites into the spiced yolk mixture. Stir the batter with the rum and cognac in a warm mug, gradually add hot water and garnish with grated nutmeg; hot milk can replace the water.",
+        "sv": "Gör smeten med två ägg per 100 g socker och vänd ner hårt vispade vitor i den kryddade ägguleblandningen. Rör smeten med rommen och cognacen i en varm mugg, tillsätt hett vatten lite i taget och garnera med riven muskot; varm mjölk kan ersätta vattnet."
+      }
+    },
+    {
+      "id": "stinger",
+      "name": "Stinger",
+      "type": "spirit-forward",
+      "base": "brandy",
+      "iba": false,
+      "bar": false,
+      "tags": [
+        "minty",
+        "stirred",
+        "strong"
+      ],
+      "glass": "coupe",
+      "source": {
+        "label": "Anders Erickson",
+        "url": "https://www.youtube.com/watch?v=mBGgu3qRztY&t=56s"
+      },
+      "ingredients": [
+        {
+          "id": "cognac",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "creme-de-menthe-white",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "mint-sprig",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        },
+        {
+          "id": "absinthe",
+          "qty": 1,
+          "unit": "top",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Stir the cognac and crème de menthe with ice and strain into a chilled coupe. Garnish with a mint sprig and add a mist of absinthe if desired.",
+        "sv": "Rör cognac och crème de menthe med is och sila upp i en kyld coupe. Garnera med en myntakvist och spreja över lite absint om du vill."
+      }
+    },
+    {
+      "id": "hot-buttered-rum",
+      "name": "Hot Buttered Rum",
+      "type": "contemporary",
+      "base": "rum",
+      "iba": false,
+      "bar": false,
+      "tags": [
+        "warm",
+        "rich",
+        "spicy"
+      ],
+      "glass": "irish-coffee",
+      "source": {
+        "label": "Anders Erickson",
+        "url": "https://www.youtube.com/watch?v=mBGgu3qRztY"
+      },
+      "ingredients": [
+        {
+          "id": "dark-rum",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "butter",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "brown-sugar",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "ground-cinnamon",
+          "qty": 0.25,
+          "unit": "teaspoon",
+          "essential": true
+        },
+        {
+          "id": "ground-cloves",
+          "qty": 1,
+          "unit": "dash",
+          "essential": true
+        },
+        {
+          "id": "ground-allspice",
+          "qty": 1,
+          "unit": "dash",
+          "essential": true
+        },
+        {
+          "id": "vanilla-extract",
+          "qty": 0.25,
+          "unit": "teaspoon",
+          "essential": true
+        },
+        {
+          "id": "water",
+          "ml": 120,
+          "essential": true
+        },
+        {
+          "id": "cinnamon-stick",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Mix the softened butter, brown sugar, cinnamon, pinches of clove and allspice, and vanilla in a warm mug; a non-dairy butter substitute also works. Add rum and hot water, stir until smooth and garnish with a cinnamon stick.",
+        "sv": "Blanda mjukt smör, farinsocker, kanel, en nypa vardera av kryddnejlika och kryddpeppar samt vanilj i en varm mugg; ett växtbaserat smöralternativ går också bra. Tillsätt rom och hett vatten, rör tills blandningen är slät och garnera med en kanelstång."
+      }
+    },
+    {
+      "id": "fish-house-punch",
+      "name": "Fish House Punch",
+      "aliases": [
+        "bål",
+        "punch"
+      ],
+      "serves": 24,
+      "type": "sour",
+      "base": "brandy",
+      "iba": false,
+      "bar": false,
+      "tags": [
+        "citrusy",
+        "fruity",
+        "punch"
+      ],
+      "glass": "wine",
+      "source": {
+        "label": "Anders Erickson",
+        "url": "https://www.youtube.com/watch?v=cJhKGTM3z20&t=372s"
+      },
+      "ingredients": [
+        {
+          "id": "cognac",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "jamaican-rum",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "peach-liqueur",
+          "ml": 7.5,
+          "essential": true
+        },
+        {
+          "id": "apple-brandy",
+          "ml": 7.5,
+          "essential": true
+        },
+        {
+          "id": "semi-rich-sugar-syrup",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 22.5,
+          "essential": true
+        },
+        {
+          "id": "water",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "ground-nutmeg",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "For one glass, shake everything but the nutmeg with ice, strain into a glass and grate nutmeg over it. For a party bowl of 24 glasses, nothing is shaken, so replace the water with 2.9 litres of cold water and serve over one large block of ice.",
+        "sv": "Till ett glas: skaka allt utom muskoten med is, sila upp och riv muskot över. Till en festbål på 24 glas skakas inget, så byt vattnet mot 2,9 liter kallt vatten och servera över ett enda stort isblock."
       }
     },
     {
@@ -15789,6 +16291,253 @@
       "method": {
         "en": "Slice the fruit and mix the whole batch in a large jug or bowl with the wines, orange liqueur, lemon juice and Demerara syrup made with two parts sugar to one part water. Cover and refrigerate overnight, then serve in wine glasses over ice with an optional splash of soda in each; any dry sherry and light red wine also work.",
         "sv": "Skiva frukten och blanda hela satsen i en stor kanna eller bålskål med vinerna, apelsinlikören, citronjuicen och demerarasockerlag av två delar socker och en del vatten. Täck och kyl över natten och servera sedan i vinglas med is och eventuellt en skvätt sodavatten i varje; valfri torr sherry och lätt rödvin går också bra."
+      }
+    },
+    {
+      "id": "plum-island-punch",
+      "name": "Plum Island Punch",
+      "type": "sour",
+      "base": "rum",
+      "iba": false,
+      "bar": false,
+      "tags": [
+        "tropical",
+        "nutty",
+        "aromatic"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "Anders Erickson",
+        "url": "https://www.youtube.com/watch?v=lWDA__gwSow&t=350s"
+      },
+      "ingredients": [
+        {
+          "id": "red-aperitif-wine",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "aged-rum",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "semi-rich-sugar-syrup",
+          "ml": 22.5,
+          "essential": true
+        },
+        {
+          "id": "lime-juice",
+          "ml": 22.5,
+          "essential": true
+        },
+        {
+          "id": "absinthe",
+          "qty": 1,
+          "unit": "barspoon",
+          "essential": true
+        },
+        {
+          "id": "almond-extract",
+          "qty": 6,
+          "unit": "drop",
+          "essential": true
+        },
+        {
+          "id": "ground-nutmeg",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        },
+        {
+          "id": "pineapple-frond",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Use semi-rich syrup made with 1.5 parts sugar to one part water, shake the liquids with ice and strain over fresh ice in a tall glass. Garnish with grated nutmeg and pineapple fronds.",
+        "sv": "Använd sockerlag av 1,5 delar socker och en del vatten, skaka vätskorna med is och sila över färsk is i ett högt glas. Garnera med riven muskot och ananasblad."
+      }
+    },
+    {
+      "id": "spa-water",
+      "name": "Spa Water",
+      "type": "highball",
+      "base": "other",
+      "iba": false,
+      "bar": false,
+      "tags": [
+        "fresh",
+        "minty",
+        "sparkling",
+        "alcohol-free"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "Anders Erickson",
+        "url": "https://www.youtube.com/watch?v=5wgvpo-xBnA&t=59s"
+      },
+      "ingredients": [
+        {
+          "id": "cucumber",
+          "qty": 4,
+          "unit": "slice",
+          "essential": true
+        },
+        {
+          "id": "mint-leaves",
+          "qty": 4,
+          "unit": "leaf",
+          "essential": true
+        },
+        {
+          "id": "lime-juice",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "semi-rich-sugar-syrup",
+          "ml": 15,
+          "essential": true
+        },
+        {
+          "id": "soda-water",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "mint-sprig",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        },
+        {
+          "id": "cucumber",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Use semi-rich syrup made with 1.5 parts sugar to one part water, gently muddle the cucumber and mint, then shake with lime juice, syrup and ice. Strain over fresh ice, add sparkling mineral water or soda water and garnish with a mint sprig and cucumber slice.",
+        "sv": "Använd sockerlag av 1,5 delar socker och en del vatten, muddla gurka och mynta försiktigt och skaka med limejuice, sockerlag och is. Sila över färsk is, tillsätt kolsyrat mineralvatten eller sodavatten och garnera med en myntakvist och en gurkskiva."
+      }
+    },
+    {
+      "id": "basil-orgeat-lemonade",
+      "name": "Basil Orgeat Lemonade",
+      "type": "highball",
+      "base": "other",
+      "iba": false,
+      "bar": false,
+      "tags": [
+        "herbal",
+        "nutty",
+        "sparkling",
+        "alcohol-free"
+      ],
+      "glass": "highball",
+      "source": {
+        "label": "Anders Erickson",
+        "url": "https://www.youtube.com/watch?v=5wgvpo-xBnA&t=116s"
+      },
+      "ingredients": [
+        {
+          "id": "orgeat",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "lemon-juice",
+          "ml": 45,
+          "essential": true
+        },
+        {
+          "id": "basil-leaves",
+          "qty": 4,
+          "unit": "leaf",
+          "essential": true
+        },
+        {
+          "id": "soda-water",
+          "ml": 90,
+          "essential": true
+        },
+        {
+          "id": "basil-leaves",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        },
+        {
+          "id": "lemon-wheel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Gently muddle the basil, shake with the orgeat, lemon juice and ice, then strain over fresh ice. Add sparkling mineral water or soda water and garnish with a basil leaf and lemon wheel.",
+        "sv": "Muddla basilikan försiktigt, skaka med orgeat, citronjuice och is och sila över färsk is. Tillsätt kolsyrat mineralvatten eller sodavatten och garnera med ett basilikablad och en citronskiva."
+      }
+    },
+    {
+      "id": "grey-fox",
+      "name": "The Grey Fox",
+      "type": "sour",
+      "base": "other",
+      "iba": false,
+      "bar": false,
+      "tags": [
+        "frothy",
+        "floral",
+        "sparkling",
+        "alcohol-free"
+      ],
+      "glass": "collins",
+      "source": {
+        "label": "Anders Erickson",
+        "url": "https://www.youtube.com/watch?v=5wgvpo-xBnA&t=251s"
+      },
+      "ingredients": [
+        {
+          "id": "lemon-juice",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "earl-grey-syrup",
+          "ml": 30,
+          "essential": true
+        },
+        {
+          "id": "aquafaba",
+          "ml": 22.5,
+          "essential": true
+        },
+        {
+          "id": "tonic-water",
+          "ml": 60,
+          "essential": true
+        },
+        {
+          "id": "lemon-peel",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        },
+        {
+          "id": "thyme-sprig",
+          "qty": 1,
+          "unit": "garnish",
+          "essential": false
+        }
+      ],
+      "method": {
+        "en": "Make the syrup by steeping strong Earl Grey for 10–15 minutes, then gently dissolving two parts sugar into one part tea by weight without boiling and cooling it. Shake lemon juice, syrup and aquafaba with ice, strain into a Collins glass and add tonic. Garnish with lemon peel and optionally thyme, or lavender instead; chickpea aquafaba can be replaced by white bean water.",
+        "sv": "Gör sirapen genom att låta starkt Earl Grey-te dra i 10–15 minuter, sedan försiktigt lösa två viktdelar socker i en viktdel te utan att koka och låta svalna. Skaka citronjuice, sirap och aquafaba med is, sila upp i ett collinsglas och tillsätt tonic. Garnera med citronskal och eventuellt timjan, eller lavendel i stället; kikärtsspad kan ersättas med spad från vita bönor."
       }
     }
   ]
