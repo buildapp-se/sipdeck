@@ -129,7 +129,7 @@ test('removing a favorite can be undone', async ({ page }) => {
 test('a new shuffle puts the cards just seen at the back', async ({ page }) => {
   await page.goto('/');
   const base = page.locator('select[data-filter="base"]');
-  await base.selectOption('gin'); // 19 cards
+  await base.selectOption('gin');
   const top = () => page.locator('#deck .card[data-depth="0"]:not([data-leaving])').getAttribute('data-id');
   const seen = [];
   for (let i = 0; i < 12; i++) {
