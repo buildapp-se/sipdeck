@@ -55,7 +55,25 @@ test('the recipe says how many limes to buy and follows the servings', async ({ 
   await expect(page.locator('.fav-recipe [data-citrus]')).toBeHidden();
 });
 
+test('a bowl opens at the glasses its source makes and scales from there', async ({ page }) => {
+  await page.route('**/drinks.json', async route => {
+    const data = require('../drinks.json');
+    await route.fulfill({ json: { ...data, drinks: data.drinks.filter(d => d.id === 'sangria') } });
+  });
+  await page.goto('/');
+  const card = page.locator('#deck .card[data-depth="0"]');
+  await card.click();
+  await expect(card.locator('[data-servings]')).toHaveValue('15');
+  await expect(card.locator('[data-batch]')).toBeVisible();
+  await card.locator('[data-act="dec"]').click();
+  await expect(card.locator('[data-servings]')).toHaveValue('14');
+});
+
 test('stepper and unit patch the card in place', async ({ page }) => {
+  await page.route('**/drinks.json', async route => {
+    const data = require('../drinks.json');
+    await route.fulfill({ json: { ...data, drinks: data.drinks.filter(d => !d.serves) } });
+  });
   await page.goto('/');
   const card = page.locator('#deck .card[data-depth="0"]');
   await card.click();
