@@ -4,10 +4,12 @@ status: active
 currentGoal: At home and the optional Flaskor link (ADR 0001) are live since 2026-10-06, owner QA remains
 nextAction: Owner QA with a real sign-in, the seven points in ../flaskor/HANDOFF.md under 2026-10-06
 blockers: []
-reviewedAt: 2026-10-31
+reviewedAt: 2026-11-01
 ---
 
 **Drift:** riktiga användare finns bara på buildapp.se/sipdeck (GitHub Pages från `main`, A-posterna 185.199.108–111.153). sipdeck.pages.dev har aldrig länkats ut; den och grenaliasen `<gren>.sipdeck.pages.dev` är granskningsytor. Merge till `main` är det som går live och det enda som kräver ägarens ja; en deploy till pages.dev behöver inget eget ja (ägaren 2026-09-25).
+
+**2026-11-01, "Att köpa: ca N lime" på receptet, varianttaggarna borttagna, PR #37, ägarens ja att merga.** `citrusText` följer `madeFrom` och `form`, så egna drinkar med kända ingredienser räknas också. Antaganden: 30 ml saft per lime, 40 ml per citron, 8 klyftor, skivor eller zester per frukt (`CITRUS_ML`, `CUTS_PER_FRUIT`), inga bra källor hittades, så justera där om verkligheten säger annat. Avrundas uppåt: halvor under 2 frukter, sedan hela. Apelsin ingår inte. `app.js?v=1.36`, 183,5 kB av 185. Verifierat: `npm test` 6 237 + Worker 48, e2e 56/56 (chromium), skärmbilder på 390 px av kort och detaljvy. **Varianttaggarna:** "var 84 cl" och "ny" är borta ur ingredienslistan (ägarens beslut 2026-11-01, de sa inte vad de jämförde med). "Utan: ..." är kvar, och `variantDiff` ger nu bara `removed`. Ingen förhandsvisning på pages.dev: wranglers Cloudflare-token är ogiltig (9109).
 
 **2026-10-31, Frozen Strawberry Daiquiri bytt till Drinkoteket (ägarens beslut), live.** PR #35 (`c4bb130`), Worker `c3af46b3` (föregående `aa3b3e00`), CI grön. Verifierat på buildapp.se: `app.js?v=1.34`, receptet visar rätt mängder och källa på 390 px, inga sidfel. Per drink: 5 cl rom, 3 cl lime, 3 cl sockerlag, 150 g frysta jordgubbar, 75 g is (källan anger två drinkar). Ny enhet `gram` (tak 2000, övriga 100) och ingrediens `frozen-strawberries` (`madeFrom: strawberries`). `batchText` visar ingen sats för recept med gram, eftersom vätskan ensam ger fel volym per glas. Workern gick ut före appen, eftersom formuläret nu erbjuder gram. Bilden ser ut som ett coupeglas medan texten säger margaritaglas, oförändrat sedan juli. `app.js?v=1.34`. Parallell e2e föll på tre tester som gick igenom seriellt (55/55, chromium).
 

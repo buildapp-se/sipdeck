@@ -44,6 +44,17 @@ test('flip hint disappears for good after the first flip', async ({ page }) => {
   await expect(page.locator('.flip-hint')).toHaveCount(0);
 });
 
+test('the recipe says how many limes to buy and follows the servings', async ({ page }) => {
+  await page.goto('/#/drink/daiquiri');
+  const recipe = page.locator('.fav-recipe');
+  await expect(recipe.locator('[data-citrus]')).toHaveText(/1 (lime|limes?)$/);
+  await recipe.locator('[data-servings]').fill('14');
+  await recipe.locator('[data-servings]').blur();
+  await expect(recipe.locator('[data-citrus]')).toHaveText(/ 10 limes?$/);
+  await page.goto('/#/drink/old-fashioned');
+  await expect(page.locator('.fav-recipe [data-citrus]')).toBeHidden();
+});
+
 test('stepper and unit patch the card in place', async ({ page }) => {
   await page.goto('/');
   const card = page.locator('#deck .card[data-depth="0"]');
