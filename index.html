@@ -205,10 +205,11 @@ header.brand .wordmark{color:var(--sd-ink);width:84px;height:auto;display:block}
 .card-source{margin-top:.5rem;text-align:right;font:500 10.5px/1 var(--sd-font-ui);color:#6E6455;flex-shrink:0}
 /* F1 variants: the chip on the front, the segmented control on the back, the diff against the primary */
 .chip.variant-chip{background:#211B12;border-color:#211B12;color:#FBF7EF;font:600 11px/1.4 var(--sd-font-ui)}
-.variant-seg{display:flex;gap:2px;height:34px;padding:2px;margin-bottom:.6rem;flex-shrink:0;
-  border:1px solid rgba(33,27,18,.18);border-radius:999px}
-.variant-seg button{position:relative;flex:1 1 auto;min-width:0;padding:0 .6rem;border-radius:999px;color:#211B12;
-  font:500 12.5px/1 var(--sd-font-ui);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.variant-seg{position:relative;display:flex;gap:4px;height:50px;padding:8px 5px;margin:-8px -5px calc(.6rem - 8px);flex-shrink:0;
+  overflow-x:auto;overflow-y:hidden;scrollbar-width:none;touch-action:pan-x} /* padding keeps the tap area and focus ring inside the scroll box */
+.variant-seg::-webkit-scrollbar{display:none}
+.variant-seg button{position:relative;flex:1 0 auto;padding:0 .7rem;border:1px solid rgba(33,27,18,.18);border-radius:999px;color:#211B12;
+  font:500 12.5px/1 var(--sd-font-ui);white-space:nowrap}
 .variant-seg button::after{content:"";position:absolute;inset:-8px 0}
 .variant-seg button[aria-pressed="true"]{background:#211B12;color:#FBF7EF;font-weight:600}
 .variant-seg button:focus-visible{outline:3px solid #2F6B3F;outline-offset:2px}
@@ -570,6 +571,6 @@ body.search-mode .brand,body.search-mode .bottom-nav{display:none}
   <a href="#/installningar" data-match="#/installningar"></a>
 </nav>
 <div id="wheelLayer" hidden></div>
-<script src="app.js?v=1.36"></script>
+<script src="app.js?v=1.37"></script>
 </body>
 </html>

@@ -247,6 +247,9 @@ check(matchesFilters(afSeed[0], { alcoholFree: true, base: null }), 'filters: al
 check(!matchesFilters(afSeed[1], { alcoholFree: true, base: null }), 'filters: alcohol-free excludes a tagged-out drink');
 check(!matchesFilters(afSeed[2], { alcoholFree: true, base: null }), 'filters: alcohol-free excludes an untagged drink');
 check(matchesFilters(afSeed[1], { alcoholFree: false, base: null }), 'filters: alcohol-free off keeps untagged drinks');
+check(matchesFilters({ tags: ['punch'], base: 'other' }, { punch: true, base: null }) && !matchesFilters({ tags: ['alcohol-free'], base: 'other' }, { punch: true, base: null }),
+  'filters: punch keeps only a tagged bowl');
+check(normalizeState({ settings: { filters: { punch: 'yes' } } }, 'en').settings.filters.punch === false, 'normalize: punch filter must be boolean');
 check(filterDrinks(afSeed, { alcoholFree: true, base: null }).length === 1 &&
   filterDrinks(afSeed, { alcoholFree: true, base: null })[0].id === 'af',
   'filterDrinks: alcohol-free returns only tagged drinks');
@@ -526,8 +529,8 @@ const workerSource = fs.readFileSync(path.join(__dirname, 'worker', 'worker.js')
 // shopping help), decided by the agent in chunk mode and listed for the owner in HANDOFF.md
 // Mät LF-storleken, alltså det git lagrar och GitHub Pages levererar. En Windows-
 // arbetskopia checkas ut med CRLF och lägger på ~1,8 kB som aldrig deployas.
-check(Buffer.byteLength(appSource.split('\r').join('')) < 185000,
-  'bundle budget: app.js stays under 185 kB unminified');
+check(Buffer.byteLength(appSource.split('\r').join('')) < 190000, // bumped 185kB -> 190kB 2026-11-01: alcohol-free and punch chips, serves default, scrollable variant row
+  'bundle budget: app.js stays under 190 kB unminified');
 check(appSource.includes('deckQueue = freshFirst(shuffle(deckIds()), seenTop);') && appSource.split('seenTop').length === 8,
   'deck: a new shuffle is biased away from the recent top cards of this visit, which live in memory only (declared, read once, written in flyOff)');
 check(appSource.includes('if (navigator.vibrate) navigator.vibrate(12);'), 'deck: saving a card gives one short haptic where supported');
