@@ -321,8 +321,8 @@ curated: user input reaches `drinks.json` only through the suggestion review bel
 - **K1 Variants.** `drinks.json` schema 2 groups drinks in `families`
   (`name`, `primary`, `order`). Each variant is a complete, source-audited recipe with its
   own `bar`; nothing is inherited. The deck queues families, the wheel counts a family as
-  one outcome, the card back switches variant in place and shows the diff against
-  `primary`. Search matches name, aliases, variant label, tags and ingredient names.
+  one outcome, the card back switches variant in place and names the lines it leaves
+  out of `primary` ("Utan: ..."). Search matches name, aliases, variant label, tags and ingredient names.
 - **K2 My drinks.** Without an account a person can create drinks (name, glass, liquid
   colour, ingredients, amounts, method, optional source). Stored locally under
   `sipdeck.custom`, outside the state blob; synced per drink through `user_drinks` when

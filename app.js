@@ -114,7 +114,7 @@ const STRINGS = {
     glass_wine: 'wine glass', glass_flute: 'flute', glass_shot: 'shot glass',
     method_stirred: 'stirred', method_frozen: 'frozen', method_layered: 'layered',
     variants_one: '+1 variant', variants_many: '+{n} variants', variants_label: 'Variants',
-    variant_new: 'new', variant_was: 'was {a}', variant_without: 'Without: ',
+    variant_without: 'Without: ',
     batch: 'Batch: {total} in all, {each} per glass', batch_top: ', before topping up',
     citrus: 'To buy: about {list}', citrus_lime: 'lime', citrus_limes: 'limes', citrus_lemon: 'lemon', citrus_lemons: 'lemons',
     variant_of: 'Variant of {name} · {n} in the family', search_tagged: 'Tagged: {tags}',
@@ -249,7 +249,7 @@ const STRINGS = {
     glass_wine: 'vinglas', glass_flute: 'champagneglas', glass_shot: 'shotglas',
     method_stirred: 'rörd', method_frozen: 'frusen', method_layered: 'skiktad',
     variants_one: '+1 variant', variants_many: '+{n} varianter', variants_label: 'Varianter',
-    variant_new: 'ny', variant_was: 'var {a}', variant_without: 'Utan: ',
+    variant_without: 'Utan: ',
     batch: 'Sats: {total} totalt, {each} per glas', batch_top: ', före toppning',
     citrus: 'Att köpa: ca {list}', citrus_lime: 'lime', citrus_limes: 'lime', citrus_lemon: 'citron', citrus_lemons: 'citroner',
     variant_of: 'Variant av {name} · {n} i familjen', search_tagged: 'Taggad: {tags}',
@@ -474,21 +474,11 @@ function deckCards(drinks, families, filters, pantry, favorites, ings) {
   });
 }
 
-// a variant against its family's primary: new ingredient ids, changed lines (primary's line), removed lines
+// a variant against its family's primary: the lines it leaves out
 function variantDiff(drink, primary) {
-  if (!primary || primary.id === drink.id) return { added: [], changed: {}, removed: [] };
-  const base = new Map(primary.ingredients.map(line => [line.id, line]));
+  if (!primary || primary.id === drink.id) return { removed: [] };
   const own = new Set(drink.ingredients.map(line => line.id));
-  const changed = {};
-  drink.ingredients.forEach(line => {
-    const was = base.get(line.id);
-    if (was && (was.ml !== line.ml || was.qty !== line.qty || was.unit !== line.unit)) changed[line.id] = was;
-  });
-  return {
-    added: drink.ingredients.filter(line => !base.has(line.id)).map(line => line.id),
-    changed,
-    removed: primary.ingredients.filter(line => !own.has(line.id)),
-  };
+  return { removed: primary.ingredients.filter(line => !own.has(line.id)) };
 }
 
 function searchHaystack(drink, ingredientNames) {
@@ -1372,7 +1362,6 @@ if (typeof document !== 'undefined') (function () {
       `<button data-${act}="variant" data-variant="${esc(v.id)}" aria-pressed="${v.id === drink.id}">${esc(localText(v.variantLabel) || v.name)}</button>`).join('');
     return `<div class="variant-seg" role="group" aria-label="${esc(t(lang(), 'variants_label'))}">${buttons}</div>`;
   }
-  function wasText(line, servings) { return t(lang(), 'variant_was').replace('{a}', amountText(line, servings)); }
   function variantWithout(diff) {
     return diff.removed.length ? `<p class="variant-without">${esc(t(lang(), 'variant_without') + diff.removed.map(line => ingName(line.id)).join(', '))}</p>` : '';
   }
@@ -1404,24 +1393,21 @@ if (typeof document !== 'undefined') (function () {
     return line.unit === 'garnish' ? formatNumber(line.qty * servings, lang()) : formatLineAmount(line, servings, unit(), lang());
   }
 
-  // right-hand column: missing, then the F1 diff against the primary; garnish only when nothing else shows
-  function lineTag(line, missing, diff, servings) {
+  // right-hand column: missing, swap or substitute; garnish only when nothing else shows
+  function lineTag(line, missing) {
     const tags = missing ? [missingTag()] : [], h = have(), swap = missing && swapFor(db.ingredients, h, line.id);
     const cover = !missing && line.essential && coverage(db.ingredients, h, line.id);
     // a swap is named next to the gap it could fill; a requirement met by another product says which one
     if (swap) tags.push(`<span class="diff-tag swap-tag">${esc(t(lang(), 'swap_with').replace('{name}', ingName(swap.id)))}</span>`);
     if (cover && cover.how === 'met') tags.push(`<span class="diff-tag">${esc(t(lang(), 'via').replace('{name}', ingName(cover.by)))}</span>`);
-    if (diff && diff.added.includes(line.id)) tags.push(`<span class="diff-tag diff-new">${esc(t(lang(), 'variant_new'))}</span>`);
-    const was = diff && diff.changed[line.id];
-    if (was) tags.push(`<span class="diff-tag" data-was="${esc(line.id)}">${esc(wasText(was, servings))}</span>`);
     if (!tags.length && line.unit === 'garnish') tags.push(`<span class="garnish-tag">${esc(t(lang(), 'unit_garnish'))}</span>`);
     return tags.length > 1 ? `<span class="line-tags">${tags.join('')}</span>` : tags.join('');
   }
 
-  function ingLine(line, have, servings, index, diff) {
+  function ingLine(line, have, servings, index) {
     const missing = isMissing(have, line);
     const cls = (missing ? 'missing' : '') + (line.unit === 'garnish' ? ' garnish' : '');
-    return `<li class="${cls.trim()}">${missing ? `<span class="sr-only">${esc(t(lang(), 'missing_prefix'))}</span>` : ''}<span class="amount" data-line="${index}">${esc(amountText(line, servings))}</span><span>${esc(ingName(line.id))}</span>${lineTag(line, missing, diff, servings)}</li>`;
+    return `<li class="${cls.trim()}">${missing ? `<span class="sr-only">${esc(t(lang(), 'missing_prefix'))}</span>` : ''}<span class="amount" data-line="${index}">${esc(amountText(line, servings))}</span><span>${esc(ingName(line.id))}</span>${lineTag(line, missing)}</li>`;
   }
 
   const METHOD_TAGS = ['stirred', 'frozen', 'layered'];
@@ -1472,10 +1458,6 @@ if (typeof document !== 'undefined') (function () {
       citrusNote.hidden = !citrus;
       box.querySelectorAll('.amount[data-line]').forEach(el => {
         el.textContent = amountText(drink.ingredients[Number(el.dataset.line)], servings);
-      });
-      const primary = familyPrimary(drink);
-      box.querySelectorAll('[data-was]').forEach(el => {
-        el.textContent = wasText(primary.ingredients.find(line => line.id === el.dataset.was), servings);
       });
       box.querySelectorAll('.units button').forEach(b => {
         const on = b.dataset.unit === unit();
@@ -1532,7 +1514,7 @@ if (typeof document !== 'undefined') (function () {
           <h2 class="card-name">${esc(drink.name)}</h2>
           <div class="card-meta">${esc(recipeMeta(drink, true))}</div>
           <div class="card-recipe">
-            <ul class="ing">${drink.ingredients.map((l, i) => ingLine(l, have, servings, i, diff)).join('')}</ul>
+            <ul class="ing">${drink.ingredients.map((l, i) => ingLine(l, have, servings, i)).join('')}</ul>
             ${batchNote(drink, servings)}
             ${variantWithout(diff)}
             <p class="card-method">${esc(drink.method[lang()] || drink.method.en)}</p>
@@ -1805,7 +1787,7 @@ if (typeof document !== 'undefined') (function () {
         return `<label class="fav-ing-row${checked ? ' done' : ''}${line.unit === 'garnish' ? ' garnish' : ''}">
           <input type="checkbox" data-fav-ing="${esc(line.id)}"${checked ? ' checked' : ''} aria-label="${esc(t(lang(), 'check_ingredient') + ' ' + ingName(line.id))}">
           <span class="amount" data-line="${i}">${esc(amountText(line, servings))}</span>
-          <span>${missing ? `<span class="sr-only">${esc(t(lang(), 'missing_prefix'))}</span>` : ''}${esc(ingName(line.id))}</span>${lineTag(line, missing, diff, servings)}
+          <span>${missing ? `<span class="sr-only">${esc(t(lang(), 'missing_prefix'))}</span>` : ''}${esc(ingName(line.id))}</span>${lineTag(line, missing)}
         </label>`;
       }).join('');
       const sourceText = open.source && open.source.label ? `${esc(t(lang(), 'source_label'))}: ${esc(open.source.label)}` : '';

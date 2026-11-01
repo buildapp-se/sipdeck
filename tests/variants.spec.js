@@ -29,11 +29,8 @@ test('the margarita family is one card whose back switches variant in place and 
   await expect(shown).toHaveAttribute('data-id', 'tommys-margarita');
   await expect(shown).toHaveClass(/flipped/);
   await expect(shown.locator('[data-variant="tommys-margarita"]')).toBeFocused();
-  await expect(shown.locator('.diff-new')).toHaveText(['ny', 'ny']); // agave syrup and the lime-wheel garnish
-  await expect(shown.locator('[data-was="tequila-blanco"]')).toHaveText('var 5 cl');
+  await expect(shown.locator('.diff-tag')).toHaveCount(0); // the list says what you need, not how the variant differs
   await expect(shown.locator('.variant-without')).toHaveText('Utan: Triple sec, Saltad kant');
-  await shown.locator('[data-act="inc"]').click();
-  await expect(shown.locator('[data-was="tequila-blanco"]')).toHaveText('var 10 cl');
   await page.locator('[data-deck="1"]').click();
   await expect.poll(() => favorites(page)).toEqual(['tommys-margarita']);
 });

@@ -260,9 +260,8 @@ check(deckCards(famDrinks, famMap, { bar: true }, null, ['t']).join() === 'm,sol
   'deckCards: the only member that passes the filters wins over a saved one');
 check(deckCards(famDrinks, famMap, { base: 'gin' }, null, []).join() === 'solo', 'deckCards: a family with no passing member drops out');
 const famDiff = variantDiff(famDrinks[1], famDrinks[0]);
-check(famDiff.added.join() === 'agave' && Object.keys(famDiff.changed).join() === 'teq' && famDiff.changed.teq.ml === 50 &&
-  famDiff.removed.map(line => line.id).join() === 'sec', 'variantDiff: new, changed (with the primary amount) and removed lines');
-check(variantDiff(famDrinks[0], famDrinks[0]).added.length === 0 && variantDiff(famDrinks[0], null).removed.length === 0,
+check(famDiff.removed.map(line => line.id).join() === 'sec', 'variantDiff: the lines a variant leaves out');
+check(variantDiff(famDrinks[0], famDrinks[0]).removed.length === 0 && variantDiff(famDrinks[0], null).removed.length === 0,
   'variantDiff: the primary itself has no diff');
 
 // ---------- F2 own drinks + F3 suggestions ----------
