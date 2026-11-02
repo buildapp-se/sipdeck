@@ -4,12 +4,12 @@ status: active
 currentGoal: At home and the optional Flaskor link (ADR 0001) are live since 2026-10-06, owner QA remains
 nextAction: Owner QA with a real sign-in, the seven points in ../flaskor/HANDOFF.md under 2026-10-06
 blockers: []
-reviewedAt: 2026-11-01
+reviewedAt: 2026-11-02
 ---
 
 **Drift:** riktiga användare finns bara på buildapp.se/sipdeck (GitHub Pages från `main`, A-posterna 185.199.108–111.153). sipdeck.pages.dev har aldrig länkats ut; den och grenaliasen `<gren>.sipdeck.pages.dev` är granskningsytor. Merge till `main` är det som går live och det enda som kräver ägarens ja; en deploy till pages.dev behöver inget eget ja (ägaren 2026-09-25).
 
-**2026-11-01, drinkar, bål och alkoholfritt, PR öppen, inte live.** Grenen `feat/drinkar-bal-alkoholfritt`: nya drinkar från Systembolaget, Drinkoteket och Anders Ericksons mest sedda videor, alkoholfria varianter i familjerna (chippet `alcohol-free`, Patriks `e7be9e1`), bål med chippet `punch` och `drink.serves` som startportion. Variantraden scrollar i sidled eftersom familjerna blev större (`centerVariant`, `touch-action:pan-x`). Alla `bar` nya är `false`, så `BAR_ALLOWLIST` och hjulet är orörda. `iba` är `false` på alla nya. Bål lagras per glas med `serves`, garnering alltid 1 per glas. Merge väntar på ägarens ja. Förhandsvisning: https://drinkar-bal.sipdeck.pages.dev.
+**2026-11-02, drinkar, bål och alkoholfritt, live.** PR #38 (`670ab50`), merge 2026-11-02 kl. 13:46, CI grön. Verifierat på buildapp.se i Chromium på 390 px: `app.js?v=1.39`, 133 kort, 7 med Bål, 71 med Alkoholfritt, alla sex chip inom skärmen, Fish House Punch 290 cl vatten vid 24 glas, inga fel. Nya drinkar från Systembolaget, Drinkoteket och Anders Ericksons mest sedda videor, alkoholfria varianter i familjerna (chippet `alcohol-free`, Patriks `e7be9e1`), bål med chippet `punch` och `drink.serves` som startportion. Variantraden scrollar i sidled eftersom familjerna blev större (`centerVariant`, `touch-action:pan-x`). Filterchippen radbryts, så kortet är 44 px lägre och på 360 × 640 px måste man scrolla lite till knapparna. Ångra medan ett sparat kort flyger ut kunde lämna leken utan översta kort: rättat i `promoteDeck`, med test. Alla `bar` nya är `false`, så `BAR_ALLOWLIST` och hjulet är orörda. `iba` är `false` på alla nya. Bål lagras per glas med `serves`, garnering alltid 1 per glas.
 
 **Deploy till Pages från den här datorn:** miljövariabeln `CLOUDFLARE_API_TOKEN` är ogiltig (9109) och går före OAuth-inloggningen. Kör `env -u CLOUDFLARE_API_TOKEN npx wrangler pages deploy <git archive HEAD> --project-name sipdeck --branch <gren>`, det kräver ingen ny nyckel.
 
