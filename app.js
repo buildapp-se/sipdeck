@@ -1609,7 +1609,8 @@ if (typeof document !== 'undefined') (function () {
       if (card !== leavingCard && !desired.includes(card.dataset.id)) card.remove();
     });
     desired.forEach((id, depth) => {
-      let card = Array.from(deckEl.querySelectorAll('.card')).find(el => el !== leavingCard && el.dataset.id === id);
+      // a card still flying away is about to be removed: an undo builds a new one instead of reusing it
+      let card = Array.from(deckEl.querySelectorAll('.card')).find(el => !el.dataset.leaving && el.dataset.id === id);
       if (!card) {
         const drink = db.drinks.find(item => item.id === id);
         card = buildCard(drink, depth);

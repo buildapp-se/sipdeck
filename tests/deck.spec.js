@@ -26,6 +26,19 @@ test('save button saves, counts and can be undone back onto the top', async ({ p
   await expect(page.locator('#deck .card[data-depth="0"]')).toHaveAttribute('data-id', id);
 });
 
+test('undo while the saved card still flies away brings it back for good', async ({ page }) => {
+  await page.goto('/');
+  const top = page.locator('#deck .card[data-depth="0"]');
+  const id = await top.getAttribute('data-id');
+  await page.evaluate(() => {
+    document.querySelector('[data-deck="1"]').click();
+    document.querySelector('#toast button').click();
+  });
+  await page.waitForTimeout(700); // past the fly-off's cleanup
+  await expect(top).toHaveAttribute('data-id', id);
+  await expect(page.locator('#deck .card[data-leaving]')).toHaveCount(0);
+});
+
 test('skip button moves on without saving', async ({ page }) => {
   await page.goto('/');
   const id = await page.locator('#deck .card[data-depth="0"]').getAttribute('data-id');
