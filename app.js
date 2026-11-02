@@ -1305,7 +1305,7 @@ if (typeof document !== 'undefined') (function () {
     const matches = deckIds();
     const filtered = !!(f.bar || f.alcoholFree || f.punch || f.base || makeableOnly);
     const chip = (name, on, label) => `<button class="fchip${on ? ' on' : ''}" data-chip="${name}" aria-pressed="${on}">${label}</button>`;
-    // T11: one scrollable chip row above the deck; the match count lives in the first chip
+    // T11: the chips above the deck wrap, so every filter shows; the match count lives in the first chip
     const chips = `<div class="fchips" role="group" aria-label="${esc(t(lang(), 'filters_label'))}">
       ${chip('all', !filtered, `${esc(t(lang(), filtered ? 'chip_matches' : 'chip_all'))} <span class="amount">${matches.length}</span>`)}
       ${chip('bar', f.bar, esc(t(lang(), 'chip_bar')))}

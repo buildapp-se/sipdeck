@@ -170,8 +170,11 @@ for (const width of [390, 430]) {
     const chips = page.locator('.fchips > .fchip');
     const first = await chips.first().boundingBox();
     expect(Math.abs(first.x - deck.x)).toBeLessThanOrEqual(1);
-    // the row scrolls when the chips do not fit: its far end still lines up with the card
-    await page.locator('.fchips').evaluate(el => { el.scrollLeft = el.scrollWidth; });
+    // every chip shows without scrolling, inside the card's edges
+    for (const box of await chips.evaluateAll(els => els.map(el => { const r = el.getBoundingClientRect(); return { x: r.x, right: r.right }; }))) {
+      expect(box.x).toBeGreaterThanOrEqual(deck.x - 1);
+      expect(box.right).toBeLessThanOrEqual(deck.x + deck.width + 1);
+    }
     const last = await chips.last().boundingBox();
     expect(Math.abs(last.x + last.width - (deck.x + deck.width))).toBeLessThanOrEqual(1);
     // the chip's enlarged tap area must not sit on top of the invisible <select>
