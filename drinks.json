@@ -16158,7 +16158,7 @@
       "glass": "wine",
       "source": {
         "label": "Anders Erickson",
-        "url": "https://www.youtube.com/watch?v=cJhKGTM3z20&t=372s"
+        "url": "https://www.youtube.com/watch?v=cJhKGTM3z20&t=452s"
       },
       "ingredients": [
         {
@@ -16193,7 +16193,7 @@
         },
         {
           "id": "water",
-          "ml": 60,
+          "ml": 120.83,
           "essential": true
         },
         {
@@ -16204,8 +16204,8 @@
         }
       ],
       "method": {
-        "en": "For one glass, shake everything but the nutmeg with ice, strain into a glass and grate nutmeg over it. For a party bowl of 24 glasses, nothing is shaken, so replace the water with 2.9 litres of cold water and serve over one large block of ice.",
-        "sv": "Till ett glas: skaka allt utom muskoten med is, sila upp och riv muskot över. Till en festbål på 24 glas skakas inget, så byt vattnet mot 2,9 liter kallt vatten och servera över ett enda stort isblock."
+        "en": "Stir everything but the nutmeg in a large bowl with cold water, chill, and serve over one large block of ice with grated nutmeg. For a single glass, use 60 ml water and shake with ice instead: the ice supplies the rest of the dilution.",
+        "sv": "Rör ihop allt utom muskoten med kallt vatten i en stor bålskål, kyl och servera över ett enda stort isblock med riven muskot. Till ett enda glas: ta 6 cl vatten och skaka med is i stället, isen späder resten."
       }
     },
     {
