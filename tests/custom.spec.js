@@ -122,7 +122,7 @@ test('own drink: the deck deals it with the Egen chip and its generic glass art'
   await page.goto('/');
   await expect(page.locator('.card[data-depth="0"]')).toBeVisible();
   const found = await page.evaluate(async () => {
-    for (let i = 0; i < 120; i++) {
+    for (let i = 0; i < 400; i++) {
       const top = document.querySelector('.card[data-depth="0"]');
       if (top.dataset.id === 'egen-deck') return { chip: top.querySelector('.custom-chip').textContent, img: top.querySelector('img').getAttribute('src'), ph: !!top.querySelector('.glass-rocks') };
       document.querySelector('.deck-skip').click();

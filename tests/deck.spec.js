@@ -26,6 +26,19 @@ test('save button saves, counts and can be undone back onto the top', async ({ p
   await expect(page.locator('#deck .card[data-depth="0"]')).toHaveAttribute('data-id', id);
 });
 
+test('undo while the saved card still flies away brings it back for good', async ({ page }) => {
+  await page.goto('/');
+  const top = page.locator('#deck .card[data-depth="0"]');
+  const id = await top.getAttribute('data-id');
+  await page.evaluate(() => {
+    document.querySelector('[data-deck="1"]').click();
+    document.querySelector('#toast button').click();
+  });
+  await page.waitForTimeout(700); // past the fly-off's cleanup
+  await expect(top).toHaveAttribute('data-id', id);
+  await expect(page.locator('#deck .card[data-leaving]')).toHaveCount(0);
+});
+
 test('skip button moves on without saving', async ({ page }) => {
   await page.goto('/');
   const id = await page.locator('#deck .card[data-depth="0"]').getAttribute('data-id');
@@ -55,7 +68,25 @@ test('the recipe says how many limes to buy and follows the servings', async ({ 
   await expect(page.locator('.fav-recipe [data-citrus]')).toBeHidden();
 });
 
+test('a bowl opens at the glasses its source makes and scales from there', async ({ page }) => {
+  await page.route('**/drinks.json', async route => {
+    const data = require('../drinks.json');
+    await route.fulfill({ json: { ...data, drinks: data.drinks.filter(d => d.id === 'sangria') } });
+  });
+  await page.goto('/');
+  const card = page.locator('#deck .card[data-depth="0"]');
+  await card.click();
+  await expect(card.locator('[data-servings]')).toHaveValue('15');
+  await expect(card.locator('[data-batch]')).toBeVisible();
+  await card.locator('[data-act="dec"]').click();
+  await expect(card.locator('[data-servings]')).toHaveValue('14');
+});
+
 test('stepper and unit patch the card in place', async ({ page }) => {
+  await page.route('**/drinks.json', async route => {
+    const data = require('../drinks.json');
+    await route.fulfill({ json: { ...data, drinks: data.drinks.filter(d => !d.serves) } });
+  });
   await page.goto('/');
   const card = page.locator('#deck .card[data-depth="0"]');
   await card.click();
@@ -111,7 +142,7 @@ test('removing a favorite can be undone', async ({ page }) => {
 test('a new shuffle puts the cards just seen at the back', async ({ page }) => {
   await page.goto('/');
   const base = page.locator('select[data-filter="base"]');
-  await base.selectOption('gin'); // 19 cards
+  await base.selectOption('gin');
   const top = () => page.locator('#deck .card[data-depth="0"]:not([data-leaving])').getAttribute('data-id');
   const seen = [];
   for (let i = 0; i < 12; i++) {

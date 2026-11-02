@@ -168,8 +168,14 @@ for (const width of [390, 430]) {
     await page.goto('/#/');
     const deck = await page.locator('#deck').boundingBox();
     const chips = page.locator('.fchips > .fchip');
-    const first = await chips.first().boundingBox(), last = await chips.last().boundingBox();
+    const first = await chips.first().boundingBox();
     expect(Math.abs(first.x - deck.x)).toBeLessThanOrEqual(1);
+    // every chip shows without scrolling, inside the card's edges
+    for (const box of await chips.evaluateAll(els => els.map(el => { const r = el.getBoundingClientRect(); return { x: r.x, right: r.right }; }))) {
+      expect(box.x).toBeGreaterThanOrEqual(deck.x - 1);
+      expect(box.right).toBeLessThanOrEqual(deck.x + deck.width + 1);
+    }
+    const last = await chips.last().boundingBox();
     expect(Math.abs(last.x + last.width - (deck.x + deck.width))).toBeLessThanOrEqual(1);
     // the chip's enlarged tap area must not sit on top of the invisible <select>
     const hit = await page.locator('select[data-filter="base"]').evaluate(el => {
@@ -178,6 +184,8 @@ for (const width of [390, 430]) {
     });
     expect(hit).toBe(true);
     await page.locator('select[data-filter="base"]').selectOption('gin');
-    await expect(page.locator('[data-chip="all"] .amount')).toHaveText('19');
+    const db = await (await page.request.get('/drinks.json')).json();
+    const gin = new Set(db.drinks.filter(d => d.base === 'gin').map(d => d.family || d.id)).size; // one card per family
+    await expect(page.locator('[data-chip="all"] .amount')).toHaveText(String(gin));
   });
 }

@@ -59,7 +59,7 @@ lists). Personal + friends first, but every decision assumes it goes public late
   independent of the selected display unit.
 - **Filters v1**: editorial boolean `bar` ("reliably servable at a normal, non-specialist
   bar"; IBA is not sufficient evidence) + base-spirit filter. Richer tags (style, strength,
-  alcohol-free) live in the data now, get UI later.
+  alcohol-free) live in the data; alcohol-free and punch have chips since 2026-11-01.
 - **Pantry is in v1**: ingredient checklist + "what can I make" (essential-ingredient ids
   ⊆ pantry; non-essential ignored).
 - **i18n**: EN + SV string table from day 1. Swedish: decimal comma, space as thousands
@@ -167,6 +167,8 @@ transient and never synced. Never store derived data in the blob.
   HTTPS link to the specific published recipe; favorite detail renders it as a small link
   after the method.
 - `essential` is explicit on every line (validator enforces).
+- A bowl has the tag `punch` and `serves`, the glasses its source makes. Amounts are stored per glass, so scaling works as for any drink, and the recipe opens at `serves`. Garnish is one per glass.
+- The tag `alcohol-free` promises `base: other`, `bar: false` and no ingredient from the groups `spirits` or `liqueurs` and no regular bitters (test.js enforces). A source's bitters becomes `alcohol-free-bitters`.
 - `type` is one of `sour`, `highball`, `aromatic`, `spirit-forward`, `contemporary` (kebab, validator enforces).
 - Schema 2 (K1): top-level `families` maps a key to `{ name, primary, order }`. A member drink carries
   `family`, `variantLabel` (`en` + `sv`) and optional lowercase `aliases`; any drink may set `art` to

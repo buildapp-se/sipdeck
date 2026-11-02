@@ -45,6 +45,10 @@ const rt = normalizeState(valid, 'sv');
 check(rt.favorites.length === 1 && rt.favorites[0] === 'margarita', 'normalizeState: favorites survive');
 check(rt.settings.unit === 'oz' && rt.settings.servings === 4, 'normalizeState: settings survive');
 check(rt.settings.filters.bar === true && rt.settings.filters.base === 'gin', 'normalizeState: filters survive');
+check(normalizeState({ settings: { filters: { alcoholFree: true } } }, 'en').settings.filters.alcoholFree === true &&
+  normalizeState({ settings: { filters: { alcoholFree: 'yes' } } }, 'en').settings.filters.alcoholFree === false &&
+  defaultState('en').settings.filters.alcoholFree === false,
+  'normalizeState: alcohol-free filter is off by default and only true survives');
 
 const validWithWheelPrefs = Object.assign({}, valid, { settings: Object.assign({}, valid.settings,
   { wheelFavoritesOnly: true, wheelExtras: ['shot', 42, 'water', 'wine'] }) });
@@ -233,6 +237,24 @@ check(matchesFilters(filterSeed[2], { bar: false, base: 'other' }), 'filters: ot
 check(filterDrinks(filterSeed, { bar: true, base: null }).length === 2, 'filterDrinks: returns matching set');
 check(filterDrinks(filterSeed, { bar: true, base: 'rum' }).length === 0, 'filterDrinks: empty combination');
 check(filterDrinks(null, {}).length === 0, 'filterDrinks: invalid input is empty');
+
+const afSeed = [
+  { id: 'af', base: 'other', bar: false, tags: ['alcohol-free', 'refreshing'] },
+  { id: 'boozy', base: 'gin', bar: true, tags: ['strong'] },
+  { id: 'untagged', base: 'rum', bar: true },
+];
+check(matchesFilters(afSeed[0], { alcoholFree: true, base: null }), 'filters: alcohol-free keeps a tagged drink');
+check(!matchesFilters(afSeed[1], { alcoholFree: true, base: null }), 'filters: alcohol-free excludes a tagged-out drink');
+check(!matchesFilters(afSeed[2], { alcoholFree: true, base: null }), 'filters: alcohol-free excludes an untagged drink');
+check(matchesFilters(afSeed[1], { alcoholFree: false, base: null }), 'filters: alcohol-free off keeps untagged drinks');
+check(matchesFilters({ tags: ['punch'], base: 'other' }, { punch: true, base: null }) && !matchesFilters({ tags: ['alcohol-free'], base: 'other' }, { punch: true, base: null }),
+  'filters: punch keeps only a tagged bowl');
+check(normalizeState({ settings: { filters: { punch: 'yes' } } }, 'en').settings.filters.punch === false, 'normalize: punch filter must be boolean');
+check(filterDrinks(afSeed, { alcoholFree: true, base: null }).length === 1 &&
+  filterDrinks(afSeed, { alcoholFree: true, base: null })[0].id === 'af',
+  'filterDrinks: alcohol-free returns only tagged drinks');
+check(filterDrinks(afSeed, { alcoholFree: true, bar: true, base: null }).length === 0,
+  'filterDrinks: alcohol-free combines with bar');
 
 // ---------- search (#/sok) ----------
 const searchDrink = { name: 'Margarita' };
@@ -507,8 +529,8 @@ const workerSource = fs.readFileSync(path.join(__dirname, 'worker', 'worker.js')
 // shopping help), decided by the agent in chunk mode and listed for the owner in HANDOFF.md
 // Mät LF-storleken, alltså det git lagrar och GitHub Pages levererar. En Windows-
 // arbetskopia checkas ut med CRLF och lägger på ~1,8 kB som aldrig deployas.
-check(Buffer.byteLength(appSource.split('\r').join('')) < 185000,
-  'bundle budget: app.js stays under 185 kB unminified');
+check(Buffer.byteLength(appSource.split('\r').join('')) < 190000, // bumped 185kB -> 190kB 2026-11-01: alcohol-free and punch chips, serves default, scrollable variant row
+  'bundle budget: app.js stays under 190 kB unminified');
 check(appSource.includes('deckQueue = freshFirst(shuffle(deckIds()), seenTop);') && appSource.split('seenTop').length === 8,
   'deck: a new shuffle is biased away from the recent top cards of this visit, which live in memory only (declared, read once, written in flyOff)');
 check(appSource.includes('if (navigator.vibrate) navigator.vibrate(12);'), 'deck: saving a card gives one short haptic where supported');
@@ -699,6 +721,11 @@ check(reconciled.pantry.includes('lime-juice'),
   'reconcileState: unchanged local set accepts remote additions');
 check(reconciled.settings.unit === 'oz' && reconciled.settings.lang === 'en',
   'reconcileState: local and remote setting edits merge field by field');
+check(reconcileState(
+  normalizeState({ settings: { filters: { alcoholFree: false } } }, 'en'),
+  normalizeState({ settings: { filters: { alcoholFree: true } } }, 'en'),
+  normalizeState({ settings: { filters: { alcoholFree: false } } }, 'en'),
+).settings.filters.alcoholFree === true, 'reconcileState: alcohol-free filter merges field by field');
 check(workerSource.includes('WHERE id = ? AND state = ?') && workerSource.includes("}, 409)"),
   'sync Worker: compare-and-swap rejects stale state writes');
 check(appSource.indexOf("authedFetch('/account'") < appSource.indexOf('await user.delete()'),
@@ -714,6 +741,29 @@ check(appSource.includes("const CUSTOM_KEY = 'sipdeck.custom'") && !('custom' in
 check(workerSource.includes('!refreshed && Date.now() - jwksMissRefresh') &&
   workerSource.includes('c.iat <= now') && workerSource.includes('c.auth_time <= now'),
   'Firebase verifier: unknown keys refresh once and required time claims are checked');
+
+// ---------- alcohol-free and punch: the labels are promises ----------
+{
+  const catalog = require('./drinks.json');
+  const groupOf = id => (catalog.ingredients[id] || {}).group;
+  const free = catalog.drinks.filter(d => d.tags.includes('alcohol-free'));
+  check(free.length >= 80, 'alcohol-free: the catalog has its variants');
+  free.forEach(d => {
+    check(d.base === 'other' && d.bar === false, `${d.id}: alcohol-free has no base spirit and is not bar-servable`);
+    const proof = d.ingredients.filter(l => ['spirits', 'liqueurs'].includes(groupOf(l.id)) && !l.id.startsWith('alcohol-free') || /^angostura|bitters$/.test(l.id) && !l.id.startsWith('alcohol-free'));
+    check(proof.length === 0, `${d.id}: no alcoholic ingredient (${proof.map(l => l.id).join(', ')})`);
+    check(!d.art || catalog.drinks.some(o => o.id === d.art), `${d.id}: borrowed art points at a real drink`);
+  });
+  catalog.drinks.forEach(d => {
+    const isPunch = d.tags.includes('punch');
+    check(isPunch === (d.serves !== undefined), `${d.id}: serves exactly on a punch`);
+    if (isPunch) {
+      check(Number.isInteger(d.serves) && d.serves > 1 && d.serves <= 100, `${d.id}: serves fits the stepper`);
+      check(d.ingredients.filter(l => l.unit === 'garnish').every(l => l.qty === 1), `${d.id}: garnish is one per glass`);
+    }
+  });
+  check(catalog.drinks.filter(d => d.tags.includes('punch')).length >= 13, 'punch: the catalog has its bowls');
+}
 
 // ---------- drinks.json validator ----------
 const UNITS = ['dash', 'barspoon', 'teaspoon', 'drop', 'piece', 'leaf', 'slice', 'garnish', 'splash', 'top', 'gram'];
