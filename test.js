@@ -597,7 +597,7 @@ const counted = ingredientCounts([
   { ingredients: [{ id: 'gin' }] },
 ]);
 check(counted.gin === 2 && counted['lime-juice'] === 1, 'ingredientCounts: counts drinks, not lines');
-check(infoSource.includes('Patrik Löfgren') && infoSource.includes('kontakt@orgutveckling.se') &&
+check(infoSource.includes('Patrik Löfgren') && infoSource.includes('kontakt@buildapp.se') &&
   infoSource.includes('id="sv"') && infoSource.includes('id="en"'),
   'legal page: controller, contact and Swedish/English notices are present');
 check(infoSource.includes('inga annonserings- eller analyscookies') &&
