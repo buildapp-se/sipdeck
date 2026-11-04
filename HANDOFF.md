@@ -4,8 +4,13 @@ status: active
 currentGoal: At home and the optional Flaskor link (ADR 0001) are live since 2026-10-06, owner QA remains
 nextAction: Owner QA with a real sign-in, the seven points in ../flaskor/HANDOFF.md under 2026-10-06
 blockers: []
-reviewedAt: 2026-11-02
+reviewedAt: 2026-11-04
 ---
+**2026-11-04, mutationstest (audit-kolumnen Mutation), gren `claude/mutation-2026-11-04`, draft-PR #42, inte mergad.** Stryker 9.6 med command runner mot `npm test` (`stryker.config.json`), på `app.js` rad 276 till 1018 och `worker/drink-rules.js`; UI-delen muteras inte. **75,00 % → 92,93 %** (1 910 mutanter, 135 överlevande kvar). Kör: `npm i --no-save @stryker-mutator/core@9 && npx stryker run`, ca 10 min på 4 kärnor, rapport i `reports/mutation/` (ignorerad). Stryker ligger inte i `package.json`. Källtextkontrollerna i `test.js` läser originalet via `SIPDECK_APP_SOURCE` när Stryker kör, annars fäller den instrumenterade filen budgeten och textmatchningarna.
+- **Bugg rättad:** `drinkErrors` kastade TypeError för en `null`-rad i `ingredients` (skyddet `line &&` var verkningslöst), så `PUT /drinks/<id>` gav 500 i stället för 400. **Workern är inte deployad**; ändringen går ut med nästa Worker-deploy.
+- **Tester:** 90 nya kontroller sist i `test.js` ("mutationstest 2026-11-04") och 1 i `worker/worker.test.mjs`. `npm test` 15 083 + Worker 49. Ingen e2e körd (ingen UI-ändring).
+- **Kvar, granskat:** de flesta överlevande är ekvivalenta (`i > 0` mot `i >= 0` i `shuffle`, gränserna i `spinAngle` där kurvan är kontinuerlig, `halves < 2` mot `<= 2`, fallbacklistor som `(drink.tags || [])`, regexvarianter i `slugify` och `authErrorKey`) eller skydd vars fallback ger samma resultat. Resten i `buildSpinLineup` (döda kategorislottar, `wantBottle`) och `classify` (ordningen bland namngivna ingredienser) står i BACKLOG.
+
 **2026-11-02:** kontaktadressen är nu `kontakt@buildapp.se` (förut `kontakt@orgutveckling.se`). Integritetstexten version 1.5.
 
 **Drift:** riktiga användare finns bara på buildapp.se/sipdeck (GitHub Pages från `main`, A-posterna 185.199.108–111.153). sipdeck.pages.dev har aldrig länkats ut; den och grenaliasen `<gren>.sipdeck.pages.dev` är granskningsytor. Merge till `main` är det som går live och det enda som kräver ägarens ja; en deploy till pages.dev behöver inget eget ja (ägaren 2026-09-25).

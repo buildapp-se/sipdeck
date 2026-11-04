@@ -345,3 +345,11 @@ Unika tillagda rader i alla 160 commits (utan låsfiler, bilder och katalog) gra
 - [x] `[P2]` (borttaget 2026-10-22: historiken omskriven med `git-filter-repo` och force-pushad efter ägarens ja; namnet stod också i nuvarande HANDOFF. Nås fortfarande via GitHubs PR-referenser tills GitHub Support rensar dem) ett familjemedlems förnamn står i `HANDOFF.md` i `e35fa3a` och `539318c` ("…dev-server"), borta ur nuvarande version. Att ta bort det kräver omskriven historik (`git-filter-repo`, force-push av ett publikt repo), eller att det accepteras.
 - [ ] `[P3]` (HANDOFF rensad 2026-10-22; ägaren valde `kontakt@buildapp.se`, väntar på att adressen verifieras i Email Routing. `firebase.json` kräver Google-konto eller Google-grupp) den privata Gmail-adressen finns i `firebase.json` (`supportEmail`, visas för användare i Googles inloggningsruta), `worker/worker.js`, `worker/wrangler.toml`, `worker/worker.test.mjs` och fyra gånger i `HANDOFF.md`. Mottagaren i `send_email` måste vara en verifierad Email Routing-adress, så byte till `kontakt@buildapp.se` är ett ägarbeslut. Testet och HANDOFF kan använda en platshållare oberoende av det.
 - Accepterat: namn och ort som personuppgiftsansvarig i `info.html` (lagkrav), `kontakt@buildapp.se`, GitHub-namnet, Firebase webbnyckel och D1-id (publika identifierare), förnamnet som testdata och den lokala användarmappen i en gammal HANDOFF.
+
+## Mutationstest 2026-11-04
+
+Stryker på de rena funktionerna (`stryker.config.json`), 75,00 % → 92,93 %. Poängen står under `## Audits` i CONTEXT.md.
+
+- [x] `[P2]` (rättat 2026-11-04 på `claude/mutation-2026-11-04`, Worker inte deployad) `drinkErrors` kastade TypeError för en `null`-rad i `ingredients`, så `PUT /drinks/<id>` och `POST /suggestions` svarade 500 och loggade ett serverfel i stället för 400.
+- [ ] `[P3]` Överlevande mutanter i `buildSpinLineup`: räkningen av döda kategorislottar och `wantBottle` (`fresh`, under en tredjedel) prövas bara genom att hela hjulet blir 12 sektorer. Ett test med en enda utesluten kategori i taget skulle döda dem.
+- [ ] `[P3]` Överlevande i `classify`: sorteringen när flera namngivna ingredienser passar samma flaska (längsta svenska namnet vinner) har inget test med två träffar.

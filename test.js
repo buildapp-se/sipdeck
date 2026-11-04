@@ -503,7 +503,8 @@ for (const [from, index, r] of [[17, 4, 0.5], [0, 0, 0], [123.4, 11, 0.999], [-4
 check(wheelSectorPath(0, 12).startsWith('M50 50L'), 'wheel SVG: sector path starts at hub');
 check(wheelSectorPath(0, 12) !== wheelSectorPath(1, 12), 'wheel SVG: adjacent sector paths differ');
 
-const appSource = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
+// Stryker (stryker.config.json) kör testerna mot en instrumenterad app.js; källtextkontrollerna läser då originalet
+const appSource = fs.readFileSync(process.env.SIPDECK_APP_SOURCE || path.join(__dirname, 'app.js'), 'utf8');
 const htmlSource = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
 const infoSource = fs.readFileSync(path.join(__dirname, 'info.html'), 'utf8');
 const workerSource = fs.readFileSync(path.join(__dirname, 'worker', 'worker.js'), 'utf8');
@@ -1147,6 +1148,311 @@ check(shop.find(x => x.id === 'mint').opens.join() === 'mojito' && shop.find(x =
   'shopping: buys the ingredient, not its preparation, and never asks for what a lime already gives');
 check(onShelf(ING.gin) && onShelf(ING.champagne) && onShelf(ING['angostura-bitters']) && !onShelf(ING.lime) && !onShelf(ING['sugar-syrup']),
   'shelves: spirits, liqueurs, bitters and wine are the bar cabinet, the rest is other ingredients');
+
+
+// ---------- mutationstest 2026-11-04: tester mot Stryker-mutanter som överlevde (stryker.config.json) ----------
+{
+  const A = require('./app.js');
+  const lcg = seed => { let x = seed; return () => (x = (x * 16807) % 2147483647) / 2147483647; };
+
+  // state
+  check(JSON.stringify(defaultState('en').settings.filters) === '{"bar":false,"alcoholFree":false,"punch":false,"base":null}' &&
+    defaultState('en').settings.seenFlipHint === false, 'mutation: default filters and flip hint are all off');
+  const ns = s => normalizeState({ settings: s }, 'en').settings;
+  check(ns({ servings: 1 }).servings === 1 && ns({ servings: 100 }).servings === 100 && ns({ servings: 0 }).servings === 1 &&
+    ns({ servings: 2.5 }).servings === 1 && ns({ servings: '4' }).servings === 1, 'mutation: servings 1 and 100 survive, 0, 2,5 and "4" fall back');
+  check(ns({ filters: { bar: 'yes', punch: true, base: '' } }).filters.bar === false && ns({ filters: { punch: true } }).filters.punch === true &&
+    ns({ filters: { base: '' } }).filters.base === null && ns({ filters: { base: 5 } }).filters.base === null &&
+    ns({ filters: 'gin' }).filters.base === null, 'mutation: filters keep only true and a non-empty base');
+  check(ns({ wheelFavoritesOnly: 'yes' }).wheelFavoritesOnly === false && ns({ seenFlipHint: true }).seenFlipHint === true &&
+    ns({ seenFlipHint: 'yes' }).seenFlipHint === false, 'mutation: wheel and hint flags keep only true');
+  check(ns({ lang: 'de' }).lang === 'en' && normalizeState({ settings: { lang: 'de' } }, 'sv').settings.lang === 'sv' &&
+    ns({ unit: 'gallon' }).unit === 'cl' && normalizeState({ settings: 'x' }, 'sv').settings.unit === 'cl',
+    'mutation: unknown language and unit fall back');
+  const nf = normalizeState({ favorites: 'margarita', pantry: { gin: true } }, 'en');
+  check(nf.favorites.length === 0 && nf.pantry.length === 0, 'mutation: favorites and pantry that are not lists become empty');
+  const nh = A.normalizeHome({ have: ['gin', 'gin', 3], picks: { a: 'gin', b: 4 }, flaskor: 'yes', country: 'SE' });
+  check(nh.have.join() === 'gin' && JSON.stringify(nh.picks) === '{"a":"gin"}' && nh.flaskor === false && nh.country === 'SE',
+    'mutation: normalizeHome dedupes have, keeps string picks, flaskor only true');
+  check(JSON.stringify(A.normalizeHome('x')) === JSON.stringify(A.normalizeHome()) &&
+    JSON.stringify(A.normalizeHome({ picks: 'gin' }).picks) === '{}' &&
+    Object.keys(A.normalizeHome({ picks: Object.fromEntries(Array.from({ length: 600 }, (_, i) => ['k' + i, 'gin'])) }).picks).length === 500,
+    'mutation: normalizeHome ignores garbage and caps picks at 500');
+
+  // routes
+  check(favoriteIdFromHash(null) === null && favoriteIdFromHash(42) === null && drinkIdFromHash('#/drink/%E0%A4%A') === null &&
+    drinkIdFromHash('#/drink/') === null && drinkIdFromHash('#/drink/a/b') === null && drinkIdFromHash('#/x/margarita') === null,
+    'mutation: hash ids reject non-strings, bad escapes, empty, nested and other routes');
+
+  // units and numbers
+  check(formatNumber(1.234, 'en') === '1.23' && formatNumber(1.5, 'sv') === '1,5' && formatNumber(12345, 'sv') === '12 345',
+    'mutation: formatNumber rounds to two decimals, comma and plain space in Swedish');
+  check(formatOz(0, 'en') === '0' && formatOz(0.1, 'en') === '0' && formatOz(2, 'en') === '2' && formatOz(0.5, 'en') === '½' &&
+    formatOz(1.75, 'sv') === '1¾', 'mutation: formatOz writes whole ounces, a lone fraction and a mixed number');
+  check(formatAmount({ qty: 0.75, unit: 'dash' }, 3, 'cl', 'en') === '2.3 dash' && formatAmount({ qty: 1, unit: 'dash' }, 3, 'cl', 'en') === '3 dash',
+    'mutation: counted amounts round to one decimal');
+  check(formatLineAmount({ qty: 2, unit: 'dash' }, 1, 'cl', 'sv') === '2 stänk' && formatLineAmount({ ml: 20 }, 1, 'cl', 'sv') === '2 cl' &&
+    formatLineAmount({ qty: 1, unit: 'top' }, 4, 'cl', 'sv') === 'toppa upp', 'mutation: counted units are translated, ml lines are not');
+  check(batchText({ ingredients: [{ ml: 500 }] }, 2, 'ml', 'en').startsWith('Batch: 1 l in all') &&
+    batchText({ ingredients: [{ ml: 333 }] }, 3, 'ml', 'en').startsWith('Batch: 999 ml'), 'mutation: batch switches to litres at exactly 1 000 ml');
+
+  // shuffle and queue
+  const sh = shuffle([1, 2, 3, 4, 5], lcg(7));
+  check(sh.join() === shuffle([1, 2, 3, 4, 5], lcg(7)).join() && sh.join() !== '1,2,3,4,5' && sh.slice().sort().join() === '1,2,3,4,5',
+    'mutation: shuffle follows the given rng and keeps every item');
+  check(shuffle([1, 2, 3], () => 0).join() === '2,3,1' && shuffle([1, 2, 3], () => 0.99).join() === '1,2,3',
+    'mutation: shuffle is Fisher-Yates (rng 0 rotates, rng near 1 keeps order)');
+  check(freshFirst([], []).length === 0 && freshFirst(['a'], ['a']).join() === 'a', 'mutation: freshFirst on empty and single lists');
+  check(advanceQueue(null, false).length === 0, 'mutation: advanceQueue on no queue');
+
+  // filters and matching
+  check(matchesFilters({ base: 'vodka' }, { base: 'other' }) === false && matchesFilters({ base: 'brandy' }, { base: 'other' }) === false &&
+    matchesFilters({ base: 'mezcal' }, { base: 'other' }) === true, 'mutation: base "other" excludes every named base');
+  check(BASE_FILTERS.length === 7 && BASE_FILTERS[BASE_FILTERS.length - 1] === 'other', 'mutation: base filters end with other');
+  const ings = { lime: {}, 'lime-juice': { madeFrom: ['lime'] }, mint: {}, 'mint-leaf': { form: 'mint' },
+    'triple-sec': { metBy: ['cointreau'], swap: [{ id: 'curacao' }] } };
+  check(JSON.stringify(A.coverage(ings, new Set(['mint']), 'mint-leaf')) === '{"how":"made","by":"mint"}' &&
+    JSON.stringify(A.coverage(ings, new Set(['lime']), 'lime')) === '{"how":"own","by":"lime"}' &&
+    JSON.stringify(A.coverage(ings, new Set(['lime']), 'lime-juice')) === '{"how":"made","by":"lime"}' &&
+    JSON.stringify(A.coverage(ings, new Set(['cointreau']), 'triple-sec')) === '{"how":"met","by":"cointreau"}' &&
+    A.coverage(ings, new Set(['mint-leaf']), 'mint-leaf') === null && A.coverage(undefined, new Set(['gin']), 'gin').how === 'own',
+    'mutation: coverage says how and by what a requirement is met');
+  check(A.swapFor(ings, new Set(['curacao']), 'triple-sec').id === 'curacao' && A.swapFor(ings, new Set(), 'triple-sec') === null &&
+    A.swapFor(ings, new Set(['x']), 'lime') === null, 'mutation: swapFor finds a labelled swap at home');
+  const fams = [{ id: 'a1', family: 'a' }, { id: 'a2', family: 'a' }, { id: 'a3', family: 'a' }, { id: 'b' }];
+  check(deckCards(fams, { a: { primary: 'a2' } }, {}, null, [], {}).join() === 'a2,b' &&
+    deckCards(fams, { a: { primary: 'a2' } }, {}, null, ['a3'], {}).join() === 'a3,b' &&
+    deckCards(fams, null, {}, null, null, {}).join() === 'a1,b' &&
+    deckCards([{ id: 'a3', family: 'a' }], { a: { primary: 'a2' } }, {}, null, [], {}).join() === 'a3',
+    'mutation: deckCards picks a saved member, then the primary, then the first');
+  check(variantDiff({ id: 'x', ingredients: [] }, null).removed.length === 0, 'mutation: variantDiff without a primary');
+  check(searchHaystack({ name: 'Mojito', variantLabel: { en: 'Virgin', sv: 'Alkoholfri' } }, ['Lime']) === 'mojito virgin alkoholfri lime' &&
+    searchHaystack({ name: 'Mojito' }) === 'mojito', 'mutation: search haystack holds the variant label in both languages');
+  check(missingIngredients({ ingredients: 'x' }, [], {}).length === 0, 'mutation: missingIngredients without a list');
+  {
+    const st = { pantry: ['gin'], home: A.normalizeHome({ seen: [], have: [] }) };
+    A.bridgeHome(st, {});
+    st.pantry.push('rum');
+    check(st.home.seen.join() === 'gin', 'mutation: bridgeHome stores a copy of the pantry as seen');
+  }
+
+  // Flaskor bottles
+  check(A.fold('Ångström') === 'angstrom' && A.fold(null) === '' && A.onShelf({ shelf: 'bar' }) && A.onShelf({ group: 'liqueurs' }) &&
+    !A.onShelf({ group: 'juice' }) && !A.onShelf(null), 'mutation: fold strips accents, onShelf knows the bar cabinet');
+  check(A.bottleKey({ id: 7 }) === 'fl:7' && A.bottleKey({ ref: 'r', id: 7 }) === 'r', 'mutation: bottleKey');
+  {
+    const bi = { gin: { en: 'Gin', sv: 'Gin', group: 'spirits' }, 'dry-vermouth': { en: 'Dry vermouth', sv: 'Torr vermouth', group: 'wine', shelf: 'bar' },
+      cognac: { en: 'Cognac', sv: 'Konjak', group: 'spirits' }, 'orange-liqueur': { en: 'Orange liqueur', sv: 'Apelsinlikör', group: 'liqueurs' },
+      lime: { en: 'Lime', sv: 'Lime', group: 'fruit' } };
+    const rules = [{ name: ['beefeater'], is: 'gin' }, { name: ['grand marnier'], is: ['cognac', 'orange-liqueur', 'nope'] },
+      { cat: ['konjak'], from: ['frankrike'], is: 'cognac' }, { cat: ['tonic'], is: null }];
+    const pick = A.classify({ id: 1, name: 'X' }, rules, bi, { 'fl:1': 'gin' });
+    check(JSON.stringify(pick) === '{"key":"fl:1","id":"gin","sure":true,"options":[],"why":"pick"}' &&
+      A.classify({ id: 1, name: 'X' }, rules, bi, { 'fl:1': 'gone' }).id === null, 'mutation: classify takes the person\'s own pick first');
+    const be = A.classify({ id: 2, name: 'London Dry', producer: 'Beefeater', kind: 'spirit' }, rules, bi, {});
+    check(be.id === 'gin' && be.sure === true && be.why === 'rule' && be.options.length === 0, 'mutation: classify matches a product rule on the producer');
+    check(A.classify({ id: 3, name: 'Beef eater' }, rules, bi, {}).id !== 'gin', 'mutation: a product rule needs whole words');
+    const gm = A.classify({ id: 4, name: 'Grand Marnier', kind: 'spirit' }, rules, bi, {});
+    check(gm.sure === false && gm.options.join() === 'cognac,orange-liqueur' && gm.why === 'rule', 'mutation: an ambiguous rule asks and drops unknown ids');
+    check(A.classify({ id: 5, name: 'Torr Vermouth' }, rules, bi, {}).id === 'dry-vermouth', 'mutation: a bottle named exactly like a bar ingredient');
+    check(A.classify({ id: 6, name: 'Hemmagjord Dry Vermouth Extra' }, rules, bi, {}).id === 'dry-vermouth' &&
+      A.classify({ id: 7, name: 'Lime', kind: 'other' }, rules, bi, {}).id === null, 'mutation: a long ingredient name inside the bottle name, never fruit');
+    check(A.classify({ id: 8, name: 'Gin Fizz Mix', kind: 'spirit' }, rules, bi, {}).id === null, 'mutation: a short name inside the bottle name is no match');
+    const vs = A.classify({ id: 9, name: 'VS', category: 'Konjak', country: 'Frankrike', kind: 'spirit' }, rules, bi, {});
+    check(vs.id === 'cognac' && A.classify({ id: 10, name: 'VS', category: 'Konjak', country: 'Spanien', kind: 'spirit' }, rules, bi, {}).id === null,
+      'mutation: category rules can require the country');
+    const none = A.classify({ id: 11, name: 'Okänd', kind: 'spirit' }, rules, bi, {});
+    check(none.sure === false && none.why === 'none' && A.classify({ id: 12, name: 'Okänd', kind: 'beer' }, rules, bi, {}).sure === true,
+      'mutation: an unknown spirit asks, an unknown beer gives nothing');
+    const tonic = A.classify({ id: 13, name: 'T', category: 'Tonic' }, rules, bi, {});
+    check(tonic.id === null && tonic.sure === true && tonic.why === 'rule', 'mutation: a rule can say the bottle gives no ingredient');
+    const src = A.homeSources({ have: ['lime'], picks: {} }, [{ id: 2, name: 'London Dry', producer: 'Beefeater' }, { id: 11, name: 'Okänd' }], rules, bi);
+    check(src.get('lime').manual === true && src.get('lime').bottles.length === 0 && src.get('gin').manual === false &&
+      src.get('gin').bottles.length === 1 && src.size === 2 && A.homeSources({ have: [], picks: {} }, null, rules, bi).size === 0,
+      'mutation: homeSources keeps hand marks and bottles apart');
+  }
+  check(JSON.stringify(A.homeGives(ings)) === '{"lime":["lime-juice"],"mint":["mint-leaf"],"cointreau":["triple-sec"]}',
+    'mutation: homeGives maps a thing at home to what it is good for');
+  {
+    const drinks = [{ id: 'd1', ingredients: [{ id: 'gin', essential: true }] }, { id: 'd2', ingredients: [{ id: 'gin', essential: true }, { id: 'rum', essential: true }] },
+      { id: 'd3', ingredients: [{ id: 'rum', essential: true }, { id: 'mint-leaf', essential: true }] }, { id: 'd4', ingredients: [{ id: 'rum', essential: true }] },
+      { id: 'd5', ingredients: [{ id: 'cola', essential: true }, { id: 'rum', essential: true }] }];
+    const shop = A.shopping(drinks, [], ings);
+    check(shop.map(s => s.id + ':' + s.opens.join('+') + '/' + s.needs.join('+')).join(' ') ===
+      'rum:d4/d2+d3+d5 gin:d1/d2 cola:/d5 mint:/d3', 'mutation: shopping sorts by drinks opened, then needed, then name');
+  }
+
+  // auth and sync
+  check(authErrorKey({ code: 'auth/wrong-password' }) === 'auth_wrong_password' && authErrorKey({ code: 'auth/weird' }) === 'auth_generic' &&
+    authErrorKey(new Error('x')) === null, 'mutation: auth error keys');
+  {
+    const base = normalizeState({ settings: { seenFlipHint: false } }, 'en');
+    const on = normalizeState({ settings: { seenFlipHint: true } }, 'en');
+    check(reconcileState(base, on, base).settings.seenFlipHint === true && reconcileState(base, base, on).settings.seenFlipHint === true &&
+      reconcileState(base, base, base).settings.seenFlipHint === false, 'mutation: the flip hint is seen once on either side');
+    const b = normalizeState({ home: { picks: { x: 'gin' } } }, 'en'), l = normalizeState({ home: { picks: {} } }, 'en');
+    check(!('x' in reconcileState(b, l, b).home.picks), 'mutation: a pick removed here stays removed');
+    const local = normalizeState({ favorites: ['a'], settings: { unit: 'oz' } }, 'en');
+    const fresh = pulledState(local, null, null);
+    check(fresh.settings.unit === 'oz' && fresh.favorites.join() === 'a', 'mutation: a new account keeps this browser\'s settings');
+    check(pulledState(local, { settings: { unit: 'ml' } }, null).settings.unit === 'ml', 'mutation: an existing account\'s settings win');
+  }
+
+  // wheel
+  check(weightedSampleUnique(['a', 'b', 'c'], 3, x => (x === 'b' ? 0 : 1), () => 0).join() === 'a,c' &&
+    weightedSampleUnique(['a', 'b'], 2, () => 0, () => 0).length === 0 && weightedSampleUnique(null, 2, () => 1, () => 0).length === 0,
+    'mutation: weighted sampling skips zero weights and stops when nothing weighs');
+  check(weightedSampleUnique(['a', 'b', 'c'], 1, x => (x === 'a' ? 1 : 3), () => 0.2).join() === 'b' &&
+    weightedSampleUnique(['a', 'b', 'c'], 1, () => 1, () => 1 / 3).join() === 'b' &&
+    weightedSampleUnique(['a', 'b', 'c'], 1, () => 1, () => 0.999).join() === 'c', 'mutation: weighted sampling lands in proportion to the weights');
+  {
+    const lineup = buildSpinLineup(wheelData, 'groove', [{ id: 'm', name: { en: 'Mule', sv: 'Mula' }, bar: true, art: 'mule-art' },
+      { id: 'n', name: { sv: 'Bara svenska' }, bar: true }, { id: 'o', name: {}, bar: true }], () => 0.5);
+    const byId = id => lineup.find(item => item.outcomeId === id);
+    check(byId('m').sector.sv === 'Mula' && byId('m').art === 'img/mule-art.webp' && byId('n').result.en === 'Bara svenska' &&
+      byId('o').sector.en === 'o' && byId('n').art === 'img/n.webp' && byId('m').category === 'cocktail' && byId('m').kind === 'cocktail',
+      'mutation: cocktail sectors carry both names, falling back to the other language and the id');
+    const water = buildSpinLineup(wheelData, 'shitfaced', wheelFixture, () => 0.5).filter(item => item.outcomeId === 'water');
+    check(new Set(water.map(item => item.art)).size === 3 && water.every(item => item.kind === 'simple' && item.category === 'water'),
+      'mutation: repeated simple outcomes cycle through their pictures');
+    check(lineup.every((item, i) => item.key === `${item.kind}-${item.outcomeId}-${i}`), 'mutation: every sector has a unique key');
+    check(buildSpinLineup(null, 'groove', wheelFixture).length === 0 && buildSpinLineup({ moods: [], outcomes: {} }, 'groove', wheelFixture).length === 0 &&
+      buildSpinLineup({ moods: [{ id: 'g', slots: ['cocktail'] }], outcomes: {} }, 'g', wheelFixture).length === 0 &&
+      buildSpinLineup(wheelData, 'groove', [], () => 0.5).length === 0, 'mutation: a broken wheel or no cocktails gives no lineup');
+    const strongOnly = wheelFixture.slice(0, 3).concat(wheelFixture.slice(3, 4));
+    check(buildSpinLineup(wheelData, 'wobbly', strongOnly, () => 0.5).filter(item => item.kind === 'cocktail').every(item => item.outcomeId === 'drink-3'),
+      'mutation: cocktails repeat from the allowed pool when it is small');
+    const favs = buildSpinLineup(wheelData, 'groove', wheelFixture, lcg(3), { favoritesOnly: true, favorites: ['drink-5', 'drink-6'] })
+      .filter(item => item.kind === 'cocktail').map(item => item.outcomeId);
+    check(favs.length === 6 && new Set(favs).size === 6 && favs.includes('drink-5') && favs.includes('drink-6'),
+      'mutation: favorites-only tops up with other drinks, no repeats');
+    const topUp = buildSpinLineup(wheelData, 'groove', wheelFixture, () => 0, { favoritesOnly: true, favorites: ['drink-3'] })
+      .filter(item => item.kind === 'cocktail').map(item => item.outcomeId);
+    check(topUp.length === 6 && new Set(topUp).size === 6 && topUp.includes('drink-3'),
+      'mutation: the favorites top-up draws from the drinks not yet picked (rng 0 would repeat drink-3 otherwise)');
+    const plain = buildSpinLineup(wheelData, 'groove', [{ id: 's', name: 'Ren text', bar: true }], () => 0.5).find(item => item.kind === 'cocktail');
+    check(plain.sector.en === 'Ren text' && plain.sector.sv === 'Ren text', 'mutation: a plain-text name is used in both languages');
+    const fam = [{ id: 'f1', name: 'F1', family: 'f', bar: true }, { id: 'f2', name: 'F2', family: 'f', bar: true }];
+    const famPicks = [0.1, 0.9].map(r => buildSpinLineup(wheelData, 'groove', fam, () => r).find(item => item.kind === 'cocktail').outcomeId);
+    check(famPicks.join() === 'f1,f2', 'mutation: the family member on the wheel is drawn at random');
+    const cats = r => buildSpinLineup(wheelData, 'groove', wheelFixture.slice(3), () => r).map(item => item.category[0]).join('');
+    check(cats(0) === 'csbcwbccbcwc' && cats(0.1) === 'sbcwbccbcwcc', 'mutation: the lineup is rotated by the rng');
+    check(selectWheelIndex([], () => 0) === -1 && selectWheelIndex(null, () => 0) === -1 &&
+      selectWheelIndex([{ eligible: true }, { eligible: false }, { eligible: true }], () => 0.6) === 2, 'mutation: selectWheelIndex picks among eligible sectors');
+  }
+  {
+    const s = springLinear(0.6, 1000, 4);
+    check(s === springLinear(0.6, 1000, 4) && s.startsWith('linear(0.0000,') && s.endsWith(',1)') && s.split(',').length === 5 &&
+      springLinear(0.6, 1000).split(',').length === 49, 'mutation: the spring easing has n+1 points from 0 to 1');
+    const pts = s.slice(7, -1).split(',').map(Number);
+    check([1.0191, 1.0272, 0.9929].every((v, i) => Math.abs(pts[i + 1] - v) < 1e-3), 'mutation: the spring overshoots and settles like a damped spring');
+  }
+  check(spinAngle(0, 720) === 0 && spinAngle(-5, 720) === 0 && spinAngle(SPIN_SLOW.windup, 720) === -SPIN_SLOW.windupDeg &&
+    Math.abs(spinAngle(SPIN_SLOW.windup + SPIN_SLOW.main, 720) - (720 + SPIN_SLOW.overshootDeg)) < 1e-9 &&
+    Math.abs(spinAngle(SPIN_SLOW.windup + SPIN_SLOW.main + SPIN_SLOW.settle / 2, 720) - (720 + SPIN_SLOW.overshootDeg / 2)) < 1e-9 &&
+    spinAngle(spinMs(SPIN_SLOW), 720) === 720, 'mutation: spin angle at the phase edges');
+  check(landingTravel(0, 0, () => 0.5) === 4 * 360 && landingTravel(0, 3, () => 0.5) === 4 * 360 + 270 &&
+    landingTravel(30, 0, () => 0.5) === 4 * 360 + 330 && landingTravel(-30, 0, () => 0.5) === 4 * 360 + 30 &&
+    Math.abs(landingTravel(0, 0, () => 0.999999999) - (4 * 360 + 360 - 30 * 0.34)) < 1e-6 && landingTravel(0, 6, () => 0.5, 0) === 4 * 360 + 180,
+    'mutation: landing travel goes forward to the sector, jitter within a third of a sector');
+  check(sectorAtAngle(0, 0) === 0 && sectorAtAngle(-30) === 1 && sectorAtAngle(-14.9) === 0 && sectorAtAngle(-15.1) === 1,
+    'mutation: sectorAtAngle defaults to 12 sectors');
+  check(wheelSectorPath(0) === 'M50 50L37.318 2.670A49 49 0 0 1 62.682 2.670Z' &&
+    wheelSectorPath(3, 4, 40) === 'M50 50L21.716 78.284A40 40 0 0 1 21.716 21.716Z', 'mutation: sector paths are exact wedges around the centre');
+  check(Object.values(WHEEL_COLORS).every(c => /^(oklch\(|#)/.test(c)) &&
+    Object.values(wheelData.outcomes).every(o => o.category in WHEEL_COLORS), 'mutation: every wheel category has a colour');
+
+  // citrus
+  const cIngs = { lime: {}, 'lime-juice': { madeFrom: ['lime'] }, 'lime-wedge': { form: 'lime' }, lemon: {} };
+  check(citrusText({ ingredients: [{ id: 'lime', qty: 1, unit: 'piece' }] }, 2, cIngs, 'en') === 'To buy: about 2 limes' &&
+    citrusText({ ingredients: [{ id: 'lime-wedge', qty: 4, unit: 'piece' }] }, 1, cIngs, 'en') === 'To buy: about ½ lime' &&
+    citrusText({ ingredients: [{ id: 'lime-wedge', qty: 8, unit: 'garnish' }] }, 1, cIngs, 'en') === 'To buy: about 1 lime' &&
+    citrusText({ ingredients: [{ id: 'lime-wedge', qty: 8, unit: 'slice' }] }, 1, cIngs, 'en') === 'To buy: about 1 lime',
+    'mutation: whole fruit counts as fruit, wedges, slices and garnish as an eighth');
+  check(citrusText({ ingredients: [{ id: 'lime-juice', qty: 3, unit: 'barspoon' }] }, 2, cIngs, 'en') === 'To buy: about 1 lime' &&
+    citrusText({ ingredients: [{ id: 'lime-juice', qty: 1, unit: 'dash' }] }, 2, cIngs, 'en') === '' &&
+    citrusText({ ingredients: [{ id: 'lemon', qty: 1, unit: 'leaf' }] }, 2, cIngs, 'en') === '',
+    'mutation: a barspoon of juice is 5 ml, dashes and leaves count nothing');
+  check(citrusText({ ingredients: [{ id: 'lime-juice', ml: 60 }] }, 1, cIngs, 'en') === 'To buy: about 2 limes' &&
+    citrusText({ ingredients: [{ id: 'lime-juice', ml: 30 }] }, 1, cIngs, 'en') === 'To buy: about 1 lime',
+    'mutation: one fruit is singular, more is plural');
+
+  // own drinks
+  check(drinkAsText({ name: { en: 'Sour', sv: 'Sur' }, ingredients: [{ id: 'x', ml: 20 }], method: { en: 'Shake.' } }, { x: { en: 'Gin' } }, 1, 'cl', 'sv')
+    .split('\n')[0] === 'Sur' && drinkAsText({ name: { en: 'Sour' }, ingredients: [{ id: 'x', ml: 20 }], method: { en: 'Shake.' } }, { x: { en: 'Gin' } }, 1, 'cl', 'sv')
+    .split('\n')[0] === 'Sour', 'mutation: copied recipe names the drink in the language, falling back to English');
+  check(drinkAsText({ name: 'N', ingredients: [{ id: 'x', ml: 20 }, { id: 'y', ml: 10 }], method: { en: 'M' } }, { x: { en: 'Gin', sv: 'Gin SV' } }, 1, 'cl', 'en')
+    .includes('- 2 cl Gin\n- 1 cl y'), 'mutation: copied recipe falls back to the id for unknown ingredients');
+  check(A.QTY_UNITS.join() === RULE_UNITS.join(), 'mutation: the form and the Worker agree on counted units');
+  check(Object.keys(CUSTOM_COLORS).join() === COLORS.join() && Object.values(CUSTOM_COLORS).every(c => /^#[0-9A-F]{6}$/.test(c)),
+    'mutation: form colours are the Worker\'s colours, each a hex value');
+  check(slugify('  Gin & Tonic!! ') === 'gin-tonic' && slugify('Ångbåt') === 'angbat' && slugify('x'.repeat(70)).length === 64,
+    'mutation: slugify');
+  {
+    const ci = { gin: { en: 'Gin', sv: 'Gin' }, mine: { en: 'Mine', custom: true }, nosv: { en: 'Soda' } };
+    const f = { id: 'egen', name: '  ' + 'N'.repeat(90), glass: 'rocks', color: 'red', method: '  Rör.  ', source: '',
+      lines: [{ name: ' gin ', amount: '4', unit: 'cl' }, { name: 'Mine', amount: '1', unit: 'top' }, { name: 'Bitter', amount: '0', unit: 'dash' },
+        { name: 'Lime', amount: '2', unit: 'garnish' }, { name: 'L'.repeat(70), amount: '3', unit: 'dash' }, { name: '   ', amount: '1', unit: 'cl' }, { name: 'soda', amount: '5', unit: 'oz' }] };
+    const dr = buildCustomDrink(f, ci);
+    const [g, m, b, l, long, soda] = dr.ingredients;
+    check(dr.ingredients.length === 6 && g.id === 'gin' && g.ml === 40 && g.essential === true && !('label' in g) &&
+      m.id === 'mine' && m.label === 'Mine' && m.qty === 1 && m.unit === 'top' && b.qty === 1 && b.unit === 'dash' &&
+      l.essential === false && l.qty === 2 && long.label.length === 60 && soda.id === 'nosv' && soda.ml === 150,
+      'mutation: own drink lines: catalog names map to ids, units and labels');
+    check(dr.name.length === 80 && dr.name[0] === 'N' && dr.method.en === 'Rör.' && !('source' in dr) && dr.tags.length === 0 && dr.bar === false,
+      'mutation: own drink name and method are trimmed, empty source left out');
+    const src = s => buildCustomDrink(Object.assign({}, f, { source: s }), ci).source;
+    check(JSON.stringify(src(' https://x.se/a ')) === '{"label":"https://x.se/a","url":"https://x.se/a"}' &&
+      JSON.stringify(src('bok https://x.se')) === '{"label":"bok https://x.se"}' && JSON.stringify(src('https://x.se/a b')) === '{"label":"https://x.se/a b"}',
+      'mutation: own drink source is a link only when it is one https address');
+  }
+  {
+    const mk = (id, ids, extra) => Object.assign({ id, ingredients: ids.map(x => ({ id: x, essential: true })) }, extra);
+    const mine = mk('mine', ['a', 'b', 'c', 'd']);
+    const cat = [mk('mine', ['a', 'b', 'c', 'd']), mk('own', ['a', 'b', 'c', 'd'], { custom: true }), mk('p', ['a', 'b', 'c']), mk('q', ['a', 'b', 'c', 'd', 'e']), mk('r', ['a', 'b', 'c', 'x'])];
+    const best = similarDrink(mine, cat);
+    check(best.drink.id === 'q' && best.score === 0.8 && similarDrink(mine, [mk('p', ['a', 'b', 'c']), mk('q', ['a', 'b', 'c', 'd', 'e'])]).drink.id === 'q' &&
+      similarDrink(mine, [mk('q', ['a', 'b', 'c', 'd', 'e']), mk('p', ['a', 'b', 'c'])]).drink.id === 'q' &&
+      similarDrink(mine, [mk('p', ['a', 'b', 'c']), mk('p2', ['a', 'b', 'd'])]).drink.id === 'p',
+      'mutation: similarDrink keeps the best score, the first of equals, and skips itself and own drinks');
+  }
+  check(mergeCustom([{ id: 'a', updatedAt: 1, drink: 'L' }], [{ id: 'a', updatedAt: 1, drink: 'R' }])[0].drink === 'L',
+    'mutation: an own-drink tie keeps this browser\'s copy');
+
+  // Worker form rules: every boundary
+  const okDrink = () => ({ id: 'a-b', name: 'N', glass: 'rocks', method: { en: 'M' }, ingredients: [{ id: 'gin', essential: true, ml: 40 }] });
+  const errs = patch => { const dd = okDrink(); patch(dd); return drinkErrors(dd).join(); };
+  check(errs(() => {}) === '' && drinkErrors(null).join() === 'not an object' && drinkErrors([]).join() === 'not an object' && drinkErrors('x').join() === 'not an object',
+    'mutation rules: a valid drink, and non-objects');
+  check(errs(d => { d.id = 'a'.repeat(64); }) === '' && errs(d => { d.id = 'a'.repeat(65); }) === 'id' && errs(d => { d.id = 'x a-b'; }) === 'id' &&
+    errs(d => { d.id = 'a-b x'; }) === 'id' && errs(d => { d.id = 5; }) === 'id', 'mutation rules: id is kebab case up to 64');
+  check(errs(d => { d.name = 'n'.repeat(80); }) === '' && errs(d => { d.name = 'n'.repeat(81); }) === 'name' && errs(d => { d.name = '   '; }) === 'name' &&
+    errs(d => { d.name = 7; }) === 'name', 'mutation rules: name is text up to 80');
+  check(errs(d => { d.glass = 'mug'; }) === 'glass' && errs(d => { d.color = 'red'; }) === '' && errs(d => { d.color = 'blue'; }) === 'color',
+    'mutation rules: glass and colour from the lists');
+  check(errs(d => { delete d.method; }) === 'method' && errs(d => { d.method = { en: 'm'.repeat(2001) }; }) === 'method' &&
+    errs(d => { d.method.sv = ''; }) === 'method.sv' && errs(d => { d.method.sv = 'S'; }) === '', 'mutation rules: method in English, optional Swedish');
+  check(errs(d => { d.tags = ['a']; }) === '' && errs(d => { d.tags = 'a'; }) === 'tags' && errs(d => { d.tags = [1]; }) === 'tags',
+    'mutation rules: tags are a list of strings');
+  check(errs(d => { d.source = { label: 'L' }; }) === '' && errs(d => { d.source = { label: 'L', url: 'https://x.se' }; }) === '' &&
+    errs(d => { d.source = null; }) === 'source' && errs(d => { d.source = { label: '' }; }) === 'source' &&
+    errs(d => { d.source = { label: 'L', url: 'http://x.se' }; }) === 'source' && errs(d => { d.source = { label: 'L', url: 'x https://x.se' }; }) === 'source' &&
+    errs(d => { d.source = { label: 'L', url: 'https://x.se y' }; }) === 'source', 'mutation rules: source label and one https address');
+  const line = l => errs(d => { d.ingredients = [Object.assign({ id: 'gin', essential: true }, l)]; });
+  check(errs(d => { d.ingredients = []; }) === 'ingredients' && errs(d => { d.ingredients = 'x'; }) === 'ingredients' &&
+    errs(d => { d.ingredients = Array(25).fill(okDrink().ingredients[0]); }) === '' && errs(d => { d.ingredients = Array(26).fill(okDrink().ingredients[0]); }) === 'ingredients' &&
+    errs(d => { d.name = ''; d.ingredients = []; }) === 'name,ingredients', 'mutation rules: 1 to 25 lines, errors add up');
+  check(line({ ml: 2000 }) === '' && line({ ml: 2001 }) === 'ingredients[0]' && line({ ml: 0 }) === 'ingredients[0]' && line({ ml: 0.1 }) === '' &&
+    line({ qty: 100, unit: 'dash' }) === '' && line({ qty: 101, unit: 'dash' }) === 'ingredients[0]' && line({ qty: 2000, unit: 'gram' }) === '' &&
+    line({ qty: 2001, unit: 'gram' }) === 'ingredients[0]' && line({ qty: 0, unit: 'dash' }) === 'ingredients[0]' && line({ qty: 1, unit: 'cup' }) === 'ingredients[0]' &&
+    line({ unit: 'dash' }) === 'ingredients[0]' && line({ qty: 1 }) === 'ingredients[0]' && line({ ml: 10, qty: 1, unit: 'dash' }) === 'ingredients[0]' &&
+    line({ ml: 10, unit: 'dash' }) === 'ingredients[0]' && line({}) === 'ingredients[0]', 'mutation rules: an amount is ml or a counted unit within its cap');
+  check(line({ ml: 1, id: 'g'.repeat(64) }) === '' && line({ ml: 1, id: 'g'.repeat(65) }) === 'ingredients[0]' && line({ ml: 1, id: 'Gin' }) === 'ingredients[0]' &&
+    line({ ml: 1, id: 7 }) === 'ingredients[0]' && line({ ml: 1, essential: 'yes' }) === 'ingredients[0]' && line({ ml: 1, label: 'L'.repeat(60) }) === '' &&
+    line({ ml: 1, label: 'L'.repeat(61) }) === 'ingredients[0]' && line({ ml: 1, label: ' ' }) === 'ingredients[0]' &&
+    errs(d => { d.ingredients = [null, 'gin']; }) === 'ingredients[0],ingredients[1]' && errs(d => { d.ingredients.push({ id: 'x', essential: true }); }) === 'ingredients[1]',
+    'mutation rules: a line has a kebab id, a boolean essential and an optional label');
+}
 
 console.log(`${pass} passed, ${fail} failed`);
 if (fail > 0) process.exit(1);
