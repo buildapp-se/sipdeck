@@ -23,3 +23,7 @@ AGENTS.md
 suggestions/
 # lokala Worker-hemligheter för wrangler dev
 worker/.dev.vars
+
+# Stryker (npx stryker run): sandlåda och rapporter, regenererbara
+.stryker-tmp/
+reports/

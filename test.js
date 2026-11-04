@@ -503,7 +503,8 @@ for (const [from, index, r] of [[17, 4, 0.5], [0, 0, 0], [123.4, 11, 0.999], [-4
 check(wheelSectorPath(0, 12).startsWith('M50 50L'), 'wheel SVG: sector path starts at hub');
 check(wheelSectorPath(0, 12) !== wheelSectorPath(1, 12), 'wheel SVG: adjacent sector paths differ');
 
-const appSource = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
+// Stryker (stryker.config.json) kör testerna mot en instrumenterad app.js; källtextkontrollerna läser då originalet
+const appSource = fs.readFileSync(process.env.SIPDECK_APP_SOURCE || path.join(__dirname, 'app.js'), 'utf8');
 const htmlSource = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
 const infoSource = fs.readFileSync(path.join(__dirname, 'info.html'), 'utf8');
 const workerSource = fs.readFileSync(path.join(__dirname, 'worker', 'worker.js'), 'utf8');
