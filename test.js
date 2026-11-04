@@ -1195,5 +1195,29 @@ check(shop.find(x => x.id === 'mint').opens.join() === 'mojito' && shop.find(x =
 check(onShelf(ING.gin) && onShelf(ING.champagne) && onShelf(ING['angostura-bitters']) && !onShelf(ING.lime) && !onShelf(ING['sugar-syrup']),
   'shelves: spirits, liqueurs, bitters and wine are the bar cabinet, the rest is other ingredients');
 
+// ---------- static recipe pages (scripts/drink-pages.js) ----------
+// the pages are checked in; this fails when drinks.json or the strings change and `node scripts/drink-pages.js` was not rerun
+{
+  const { pages } = require('./scripts/drink-pages.js');
+  const want = pages(), catalog = JSON.parse(fs.readFileSync(path.join(__dirname, 'drinks.json'), 'utf8')).drinks;
+  const stale = [...want].filter(([file, html]) => { try { return fs.readFileSync(path.join(__dirname, file), 'utf8') !== html; } catch (e) { return true; } });
+  check(!stale.length, `drink pages: up to date with the catalog (rerun node scripts/drink-pages.js): ${stale.slice(0, 3).map(x => x[0]).join(', ')}`);
+  const dirs = fs.readdirSync(path.join(__dirname, 'drink')).sort();
+  check(dirs.join() === catalog.map(d => d.id).sort().join(), 'drink pages: one folder per catalog drink, none left over');
+  catalog.forEach(d => {
+    const html = want.get(`drink/${d.id}/index.html`), url = `https://buildapp.se/sipdeck/drink/${d.id}/`;
+    const ld = JSON.parse(html.match(/<script type="application\/ld\+json">(.*)<\/script>/)[1]);
+    check(html.includes(`<link rel="canonical" href="${url}">`) && html.includes(`<meta property="og:url" content="${url}">`)
+      && html.includes(`href="../../#/drink/${d.id}"`) && !/app\.js/.test(html), `drink page ${d.id}: canonical, og:url, link into the app, no app.js`);
+    check(ld['@type'] === 'Recipe' && ld.name === d.name && ld.recipeIngredient.length === d.ingredients.length && ld.url === url
+      && ld.image === `https://buildapp.se/sipdeck/img/${d.art || d.id}.webp` && fs.existsSync(path.join(__dirname, 'img', `${d.art || d.id}.webp`)),
+      `drink page ${d.id}: JSON-LD Recipe matches the catalog and its image exists`);
+    check((html.match(/<li>/g) || []).length === d.ingredients.length && html.includes(d.method.sv.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')),
+      `drink page ${d.id}: every ingredient line and the Swedish method`);
+  });
+  check(/<li><b>5 cl<\/b><span>Blanco-tequila<\/span><\/li>/.test(want.get('drink/margarita/index.html')), 'drink page: amounts in cl, Swedish names');
+  check((want.get('sitemap.xml').match(/<loc>/g) || []).length === catalog.length + 1, 'sitemap: the app and every drink page');
+}
+
 console.log(`${pass} passed, ${fail} failed`);
 if (fail > 0) process.exit(1);
