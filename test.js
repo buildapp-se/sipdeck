@@ -11,7 +11,7 @@ const { STRINGS, t, detectLang, defaultState, normalizeState, favoriteIdFromHash
   weightedSampleUnique, wheelCocktailWeight, buildSpinLineup, selectWheelIndex,
   wheelSectorPath, springLinear, SPIN_SLOW, SPIN_FAST, SLOW_SPINS, spinMs, spinAngle, landingTravel, sectorAtAngle, WHEEL_COLORS,
   GLASS_SILHOUETTES, glassPlaceholder,
-  WHEEL_EXTRAS, wheelExcludedOutcomes, CUSTOM_GLASSES, CUSTOM_COLORS, slugify, buildCustomDrink, similarDrink, mergeCustom } = require('./app.js');
+  WHEEL_EXTRAS, wheelExcludedOutcomes, CUSTOM_GLASSES, CUSTOM_COLORS, slugify, buildCustomDrink, similarDrink, similarDrinks, mergeCustom } = require('./app.js');
 // node 22.12+ loads the Worker's ES module with require(); the same rules guard the catalog below
 const { drinkErrors, GLASSES, COLORS, QTY_UNITS: RULE_UNITS } = require('./worker/drink-rules.js');
 
@@ -378,6 +378,28 @@ check(['en', 'sv'].every(l => Object.keys(CUSTOM_COLORS).every(c => t(l, 'color_
   'i18n: colour names and every suggestion status in EN + SV');
 check(RULE_UNITS.join() === ['dash', 'barspoon', 'teaspoon', 'drop', 'piece', 'leaf', 'slice', 'garnish', 'splash', 'top', 'gram'].join(),
   'drink rules: the same qty units as the catalog validator');
+
+// ---------- more like this ----------
+{
+  const ing = (...ids) => ids.map(id => ({ id, essential: true }));
+  const me = { id: 'me', name: 'Me', family: 'fam', tags: ['sour'], ingredients: ing('gin', 'lemon', 'syrup') };
+  const pool = [me,
+    { id: 'sib', name: 'Sib', family: 'fam', ingredients: ing('gin', 'lemon', 'syrup') },
+    { id: 'a', name: 'A', tags: [], ingredients: ing('gin', 'lemon', 'honey') },
+    { id: 'b', name: 'B', tags: ['sour'], ingredients: ing('gin', 'lemon', 'honey') },
+    { id: 'f1', name: 'F1', family: 'other', ingredients: ing('gin', 'lemon', 'syrup', 'egg') },
+    { id: 'f2', name: 'F2', family: 'other', ingredients: ing('gin', 'lemon', 'syrup', 'egg', 'mint') },
+    { id: 'af', name: 'Af', tags: ['alcohol-free'], ingredients: ing('gin', 'lemon', 'syrup') },
+    { id: 'own', name: 'Own', custom: true, ingredients: ing('gin', 'lemon', 'syrup') },
+    { id: 'none', name: 'None', ingredients: ing('rum') }];
+  check(similarDrinks(me, pool).map(x => x.id).join() === 'f1,b,a',
+    'similarDrinks: closest first, a tag breaks the tie, own family, own drinks, alcohol-free and a second member of a family skipped');
+  check(similarDrinks(me, pool, 5).map(x => x.id).join() === 'f1,b,a', 'similarDrinks: nothing in common is never listed');
+  const cat = require('./drinks.json').drinks;
+  check(cat.every(dr => { const list = similarDrinks(dr, cat); return list.length <= 3 && list.every(x => x.id !== dr.id && (!dr.family || x.family !== dr.family)); }),
+    'similarDrinks: every catalog drink gets at most three, never itself or its own variants');
+  check(cat.filter(dr => similarDrinks(dr, cat).length === 3).length >= cat.length - 5, 'similarDrinks: nearly every catalog drink fills all three');
+}
 
 check(swipeDirectionForKey('ArrowLeft') === -1, 'keyboard swipe: left skips');
 check(swipeDirectionForKey('ArrowRight') === 1, 'keyboard swipe: right saves');

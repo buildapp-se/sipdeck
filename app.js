@@ -31,7 +31,7 @@ const STRINGS = {
     missing_prefix: 'Missing: ', missing_many: 'Missing 3+', missing_tag: 'Missing',
     recipe_title: 'Recipe', ingredients_title: 'Ingredients', method_title: 'Method',
     ingredient_check_hint: 'Check off ingredients as you mix.',
-    check_ingredient: 'Check off', copy_recipe: 'Copy recipe',
+    check_ingredient: 'Check off', copy_recipe: 'Copy recipe', similar_title: 'More like this',
     copied: 'Copied!', copy_failed: 'Could not copy', servings_copy: 'servings', source_label: 'Source',
     pantry_title: 'At home',
     pantry_empty: 'No ingredients are used by the current drinks.',
@@ -167,7 +167,7 @@ const STRINGS = {
     missing_prefix: 'Saknar: ', missing_many: 'Saknar 3+', missing_tag: 'Saknas',
     recipe_title: 'Recept', ingredients_title: 'Ingredienser', method_title: 'Gör så här',
     ingredient_check_hint: 'Bocka av ingredienserna medan du blandar.',
-    check_ingredient: 'Bocka av', copy_recipe: 'Kopiera receptet',
+    check_ingredient: 'Bocka av', copy_recipe: 'Kopiera receptet', similar_title: 'Mer som den här',
     copied: 'Kopierat!', copy_failed: 'Kunde inte kopiera', servings_copy: 'portioner', source_label: 'Källa',
     pantry_title: 'Hemma',
     pantry_empty: 'Inga ingredienser används av de aktuella drinkarna.',
@@ -1023,6 +1023,19 @@ function similarDrink(drink, catalog) {
   return best;
 }
 
+// "More like this": the closest catalog drinks by the same Jaccard on essentials, shared tags break a tie. The drink's
+// own family is skipped and any other family shows once, and alcohol-free stays with alcohol-free.
+function similarDrinks(drink, catalog, n = 3) {
+  const own = essentialIds(drink), tags = new Set(drink.tags || []), seen = new Set(), af = d => (d.tags || []).includes('alcohol-free');
+  return catalog.filter(o => !o.custom && o.id !== drink.id && !(drink.family && o.family === drink.family) && af(o) === af(drink))
+    .map(o => {
+      const theirs = essentialIds(o), shared = Array.from(own).filter(id => theirs.has(id)).length;
+      return { drink: o, score: shared / (own.size + theirs.size - shared || 1), tags: (o.tags || []).filter(x => tags.has(x)).length };
+    })
+    .filter(x => x.score > 0).sort((a, b) => b.score - a.score || b.tags - a.tags || a.drink.name.localeCompare(b.drink.name))
+    .filter(x => !x.drink.family || !seen.has(x.drink.family) && seen.add(x.drink.family)).slice(0, n).map(x => x.drink);
+}
+
 // F2 sync: entries {id, drink, updatedAt}; per drink the newer edit wins, and a deletion (drink null) is an edit too
 function mergeCustom(local, remote) {
   const out = {};
@@ -1043,7 +1056,7 @@ if (typeof module !== 'undefined') module.exports = {
   weightedSampleUnique, wheelCocktailWeight, buildSpinLineup, selectWheelIndex,
   wheelSectorPath, springLinear, SPIN_SLOW, SPIN_FAST, SLOW_SPINS, spinMs, spinAngle, landingTravel, sectorAtAngle, WHEEL_COLORS,
   GLASS_SILHOUETTES, glassPlaceholder,
-  WHEEL_EXTRAS, wheelExcludedOutcomes, CUSTOM_GLASSES, CUSTOM_COLORS, QTY_UNITS, slugify, buildCustomDrink, similarDrink, mergeCustom,
+  WHEEL_EXTRAS, wheelExcludedOutcomes, CUSTOM_GLASSES, CUSTOM_COLORS, QTY_UNITS, slugify, buildCustomDrink, similarDrink, similarDrinks, mergeCustom,
 };
 
 // ---------- app (browser only) ----------
@@ -1798,6 +1811,12 @@ if (typeof document !== 'undefined') (function () {
     return navigator.clipboard.writeText(text);
   }
 
+  function similarList(drink) {
+    const list = similarDrinks(drink, db.catalog);
+    return list.length ? `<h3>${esc(t(lang(), 'similar_title'))}</h3><div class="similar">${list.map(d => `<a class="fav-row similar-row" href="#/drink/${esc(d.id)}">
+      <span class="fav-thumb">${artMarkup(d)}</span><span class="fav-info"><span class="name">${esc(d.name)}</span><span class="meta">${esc(recipeMeta(d))}</span></span></a>`).join('')}</div>` : '';
+  }
+
   function viewFavorites() {
     const title = `<h1 class="screen-title">${esc(t(lang(), 'favorites_title'))}</h1>`;
     if (!db) return `${title}<p class="empty">${esc(t(lang(), 'deck_loading'))}</p>`; // ponytail: shared fetch, same loading copy
@@ -1851,7 +1870,7 @@ if (typeof document !== 'undefined') (function () {
             <p class="fav-method">${esc(open.method[lang()] || open.method.en)}</p>
             ${source}
             <button class="fav-copy" data-copy-fav>${esc(t(lang(), 'copy_recipe'))}</button>
-            ${suggest}
+            ${suggest}${similarList(open)}
           </section>
         </article>`;
     }
