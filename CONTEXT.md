@@ -170,3 +170,4 @@ Read by the cockpit Audits tab. One `- Label: YYYY-MM-DD, result` per check; con
 - Secrets: 2026-10-22, pass, gitleaks 0 findings in 133 commits, 2 reviewed as public in .gitleaksignore
 - Actions: 2026-10-22, pass, zizmor 0 high, 0 medium, 0 low after pinning 3 actions to commit SHA (newer zizmor flags unpinned-uses as high)
 - WCAG 2.2 AA: 2026-09-24, warn, axe 4.13.0 0 violations on buildapp.se/sipdeck (mobile, one page); manual keyboard pass not done
+- Mutation: 2026-11-04, Stryker 92,93 % (75,00 % before the new tests), pure functions in app.js lines 276 to 1018 and worker/drink-rules.js, 1 910 mutants, 135 survivors reviewed (equivalent or redundant guards), 1 bug fixed in drinkErrors; BACKLOG §Mutationstest 2026-11-04
