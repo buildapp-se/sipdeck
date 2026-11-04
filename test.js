@@ -11,7 +11,7 @@ const { STRINGS, t, detectLang, defaultState, normalizeState, favoriteIdFromHash
   weightedSampleUnique, wheelCocktailWeight, buildSpinLineup, selectWheelIndex,
   wheelSectorPath, springLinear, SPIN_SLOW, SPIN_FAST, SLOW_SPINS, spinMs, spinAngle, landingTravel, sectorAtAngle, WHEEL_COLORS,
   GLASS_SILHOUETTES, glassPlaceholder,
-  WHEEL_EXTRAS, wheelExcludedOutcomes, CUSTOM_GLASSES, CUSTOM_COLORS, slugify, buildCustomDrink, similarDrink, similarDrinks, mergeCustom } = require('./app.js');
+  WHEEL_EXTRAS, wheelExcludedOutcomes, CUSTOM_GLASSES, CUSTOM_COLORS, slugify, buildCustomDrink, shareCode, sharedDrink, similarDrink, similarDrinks, mergeCustom } = require('./app.js');
 // node 22.12+ loads the Worker's ES module with require(); the same rules guard the catalog below
 const { drinkErrors, GLASSES, COLORS, QTY_UNITS: RULE_UNITS } = require('./worker/drink-rules.js');
 
@@ -576,8 +576,9 @@ const workerSource = fs.readFileSync(path.join(__dirname, 'worker', 'worker.js')
 // shopping help), decided by the agent in chunk mode and listed for the owner in HANDOFF.md
 // Mät LF-storleken, alltså det git lagrar och GitHub Pages levererar. En Windows-
 // arbetskopia checkas ut med CRLF och lägger på ~1,8 kB som aldrig deployas.
-check(Buffer.byteLength(appSource.split('\r').join('')) < 190000, // bumped 185kB -> 190kB 2026-11-01: alcohol-free and punch chips, serves default, scrollable variant row
-  'bundle budget: app.js stays under 190 kB unminified');
+check(Buffer.byteLength(appSource.split('\r').join('')) < 195000, // bumped 185kB -> 190kB 2026-11-01: alcohol-free and punch chips, serves default, scrollable variant row;
+  // 190kB -> 195kB 2026-11-04: water line, similar drinks and sharing (share links carry an own drink's recipe)
+  'bundle budget: app.js stays under 195 kB unminified');
 check(appSource.includes('deckQueue = freshFirst(shuffle(deckIds()), seenTop);') && appSource.split('seenTop').length === 8,
   'deck: a new shuffle is biased away from the recent top cards of this visit, which live in memory only (declared, read once, written in flyOff)');
 check(appSource.includes('if (navigator.vibrate) navigator.vibrate(12);'), 'deck: saving a card gives one short haptic where supported');
@@ -1194,6 +1195,30 @@ check(shop.find(x => x.id === 'mint').opens.join() === 'mojito' && shop.find(x =
   'shopping: buys the ingredient, not its preparation, and never asks for what a lime already gives');
 check(onShelf(ING.gin) && onShelf(ING.champagne) && onShelf(ING['angostura-bitters']) && !onShelf(ING.lime) && !onShelf(ING['sugar-syrup']),
   'shelves: spirits, liqueurs, bitters and wine are the bar cabinet, the rest is other ingredients');
+
+// ---------- sharing an own drink: the recipe travels in the link and comes back as a filled-in form ----------
+{
+  const own = { name: 'Åsas “sour” <b>', glass: 'coupe', color: 'pink', method: { en: 'Skaka hårt.\nSila.' }, source: { label: 'Mormor' },
+    ingredients: [{ id: 'gin', ml: 45 }, { id: 'mormors-fladerlag', label: 'Mormors fläderlag', ml: 15 }, { id: 'angostura-bitters', qty: 2, unit: 'dash' }, { id: 'soda-water', qty: 1, unit: 'top' }] };
+  const code = shareCode(own, l => l.label || l.id), back = sharedDrink(code);
+  check(/^[\w-]+$/.test(code), 'shareCode: URL-safe base64 only');
+  check(back && back.id === '' && back.custom && back.name === own.name && back.glass === 'coupe' && back.color === 'pink'
+    && back.method.en === own.method.en && back.source.label === 'Mormor', 'sharedDrink: name, glass, colour, method and source round-trip');
+  check(JSON.stringify(back.ingredients) === JSON.stringify([{ id: '', label: 'gin', ml: 45 }, { id: '', label: 'Mormors fläderlag', ml: 15 },
+    { id: '', label: 'angostura-bitters', qty: 2, unit: 'dash' }, { id: '', label: 'soda-water', qty: 1, unit: 'top' }]), 'sharedDrink: ml and counted lines round-trip by name');
+  const saved = buildCustomDrink({ id: 'egen-x', name: back.name, glass: back.glass, color: back.color, method: back.method.en, source: back.source.label,
+    lines: back.ingredients.map(l => ({ name: l.label, amount: 'ml' in l ? l.ml / 10 : l.qty, unit: 'ml' in l ? 'cl' : l.unit })) }, ING);
+  check(saved.ingredients[0].id === 'gin' && saved.ingredients[0].ml === 45 && saved.ingredients[1].label === 'Mormors fläderlag', 'sharedDrink: saving through the form maps known names back to catalog ids');
+  const raw = arr => Buffer.from(JSON.stringify(arr)).toString('base64url');
+  const odd = sharedDrink(raw(['x'.repeat(200), 'bucket', 'plaid', 'm'.repeat(3000), 5, [['a', -3, 'cup'], ['b', 2, 'dash'], 'junk', ['', 10], ...Array(40).fill(['c', 1])]]));
+  check(odd && odd.name.length === 80 && odd.glass === CUSTOM_GLASSES[0] && odd.color === 'clear' && odd.method.en.length === 2000 && !odd.source,
+    'sharedDrink: unknown glass and colour fall back, text is cut to the form limits');
+  check(odd.ingredients[0].ml === 0 && odd.ingredients[1].unit === 'dash' && odd.ingredients.length <= 30 && odd.ingredients.every(l => l.label),
+    'sharedDrink: an unknown unit is ml, negative amounts are 0, empty names dropped, at most 30 lines');
+  check(sharedDrink(raw(['x', 'constructor', 'toString', '', '', []])).color === 'clear', 'sharedDrink: a colour must be one of the own, not an inherited key');
+  check([undefined, '', '!!', 'abc', raw(['', 'coupe']), raw({ a: 1 }), raw(['x', 'coupe', 'clear', '', '', 'no']), 'A'.repeat(20000)].every(c => sharedDrink(c) === null),
+    'sharedDrink: unreadable, nameless or oversized links give null');
+}
 
 // ---------- static recipe pages (scripts/drink-pages.js) ----------
 // the pages are checked in; this fails when drinks.json or the strings change and `node scripts/drink-pages.js` was not rerun

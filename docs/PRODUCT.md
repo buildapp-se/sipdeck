@@ -339,6 +339,11 @@ curated: user input reaches `drinks.json` only through the suggestion review bel
   drinks" section of Favorites; never on the wheel (not bar-audited). Art is the
   generic illustration for its glass and colour (K4), over the glass silhouette. Shape rules shared with the catalog validator in
   `worker/drink-rules.js`.
+  **Sharing (2026-11-04):** "Dela" in the recipe view and on the wheel result uses the share
+  sheet, else copies the recipe text and link. A catalog drink links to its static page
+  `drink/<id>/`; an own drink carries its recipe in the link (`#/egen/dela/<base64url>`,
+  `shareCode`/`sharedDrink` in `app.js`), which opens the own-drink form filled in. Nothing is
+  stored until the receiver saves, and saving goes through the form's own checks.
 - **K3 Suggestions.** Signed-in users can suggest a drink to the catalog after a Jaccard
   similarity check (≥ 0.6 offers "as variant" or "as new drink") and explicit consent to
   publication, editing and illustration. Worker `POST /suggestions` (max 5 per day and
