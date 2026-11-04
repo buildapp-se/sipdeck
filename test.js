@@ -1326,6 +1326,12 @@ check(onShelf(ING.gin) && onShelf(ING.champagne) && onShelf(ING['angostura-bitte
       .filter(item => item.kind === 'cocktail').map(item => item.outcomeId);
     check(favs.length === 6 && new Set(favs).size === 6 && favs.includes('drink-5') && favs.includes('drink-6'),
       'mutation: favorites-only tops up with other drinks, no repeats');
+    const topUp = buildSpinLineup(wheelData, 'groove', wheelFixture, () => 0, { favoritesOnly: true, favorites: ['drink-3'] })
+      .filter(item => item.kind === 'cocktail').map(item => item.outcomeId);
+    check(topUp.length === 6 && new Set(topUp).size === 6 && topUp.includes('drink-3'),
+      'mutation: the favorites top-up draws from the drinks not yet picked (rng 0 would repeat drink-3 otherwise)');
+    const plain = buildSpinLineup(wheelData, 'groove', [{ id: 's', name: 'Ren text', bar: true }], () => 0.5).find(item => item.kind === 'cocktail');
+    check(plain.sector.en === 'Ren text' && plain.sector.sv === 'Ren text', 'mutation: a plain-text name is used in both languages');
     const fam = [{ id: 'f1', name: 'F1', family: 'f', bar: true }, { id: 'f2', name: 'F2', family: 'f', bar: true }];
     const famPicks = [0.1, 0.9].map(r => buildSpinLineup(wheelData, 'groove', fam, () => r).find(item => item.kind === 'cocktail').outcomeId);
     check(famPicks.join() === 'f1,f2', 'mutation: the family member on the wheel is drawn at random');
