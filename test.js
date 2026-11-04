@@ -552,6 +552,13 @@ check(headersSource.includes('X-Content-Type-Options: nosniff') &&
   headersSource.includes("frame-ancestors 'none'") &&
   headersSource.includes('Permissions-Policy: camera=(), microphone=(), geolocation=()'),
   'hosting: static responses declare the safe project-scoped security headers');
+{
+  // the Report-Only frame-src follows the authDomain in app.js, so a report from the sign-in frame is a real finding
+  const authDomain = (appSource.match(/authDomain: '([^']+)'/) || [])[1];
+  const frameSrc = ((headersSource.match(/Content-Security-Policy-Report-Only:[^\n]*?frame-src ([^;]+)/) || [])[1] || '').split(' ');
+  check(authDomain && frameSrc.includes('https://' + authDomain) && frameSrc.includes('https://apis.google.com') && !frameSrc.some(s => s.includes('firebaseapp.com')),
+    'hosting: Report-Only frame-src allows the authDomain and Google sign-in frame');
+}
 check(appSource.includes('el.inert = depth !== 0') &&
   appSource.includes("e.key !== 'Enter' && e.key !== ' '") &&
   appSource.includes('aria-describedby="accError"'),
