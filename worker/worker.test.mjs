@@ -65,6 +65,8 @@ check((await call('PUT', '/drinks/egen-2', { who: 'alice', body: { drink: drink(
   'drinks: body id must match the path');
 check((await call('PUT', '/drinks/egen-2', { who: 'alice', body: { drink: Object.assign(drink('egen-2'), { glass: 'bucket' }), updatedAt: 1 } })).status === 400,
   'drinks: shared rules reject an unknown glass');
+check((await call('PUT', '/drinks/egen-2', { who: 'alice', body: { drink: Object.assign(drink('egen-2'), { ingredients: [null] }), updatedAt: 1 } })).status === 400,
+  'drinks: a null ingredient line is 400, not a server error');
 check((await call('GET', '/drinks', { who: 'bob' })).data.drinks.length === 0, 'drinks: another user sees nothing');
 mailFails = true;
 check((await call('PUT', '/drinks/egen-1', { who: 'bob', body: { drink: drink('egen-1'), updatedAt: 1 } })).status === 200 &&

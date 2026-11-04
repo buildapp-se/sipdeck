@@ -23,7 +23,9 @@ export function drinkErrors(drink) {
     (drink.source.url === undefined || /^https:\/\/\S+$/.test(drink.source.url)))) errors.push('source');
   if (!Array.isArray(drink.ingredients) || !drink.ingredients.length || drink.ingredients.length > 25) return errors.concat('ingredients');
   drink.ingredients.forEach((line, i) => {
-    const ok = line && typeof line.id === 'string' && KEBAB.test(line.id) && line.id.length <= 64 &&
+    // null eller en sträng som rad: ett formfel, inte ett TypeError som blir 500 i Workern
+    if (!line || typeof line !== 'object') return errors.push(`ingredients[${i}]`);
+    const ok = typeof line.id === 'string' && KEBAB.test(line.id) && line.id.length <= 64 &&
       typeof line.essential === 'boolean' && (line.label === undefined || text(line.label, 60));
     const hasMl = typeof line.ml === 'number', hasQty = typeof line.qty === 'number' || typeof line.unit === 'string';
     const amount = hasMl !== hasQty && (hasMl ? line.ml > 0 && line.ml <= 2000
