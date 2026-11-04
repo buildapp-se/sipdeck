@@ -1454,5 +1454,26 @@ check(onShelf(ING.gin) && onShelf(ING.champagne) && onShelf(ING['angostura-bitte
     'mutation rules: a line has a kebab id, a boolean essential and an optional label');
 }
 
+// backlog 2026-11-04: the wheel with one category excluded at a time, and the flex draw at a third
+{
+  const seq = first => { let n = 0; return () => (n++ === 0 ? first : 0.99); };
+  const cocktails = lineup => lineup.filter(item => item.kind === 'cocktail').length;
+  const outcomesOf = category => Object.keys(wheelData.outcomes).filter(id => wheelData.outcomes[id].category === category);
+  const fresh = excludedOutcomes => buildSpinLineup(wheelData, 'fresh', wheelFixture, seq(0.99), { excludedOutcomes });
+  const noBeer = fresh(outcomesOf('beer-cider')), noWine = fresh(outcomesOf('wine')), onlyBeerOff = fresh(['beer']);
+  check(noBeer.length === 12 && cocktails(noBeer) === 9 && noBeer.every(item => item.category !== 'beer-cider') &&
+    noBeer.filter(item => item.category === 'shot').length === 2 && noBeer.filter(item => item.category === 'wine').length === 1,
+    'wheel lineup fresh: both beer slots fall back to cocktails, shots and wine stay');
+  check(noWine.length === 12 && cocktails(noWine) === 8 && noWine.filter(item => item.category === 'beer-cider').length === 2,
+    'wheel lineup fresh: the one wine slot falls back to a cocktail');
+  check(onlyBeerOff.length === 12 && cocktails(onlyBeerOff) === 7 && onlyBeerOff.filter(item => item.category === 'beer-cider').every(item => item.outcomeId === 'cider'),
+    'wheel lineup fresh: a category with one outcome left keeps its slots');
+  const below = buildSpinLineup(wheelData, 'fresh', wheelFixture, seq(0.33)), above = buildSpinLineup(wheelData, 'fresh', wheelFixture, seq(0.34));
+  check(below.filter(item => item.category === 'bottle').length === 1 && cocktails(below) === 6 &&
+    above.every(item => item.category !== 'bottle') && cocktails(above) === 7,
+    'wheel lineup fresh: the bottle comes when the first draw is under a third, else the flex slot is a cocktail');
+  const groove = buildSpinLineup(wheelData, 'groove', wheelFixture, seq(0));
+  check(groove.length === 12 && groove.every(item => item.category !== 'bottle'), 'wheel lineup: only fresh has a bottle slot');
+}
 console.log(`${pass} passed, ${fail} failed`);
 if (fail > 0) process.exit(1);
