@@ -303,6 +303,18 @@ Gemensam specifikation: [Flaskor ADR 0001](../flaskor/docs/adr/0001-sipdeck-hemm
 - [ ] `[P2]` Ägarens läsning av relationerna och produktreglerna i `drinks.json` (sammanfattade i Flaskors `HANDOFF.md` §Val tagna). De är granskade av agenten, inte av en bartender.
 - [ ] `[P3]` Hemma-listans grupper följer ingrediensens `group`, så bitter och vin ligger under Skafferivaror i bläddringen men i Barskåp i innehavet. Flytta dem om det stör.
 
+## Förslag 2026-11-04 (gren `claude/forslag-2026-11-04`, inte mergad)
+
+Godkända av ägaren, byggda och testade, väntar på Patriks klicktest före merge. Detaljer i HANDOFF.md under 2026-11-04.
+
+- [x] (byggt 2026-11-04, `ec8b4b5`) **Dela-knapp** i receptvyn och på hjulets resultat: `navigator.share`, annars kopiera. Katalogdrinkar delar `drink/<id>/`, egna drinkar en länk som öppnar `#/egen` ifyllt.
+- [x] (byggt 2026-11-04, `c1dcf5f`) **Mer som den här:** 3 närmaste drinkar under metoden, utanför den egna familjen.
+- [x] (byggt 2026-11-04, `80817ec`) **Vatten i satsen** när den blandas i förväg, via nytt fält `prep`. 11 `prep`-värden är gissade, se HANDOFF.
+- [x] (byggt 2026-11-04, `206cf7b`) **Statiska drinksidor** `drink/<id>/` med og-taggar, JSON-LD och `sitemap.xml`, genererade av `scripts/drink-pages.js` och incheckade.
+- **Verifierat:** `npm test` 15 756 + 48, e2e 66/66 chromium, skärmbilder på 390 px (och drinksidor på 1 280 px, ljust och mörkt).
+- **Inte verifierat:** riktig delningsmeny på telefon, länkförhandsvisning i chattappar (webp som og:image), Rich Results-test, Firefox/WebKit, förhandsvisning på pages.dev (ingen Cloudflare-token i molnsessionen).
+- [ ] Anmäl `https://buildapp.se/sipdeck/sitemap.xml` i Search Console efter merge, om sidorna ska hittas av sökmotorer.
+
 ## Known accepted limitations
 
 - A first login without a stored sync baseline still unions local and remote lists once;

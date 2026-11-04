@@ -5,13 +5,13 @@ const path = require('path');
 const { STRINGS, t, detectLang, defaultState, normalizeState, favoriteIdFromHash, drinkIdFromHash,
   scaleMl, normalizeServingCount, MAX_SERVINGS, convert, roundForUnit, formatNumber, formatOz, formatAmount, shuffle, freshFirst, advanceQueue,
   swipeDirectionForKey,
-  formatLineAmount, drinkAsText, batchText, citrusText,
+  formatLineAmount, drinkAsText, batchText, waterText, DILUTION_ML, citrusText,
   BASE_FILTERS, matchesFilters, canMake, filterDrinks, groupFamilies, deckCards, variantDiff, missingIngredients, mergeState, reconcileState, pulledState,
   searchHaystack, matchesSearch, ingredientCounts, authErrorKey, AUTH_ERRORS,
   weightedSampleUnique, wheelCocktailWeight, buildSpinLineup, selectWheelIndex,
   wheelSectorPath, springLinear, SPIN_SLOW, SPIN_FAST, SLOW_SPINS, spinMs, spinAngle, landingTravel, sectorAtAngle, WHEEL_COLORS,
   GLASS_SILHOUETTES, glassPlaceholder,
-  WHEEL_EXTRAS, wheelExcludedOutcomes, CUSTOM_GLASSES, CUSTOM_COLORS, slugify, buildCustomDrink, similarDrink, mergeCustom } = require('./app.js');
+  WHEEL_EXTRAS, wheelExcludedOutcomes, CUSTOM_GLASSES, CUSTOM_COLORS, slugify, buildCustomDrink, shareCode, sharedDrink, similarDrink, similarDrinks, mergeCustom } = require('./app.js');
 // node 22.12+ loads the Worker's ES module with require(); the same rules guard the catalog below
 const { drinkErrors, GLASSES, COLORS, QTY_UNITS: RULE_UNITS } = require('./worker/drink-rules.js');
 
@@ -170,6 +170,31 @@ check(formatLineAmount({ qty: 150, unit: 'gram' }, 2, 'oz', 'sv') === '300 g',
   'formatLineAmount: grams scale and stay grams in every display unit');
 check(batchText({ ingredients: [{ id: 'a', ml: 50 }, { id: 'b', qty: 150, unit: 'gram' }] }, 2, 'cl', 'sv') === '',
   'batchText: solids in grams, no per-glass figure');
+
+// ---------- water when mixed ahead ----------
+const shaken = { prep: 'shake', ingredients: [{ id: 'gin', ml: 50 }, { id: 'lemon-juice', ml: 25 }] };
+check(DILUTION_ML.get('shake') === 22 && DILUTION_ML.get('stir') === 15, 'waterText: 2,2 cl per shaken glass, 1,5 cl per stirred');
+check(waterText(shaken, 4, 'cl', 'sv') === 'Blandar du i förväg: rör i ca 9 cl vatten och kyl', 'waterText: 4 x 2,2 cl rounds to the 0,5 cl step');
+check(waterText({ ...shaken, prep: 'stir' }, 6, 'ml', 'en') === 'Mixing ahead: stir in about 90 ml of water and chill', 'waterText: stirred, English ml');
+check(waterText(shaken, 50, 'cl', 'sv') === 'Blandar du i förväg: rör i ca 1,1 l vatten och kyl', 'waterText: litres from 1 l');
+check(waterText(shaken, 4, 'oz', 'en') === 'Mixing ahead: stir in about 3 oz of water and chill', 'waterText: oz in quarter steps');
+check(waterText(shaken, 1, 'cl', 'sv') === '', 'waterText: one glass is not mixed ahead');
+check(['build', 'blend', undefined].every(prep => waterText({ ...shaken, prep }, 4, 'cl', 'sv') === ''), 'waterText: built, blended and own drinks get no line');
+check(['soda-water', 'prosecco', 'egg-white', 'water'].every(id => waterText({ ...shaken, ingredients: shaken.ingredients.concat({ id, ml: 30 }) }, 4, 'cl', 'sv') === '') &&
+  waterText({ ...shaken, ingredients: shaken.ingredients.concat({ id: 'soda-water', qty: 1, unit: 'top' }) }, 4, 'cl', 'sv') === '' &&
+  waterText({ ...shaken, ingredients: shaken.ingredients.concat({ id: 'chocolate-drink', ml: 30 }) }, 4, 'cl', 'sv') !== '',
+  'waterText: a top-up, fizz, egg or water already in the recipe gives no line; "cola" in chocolate does not count');
+{
+  const all = require('./drinks.json').drinks;
+  check(all.every(dr => ['shake', 'stir', 'build', 'blend'].includes(dr.prep)), 'drinks.json: every drink has prep shake, stir, build or blend');
+  check(all.filter(dr => (dr.tags || []).includes('punch')).every(dr => dr.prep === 'build' && waterText(dr, 24, 'cl', 'sv') === ''),
+    'waterText: a punch is built in the bowl and never gets a second water line (Fish House Punch has its own)');
+  check(all.filter(dr => dr.prep === 'shake').every(dr => /shak/i.test(dr.method.en)) && all.filter(dr => dr.prep === 'stir').every(dr => /stir/i.test(dr.method.en)),
+    'drinks.json: prep shake and stir follow the method text');
+  check(waterText(all.find(dr => dr.id === 'margarita'), 8, 'cl', 'sv') === 'Blandar du i förväg: rör i ca 17,5 cl vatten och kyl' &&
+    waterText(all.find(dr => dr.id === 'manhattan'), 8, 'cl', 'sv') === 'Blandar du i förväg: rör i ca 12 cl vatten och kyl',
+    'waterText: catalog Margarita (shaken) and Manhattan (stirred)');
+}
 
 // ---------- citrus to buy ----------
 const citrusCatalog = require('./drinks.json');
@@ -354,6 +379,28 @@ check(['en', 'sv'].every(l => Object.keys(CUSTOM_COLORS).every(c => t(l, 'color_
 check(RULE_UNITS.join() === ['dash', 'barspoon', 'teaspoon', 'drop', 'piece', 'leaf', 'slice', 'garnish', 'splash', 'top', 'gram'].join(),
   'drink rules: the same qty units as the catalog validator');
 
+// ---------- more like this ----------
+{
+  const ing = (...ids) => ids.map(id => ({ id, essential: true }));
+  const me = { id: 'me', name: 'Me', family: 'fam', tags: ['sour'], ingredients: ing('gin', 'lemon', 'syrup') };
+  const pool = [me,
+    { id: 'sib', name: 'Sib', family: 'fam', ingredients: ing('gin', 'lemon', 'syrup') },
+    { id: 'a', name: 'A', tags: [], ingredients: ing('gin', 'lemon', 'honey') },
+    { id: 'b', name: 'B', tags: ['sour'], ingredients: ing('gin', 'lemon', 'honey') },
+    { id: 'f1', name: 'F1', family: 'other', ingredients: ing('gin', 'lemon', 'syrup', 'egg') },
+    { id: 'f2', name: 'F2', family: 'other', ingredients: ing('gin', 'lemon', 'syrup', 'egg', 'mint') },
+    { id: 'af', name: 'Af', tags: ['alcohol-free'], ingredients: ing('gin', 'lemon', 'syrup') },
+    { id: 'own', name: 'Own', custom: true, ingredients: ing('gin', 'lemon', 'syrup') },
+    { id: 'none', name: 'None', ingredients: ing('rum') }];
+  check(similarDrinks(me, pool).map(x => x.id).join() === 'f1,b,a',
+    'similarDrinks: closest first, a tag breaks the tie, own family, own drinks, alcohol-free and a second member of a family skipped');
+  check(similarDrinks(me, pool, 5).map(x => x.id).join() === 'f1,b,a', 'similarDrinks: nothing in common is never listed');
+  const cat = require('./drinks.json').drinks;
+  check(cat.every(dr => { const list = similarDrinks(dr, cat); return list.length <= 3 && list.every(x => x.id !== dr.id && (!dr.family || x.family !== dr.family)); }),
+    'similarDrinks: every catalog drink gets at most three, never itself or its own variants');
+  check(cat.filter(dr => similarDrinks(dr, cat).length === 3).length >= cat.length - 5, 'similarDrinks: nearly every catalog drink fills all three');
+}
+
 check(swipeDirectionForKey('ArrowLeft') === -1, 'keyboard swipe: left skips');
 check(swipeDirectionForKey('ArrowRight') === 1, 'keyboard swipe: right saves');
 check(swipeDirectionForKey('Enter') === 0, 'keyboard swipe: unrelated keys are ignored');
@@ -529,8 +576,9 @@ const workerSource = fs.readFileSync(path.join(__dirname, 'worker', 'worker.js')
 // shopping help), decided by the agent in chunk mode and listed for the owner in HANDOFF.md
 // Mät LF-storleken, alltså det git lagrar och GitHub Pages levererar. En Windows-
 // arbetskopia checkas ut med CRLF och lägger på ~1,8 kB som aldrig deployas.
-check(Buffer.byteLength(appSource.split('\r').join('')) < 190000, // bumped 185kB -> 190kB 2026-11-01: alcohol-free and punch chips, serves default, scrollable variant row
-  'bundle budget: app.js stays under 190 kB unminified');
+check(Buffer.byteLength(appSource.split('\r').join('')) < 195000, // bumped 185kB -> 190kB 2026-11-01: alcohol-free and punch chips, serves default, scrollable variant row;
+  // 190kB -> 195kB 2026-11-04: water line, similar drinks and sharing (share links carry an own drink's recipe)
+  'bundle budget: app.js stays under 195 kB unminified');
 check(appSource.includes('deckQueue = freshFirst(shuffle(deckIds()), seenTop);') && appSource.split('seenTop').length === 8,
   'deck: a new shuffle is biased away from the recent top cards of this visit, which live in memory only (declared, read once, written in flyOff)');
 check(appSource.includes('if (navigator.vibrate) navigator.vibrate(12);'), 'deck: saving a card gives one short haptic where supported');
@@ -1147,6 +1195,54 @@ check(shop.find(x => x.id === 'mint').opens.join() === 'mojito' && shop.find(x =
   'shopping: buys the ingredient, not its preparation, and never asks for what a lime already gives');
 check(onShelf(ING.gin) && onShelf(ING.champagne) && onShelf(ING['angostura-bitters']) && !onShelf(ING.lime) && !onShelf(ING['sugar-syrup']),
   'shelves: spirits, liqueurs, bitters and wine are the bar cabinet, the rest is other ingredients');
+
+// ---------- sharing an own drink: the recipe travels in the link and comes back as a filled-in form ----------
+{
+  const own = { name: 'Åsas “sour” <b>', glass: 'coupe', color: 'pink', method: { en: 'Skaka hårt.\nSila.' }, source: { label: 'Mormor' },
+    ingredients: [{ id: 'gin', ml: 45 }, { id: 'mormors-fladerlag', label: 'Mormors fläderlag', ml: 15 }, { id: 'angostura-bitters', qty: 2, unit: 'dash' }, { id: 'soda-water', qty: 1, unit: 'top' }] };
+  const code = shareCode(own, l => l.label || l.id), back = sharedDrink(code);
+  check(/^[\w-]+$/.test(code), 'shareCode: URL-safe base64 only');
+  check(back && back.id === '' && back.custom && back.name === own.name && back.glass === 'coupe' && back.color === 'pink'
+    && back.method.en === own.method.en && back.source.label === 'Mormor', 'sharedDrink: name, glass, colour, method and source round-trip');
+  check(JSON.stringify(back.ingredients) === JSON.stringify([{ id: '', label: 'gin', ml: 45 }, { id: '', label: 'Mormors fläderlag', ml: 15 },
+    { id: '', label: 'angostura-bitters', qty: 2, unit: 'dash' }, { id: '', label: 'soda-water', qty: 1, unit: 'top' }]), 'sharedDrink: ml and counted lines round-trip by name');
+  const saved = buildCustomDrink({ id: 'egen-x', name: back.name, glass: back.glass, color: back.color, method: back.method.en, source: back.source.label,
+    lines: back.ingredients.map(l => ({ name: l.label, amount: 'ml' in l ? l.ml / 10 : l.qty, unit: 'ml' in l ? 'cl' : l.unit })) }, ING);
+  check(saved.ingredients[0].id === 'gin' && saved.ingredients[0].ml === 45 && saved.ingredients[1].label === 'Mormors fläderlag', 'sharedDrink: saving through the form maps known names back to catalog ids');
+  const raw = arr => Buffer.from(JSON.stringify(arr)).toString('base64url');
+  const odd = sharedDrink(raw(['x'.repeat(200), 'bucket', 'plaid', 'm'.repeat(3000), 5, [['a', -3, 'cup'], ['b', 2, 'dash'], 'junk', ['', 10], ...Array(40).fill(['c', 1])]]));
+  check(odd && odd.name.length === 80 && odd.glass === CUSTOM_GLASSES[0] && odd.color === 'clear' && odd.method.en.length === 2000 && !odd.source,
+    'sharedDrink: unknown glass and colour fall back, text is cut to the form limits');
+  check(odd.ingredients[0].ml === 0 && odd.ingredients[1].unit === 'dash' && odd.ingredients.length <= 30 && odd.ingredients.every(l => l.label),
+    'sharedDrink: an unknown unit is ml, negative amounts are 0, empty names dropped, at most 30 lines');
+  check(sharedDrink(raw(['x', 'constructor', 'toString', '', '', []])).color === 'clear', 'sharedDrink: a colour must be one of the own, not an inherited key');
+  check([undefined, '', '!!', 'abc', raw(['', 'coupe']), raw({ a: 1 }), raw(['x', 'coupe', 'clear', '', '', 'no']), 'A'.repeat(20000)].every(c => sharedDrink(c) === null),
+    'sharedDrink: unreadable, nameless or oversized links give null');
+}
+
+// ---------- static recipe pages (scripts/drink-pages.js) ----------
+// the pages are checked in; this fails when drinks.json or the strings change and `node scripts/drink-pages.js` was not rerun
+{
+  const { pages } = require('./scripts/drink-pages.js');
+  const want = pages(), catalog = JSON.parse(fs.readFileSync(path.join(__dirname, 'drinks.json'), 'utf8')).drinks;
+  const stale = [...want].filter(([file, html]) => { try { return fs.readFileSync(path.join(__dirname, file), 'utf8') !== html; } catch (e) { return true; } });
+  check(!stale.length, `drink pages: up to date with the catalog (rerun node scripts/drink-pages.js): ${stale.slice(0, 3).map(x => x[0]).join(', ')}`);
+  const dirs = fs.readdirSync(path.join(__dirname, 'drink')).sort();
+  check(dirs.join() === catalog.map(d => d.id).sort().join(), 'drink pages: one folder per catalog drink, none left over');
+  catalog.forEach(d => {
+    const html = want.get(`drink/${d.id}/index.html`), url = `https://buildapp.se/sipdeck/drink/${d.id}/`;
+    const ld = JSON.parse(html.match(/<script type="application\/ld\+json">(.*)<\/script>/)[1]);
+    check(html.includes(`<link rel="canonical" href="${url}">`) && html.includes(`<meta property="og:url" content="${url}">`)
+      && html.includes(`href="../../#/drink/${d.id}"`) && !/app\.js/.test(html), `drink page ${d.id}: canonical, og:url, link into the app, no app.js`);
+    check(ld['@type'] === 'Recipe' && ld.name === d.name && ld.recipeIngredient.length === d.ingredients.length && ld.url === url
+      && ld.image === `https://buildapp.se/sipdeck/img/${d.art || d.id}.webp` && fs.existsSync(path.join(__dirname, 'img', `${d.art || d.id}.webp`)),
+      `drink page ${d.id}: JSON-LD Recipe matches the catalog and its image exists`);
+    check((html.match(/<li>/g) || []).length === d.ingredients.length && html.includes(d.method.sv.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')),
+      `drink page ${d.id}: every ingredient line and the Swedish method`);
+  });
+  check(/<li><b>5 cl<\/b><span>Blanco-tequila<\/span><\/li>/.test(want.get('drink/margarita/index.html')), 'drink page: amounts in cl, Swedish names');
+  check((want.get('sitemap.xml').match(/<loc>/g) || []).length === catalog.length + 1, 'sitemap: the app and every drink page');
+}
 
 console.log(`${pass} passed, ${fail} failed`);
 if (fail > 0) process.exit(1);

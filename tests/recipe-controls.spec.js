@@ -126,3 +126,35 @@ test.describe('touch gestures on a long recipe', () => {
     await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('sipdeck')).favorites)).toContain('zombie');
   });
 });
+
+test('a shaken round says how much water to stir in when mixed ahead, a built one does not', async ({ page }) => {
+  await seed(page, 'sv');
+  await page.goto('/#/drink/margarita');
+  const recipe = page.locator('.fav-recipe');
+  await expect(recipe.locator('[data-water]')).toBeHidden();
+  await recipe.locator('[data-fav-act="inc"]').click();
+  await expect(recipe.locator('[data-water]')).toHaveText('Blandar du i förväg: rör i ca 4,5 cl vatten och kyl');
+  await recipe.locator('[data-unit="ml"]').click();
+  await expect(recipe.locator('[data-water]')).toHaveText('Blandar du i förväg: rör i ca 45 ml vatten och kyl');
+  await page.goto('/#/drink/tinto-de-verano');
+  await page.locator('.fav-recipe [data-fav-act="inc"]').click();
+  await expect(page.locator('.fav-recipe [data-batch]')).toBeVisible();
+  await expect(page.locator('.fav-recipe [data-water]')).toBeHidden();
+});
+
+test('the recipe lists three similar drinks outside its own family that open their own recipe', async ({ page }) => {
+  await seed(page, 'sv');
+  await page.goto('/#/drink/margarita');
+  const rows = page.locator('.fav-recipe .similar-row');
+  await expect(page.locator('.fav-recipe h3', { hasText: 'Mer som den här' })).toBeVisible();
+  await expect(rows).toHaveCount(3);
+  const family = require('../drinks.json').drinks.filter(d => d.family === 'margarita').map(d => d.id);
+  const hrefs = await rows.evaluateAll(links => links.map(a => a.getAttribute('href')));
+  expect(hrefs.every(h => h.startsWith('#/drink/') && !family.includes(h.slice(8)))).toBe(true);
+  const name = await rows.first().locator('.name').textContent();
+  await rows.first().click();
+  await expect(page).toHaveURL(new RegExp(hrefs[0] + '$'));
+  await expect(page.locator('.fav-detail .card-name')).toHaveText(name);
+  await page.goBack();
+  await expect(page.locator('.fav-detail .card-name')).toHaveText('Margarita');
+});

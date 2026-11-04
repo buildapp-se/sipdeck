@@ -31,7 +31,8 @@ const STRINGS = {
     missing_prefix: 'Missing: ', missing_many: 'Missing 3+', missing_tag: 'Missing',
     recipe_title: 'Recipe', ingredients_title: 'Ingredients', method_title: 'Method',
     ingredient_check_hint: 'Check off ingredients as you mix.',
-    check_ingredient: 'Check off', copy_recipe: 'Copy recipe',
+    check_ingredient: 'Check off', copy_recipe: 'Copy recipe', similar_title: 'More like this', share: 'Share',
+    shared_hint: 'Someone shared this drink with you. Check it and save it to My drinks.', shared_broken: 'The shared link could not be read.',
     copied: 'Copied!', copy_failed: 'Could not copy', servings_copy: 'servings', source_label: 'Source',
     pantry_title: 'At home',
     pantry_empty: 'No ingredients are used by the current drinks.',
@@ -116,6 +117,7 @@ const STRINGS = {
     variants_one: '+1 variant', variants_many: '+{n} variants', variants_label: 'Variants',
     variant_without: 'Without: ',
     batch: 'Batch: {total} in all, {each} per glass', batch_top: ', before topping up',
+    water: 'Mixing ahead: stir in about {water} of water and chill',
     citrus: 'To buy: about {list}', citrus_lime: 'lime', citrus_limes: 'limes', citrus_lemon: 'lemon', citrus_lemons: 'lemons',
     variant_of: 'Variant of {name} · {n} in the family', search_tagged: 'Tagged: {tags}',
     custom_tag: 'Own', custom_title: 'My drinks', custom_new: '+ New drink', custom_new_title: 'New drink',
@@ -166,7 +168,8 @@ const STRINGS = {
     missing_prefix: 'Saknar: ', missing_many: 'Saknar 3+', missing_tag: 'Saknas',
     recipe_title: 'Recept', ingredients_title: 'Ingredienser', method_title: 'Gör så här',
     ingredient_check_hint: 'Bocka av ingredienserna medan du blandar.',
-    check_ingredient: 'Bocka av', copy_recipe: 'Kopiera receptet',
+    check_ingredient: 'Bocka av', copy_recipe: 'Kopiera receptet', similar_title: 'Mer som den här', share: 'Dela',
+    shared_hint: 'Någon har delat den här drinken med dig. Kontrollera och spara den i Mina drinkar.', shared_broken: 'Den delade länken gick inte att läsa.',
     copied: 'Kopierat!', copy_failed: 'Kunde inte kopiera', servings_copy: 'portioner', source_label: 'Källa',
     pantry_title: 'Hemma',
     pantry_empty: 'Inga ingredienser används av de aktuella drinkarna.',
@@ -251,6 +254,7 @@ const STRINGS = {
     variants_one: '+1 variant', variants_many: '+{n} varianter', variants_label: 'Varianter',
     variant_without: 'Utan: ',
     batch: 'Sats: {total} totalt, {each} per glas', batch_top: ', före toppning',
+    water: 'Blandar du i förväg: rör i ca {water} vatten och kyl',
     citrus: 'Att köpa: ca {list}', citrus_lime: 'lime', citrus_limes: 'lime', citrus_lemon: 'citron', citrus_lemons: 'citroner',
     variant_of: 'Variant av {name} · {n} i familjen', search_tagged: 'Taggad: {tags}',
     custom_tag: 'Egen', custom_title: 'Mina drinkar', custom_new: '+ Ny drink', custom_new_title: 'Ny drink',
@@ -913,13 +917,25 @@ function batchText(drink, servings, unit, lang) {
   if (drink.ingredients.some(line => line.unit === 'gram')) return '';
   const each = drink.ingredients.reduce((sum, line) => sum + (typeof line.ml === 'number' ? line.ml : line.unit === 'barspoon' ? line.qty * 5 : 0), 0);
   if (servings < 2 || !each) return '';
-  const vol = ml => {
-    if (unit !== 'oz' && ml >= 1000) return `${formatNumber(Math.round(ml / 10) / 100, lang)} l`;
-    const value = Math.round(convert(ml, unit) * 100) / 100;
-    return `${unit === 'oz' && Number.isInteger(value * 4) ? formatOz(value, lang) : formatNumber(value, lang)} ${unit}`;
-  };
-  return t(lang, 'batch').replace('{total}', vol(each * servings)).replace('{each}', vol(each))
+  return t(lang, 'batch').replace('{total}', volText(each * servings, unit, lang)).replace('{each}', volText(each, unit, lang))
     + (drink.ingredients.some(line => line.unit === 'top') ? t(lang, 'batch_top') : '');
+}
+// litres from 1 l; `round` gives the pouring steps of a recipe line, for an "about" figure
+function volText(ml, unit, lang, round) {
+  if (unit !== 'oz' && ml >= 1000) return `${formatNumber(Math.round(ml / 10) / 100, lang)} l`;
+  const value = round ? roundForUnit(convert(ml, unit), unit) : Math.round(convert(ml, unit) * 100) / 100;
+  return `${unit === 'oz' && Number.isInteger(value * 4) ? formatOz(value, lang) : formatNumber(value, lang)} ${unit}`;
+}
+
+// a jug mixed ahead and poured without shaking or stirring misses the melt from the ice, so it goes in as water.
+// ponytail: ml per glass from `prep` in drinks.json. The guides say ½ to ¾ oz and do not quite agree, so these two
+// are the knob. Built and blended drinks get none, nor a top-up or fizz, egg (it needs the shake) or water already in it.
+const DILUTION_ML = new Map([['shake', 22], ['stir', 15]]);
+function waterText(drink, servings, unit, lang) {
+  const each = DILUTION_ML.get(drink.prep);
+  if (!each || servings < 2 || drink.ingredients.some(l => l.unit === 'top'
+    || /egg|aquafaba|soda|tonic|ginger-(beer|ale)|prosecco|champagne|sparkling|\bcola\b|^(chilled-)?water$/.test(l.id))) return '';
+  return t(lang, 'water').replace('{water}', volText(each * servings, unit, lang, true));
 }
 
 // ponytail: rough juice per fruit in ml, on the low side so a round doesn't run short. Fruit size varies,
@@ -994,6 +1010,31 @@ function buildCustomDrink(f, ingredients) {
   return drink;
 }
 
+// a shared own drink travels in the link: base64url of [name, glass, colour, method, source, lines], a line [name, ml] or
+// [name, qty, unit]. The receiver gets the form filled in and saves it there, so the form's own checks apply.
+function shareCode(drink, nameOf) {
+  const lines = drink.ingredients.map(l => typeof l.ml === 'number' ? [nameOf(l), l.ml] : [nameOf(l), l.qty, l.unit]);
+  const bytes = new TextEncoder().encode(JSON.stringify([drink.name, drink.glass, drink.color || 'clear', drink.method.en,
+    drink.source ? drink.source.label : '', lines]));
+  return btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+// anything can arrive in a link: unknown glass, colour or unit fall back, text is cut to the form's limits, null if unreadable
+function sharedDrink(code) {
+  try {
+    if (!/^[\w-]{1,12000}$/.test(code)) return null;
+    const bin = atob(code.replace(/-/g, '+').replace(/_/g, '/'));
+    const [name, glass, color, method, source, lines] = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(Uint8Array.from(bin, c => c.charCodeAt(0))));
+    const str = (x, n) => typeof x === 'string' ? x.trim().slice(0, n) : '', num = x => Number.isFinite(x) && x > 0 ? Math.min(x, 10000) : 0;
+    if (!str(name, 80) || !Array.isArray(lines)) return null;
+    const ingredients = lines.filter(Array.isArray).slice(0, 30).map(([n, amount, u]) => QTY_UNITS.includes(u)
+      ? { id: '', label: str(n, 60), qty: num(amount), unit: u } : { id: '', label: str(n, 60), ml: num(amount) }).filter(l => l.label);
+    const drink = { id: '', custom: true, name: str(name, 80), glass: CUSTOM_GLASSES.includes(glass) ? glass : CUSTOM_GLASSES[0],
+      color: Object.prototype.hasOwnProperty.call(CUSTOM_COLORS, color) ? color : 'clear', ingredients, method: { en: str(method, 2000) } };
+    if (str(source, 200)) drink.source = { label: str(source, 200) };
+    return drink;
+  } catch (e) { return null; }
+}
+
 function essentialIds(drink) { return new Set(drink.ingredients.filter(l => l.essential).map(l => l.id)); }
 
 // F3: the closest catalog drink when the essential ingredients overlap by Jaccard ≥ 0,6, else null
@@ -1009,6 +1050,19 @@ function similarDrink(drink, catalog) {
   return best;
 }
 
+// "More like this": the closest catalog drinks by the same Jaccard on essentials, shared tags break a tie. The drink's
+// own family is skipped and any other family shows once, and alcohol-free stays with alcohol-free.
+function similarDrinks(drink, catalog, n = 3) {
+  const own = essentialIds(drink), tags = new Set(drink.tags || []), seen = new Set(), af = d => (d.tags || []).includes('alcohol-free');
+  return catalog.filter(o => !o.custom && o.id !== drink.id && !(drink.family && o.family === drink.family) && af(o) === af(drink))
+    .map(o => {
+      const theirs = essentialIds(o), shared = Array.from(own).filter(id => theirs.has(id)).length;
+      return { drink: o, score: shared / (own.size + theirs.size - shared || 1), tags: (o.tags || []).filter(x => tags.has(x)).length };
+    })
+    .filter(x => x.score > 0).sort((a, b) => b.score - a.score || b.tags - a.tags || a.drink.name.localeCompare(b.drink.name))
+    .filter(x => !x.drink.family || !seen.has(x.drink.family) && seen.add(x.drink.family)).slice(0, n).map(x => x.drink);
+}
+
 // F2 sync: entries {id, drink, updatedAt}; per drink the newer edit wins, and a deletion (drink null) is an edit too
 function mergeCustom(local, remote) {
   const out = {};
@@ -1019,7 +1073,7 @@ function mergeCustom(local, remote) {
 if (typeof module !== 'undefined') module.exports = {
   STRINGS, t, UNITS, detectLang, defaultState, normalizeState, favoriteIdFromHash, drinkIdFromHash,
   scaleMl, convert, roundForUnit, formatNumber, formatOz, formatAmount,
-  formatLineAmount, drinkAsText, batchText, citrusText,
+  formatLineAmount, drinkAsText, batchText, waterText, DILUTION_ML, citrusText,
   shuffle, freshFirst, advanceQueue, swipeDirectionForKey, BASE_FILTERS, matchesFilters, canMake, filterDrinks,
   groupFamilies, deckCards, variantDiff,
   normalizeHome, coverage, swapFor, bridgeHome, classify, bottleKey, homeSources, homeGives, shopping, fold, onShelf,
@@ -1029,7 +1083,7 @@ if (typeof module !== 'undefined') module.exports = {
   weightedSampleUnique, wheelCocktailWeight, buildSpinLineup, selectWheelIndex,
   wheelSectorPath, springLinear, SPIN_SLOW, SPIN_FAST, SLOW_SPINS, spinMs, spinAngle, landingTravel, sectorAtAngle, WHEEL_COLORS,
   GLASS_SILHOUETTES, glassPlaceholder,
-  WHEEL_EXTRAS, wheelExcludedOutcomes, CUSTOM_GLASSES, CUSTOM_COLORS, QTY_UNITS, slugify, buildCustomDrink, similarDrink, mergeCustom,
+  WHEEL_EXTRAS, wheelExcludedOutcomes, CUSTOM_GLASSES, CUSTOM_COLORS, QTY_UNITS, slugify, buildCustomDrink, shareCode, sharedDrink, similarDrink, similarDrinks, mergeCustom,
 };
 
 // ---------- app (browser only) ----------
@@ -1432,10 +1486,11 @@ if (typeof document !== 'undefined') (function () {
       .filter(Boolean).join(' · ');
   }
 
+  // the notes under the ingredients: batch, water when mixed ahead, citrus to buy; refreshRecipes patches them in place
+  const noteTexts = (drink, servings) => [batchText(drink, servings, unit(), lang()), waterText(drink, servings, unit(), lang()),
+    citrusText(drink, servings, db.ingredients, lang())];
   function batchNote(drink, servings) {
-    const text = batchText(drink, servings, unit(), lang());
-    const citrus = citrusText(drink, servings, db.ingredients, lang());
-    return `<p class="batch-note" data-batch${text ? '' : ' hidden'}>${esc(text)}</p><p class="batch-note" data-citrus${citrus ? '' : ' hidden'}>${esc(citrus)}</p>`;
+    return noteTexts(drink, servings).map((text, i) => `<p class="batch-note" data-note data-${['batch', 'water', 'citrus'][i]}${text ? '' : ' hidden'}>${esc(text)}</p>`).join('');
   }
 
   function servingWord(servings) { return t(lang(), servings === 1 ? 'serving_one' : 'serving_many'); }
@@ -1464,12 +1519,8 @@ if (typeof document !== 'undefined') (function () {
       const servings = box.dataset.depth && box.dataset.depth !== '0' ? 1 : servingsFor(drink.id);
       input.value = servings;
       box.querySelector('.servings-unit').textContent = servingWord(servings);
-      const note = box.querySelector('[data-batch]'), text = batchText(drink, servings, unit(), lang());
-      note.textContent = text;
-      note.hidden = !text;
-      const citrusNote = box.querySelector('[data-citrus]'), citrus = citrusText(drink, servings, db.ingredients, lang());
-      citrusNote.textContent = citrus;
-      citrusNote.hidden = !citrus;
+      const texts = noteTexts(drink, servings);
+      box.querySelectorAll('[data-note]').forEach((note, i) => { note.textContent = texts[i]; note.hidden = !texts[i]; });
       box.querySelectorAll('.amount[data-line]').forEach(el => {
         el.textContent = amountText(drink.ingredients[Number(el.dataset.line)], servings);
       });
@@ -1787,6 +1838,28 @@ if (typeof document !== 'undefined') (function () {
     return navigator.clipboard.writeText(text);
   }
 
+  // the share sheet where there is one, else the text and link on the clipboard; a cancelled sheet is not an error
+  const appBase = () => location.href.replace(/[?#].*$/, '').replace(/[^/]*$/, '');
+  async function share(btn, data) {
+    if (navigator.share) {
+      try { return await navigator.share(data); } catch (err) { if (err.name === 'AbortError') return; }
+    }
+    const label = btn.textContent;
+    try { await copyText(`${data.text}\n\n${data.url}`); btn.textContent = t(lang(), 'copied'); } catch (err) { btn.textContent = t(lang(), 'copy_failed'); }
+    setTimeout(() => { if (btn.isConnected) btn.textContent = label; }, 2500);
+  }
+  // a catalog drink links to its own page (drink/<id>/); an own drink carries its recipe in the link
+  function shareDrink(btn, drink, servings) {
+    share(btn, { title: drink.name, text: drinkAsText(drink, db.ingredients, servings, unit(), lang()), url: drink.custom
+      ? `${appBase()}#/egen/dela/${shareCode(drink, l => l.label || ingName(l.id))}` : `${appBase()}drink/${encodeURIComponent(drink.id)}/` });
+  }
+
+  function similarList(drink) {
+    const list = similarDrinks(drink, db.catalog);
+    return list.length ? `<h3>${esc(t(lang(), 'similar_title'))}</h3><div class="similar">${list.map(d => `<a class="fav-row similar-row" href="#/drink/${esc(d.id)}">
+      <span class="fav-thumb">${artMarkup(d)}</span><span class="fav-info"><span class="name">${esc(d.name)}</span><span class="meta">${esc(recipeMeta(d))}</span></span></a>`).join('')}</div>` : '';
+  }
+
   function viewFavorites() {
     const title = `<h1 class="screen-title">${esc(t(lang(), 'favorites_title'))}</h1>`;
     if (!db) return `${title}<p class="empty">${esc(t(lang(), 'deck_loading'))}</p>`; // ponytail: shared fetch, same loading copy
@@ -1839,8 +1912,9 @@ if (typeof document !== 'undefined') (function () {
             <h3>${esc(t(lang(), 'method_title'))}</h3>
             <p class="fav-method">${esc(open.method[lang()] || open.method.en)}</p>
             ${source}
-            <button class="fav-copy" data-copy-fav>${esc(t(lang(), 'copy_recipe'))}</button>
-            ${suggest}
+            <div class="fav-actions"><button class="fav-copy" data-copy-fav>${esc(t(lang(), 'copy_recipe'))}</button>
+            <button class="fav-copy fav-share" data-share-fav>${esc(t(lang(), 'share'))}</button></div>
+            ${suggest}${similarList(open)}
           </section>
         </article>`;
     }
@@ -1880,12 +1954,15 @@ if (typeof document !== 'undefined') (function () {
     const amount = !l ? '' : typeof l.ml === 'number' ? Math.round(convert(l.ml, u) * 100) / 100 : l.qty;
     const units = recipeUnits().concat(QTY_UNITS).map(x =>
       `<option value="${x}"${x === u ? ' selected' : ''}>${esc(UNITS.includes(x) ? x : t(lang(), 'unit_' + x))}</option>`).join('');
-    return `<div class="custom-line"><input name="amount" type="number" min="0" step="any" inputmode="decimal" aria-label="${esc(t(lang(), 'custom_amount'))}" value="${amount}"><select name="unit" aria-label="${esc(t(lang(), 'settings_unit'))}">${units}</select><input name="ing" list="ingredientList" maxlength="60" aria-label="${esc(t(lang(), 'custom_ingredient'))}" value="${l ? esc(ingName(l.id)) : ''}"><button type="button" data-custom-act="remove-line" aria-label="${esc(t(lang(), 'custom_remove_line'))}">&times;</button></div>`;
+    return `<div class="custom-line"><input name="amount" type="number" min="0" step="any" inputmode="decimal" aria-label="${esc(t(lang(), 'custom_amount'))}" value="${amount}"><select name="unit" aria-label="${esc(t(lang(), 'settings_unit'))}">${units}</select><input name="ing" list="ingredientList" maxlength="60" aria-label="${esc(t(lang(), 'custom_ingredient'))}" value="${l ? esc(l.label || ingName(l.id)) : ''}"><button type="button" data-custom-act="remove-line" aria-label="${esc(t(lang(), 'custom_remove_line'))}">&times;</button></div>`;
   }
 
   function viewCustomForm() {
-    const id = hid(location.hash, '#/egen/'), d = id && db ? db.drinks.find(x => x.id === id && x.custom) : null;
-    const title = `<h1 class="screen-title">${esc(t(lang(), d ? 'custom_edit_title' : 'custom_new_title'))}</h1>`;
+    // #/egen/dela/<code>: a drink someone shared, filled in as a new drink
+    const id = hid(location.hash, '#/egen/'), code = /^#\/egen\/dela\/(.*)$/.exec(location.hash);
+    const d = code ? sharedDrink(code[1]) : id && db ? db.drinks.find(x => x.id === id && x.custom) : null;
+    const title = `<h1 class="screen-title">${esc(t(lang(), d && d.id ? 'custom_edit_title' : 'custom_new_title'))}</h1>`
+      + (code ? `<p class="fav-hint shared-hint">${esc(t(lang(), d ? 'shared_hint' : 'shared_broken'))}</p>` : '');
     if (!db) return `${title}<p class="empty">${esc(t(lang(), 'deck_loading'))}</p>`;
     const glass = d ? d.glass : CUSTOM_GLASSES[0], color = d && d.color ? d.color : 'clear';
     return `${title}<form id="customForm" class="account-form custom-form" data-id="${d ? esc(d.id) : ''}">
@@ -2277,7 +2354,8 @@ if (typeof document !== 'undefined') (function () {
       return `<div class="wheel-result" id="wheelResult">
         <div class="wheel-result-head"><img class="wheel-result-art" src="${esc(entry.art)}" alt="">
           <div class="wheel-result-text"><p class="wheel-result-label">${esc(label)}</p>
-          <h2 class="wheel-result-name">${esc(localText(entry.result))}</h2></div></div>
+          <h2 class="wheel-result-name">${esc(localText(entry.result))}</h2></div>
+          <button class="wheel-share" data-wheel-act="share">${esc(t(lang(), 'share'))}</button></div>
         ${safety}
         <div class="wheel-result-btns">${recipe}<button data-wheel-act="change">${esc(t(lang(), 'wheel_change'))} · ${esc(localText(mood.name))}</button></div>
       </div>`;
@@ -2964,6 +3042,8 @@ if (typeof document !== 'undefined') (function () {
       refreshRecipes();
       return;
     }
+    const shareBtn = e.target.closest('[data-share-fav]');
+    if (shareBtn) return shareDrink(shareBtn, favDrink(), servingsFor(favOpenId));
     const copyBtn = e.target.closest('[data-copy-fav]');
     if (copyBtn) {
       const drink = favDrink();
@@ -3201,6 +3281,11 @@ if (typeof document !== 'undefined') (function () {
     const act = action && action.dataset.wheelAct;
     if (act === 'spin') spinWheel();
     else if (act === 'back') closeWheel();
+    else if (act === 'share') { // a cocktail shares its recipe, any other outcome just what the wheel said
+      const drink = wheelResult.kind === 'cocktail' && db.drinks.find(d => d.id === wheelResult.outcomeId);
+      if (drink) shareDrink(action, drink, 1);
+      else share(action, { title: 'Sipdeck', text: `${t(lang(), 'wheel_result')}: ${localText(wheelResult.result)}`, url: appBase() });
+    }
     else if (act === 'change') { // show the picker again in the result card's place
       wheelPicker = true;
       $('#wheelPanel').innerHTML = wheelPanelMarkup();

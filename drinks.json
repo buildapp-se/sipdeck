@@ -2821,6 +2821,7 @@
         "strong"
       ],
       "glass": "coupe",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/margarita/"
@@ -2870,6 +2871,7 @@
         "refreshing"
       ],
       "glass": "coupe",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/daiquiri/"
@@ -2914,6 +2916,7 @@
         "herbal"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/mojito/"
@@ -2983,6 +2986,7 @@
         "aperitif"
       ],
       "glass": "rocks",
+      "prep": "stir",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/negroni/"
@@ -3033,6 +3037,7 @@
         "classic"
       ],
       "glass": "rocks",
+      "prep": "stir",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/old-fashioned/"
@@ -3096,6 +3101,7 @@
         "frothy"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/whiskey-sour/"
@@ -3158,6 +3164,7 @@
         "dry"
       ],
       "glass": "martini",
+      "prep": "stir",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/dry-martini/"
@@ -3202,6 +3209,7 @@
         "gin-forward"
       ],
       "glass": "coupe",
+      "prep": "shake",
       "source": {
         "label": "Difford's Guide",
         "url": "https://www.diffordsguide.com/cocktails/recipe/831/gimlet-diffords-recipe"
@@ -3273,6 +3281,7 @@
         "contemporary"
       ],
       "glass": "martini",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/espresso-martini/"
@@ -3328,6 +3337,7 @@
         "vodka-forward"
       ],
       "glass": "martini",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/cosmopolitan/"
@@ -3382,6 +3392,7 @@
         "spicy"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/bloody-mary/"
@@ -3455,6 +3466,7 @@
         "refreshing"
       ],
       "glass": "rocks",
+      "prep": "build",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/caipirinha/"
@@ -3500,6 +3512,7 @@
         "frothy"
       ],
       "glass": "coupe",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/clover-club/"
@@ -3555,6 +3568,7 @@
         "citrusy"
       ],
       "glass": "highball",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/french-75/"
@@ -3603,6 +3617,7 @@
         "citrusy"
       ],
       "glass": "highball",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/gin-fizz/"
@@ -3658,6 +3673,7 @@
         "warm"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/irish-coffee/"
@@ -3707,6 +3723,7 @@
         "refreshing"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/moscow-mule/"
@@ -3756,6 +3773,7 @@
         "refreshing"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/paloma/"
@@ -3811,6 +3829,7 @@
         "sparkling"
       ],
       "glass": "martini",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/porn-star-martini/"
@@ -3877,6 +3896,7 @@
         "sparkling"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/john-collins/"
@@ -3937,6 +3957,7 @@
         "creamy"
       ],
       "glass": "rocks",
+      "prep": "build",
       "source": {
         "label": "Kahlúa",
         "url": "https://www.kahlua.com/en-us/drinks/white-russian/"
@@ -3980,6 +4001,7 @@
         "citrusy"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "Disaronno",
         "url": "https://disaronno.com/en-au/drinks/disaronno-sour/"
@@ -4030,6 +4052,7 @@
         "frothy"
       ],
       "glass": "goblet",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/pisco-sour/"
@@ -4081,6 +4104,7 @@
         "creamy"
       ],
       "glass": "irish-coffee",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/likordrinkar/kaffe-karlsson/"
@@ -4132,6 +4156,7 @@
         "sparkling"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/vodkadrinkar/p-2/"
@@ -4187,6 +4212,7 @@
         "refreshing"
       ],
       "glass": "margarita",
+      "prep": "blend",
       "source": {
         "label": "Drinkoteket",
         "url": "https://drinkoteket.se/recept/frozen-strawberry-daiquiri/"
@@ -4249,6 +4275,7 @@
         "classic"
       ],
       "glass": "martini",
+      "prep": "stir",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/manhattan/"
@@ -4300,6 +4327,7 @@
         "strong"
       ],
       "glass": "martini",
+      "prep": "stir",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/boulevardier/"
@@ -4350,6 +4378,7 @@
         "strong"
       ],
       "glass": "rocks",
+      "prep": "stir",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/sazerac/"
@@ -4402,6 +4431,7 @@
         "strong"
       ],
       "glass": "martini",
+      "prep": "stir",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/vieux-carre/"
@@ -4465,6 +4495,7 @@
         "simple"
       ],
       "glass": "rocks",
+      "prep": "stir",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/rusty-nail/"
@@ -4510,6 +4541,7 @@
         "classic"
       ],
       "glass": "coupe",
+      "prep": "stir",
       "source": {
         "label": "Difford's Guide",
         "url": "https://www.diffordsguide.com/cocktails/recipe/1681/rob-roy"
@@ -4567,6 +4599,7 @@
         "strong"
       ],
       "glass": "julep",
+      "prep": "build",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/mint-julep/"
@@ -4624,6 +4657,7 @@
         "citrusy"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/penicillin/"
@@ -4685,6 +4719,7 @@
         "modern"
       ],
       "glass": "coupe",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/paper-plane/"
@@ -4734,6 +4769,7 @@
         "layered"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/new-york-sour/"
@@ -4801,6 +4837,7 @@
         "modern"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "Difford's Guide",
         "url": "https://www.diffordsguide.com/cocktails/recipe/3629/gold-rush"
@@ -4857,6 +4894,7 @@
         "simple"
       ],
       "glass": "rocks",
+      "prep": "stir",
       "source": {
         "label": "Difford's Guide",
         "url": "https://www.diffordsguide.com/cocktails/recipe/864/godfather-cocktail"
@@ -4902,6 +4940,7 @@
         "refreshing"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Jack Daniel's",
         "url": "https://www.jackdaniels.com/en-us/recipes/lynchburg-lemonade"
@@ -4957,6 +4996,7 @@
         "sparkling"
       ],
       "glass": "highball",
+      "prep": "shake",
       "source": {
         "label": "Drinkoteket",
         "url": "https://drinkoteket.se/recept/cranberry-jack/"
@@ -5023,6 +5063,7 @@
         "classic"
       ],
       "glass": "coupe",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/aviation/"
@@ -5073,6 +5114,7 @@
         "strong"
       ],
       "glass": "coupe",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/last-word/"
@@ -5122,6 +5164,7 @@
         "classic"
       ],
       "glass": "coupe",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/bees-knees/"
@@ -5177,6 +5220,7 @@
         "refreshing"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/bramble/"
@@ -5226,6 +5270,7 @@
         "fresh"
       ],
       "glass": "coupe",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/gin-basil-smash/"
@@ -5276,6 +5321,7 @@
         "fresh"
       ],
       "glass": "coupe",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/south-side/"
@@ -5321,6 +5367,7 @@
         "classic"
       ],
       "glass": "coupe",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/corpse-reviver-2/"
@@ -5377,6 +5424,7 @@
         "strong"
       ],
       "glass": "martini",
+      "prep": "stir",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/hanky-panky/"
@@ -5422,6 +5470,7 @@
         "classic"
       ],
       "glass": "martini",
+      "prep": "stir",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/martinez/"
@@ -5474,6 +5523,7 @@
         "classic"
       ],
       "glass": "coupe",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/white-lady/"
@@ -5518,6 +5568,7 @@
         "sparkling"
       ],
       "glass": "highball",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/ramos-fizz/"
@@ -5595,6 +5646,7 @@
         "complex"
       ],
       "glass": "hurricane",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/singapore-sling/"
@@ -5677,6 +5729,7 @@
         "simple"
       ],
       "glass": "collins",
+      "prep": "build",
       "source": {
         "label": "Difford's Guide",
         "url": "https://www.diffordsguide.com/cocktails/recipe/835/gin-and-tonic"
@@ -5722,6 +5775,7 @@
         "strong"
       ],
       "glass": "martini",
+      "prep": "stir",
       "source": {
         "label": "Difford's Guide",
         "url": "https://www.diffordsguide.com/cocktails/recipe/650/dirty-martini"
@@ -5772,6 +5826,7 @@
         "refreshing"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/cuba-libre/"
@@ -5822,6 +5877,7 @@
         "refreshing"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/dark-n-stormy/"
@@ -5867,6 +5923,7 @@
         "citrusy"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/mai-tai/"
@@ -5944,6 +6001,7 @@
         "pineapple"
       ],
       "glass": "highball",
+      "prep": "blend",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/pina-colada/"
@@ -5995,6 +6053,7 @@
         "strong"
       ],
       "glass": "highball",
+      "prep": "blend",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/zombie/"
@@ -6078,6 +6137,7 @@
         "pineapple"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/jungle-bird/"
@@ -6133,6 +6193,7 @@
         "classic"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/planters-punch/"
@@ -6183,6 +6244,7 @@
         "strong"
       ],
       "glass": "hurricane",
+      "prep": "shake",
       "source": {
         "label": "Difford's Guide",
         "url": "https://www.diffordsguide.com/cocktails/recipe/993/hurricane"
@@ -6264,6 +6326,7 @@
         "pineapple"
       ],
       "glass": "highball",
+      "prep": "shake",
       "source": {
         "label": "Difford's Guide",
         "url": "https://www.diffordsguide.com/cocktails/recipe/1454/painkiller"
@@ -6325,6 +6388,7 @@
         "refreshing"
       ],
       "glass": "highball",
+      "prep": "shake",
       "source": {
         "label": "Difford's Guide",
         "url": "https://www.diffordsguide.com/cocktails/recipe/1712/rum-punch"
@@ -6392,6 +6456,7 @@
         "citrusy"
       ],
       "glass": "coupe",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/hemingway-special/"
@@ -6441,6 +6506,7 @@
         "elegant"
       ],
       "glass": "coupe",
+      "prep": "stir",
       "source": {
         "label": "Difford's Guide",
         "url": "https://www.diffordsguide.com/cocktails/recipe/701/el-presidente"
@@ -6511,6 +6577,7 @@
         "modern"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/tommys-margarita/"
@@ -6561,6 +6628,7 @@
         "layered"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/tequila-sunrise/"
@@ -6611,6 +6679,7 @@
         "citrusy"
       ],
       "glass": "highball",
+      "prep": "shake",
       "source": {
         "label": "Difford's Guide",
         "url": "https://www.diffordsguide.com/cocktails/recipe/700/el-diablo-cocktail"
@@ -6666,6 +6735,7 @@
         "citrusy"
       ],
       "glass": "coupe",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/naked-and-famous/"
@@ -6715,6 +6785,7 @@
         "herbal"
       ],
       "glass": "rocks",
+      "prep": "stir",
       "source": {
         "label": "Eater",
         "url": "https://www.eater.com/2016/1/11/10748512/mezcal-negroni-recipe"
@@ -6765,6 +6836,7 @@
         "simple"
       ],
       "glass": "rocks",
+      "prep": "stir",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/black-russian/"
@@ -6804,6 +6876,7 @@
         "strong"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/long-island-iced-tea/"
@@ -6875,6 +6948,7 @@
         "berry"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/sex-on-the-beach/"
@@ -6925,6 +6999,7 @@
         "refreshing"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/sea-breeze/"
@@ -6981,6 +7056,7 @@
         "bright"
       ],
       "glass": "martini",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/lemon-drop-martini/"
@@ -7025,6 +7101,7 @@
         "silky"
       ],
       "glass": "martini",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/french-martini/"
@@ -7075,6 +7152,7 @@
         "simple"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "Difford's Guide",
         "url": "https://www.diffordsguide.com/cocktails/recipe/356/caipirovska"
@@ -7115,6 +7193,7 @@
         "retro"
       ],
       "glass": "highball",
+      "prep": "stir",
       "source": {
         "label": "Difford's Guide",
         "url": "https://www.diffordsguide.com/cocktails/recipe/936/harvey-wallbanger"
@@ -7176,6 +7255,7 @@
         "blue"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Difford's Guide",
         "url": "https://www.diffordsguide.com/cocktails/recipe/264/blue-lagoon"
@@ -7237,6 +7317,7 @@
         "refreshing"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Saveur (Sipdeck 1:1:1)",
         "url": "https://www.saveur.com/article/recipes/tinto-de-verano/"
@@ -7287,6 +7368,7 @@
         "refreshing"
       ],
       "glass": "wine",
+      "prep": "build",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/spritz/"
@@ -7338,6 +7420,7 @@
         "refreshing"
       ],
       "glass": "wine",
+      "prep": "build",
       "source": {
         "label": "Difford's Guide",
         "url": "https://www.diffordsguide.com/cocktails/recipe/5039/hugo-spritz"
@@ -7400,6 +7483,7 @@
         "fruity"
       ],
       "glass": "flute",
+      "prep": "build",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/bellini/"
@@ -7439,6 +7523,7 @@
         "brunch"
       ],
       "glass": "flute",
+      "prep": "build",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/mimosa/"
@@ -7478,6 +7563,7 @@
         "elegant"
       ],
       "glass": "flute",
+      "prep": "build",
       "source": {
         "label": "Difford's Guide",
         "url": "https://www.diffordsguide.com/cocktails/recipe/1109/kir-royale"
@@ -7518,6 +7604,7 @@
         "classic"
       ],
       "glass": "flute",
+      "prep": "build",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/champagne-cocktail/"
@@ -7581,6 +7668,7 @@
         "light"
       ],
       "glass": "rocks",
+      "prep": "build",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/americano/"
@@ -7633,6 +7721,7 @@
         "classic"
       ],
       "glass": "coupe",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/sidecar/"
@@ -7672,6 +7761,7 @@
         "dessert"
       ],
       "glass": "coupe",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/alexander/"
@@ -7717,6 +7807,7 @@
         "simple"
       ],
       "glass": "rocks",
+      "prep": "stir",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/french-connection/"
@@ -7751,6 +7842,7 @@
         "creamy"
       ],
       "glass": "coupe",
+      "prep": "shake",
       "source": {
         "label": "IBA",
         "url": "https://iba-world.com/iba-cocktail/grasshopper/"
@@ -7790,6 +7882,7 @@
         "layered"
       ],
       "glass": "shot",
+      "prep": "build",
       "source": {
         "label": "Difford's Guide",
         "url": "https://www.diffordsguide.com/cocktails/recipe/133/b-52-shot"
@@ -7829,6 +7922,7 @@
         "creamy"
       ],
       "glass": "shot",
+      "prep": "build",
       "source": {
         "label": "Difford's Guide",
         "url": "https://www.diffordsguide.com/cocktails/recipe/986/hot-shot"
@@ -7867,6 +7961,7 @@
         "creamy"
       ],
       "glass": "highball",
+      "prep": "shake",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/vodkadrinkar/rosa-pantern/"
@@ -7922,6 +8017,7 @@
         "refreshing"
       ],
       "glass": "wine",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/vindrinkar/limoncello-spritz/"
@@ -7973,6 +8069,7 @@
         "refreshing"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/romdrinkar/queens-park-swizzle/"
@@ -8035,6 +8132,7 @@
         "salty"
       ],
       "glass": "margarita",
+      "prep": "blend",
       "source": {
         "label": "Drinkoteket",
         "url": "https://drinkoteket.se/recept/frozen-margarita/"
@@ -8102,6 +8200,7 @@
         "dessert"
       ],
       "glass": "wine",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/ovriga-drinkar/aggtoddy/"
@@ -8148,6 +8247,7 @@
         "sparkling"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/likordrinkar/snowball/"
@@ -8198,6 +8298,7 @@
         "classic"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/gindrinkar/gin-sour/"
@@ -8265,6 +8366,7 @@
         "frothy"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/gindrinkar/thai-basil/"
@@ -8316,6 +8418,7 @@
         "fruity"
       ],
       "glass": "hurricane",
+      "prep": "shake",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/romdrinkar/bahama-mama/"
@@ -8387,6 +8490,7 @@
         "layered"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/vodkadrinkar/fizzypop/"
@@ -8442,6 +8546,7 @@
         "vanilla"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/vodkadrinkar/solero/"
@@ -8492,6 +8597,7 @@
         "sweet"
       ],
       "glass": "highball",
+      "prep": "shake",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/gindrinkar/gotlandsk-sommarnatt/"
@@ -8553,6 +8659,7 @@
         "classic"
       ],
       "glass": "martini",
+      "prep": "shake",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/cognacdrinkar/between-the-sheets/"
@@ -8614,6 +8721,7 @@
         "vanilla"
       ],
       "glass": "highball",
+      "prep": "shake",
       "source": {
         "label": "Drinkoteket",
         "url": "https://drinkoteket.se/recept/spanish-bomb/"
@@ -8664,6 +8772,7 @@
         "fruity"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/vodkadrinkar/screwdriver/"
@@ -8704,6 +8813,7 @@
         "sparkling"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/cognacdrinkar/horses-neck/"
@@ -8750,6 +8860,7 @@
         "simple"
       ],
       "glass": "rocks",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/vodkadrinkar/godmother/"
@@ -8784,6 +8895,7 @@
         "sweet"
       ],
       "glass": "martini",
+      "prep": "stir",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/vodkadrinkar/appletini/"
@@ -8835,6 +8947,7 @@
         "classic"
       ],
       "glass": "martini",
+      "prep": "shake",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/gindrinkar/pink-lady/"
@@ -8902,6 +9015,7 @@
         "classic"
       ],
       "glass": "martini",
+      "prep": "stir",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/gindrinkar/gibson-martini/"
@@ -8947,6 +9061,7 @@
         "aperitif"
       ],
       "glass": "wine",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/vindrinkar/kir/"
@@ -8981,6 +9096,7 @@
         "sweet"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/vodkadrinkar/geting/"
@@ -9027,6 +9143,7 @@
         "simple"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/vodkadrinkar/skinny-bitch/"
@@ -9077,6 +9194,7 @@
         "sweet"
       ],
       "glass": "highball",
+      "prep": "shake",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/cognacdrinkar/lumumba/"
@@ -9122,6 +9240,7 @@
         "citrusy"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/ovriga-drinkar/tokyo-iced-tea/"
@@ -9199,6 +9318,7 @@
         "dessert"
       ],
       "glass": "martini",
+      "prep": "shake",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/likordrinkar/velvet-hammer/"
@@ -9249,6 +9369,7 @@
         "salty"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "Drinkoteket",
         "url": "https://drinkoteket.se/recept/spicy-margarita/"
@@ -9310,6 +9431,7 @@
         "frothy"
       ],
       "glass": "coupe",
+      "prep": "shake",
       "source": {
         "label": "Drinkoteket",
         "url": "https://drinkoteket.se/recept/negroni-sour/"
@@ -9376,6 +9498,7 @@
         "herbal"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "Drinkoteket",
         "url": "https://drinkoteket.se/recept/pennegroni/"
@@ -9442,6 +9565,7 @@
         "aperitif"
       ],
       "glass": "rocks",
+      "prep": "build",
       "source": {
         "label": "Drinkoteket",
         "url": "https://drinkoteket.se/recept/negroni-sbagliato/"
@@ -9492,6 +9616,7 @@
         "fresh"
       ],
       "glass": "coupe",
+      "prep": "shake",
       "source": {
         "label": "Drinkoteket",
         "url": "https://drinkoteket.se/recept/strawberry-daiquiri/"
@@ -9548,6 +9673,7 @@
         "stirred"
       ],
       "glass": "martini",
+      "prep": "stir",
       "source": {
         "label": "Drinkoteket",
         "url": "https://drinkoteket.se/recept/vesper-martini/"
@@ -9598,6 +9724,7 @@
         "classic"
       ],
       "glass": "martini",
+      "prep": "stir",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/vodkadrinkar/vodka-martini/"
@@ -9650,6 +9777,7 @@
         "stirred"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Drinkoteket",
         "url": "https://drinkoteket.se/recept/hallonmojito/"
@@ -9724,6 +9852,7 @@
         "stirred"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Drinkoteket",
         "url": "https://drinkoteket.se/recept/rabarbermojito/"
@@ -9786,6 +9915,7 @@
         "sparkling"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Drinkoteket",
         "url": "https://drinkoteket.se/recept/red-bull-vodka/"
@@ -9820,6 +9950,7 @@
         "sweet"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Drinkoteket",
         "url": "https://drinkoteket.se/recept/jack-coke/"
@@ -9855,6 +9986,7 @@
         "refreshing"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Drinkoteket",
         "url": "https://drinkoteket.se/recept/vodka-cranberry-cape-cod/"
@@ -9890,6 +10022,7 @@
         "sweet"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Drinkoteket",
         "url": "https://drinkoteket.se/recept/malibu-coke/"
@@ -9925,6 +10058,7 @@
         "sparkling"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Drinkoteket",
         "url": "https://drinkoteket.se/recept/campari-soda/"
@@ -9965,6 +10099,7 @@
         "citrusy"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Drinkoteket",
         "url": "https://drinkoteket.se/recept/campari-tonic/"
@@ -10005,6 +10140,7 @@
         "simple"
       ],
       "glass": "martini",
+      "prep": "shake",
       "source": {
         "label": "Drinkoteket",
         "url": "https://drinkoteket.se/recept/kamikaze/"
@@ -10044,6 +10180,7 @@
         "complex"
       ],
       "glass": "martini",
+      "prep": "shake",
       "source": {
         "label": "Drinkoteket",
         "url": "https://drinkoteket.se/recept/the-flying-dutchman/"
@@ -10094,6 +10231,7 @@
         "sweet"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Drinkoteket",
         "url": "https://drinkoteket.se/recept/p3/"
@@ -10156,6 +10294,7 @@
         "punch"
       ],
       "glass": "wine",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/bal/sangria/"
@@ -10254,6 +10393,7 @@
         "punch"
       ],
       "glass": "wine",
+      "prep": "build",
       "source": {
         "label": "Drinkoteket",
         "url": "https://drinkoteket.se/recept/vit-sangria/"
@@ -10328,6 +10468,7 @@
         "punch"
       ],
       "glass": "wine",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/bal/jordgubbsbal/"
@@ -10401,6 +10542,7 @@
         "punch"
       ],
       "glass": "wine",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/bal/vinbarsbal/"
@@ -10463,6 +10605,7 @@
         "punch"
       ],
       "glass": "wine",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/bal/bellinibal/"
@@ -10520,6 +10663,7 @@
         "punch"
       ],
       "glass": "wine",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/bal/gron-bal-med-apple-och-lime/"
@@ -10587,6 +10731,7 @@
         "punch"
       ],
       "glass": "wine",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/sprit/drinkar-cocktails/bal/mumma/"
@@ -10656,6 +10801,7 @@
         "punch"
       ],
       "glass": "wine",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/kryddiga-alkoholfria-drinkar/sangria/"
@@ -10738,6 +10884,7 @@
         "punch"
       ],
       "glass": "wine",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/fruktiga-alkoholfria-drinkar/jordgubbsbal/"
@@ -10803,6 +10950,7 @@
         "punch"
       ],
       "glass": "wine",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/sota-alkoholfria-drinkar/alkoholfritt-vinbarsbal/"
@@ -10867,6 +11015,7 @@
         "punch"
       ],
       "glass": "wine",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/sota-alkoholfria-drinkar/alkoholfri-bal-med-apple-och-lime/"
@@ -10936,6 +11085,7 @@
         "punch"
       ],
       "glass": "wine",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/kryddiga-alkoholfria-drinkar/alkoholfri-mumma/"
@@ -10992,6 +11142,7 @@
         "alcohol-free"
       ],
       "glass": "wine",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/bittra-alkoholfria-drinkar/alkoholfri-aperitivo-spritz/"
@@ -11044,6 +11195,7 @@
         "alcohol-free"
       ],
       "glass": "wine",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/sota-alkoholfria-drinkar/alkoholfri-hugo-spritz/"
@@ -11108,6 +11260,7 @@
         "alcohol-free"
       ],
       "glass": "wine",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/syrliga-alkoholfria-drinkar/alkoholfri-limoncello-spritz/"
@@ -11160,6 +11313,7 @@
         "alcohol-free"
       ],
       "glass": "flute",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/fruktiga-alkoholfria-drinkar/virgin-mimosa/"
@@ -11201,6 +11355,7 @@
         "alcohol-free"
       ],
       "glass": "flute",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/sota-alkoholfria-drinkar/bellini/"
@@ -11242,6 +11397,7 @@
         "alcohol-free"
       ],
       "glass": "martini",
+      "prep": "shake",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/fruktiga-alkoholfria-drinkar/alkoholfri-pornstar-martini/"
@@ -11310,6 +11466,7 @@
         "alcohol-free"
       ],
       "glass": "margarita",
+      "prep": "blend",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/fruktiga-alkoholfria-drinkar/frozen-strawberry-daiquiri/"
@@ -11380,6 +11537,7 @@
         "alcohol-free"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/syrliga-alkoholfria-drinkar/grapefruit-daiquiri-2/"
@@ -11432,6 +11590,7 @@
         "alcohol-free"
       ],
       "glass": "rocks",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/graddiga-alkoholfria-drinkar/virgin-white-russian/"
@@ -11489,6 +11648,7 @@
         "alcohol-free"
       ],
       "glass": "martini",
+      "prep": "shake",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/kryddiga-alkoholfria-drinkar/alkoholfri-espresso-martini/"
@@ -11536,6 +11696,7 @@
         "alcohol-free"
       ],
       "glass": "rocks",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/kryddiga-alkoholfria-drinkar/alkoholfri-mint-julep/"
@@ -11589,6 +11750,7 @@
         "alcohol-free"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/kryddiga-alkoholfria-drinkar/alkoholfri-thai-basil/"
@@ -11647,6 +11809,7 @@
         "alcohol-free"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/kryddiga-alkoholfria-drinkar/gin-tonic/"
@@ -11700,6 +11863,7 @@
         "alcohol-free"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/kryddiga-alkoholfria-drinkar/mojito/"
@@ -11765,6 +11929,7 @@
         "alcohol-free"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/fruktiga-alkoholfria-drinkar/strawberry-mojito/"
@@ -11836,6 +12001,7 @@
         "alcohol-free"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/syrliga-alkoholfria-drinkar/ginger-no-jito/"
@@ -11894,6 +12060,7 @@
         "alcohol-free"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/syrliga-alkoholfria-drinkar/temperance-apple-mojito/"
@@ -11963,6 +12130,7 @@
         "alcohol-free"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/kryddiga-alkoholfria-drinkar/virgin-mary/"
@@ -12049,6 +12217,7 @@
         "alcohol-free"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/kryddiga-alkoholfria-drinkar/virgin-moscow-mule/"
@@ -12104,6 +12273,7 @@
         "alcohol-free"
       ],
       "glass": "hurricane",
+      "prep": "blend",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/sota-alkoholfria-drinkar/pina-colada/"
@@ -12162,6 +12332,7 @@
         "alcohol-free"
       ],
       "glass": "highball",
+      "prep": "shake",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/sota-alkoholfria-drinkar/iced-tea/"
@@ -12215,6 +12386,7 @@
         "alcohol-free"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/syrliga-alkoholfria-drinkar/alkoholfri-gin-basil-smash/"
@@ -12268,6 +12440,7 @@
         "alcohol-free"
       ],
       "glass": "martini",
+      "prep": "shake",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/syrliga-alkoholfria-drinkar/alkoholfri-bees-knees/"
@@ -12331,6 +12504,7 @@
         "alcohol-free"
       ],
       "glass": "martini",
+      "prep": "shake",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/syrliga-alkoholfria-drinkar/alkoholfri-gin-sour/"
@@ -12383,6 +12557,7 @@
         "alcohol-free"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/syrliga-alkoholfria-drinkar/alkoholfri-queens-park-swizzle/"
@@ -12448,6 +12623,7 @@
         "alcohol-free"
       ],
       "glass": "highball",
+      "prep": "shake",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/syrliga-alkoholfria-drinkar/alkoholfri-rosmarinspaloma/"
@@ -12511,6 +12687,7 @@
         "alcohol-free"
       ],
       "glass": "martini",
+      "prep": "shake",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/syrliga-alkoholfria-drinkar/gimlette/"
@@ -12584,6 +12761,7 @@
         "alcohol-free"
       ],
       "glass": "flute",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/syrliga-alkoholfria-drinkar/kir-royal/"
@@ -12632,6 +12810,7 @@
         "alcohol-free"
       ],
       "glass": "martini",
+      "prep": "shake",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/syrliga-alkoholfria-drinkar/virgin-cosmopolitan/"
@@ -12689,6 +12868,7 @@
         "alcohol-free"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/syrliga-alkoholfria-drinkar/virgin-margarita/"
@@ -12753,6 +12933,7 @@
         "alcohol-free"
       ],
       "glass": "margarita",
+      "prep": "blend",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/fruktiga-alkoholfria-drinkar/alkoholfri-frozen-peach-margarita/"
@@ -12823,6 +13004,7 @@
         "alcohol-free"
       ],
       "glass": "irish-coffee",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/varma-alkoholfria-drinkar/alkoholfri-irish-coffee/"
@@ -12883,6 +13065,7 @@
         "alcohol-free"
       ],
       "glass": "irish-coffee",
+      "prep": "build",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/varma-alkoholfria-drinkar/alkoholfri-lumumba/"
@@ -12960,6 +13143,7 @@
         "alcohol-free"
       ],
       "glass": "irish-coffee",
+      "prep": "blend",
       "source": {
         "label": "Systembolaget",
         "url": "https://www.systembolaget.se/alkoholfritt/drinkar/graddiga-alkoholfria-drinkar/alkoholfri-eggnog/"
@@ -13030,6 +13214,7 @@
         "alcohol-free"
       ],
       "glass": "rocks",
+      "prep": "stir",
       "source": {
         "label": "Lyre's",
         "url": "https://lyres.com/products/negroni-mocktail-recipe"
@@ -13081,6 +13266,7 @@
         "alcohol-free"
       ],
       "glass": "rocks",
+      "prep": "stir",
       "source": {
         "label": "Lyre's",
         "url": "https://lyres.com/products/old-fashioned-mocktail-recipe"
@@ -13133,6 +13319,7 @@
         "alcohol-free"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "Free Spirits",
         "url": "https://drinkfreespirits.com/blogs/recipes/whiskey-sour"
@@ -13184,6 +13371,7 @@
         "alcohol-free"
       ],
       "glass": "rocks",
+      "prep": "build",
       "source": {
         "label": "JNPR",
         "url": "https://www.jnprspirits.com/en/pages/recipe/caipirinha-sans-alcool"
@@ -13243,6 +13431,7 @@
         "alcohol-free"
       ],
       "glass": "coupe",
+      "prep": "shake",
       "source": {
         "label": "Liber & Co.",
         "url": "https://www.liberandcompany.com/fr/products/non-alc-clover-club"
@@ -13300,6 +13489,7 @@
         "alcohol-free"
       ],
       "glass": "flute",
+      "prep": "shake",
       "source": {
         "label": "Laori",
         "url": "https://www.laoridrinks.com/en/blogs/salon-en/non-alcoholic-champagne-cocktail-with-laori"
@@ -13358,6 +13548,7 @@
         "alcohol-free"
       ],
       "glass": "collins",
+      "prep": "build",
       "source": {
         "label": "Laori",
         "url": "https://www.laoridrinks.com/en/blogs/salon-en/non-alcoholic-tom-collins-with-laori"
@@ -13416,6 +13607,7 @@
         "alcohol-free"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "Sober Spirits",
         "url": "https://www.soberspirits.com/pages/cocktail-recipes/non-alcoholic-amaretto-sour"
@@ -13479,6 +13671,7 @@
         "alcohol-free"
       ],
       "glass": "rocks",
+      "prep": "stir",
       "source": {
         "label": "Spiritless",
         "url": "https://spiritless.com/blogs/recipes/spiritless-non-alcoholic-manhattan"
@@ -13538,6 +13731,7 @@
         "alcohol-free"
       ],
       "glass": "rocks",
+      "prep": "stir",
       "source": {
         "label": "Lyre's",
         "url": "https://lyres.com/products/boulevardier-mocktail-recipe"
@@ -13589,6 +13783,7 @@
         "alcohol-free"
       ],
       "glass": "rocks",
+      "prep": "stir",
       "source": {
         "label": "Free Spirits",
         "url": "https://drinkfreespirits.com/blogs/recipes/the-sazerac"
@@ -13642,6 +13837,7 @@
         "alcohol-free"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "Sans Drinks",
         "url": "https://sansdrinks.com.au/blogs/mocktail-recipes/lyres-penicillin"
@@ -13698,6 +13894,7 @@
         "alcohol-free"
       ],
       "glass": "martini",
+      "prep": "shake",
       "source": {
         "label": "TT London",
         "url": "https://tt-london.co.uk/how-to/make-a-non-alcoholic-paper-plane/"
@@ -13756,6 +13953,7 @@
         "alcohol-free"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "Ritual Zero Proof",
         "url": "https://www.ritualzeroproof.com/blogs/cocktails/new-york-sour"
@@ -13806,6 +14004,7 @@
         "alcohol-free"
       ],
       "glass": "martini",
+      "prep": "shake",
       "source": {
         "label": "Spiritless",
         "url": "https://spiritless.com/blogs/recipes/spiritless-gold-rush"
@@ -13857,6 +14056,7 @@
         "alcohol-free"
       ],
       "glass": "rocks",
+      "prep": "stir",
       "source": {
         "label": "Sober Spirits",
         "url": "https://www.soberspirits.com/pages/cocktail-recipes/godfather-alcohol-free"
@@ -13903,6 +14103,7 @@
         "alcohol-free"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Lyre's",
         "url": "https://lyres.com/products/lynchburg-lemonade-recipe"
@@ -13965,6 +14166,7 @@
         "alcohol-free"
       ],
       "glass": "coupe",
+      "prep": "shake",
       "source": {
         "label": "Ritual Zero Proof",
         "url": "https://www.ritualzeroproof.com/blogs/cocktails/the-last-word"
@@ -14021,6 +14223,7 @@
         "alcohol-free"
       ],
       "glass": "rocks",
+      "prep": "build",
       "source": {
         "label": "Sans Drinks",
         "url": "https://sansdrinks.com.au/blogs/mocktail-recipes/bramble-gin-mocktail"
@@ -14072,6 +14275,7 @@
         "alcohol-free"
       ],
       "glass": "coupe",
+      "prep": "shake",
       "source": {
         "label": "The Humble Garnish",
         "url": "https://www.thehumblegarnish.com/original-recipes/south-bend-a-non-alcoholic-southside-riff/"
@@ -14124,6 +14328,7 @@
         "alcohol-free"
       ],
       "glass": "collins",
+      "prep": "shake",
       "source": {
         "label": "Master of Mocktails",
         "url": "https://masterofmocktails.com/non-alcoholic-ramos-gin-fizz/"
@@ -14198,6 +14403,7 @@
         "alcohol-free"
       ],
       "glass": "highball",
+      "prep": "shake",
       "source": {
         "label": "Melati Drinks",
         "url": "https://melatidrinks.com/blogs/classic-zero-alcohol/singapore-sling"
@@ -14267,6 +14473,7 @@
         "alcohol-free"
       ],
       "glass": "wine",
+      "prep": "stir",
       "source": {
         "label": "NØLO",
         "url": "https://heynolo.com/blogs/nolo-recipes/nolo-recipe-the-perfect-dry-martini"
@@ -14320,6 +14527,7 @@
         "alcohol-free"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Barnes & Brown",
         "url": "https://barnesandbrown.co/blogs/recipes/cuba-libre"
@@ -14373,6 +14581,7 @@
         "alcohol-free"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Pollen Drinks",
         "url": "https://pollen-drinks.com/en/blogs/infos/dark-and-stormy"
@@ -14425,6 +14634,7 @@
         "alcohol-free"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "Lyre's",
         "url": "https://lyres.com/products/mai-tai-mocktail-recipe"
@@ -14493,6 +14703,7 @@
         "alcohol-free"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "Bark & Bitter",
         "url": "https://www.barkandbitter.com/blogs/recipes/jungle-bird"
@@ -14561,6 +14772,7 @@
         "alcohol-free"
       ],
       "glass": "hurricane",
+      "prep": "shake",
       "source": {
         "label": "Seir Hill",
         "url": "https://seirhill.com/blogs/mocktails/non-alcoholic-hurrican-recipe"
@@ -14635,6 +14847,7 @@
         "alcohol-free"
       ],
       "glass": "highball",
+      "prep": "shake",
       "source": {
         "label": "The Feedfeed",
         "url": "https://thefeedfeed.com/laurentoppe/the-pain-chiller-mocktail"
@@ -14709,6 +14922,7 @@
         "alcohol-free"
       ],
       "glass": "hurricane",
+      "prep": "shake",
       "source": {
         "label": "TT London",
         "url": "https://tt-london.co.uk/how-to/non-alcoholic-sasas-rum-punch/"
@@ -14775,6 +14989,7 @@
         "alcohol-free"
       ],
       "glass": "coupe",
+      "prep": "shake",
       "source": {
         "label": "Giffard",
         "url": "https://www.giffard.com/en/cocktail/8266-hemingway-daiquiri-alcohol-free"
@@ -14825,6 +15040,7 @@
         "alcohol-free"
       ],
       "glass": "coupe",
+      "prep": "shake",
       "source": {
         "label": "Monday",
         "url": "https://drinkmonday.co/blogs/recipes/mollymakesdrinks-non-alcoholic-rum-el-presidente"
@@ -14876,6 +15092,7 @@
         "alcohol-free"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "Lyre's",
         "url": "https://lyres.com/products/tommys-margarita-recipe"
@@ -14934,6 +15151,7 @@
         "alcohol-free"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Ritual Zero Proof",
         "url": "https://www.ritualzeroproof.com/blogs/cocktails/sunrise-shine"
@@ -14992,6 +15210,7 @@
         "alcohol-free"
       ],
       "glass": "highball",
+      "prep": "shake",
       "source": {
         "label": "Mixology Events",
         "url": "https://mixologyevents.co.uk/recipes/non-alcoholic-el-diablo-cocktail/"
@@ -15050,6 +15269,7 @@
         "alcohol-free"
       ],
       "glass": "coupe",
+      "prep": "shake",
       "source": {
         "label": "Giffard",
         "url": "https://www.giffard.com/en/cocktail/8337-naked-but-not-famous-alcohol-free"
@@ -15101,6 +15321,7 @@
         "alcohol-free"
       ],
       "glass": "coupe",
+      "prep": "stir",
       "source": {
         "label": "All The Bitter",
         "url": "https://allthebitter.com/blogs/recipes/mezcal-negroni-non-alcoholic-cocktail-recipe"
@@ -15158,6 +15379,7 @@
         "alcohol-free"
       ],
       "glass": "martini",
+      "prep": "shake",
       "source": {
         "label": "Ritual Zero Proof",
         "url": "https://www.ritualzeroproof.com/blogs/cocktails/lemon-drop"
@@ -15210,6 +15432,7 @@
         "alcohol-free"
       ],
       "glass": "martini",
+      "prep": "shake",
       "source": {
         "label": "The Healthful Ideas",
         "url": "https://thehealthfulideas.com/french-martini/"
@@ -15263,6 +15486,7 @@
         "alcohol-free"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Moody Mixologist",
         "url": "https://www.moodymixologist.com/blog/blue-lagoon-mocktail-recipe"
@@ -15321,6 +15545,7 @@
         "alcohol-free"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "ComoQuiero",
         "url": "https://comoquiero.net/es-CL/receta/6890/tinto-de-verano-sin-alcohol"
@@ -15374,6 +15599,7 @@
         "alcohol-free"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "JNPR",
         "url": "https://www.jnprspirits.com/en/pages/recipe/ceci-nest-pas-un-americano"
@@ -15420,6 +15646,7 @@
         "aromatic"
       ],
       "glass": "rocks",
+      "prep": "stir",
       "source": {
         "label": "Anders Erickson",
         "url": "https://www.youtube.com/watch?v=u1PQ-L6zvb8&t=317s"
@@ -15466,6 +15693,7 @@
         "modern"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "Anders Erickson",
         "url": "https://www.youtube.com/watch?v=8WVlMjEGma4&t=181s"
@@ -15523,6 +15751,7 @@
         "citrusy"
       ],
       "glass": "coupe",
+      "prep": "shake",
       "source": {
         "label": "Anders Erickson",
         "url": "https://www.youtube.com/watch?v=Ttnf3PbJqnA&t=265s"
@@ -15608,6 +15837,7 @@
         "stirred"
       ],
       "glass": "rocks",
+      "prep": "stir",
       "source": {
         "label": "Anders Erickson",
         "url": "https://www.youtube.com/watch?v=wr1pjEwi4P0&t=240s"
@@ -15678,6 +15908,7 @@
         "stirred"
       ],
       "glass": "rocks",
+      "prep": "stir",
       "source": {
         "label": "Anders Erickson",
         "url": "https://www.youtube.com/watch?v=YFqEvNdPrX8&t=362s"
@@ -15723,6 +15954,7 @@
         "stirred"
       ],
       "glass": "coupe",
+      "prep": "stir",
       "source": {
         "label": "Anders Erickson",
         "url": "https://www.youtube.com/watch?v=mFOZcQvZ6oY&t=268s"
@@ -15775,6 +16007,7 @@
         "aperitif"
       ],
       "glass": "rocks",
+      "prep": "stir",
       "source": {
         "label": "Anders Erickson",
         "url": "https://www.youtube.com/watch?v=fBax4HODqyA&t=198s"
@@ -15820,6 +16053,7 @@
         "refreshing"
       ],
       "glass": "rocks",
+      "prep": "shake",
       "source": {
         "label": "Anders Erickson",
         "url": "https://www.youtube.com/watch?v=Jo1wxAfyLto&t=145s"
@@ -15879,6 +16113,7 @@
         "refreshing"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Anders Erickson",
         "url": "https://www.youtube.com/watch?v=vOM5wbvegzo&t=401s"
@@ -15919,6 +16154,7 @@
         "citrusy"
       ],
       "glass": "highball",
+      "prep": "build",
       "source": {
         "label": "Anders Erickson",
         "url": "https://www.youtube.com/watch?v=RThEGH0sbgM&t=290s"
@@ -15981,6 +16217,7 @@
         "rich"
       ],
       "glass": "irish-coffee",
+      "prep": "build",
       "source": {
         "label": "Anders Erickson",
         "url": "https://www.youtube.com/watch?v=tfPrLUlFO8k&t=386s"
@@ -16031,6 +16268,7 @@
         "strong"
       ],
       "glass": "coupe",
+      "prep": "stir",
       "source": {
         "label": "Anders Erickson",
         "url": "https://www.youtube.com/watch?v=mBGgu3qRztY&t=56s"
@@ -16077,6 +16315,7 @@
         "spicy"
       ],
       "glass": "irish-coffee",
+      "prep": "build",
       "source": {
         "label": "Anders Erickson",
         "url": "https://www.youtube.com/watch?v=mBGgu3qRztY"
@@ -16156,6 +16395,7 @@
         "punch"
       ],
       "glass": "wine",
+      "prep": "build",
       "source": {
         "label": "Anders Erickson",
         "url": "https://www.youtube.com/watch?v=cJhKGTM3z20&t=452s"
@@ -16233,6 +16473,7 @@
         "punch"
       ],
       "glass": "wine",
+      "prep": "build",
       "source": {
         "label": "Anders Erickson",
         "url": "https://www.youtube.com/watch?v=NNI--bxevNo&t=279s"
@@ -16306,6 +16547,7 @@
         "aromatic"
       ],
       "glass": "highball",
+      "prep": "shake",
       "source": {
         "label": "Anders Erickson",
         "url": "https://www.youtube.com/watch?v=lWDA__gwSow&t=350s"
@@ -16375,6 +16617,7 @@
         "alcohol-free"
       ],
       "glass": "highball",
+      "prep": "shake",
       "source": {
         "label": "Anders Erickson",
         "url": "https://www.youtube.com/watch?v=5wgvpo-xBnA&t=59s"
@@ -16439,6 +16682,7 @@
         "alcohol-free"
       ],
       "glass": "highball",
+      "prep": "shake",
       "source": {
         "label": "Anders Erickson",
         "url": "https://www.youtube.com/watch?v=5wgvpo-xBnA&t=116s"
@@ -16497,6 +16741,7 @@
         "alcohol-free"
       ],
       "glass": "collins",
+      "prep": "shake",
       "source": {
         "label": "Anders Erickson",
         "url": "https://www.youtube.com/watch?v=5wgvpo-xBnA&t=251s"
