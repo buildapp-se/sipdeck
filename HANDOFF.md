@@ -6,6 +6,14 @@ nextAction: Owner QA with a real sign-in, the seven points in ../flaskor/HANDOFF
 blockers: []
 reviewedAt: 2026-11-04
 ---
+**2026-11-04, backlogpunkter utan ägarbeslut, gren `claude/backlog-2026-11-04` (bas `claude/mutation-2026-11-04`), draft-PR #43, inte mergad.** Bara tester och rättningar, inget nytt i appen.
+- **Tester:** hjulet med en utesluten kategori i taget och flexdragningen 0,33 mot 0,34 (`buildSpinLineup`); `classify` med två namngivna ingredienser i båda ordningarna. Båda BACKLOG-punkterna från mutationstestet avbockade.
+- **CSP Report-Only:** `frame-src` pekade på `sipdeck.firebaseapp.com`; nu `https://sipdeck.buildapp.se https://apis.google.com`, och ett test håller den i fas med `authDomain`. Fortfarande bara rapport, skärpningen kräver riktig inloggning på en förhandsvisning.
+- **Worker-testet** läser mottagaren ur `wrangler.toml` och nämner inte längre den privata adressen. `worker.js`, `wrangler.toml` och `firebase.json` är orörda (ägarbeslut).
+- **e2e:** läckkontrollen i `tests/home.spec.js` jämför mot `baseURL`:s ursprung, så appens egna filer räknas inte som läckor på en förhandsvisning (fyndet från 2026-10-11). Kommentaren vid `navigator.vibrate(12)` rättad.
+- **Verifierat:** `npm test` 15 090 + Worker 49, e2e 58/58 i Chromium lokalt (egen server på 4291). Ingen deploy.
+- **Kvar:** P1 ägarens granskning, relationerna i `drinks.json`, Hemma-gruppernas placering, Porn Star Martinis vin i satsen (kräver att någon avgör om vinet är en toppning).
+
 **2026-11-04, mutationstest (audit-kolumnen Mutation), gren `claude/mutation-2026-11-04`, draft-PR #42, inte mergad.** Stryker 9.6 med command runner mot `npm test` (`stryker.config.json`), på `app.js` rad 276 till 1018 och `worker/drink-rules.js`; UI-delen muteras inte. **75,00 % → 92,93 %** (1 910 mutanter, 135 överlevande kvar). Kör: `npm i --no-save @stryker-mutator/core@9 && npx stryker run`, ca 10 min på 4 kärnor, rapport i `reports/mutation/` (ignorerad). Stryker ligger inte i `package.json`. Källtextkontrollerna i `test.js` läser originalet via `SIPDECK_APP_SOURCE` när Stryker kör, annars fäller den instrumenterade filen budgeten och textmatchningarna.
 - **Bugg rättad:** `drinkErrors` kastade TypeError för en `null`-rad i `ingredients` (skyddet `line &&` var verkningslöst), så `PUT /drinks/<id>` gav 500 i stället för 400. **Workern är inte deployad**; ändringen går ut med nästa Worker-deploy.
 - **Tester:** 90 nya kontroller sist i `test.js` ("mutationstest 2026-11-04") och 1 i `worker/worker.test.mjs`. `npm test` 15 083 + Worker 49. Ingen e2e körd (ingen UI-ändring).
