@@ -19,6 +19,8 @@ const DB = {
     return q;
   },
 };
+// mottagaren står bara i wrangler.toml (Email Routing kräver en verifierad adress), testet läser den därifrån
+const NOTIFY_TO = (readFileSync(new URL('./wrangler.toml', import.meta.url), 'utf8').match(/destination_address = "([^"]+)"/) || [])[1];
 const mails = [], pending = [];
 let mailFails = false;
 const MAIL = { send: async m => { if (mailFails) throw new Error('testfel: smtp nere'); mails.push(m); } };
@@ -86,7 +88,7 @@ check((await call('POST', '/suggestions', { who: 'alice', body: Object.assign({}
   'suggestions: consent is required');
 const first = await call('POST', '/suggestions', { who: 'alice', body: suggestion });
 check(first.status === 201 && first.data.status === 'new', 'suggestions: created as new');
-check(mails.length === 1 && mails[0].to === 'patz.lofgren@gmail.com' && mails[0].subject === 'Sipdeck: nytt förslag #' + first.data.id &&
+check(mails.length === 1 && NOTIFY_TO && mails[0].to === NOTIFY_TO && mails[0].subject === 'Sipdeck: nytt förslag #' + first.data.id &&
   /Kvällens sour/.test(mails[0].text) && /Typ: variant/.test(mails[0].text) && /whiskey-sour/.test(mails[0].text) &&
   /suggestions\.js pull/.test(mails[0].text), 'suggestions: one mail with id, name, kind, similar drink and pull command');
 for (let i = 0; i < 4; i++) await call('POST', '/suggestions', { who: 'alice', body: suggestion });
