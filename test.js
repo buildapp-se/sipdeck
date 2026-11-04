@@ -1475,5 +1475,16 @@ check(onShelf(ING.gin) && onShelf(ING.champagne) && onShelf(ING['angostura-bitte
   const groove = buildSpinLineup(wheelData, 'groove', wheelFixture, seq(0));
   check(groove.length === 12 && groove.every(item => item.category !== 'bottle'), 'wheel lineup: only fresh has a bottle slot');
 }
+// backlog 2026-11-04: two named ingredients in one bottle name, the longest Swedish name wins
+{
+  const dry = { en: 'Dry vermouth', sv: 'Torr vermouth', group: 'wine', shelf: 'bar' };
+  const extra = { en: 'Extra dry vermouth', sv: 'Extra torr vermouth', group: 'wine', shelf: 'bar' };
+  const bottle = { id: 1, name: 'Extra Torr Vermouth', kind: 'spirit' };
+  const shortFirst = classify(bottle, [], { dry, extra }, {}), longFirst = classify(bottle, [], { extra, dry }, {});
+  const inside = classify({ id: 2, name: 'Hemmets Extra Torr Vermouth', kind: 'spirit' }, [], { dry, extra }, {});
+  check(shortFirst.id === 'extra' && longFirst.id === 'extra' && inside.id === 'extra' && shortFirst.sure === true,
+    'classify: when two ingredients are named on the bottle, the longer Swedish name wins in any order');
+}
+
 console.log(`${pass} passed, ${fail} failed`);
 if (fail > 0) process.exit(1);
