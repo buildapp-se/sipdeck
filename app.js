@@ -116,6 +116,7 @@ const STRINGS = {
     variants_one: '+1 variant', variants_many: '+{n} variants', variants_label: 'Variants',
     variant_without: 'Without: ',
     batch: 'Batch: {total} in all, {each} per glass', batch_top: ', before topping up',
+    water: 'Mixing ahead: stir in about {water} of water and chill',
     citrus: 'To buy: about {list}', citrus_lime: 'lime', citrus_limes: 'limes', citrus_lemon: 'lemon', citrus_lemons: 'lemons',
     variant_of: 'Variant of {name} · {n} in the family', search_tagged: 'Tagged: {tags}',
     custom_tag: 'Own', custom_title: 'My drinks', custom_new: '+ New drink', custom_new_title: 'New drink',
@@ -251,6 +252,7 @@ const STRINGS = {
     variants_one: '+1 variant', variants_many: '+{n} varianter', variants_label: 'Varianter',
     variant_without: 'Utan: ',
     batch: 'Sats: {total} totalt, {each} per glas', batch_top: ', före toppning',
+    water: 'Blandar du i förväg: rör i ca {water} vatten och kyl',
     citrus: 'Att köpa: ca {list}', citrus_lime: 'lime', citrus_limes: 'lime', citrus_lemon: 'citron', citrus_lemons: 'citroner',
     variant_of: 'Variant av {name} · {n} i familjen', search_tagged: 'Taggad: {tags}',
     custom_tag: 'Egen', custom_title: 'Mina drinkar', custom_new: '+ Ny drink', custom_new_title: 'Ny drink',
@@ -913,13 +915,25 @@ function batchText(drink, servings, unit, lang) {
   if (drink.ingredients.some(line => line.unit === 'gram')) return '';
   const each = drink.ingredients.reduce((sum, line) => sum + (typeof line.ml === 'number' ? line.ml : line.unit === 'barspoon' ? line.qty * 5 : 0), 0);
   if (servings < 2 || !each) return '';
-  const vol = ml => {
-    if (unit !== 'oz' && ml >= 1000) return `${formatNumber(Math.round(ml / 10) / 100, lang)} l`;
-    const value = Math.round(convert(ml, unit) * 100) / 100;
-    return `${unit === 'oz' && Number.isInteger(value * 4) ? formatOz(value, lang) : formatNumber(value, lang)} ${unit}`;
-  };
-  return t(lang, 'batch').replace('{total}', vol(each * servings)).replace('{each}', vol(each))
+  return t(lang, 'batch').replace('{total}', volText(each * servings, unit, lang)).replace('{each}', volText(each, unit, lang))
     + (drink.ingredients.some(line => line.unit === 'top') ? t(lang, 'batch_top') : '');
+}
+// litres from 1 l; `round` gives the pouring steps of a recipe line, for an "about" figure
+function volText(ml, unit, lang, round) {
+  if (unit !== 'oz' && ml >= 1000) return `${formatNumber(Math.round(ml / 10) / 100, lang)} l`;
+  const value = round ? roundForUnit(convert(ml, unit), unit) : Math.round(convert(ml, unit) * 100) / 100;
+  return `${unit === 'oz' && Number.isInteger(value * 4) ? formatOz(value, lang) : formatNumber(value, lang)} ${unit}`;
+}
+
+// a jug mixed ahead and poured without shaking or stirring misses the melt from the ice, so it goes in as water.
+// ponytail: ml per glass from `prep` in drinks.json. The guides say ½ to ¾ oz and do not quite agree, so these two
+// are the knob. Built and blended drinks get none, nor a top-up or fizz, egg (it needs the shake) or water already in it.
+const DILUTION_ML = new Map([['shake', 22], ['stir', 15]]);
+function waterText(drink, servings, unit, lang) {
+  const each = DILUTION_ML.get(drink.prep);
+  if (!each || servings < 2 || drink.ingredients.some(l => l.unit === 'top'
+    || /egg|aquafaba|soda|tonic|ginger-(beer|ale)|prosecco|champagne|sparkling|\bcola\b|^(chilled-)?water$/.test(l.id))) return '';
+  return t(lang, 'water').replace('{water}', volText(each * servings, unit, lang, true));
 }
 
 // ponytail: rough juice per fruit in ml, on the low side so a round doesn't run short. Fruit size varies,
@@ -1019,7 +1033,7 @@ function mergeCustom(local, remote) {
 if (typeof module !== 'undefined') module.exports = {
   STRINGS, t, UNITS, detectLang, defaultState, normalizeState, favoriteIdFromHash, drinkIdFromHash,
   scaleMl, convert, roundForUnit, formatNumber, formatOz, formatAmount,
-  formatLineAmount, drinkAsText, batchText, citrusText,
+  formatLineAmount, drinkAsText, batchText, waterText, DILUTION_ML, citrusText,
   shuffle, freshFirst, advanceQueue, swipeDirectionForKey, BASE_FILTERS, matchesFilters, canMake, filterDrinks,
   groupFamilies, deckCards, variantDiff,
   normalizeHome, coverage, swapFor, bridgeHome, classify, bottleKey, homeSources, homeGives, shopping, fold, onShelf,
@@ -1432,10 +1446,11 @@ if (typeof document !== 'undefined') (function () {
       .filter(Boolean).join(' · ');
   }
 
+  // the notes under the ingredients: batch, water when mixed ahead, citrus to buy; refreshRecipes patches them in place
+  const noteTexts = (drink, servings) => [batchText(drink, servings, unit(), lang()), waterText(drink, servings, unit(), lang()),
+    citrusText(drink, servings, db.ingredients, lang())];
   function batchNote(drink, servings) {
-    const text = batchText(drink, servings, unit(), lang());
-    const citrus = citrusText(drink, servings, db.ingredients, lang());
-    return `<p class="batch-note" data-batch${text ? '' : ' hidden'}>${esc(text)}</p><p class="batch-note" data-citrus${citrus ? '' : ' hidden'}>${esc(citrus)}</p>`;
+    return noteTexts(drink, servings).map((text, i) => `<p class="batch-note" data-note data-${['batch', 'water', 'citrus'][i]}${text ? '' : ' hidden'}>${esc(text)}</p>`).join('');
   }
 
   function servingWord(servings) { return t(lang(), servings === 1 ? 'serving_one' : 'serving_many'); }
@@ -1464,12 +1479,8 @@ if (typeof document !== 'undefined') (function () {
       const servings = box.dataset.depth && box.dataset.depth !== '0' ? 1 : servingsFor(drink.id);
       input.value = servings;
       box.querySelector('.servings-unit').textContent = servingWord(servings);
-      const note = box.querySelector('[data-batch]'), text = batchText(drink, servings, unit(), lang());
-      note.textContent = text;
-      note.hidden = !text;
-      const citrusNote = box.querySelector('[data-citrus]'), citrus = citrusText(drink, servings, db.ingredients, lang());
-      citrusNote.textContent = citrus;
-      citrusNote.hidden = !citrus;
+      const texts = noteTexts(drink, servings);
+      box.querySelectorAll('[data-note]').forEach((note, i) => { note.textContent = texts[i]; note.hidden = !texts[i]; });
       box.querySelectorAll('.amount[data-line]').forEach(el => {
         el.textContent = amountText(drink.ingredients[Number(el.dataset.line)], servings);
       });

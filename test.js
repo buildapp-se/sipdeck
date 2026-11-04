@@ -5,7 +5,7 @@ const path = require('path');
 const { STRINGS, t, detectLang, defaultState, normalizeState, favoriteIdFromHash, drinkIdFromHash,
   scaleMl, normalizeServingCount, MAX_SERVINGS, convert, roundForUnit, formatNumber, formatOz, formatAmount, shuffle, freshFirst, advanceQueue,
   swipeDirectionForKey,
-  formatLineAmount, drinkAsText, batchText, citrusText,
+  formatLineAmount, drinkAsText, batchText, waterText, DILUTION_ML, citrusText,
   BASE_FILTERS, matchesFilters, canMake, filterDrinks, groupFamilies, deckCards, variantDiff, missingIngredients, mergeState, reconcileState, pulledState,
   searchHaystack, matchesSearch, ingredientCounts, authErrorKey, AUTH_ERRORS,
   weightedSampleUnique, wheelCocktailWeight, buildSpinLineup, selectWheelIndex,
@@ -170,6 +170,31 @@ check(formatLineAmount({ qty: 150, unit: 'gram' }, 2, 'oz', 'sv') === '300 g',
   'formatLineAmount: grams scale and stay grams in every display unit');
 check(batchText({ ingredients: [{ id: 'a', ml: 50 }, { id: 'b', qty: 150, unit: 'gram' }] }, 2, 'cl', 'sv') === '',
   'batchText: solids in grams, no per-glass figure');
+
+// ---------- water when mixed ahead ----------
+const shaken = { prep: 'shake', ingredients: [{ id: 'gin', ml: 50 }, { id: 'lemon-juice', ml: 25 }] };
+check(DILUTION_ML.get('shake') === 22 && DILUTION_ML.get('stir') === 15, 'waterText: 2,2 cl per shaken glass, 1,5 cl per stirred');
+check(waterText(shaken, 4, 'cl', 'sv') === 'Blandar du i förväg: rör i ca 9 cl vatten och kyl', 'waterText: 4 x 2,2 cl rounds to the 0,5 cl step');
+check(waterText({ ...shaken, prep: 'stir' }, 6, 'ml', 'en') === 'Mixing ahead: stir in about 90 ml of water and chill', 'waterText: stirred, English ml');
+check(waterText(shaken, 50, 'cl', 'sv') === 'Blandar du i förväg: rör i ca 1,1 l vatten och kyl', 'waterText: litres from 1 l');
+check(waterText(shaken, 4, 'oz', 'en') === 'Mixing ahead: stir in about 3 oz of water and chill', 'waterText: oz in quarter steps');
+check(waterText(shaken, 1, 'cl', 'sv') === '', 'waterText: one glass is not mixed ahead');
+check(['build', 'blend', undefined].every(prep => waterText({ ...shaken, prep }, 4, 'cl', 'sv') === ''), 'waterText: built, blended and own drinks get no line');
+check(['soda-water', 'prosecco', 'egg-white', 'water'].every(id => waterText({ ...shaken, ingredients: shaken.ingredients.concat({ id, ml: 30 }) }, 4, 'cl', 'sv') === '') &&
+  waterText({ ...shaken, ingredients: shaken.ingredients.concat({ id: 'soda-water', qty: 1, unit: 'top' }) }, 4, 'cl', 'sv') === '' &&
+  waterText({ ...shaken, ingredients: shaken.ingredients.concat({ id: 'chocolate-drink', ml: 30 }) }, 4, 'cl', 'sv') !== '',
+  'waterText: a top-up, fizz, egg or water already in the recipe gives no line; "cola" in chocolate does not count');
+{
+  const all = require('./drinks.json').drinks;
+  check(all.every(dr => ['shake', 'stir', 'build', 'blend'].includes(dr.prep)), 'drinks.json: every drink has prep shake, stir, build or blend');
+  check(all.filter(dr => (dr.tags || []).includes('punch')).every(dr => dr.prep === 'build' && waterText(dr, 24, 'cl', 'sv') === ''),
+    'waterText: a punch is built in the bowl and never gets a second water line (Fish House Punch has its own)');
+  check(all.filter(dr => dr.prep === 'shake').every(dr => /shak/i.test(dr.method.en)) && all.filter(dr => dr.prep === 'stir').every(dr => /stir/i.test(dr.method.en)),
+    'drinks.json: prep shake and stir follow the method text');
+  check(waterText(all.find(dr => dr.id === 'margarita'), 8, 'cl', 'sv') === 'Blandar du i förväg: rör i ca 17,5 cl vatten och kyl' &&
+    waterText(all.find(dr => dr.id === 'manhattan'), 8, 'cl', 'sv') === 'Blandar du i förväg: rör i ca 12 cl vatten och kyl',
+    'waterText: catalog Margarita (shaken) and Manhattan (stirred)');
+}
 
 // ---------- citrus to buy ----------
 const citrusCatalog = require('./drinks.json');

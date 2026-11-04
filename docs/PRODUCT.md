@@ -167,6 +167,7 @@ transient and never synced. Never store derived data in the blob.
   HTTPS link to the specific published recipe; favorite detail renders it as a small link
   after the method.
 - `essential` is explicit on every line (validator enforces).
+- `prep` is how the drink is mixed: `shake`, `stir`, `build` or `blend`, read from its method. From two glasses a shaken or stirred recipe adds "Blandar du i förväg: rör i ca X cl vatten och kyl" (`DILUTION_ML` in `app.js`: 22 ml per shaken glass, 15 per stirred); built and blended drinks, top-ups, fizz, egg and recipes with water get none.
 - A bowl has the tag `punch` and `serves`, the glasses its source makes. Amounts are stored per glass, so scaling works as for any drink, and the recipe opens at `serves`. Garnish is one per glass.
 - The tag `alcohol-free` promises `base: other`, `bar: false` and no ingredient from the groups `spirits` or `liqueurs` and no regular bitters (test.js enforces). A source's bitters becomes `alcohol-free-bitters`.
 - `type` is one of `sour`, `highball`, `aromatic`, `spirit-forward`, `contemporary` (kebab, validator enforces).
