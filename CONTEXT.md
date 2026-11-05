@@ -156,6 +156,56 @@ An explicit request to replace the current spin lineup while keeping the selecte
 The canonical English and Swedish names of the action that starts the spinning wheel.
 _Avoid_: Flick, throw
 
+## Architecture
+
+Static site with no build step; the Worker only holds signed-in state. Accounts are optional.
+
+```mermaid
+graph LR
+  USER[Browser]
+
+  subgraph WEB["buildapp.se/sipdeck"]
+    PAGE[index.html and app.js]
+    DATA[drinks.json and wheel.json]
+  end
+
+  subgraph AUTH["Firebase"]
+    FB[Firebase Auth]
+    AH[sipdeck.buildapp.se authDomain]
+  end
+
+  subgraph CF["Cloudflare"]
+    W[Worker sipdeck-api]
+    D1[(D1 sipdeck)]
+    CRON[Cron hourly purge]
+    MAIL[Email to owner]
+  end
+
+  FLASKOR[Flaskor Worker]
+  JWKS[Google JWKS]
+
+  USER --> PAGE
+  PAGE --> DATA
+  PAGE --> FB
+  FB --> AH
+  PAGE -->|ID token| W
+  W --> JWKS
+  W --> D1
+  W --> MAIL
+  CRON --> D1
+  PAGE -->|optional link| FLASKOR
+```
+
+## Stack
+
+- Auth: Firebase Auth (Google and email/password), optional; the Worker verifies the ID token
+- Backend: Cloudflare Worker `sipdeck-api` (`worker/worker.js`) with an hourly cron and email to the owner
+- Database: Cloudflare D1 `sipdeck` (favorites and At home per account)
+- Frontend: vanilla HTML, CSS and JS, no framework, no build step
+- Code: JavaScript
+- Tests: `node test.js`, Worker tests, Playwright e2e in CI
+- Hosting: GitHub Pages from `main`, buildapp.se/sipdeck; pages.dev only for previews
+
 ## Audits
 Read by the cockpit Audits tab. One `- Label: YYYY-MM-DD, result` per check; conventions in elwyn-dash `docs/security.md`.
 - OWASP Top 10: 2026-10-20, warn, code review only (Gemini 4 Argon, verified by Claude), no live probe; 0 high, 0 medium open (both fixed and deployed 2026-10-21), low 1a fixed 2026-10-22, CSP frame-src open under CSP promotion; BACKLOG §OWASP-granskning 2026-10-20
