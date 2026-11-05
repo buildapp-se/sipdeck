@@ -1713,7 +1713,7 @@ if (typeof document !== 'undefined') (function () {
     if (seenTop.push(id) > 12) seenTop.shift();
     if (dir > 0) { // save (A3): idempotent, out of this cycle; exhaustion reshuffles the full set
       if (!state.favorites.includes(id)) state.favorites.push(id);
-      if (navigator.vibrate) navigator.vibrate(12); // progressive: Android only, same call as the wheel landing
+      if (navigator.vibrate) navigator.vibrate(12); // progressive: Android only; the wheel landing uses a longer 18 ms
       deckQueue = advanceQueue(deckQueue, true);
       save();
       updateNav();
