@@ -127,12 +127,12 @@ test('same matching in every view: Cointreau for triple sec, a labelled swap the
 });
 
 for (const [lang, width, title, bar, other] of [['sv', 390, 'Hemma', 'Barskåp · 1', 'Övriga ingredienser · 1'], ['en', 1280, 'At home', 'Bar cabinet · 1', 'Other ingredients · 1']]) {
-  test(`guest at ${width} px in ${lang}: holdings first, search by product name, browse kept, Flaskor is optional`, async ({ page }) => {
+  test(`guest at ${width} px in ${lang}: holdings first, search by product name, browse kept, Flaskor is optional`, async ({ page, baseURL }) => {
     await page.setViewportSize({ width, height: 844 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await seed(page, { settings: { lang } });
-    const requests = [];
-    page.on('request', r => { if (!r.url().startsWith('http://127.0.0.1')) requests.push(r.url()); });
+    const requests = [], own = new URL(baseURL).origin; // the app's own files are no leak, also on a preview
+    page.on('request', r => { if (new URL(r.url()).origin !== own) requests.push(r.url()); });
     await page.goto('/#/hemma');
     await expect(page.locator('h1')).toHaveText(title);
     await expect(page.locator('#homeHave .home-empty')).toBeVisible();

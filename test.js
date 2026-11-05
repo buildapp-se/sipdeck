@@ -552,6 +552,13 @@ check(headersSource.includes('X-Content-Type-Options: nosniff') &&
   headersSource.includes("frame-ancestors 'none'") &&
   headersSource.includes('Permissions-Policy: camera=(), microphone=(), geolocation=()'),
   'hosting: static responses declare the safe project-scoped security headers');
+{
+  // the Report-Only frame-src follows the authDomain in app.js, so a report from the sign-in frame is a real finding
+  const authDomain = (appSource.match(/authDomain: '([^']+)'/) || [])[1];
+  const frameSrc = ((headersSource.match(/Content-Security-Policy-Report-Only:[^\n]*?frame-src ([^;]+)/) || [])[1] || '').split(' ');
+  check(authDomain && frameSrc.includes('https://' + authDomain) && frameSrc.includes('https://apis.google.com') && !frameSrc.some(s => s.includes('firebaseapp.com')),
+    'hosting: Report-Only frame-src allows the authDomain and Google sign-in frame');
+}
 check(appSource.includes('el.inert = depth !== 0') &&
   appSource.includes("e.key !== 'Enter' && e.key !== ' '") &&
   appSource.includes('aria-describedby="accError"'),
@@ -1452,6 +1459,38 @@ check(onShelf(ING.gin) && onShelf(ING.champagne) && onShelf(ING['angostura-bitte
     line({ ml: 1, label: 'L'.repeat(61) }) === 'ingredients[0]' && line({ ml: 1, label: ' ' }) === 'ingredients[0]' &&
     errs(d => { d.ingredients = [null, 'gin']; }) === 'ingredients[0],ingredients[1]' && errs(d => { d.ingredients.push({ id: 'x', essential: true }); }) === 'ingredients[1]',
     'mutation rules: a line has a kebab id, a boolean essential and an optional label');
+}
+
+// backlog 2026-11-04: the wheel with one category excluded at a time, and the flex draw at a third
+{
+  const seq = first => { let n = 0; return () => (n++ === 0 ? first : 0.99); };
+  const cocktails = lineup => lineup.filter(item => item.kind === 'cocktail').length;
+  const outcomesOf = category => Object.keys(wheelData.outcomes).filter(id => wheelData.outcomes[id].category === category);
+  const fresh = excludedOutcomes => buildSpinLineup(wheelData, 'fresh', wheelFixture, seq(0.99), { excludedOutcomes });
+  const noBeer = fresh(outcomesOf('beer-cider')), noWine = fresh(outcomesOf('wine')), onlyBeerOff = fresh(['beer']);
+  check(noBeer.length === 12 && cocktails(noBeer) === 9 && noBeer.every(item => item.category !== 'beer-cider') &&
+    noBeer.filter(item => item.category === 'shot').length === 2 && noBeer.filter(item => item.category === 'wine').length === 1,
+    'wheel lineup fresh: both beer slots fall back to cocktails, shots and wine stay');
+  check(noWine.length === 12 && cocktails(noWine) === 8 && noWine.filter(item => item.category === 'beer-cider').length === 2,
+    'wheel lineup fresh: the one wine slot falls back to a cocktail');
+  check(onlyBeerOff.length === 12 && cocktails(onlyBeerOff) === 7 && onlyBeerOff.filter(item => item.category === 'beer-cider').every(item => item.outcomeId === 'cider'),
+    'wheel lineup fresh: a category with one outcome left keeps its slots');
+  const below = buildSpinLineup(wheelData, 'fresh', wheelFixture, seq(0.33)), above = buildSpinLineup(wheelData, 'fresh', wheelFixture, seq(0.34));
+  check(below.filter(item => item.category === 'bottle').length === 1 && cocktails(below) === 6 &&
+    above.every(item => item.category !== 'bottle') && cocktails(above) === 7,
+    'wheel lineup fresh: the bottle comes when the first draw is under a third, else the flex slot is a cocktail');
+  const groove = buildSpinLineup(wheelData, 'groove', wheelFixture, seq(0));
+  check(groove.length === 12 && groove.every(item => item.category !== 'bottle'), 'wheel lineup: only fresh has a bottle slot');
+}
+// backlog 2026-11-04: two named ingredients in one bottle name, the longest Swedish name wins
+{
+  const dry = { en: 'Dry vermouth', sv: 'Torr vermouth', group: 'wine', shelf: 'bar' };
+  const extra = { en: 'Extra dry vermouth', sv: 'Extra torr vermouth', group: 'wine', shelf: 'bar' };
+  const bottle = { id: 1, name: 'Extra Torr Vermouth', kind: 'spirit' };
+  const shortFirst = classify(bottle, [], { dry, extra }, {}), longFirst = classify(bottle, [], { extra, dry }, {});
+  const inside = classify({ id: 2, name: 'Hemmets Extra Torr Vermouth', kind: 'spirit' }, [], { dry, extra }, {});
+  check(shortFirst.id === 'extra' && longFirst.id === 'extra' && inside.id === 'extra' && shortFirst.sure === true,
+    'classify: when two ingredients are named on the bottle, the longer Swedish name wins in any order');
 }
 
 console.log(`${pass} passed, ${fail} failed`);
